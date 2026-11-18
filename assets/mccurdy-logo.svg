@@ -1,6 +1,6 @@
 <svg viewBox="0 0 200 80" xmlns="http://www.w3.org/2000/svg">
   <!-- Badge Shape -->
-  <path d="M20 10 L180 10 L195 40 L180 70 L20 70 L5 40 Z" fill="#007acc" stroke="#ffffff" stroke-width="4"/>
+  <path d="M20 10 L180 10 L195 40 L180 70 L20 70 L5 40 Z" fill="none" stroke="#ffffff" stroke-width="4"/>
   
   <!-- "m" -->
   <text x="35" y="55" font-family="serif" font-size="50" font-weight="bold" fill="#ffffff">m</text>
