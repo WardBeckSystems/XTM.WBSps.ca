@@ -1,6 +1,16 @@
 <svg viewBox="0 0 200 80" xmlns="http://www.w3.org/2000/svg">
-  <path d="M10 20 L190 20 L170 60 L30 60 Z" fill="#1e1e1e" stroke="#c0c0c0" stroke-width="4"/>
-  <text x="25" y="45" font-family="serif" font-size="30" font-weight="bold" fill="#ffffff">m</text>
-  <text x="50" y="45" font-family="sans-serif" font-size="20" fill="#ffffff">CURDY</text>
-  <text x="50" y="55" font-family="sans-serif" font-size="8" fill="#ffffff">RADIO INDUSTRIES LIMITED</text>
+  <!-- Badge Shape -->
+  <path d="M20 10 L180 10 L195 40 L180 70 L20 70 L5 40 Z" fill="#121212" stroke="#d0d0d0" stroke-width="3"/>
+  <!-- Silver Border Inner -->
+  <path d="M22 13 L178 13 L191 40 L178 67 L22 67 L9 40 Z" fill="none" stroke="#606060" stroke-width="1"/>
+  
+  <!-- "m" -->
+  <text x="35" y="55" font-family="serif" font-size="50" font-weight="bold" fill="#e0e0e0">m</text>
+  
+  <!-- "CURDY" -->
+  <text x="95" y="42" font-family="sans-serif" font-size="22" font-weight="bold" fill="#ffffff" letter-spacing="1">CURDY</text>
+  
+  <!-- "RADIO INDUSTRIES LIMITED" -->
+  <rect x="95" y="48" width="90" height="10" fill="#a0a0a0" rx="1"/>
+  <text x="96" y="56" font-family="sans-serif" font-size="6" fill="#000000" font-weight="bold">RADIO INDUSTRIES LIMITED</text>
 </svg>
