@@ -57,11 +57,11 @@
            L 248,200 
            Z" fill="#f4f6f8" />
 
-  <!-- "CCURDY" Lettering -->
-  <g fill="#f4f6f8" font-family="&#39;Helvetica Neue&#39;, Helvetica, Arial, sans-serif" font-weight="800" letter-spacing="2">
+  <!-- "CCURDY" Lettering (1/2 size) -->
+  <g fill="#f4f6f8" font-family="&#39;Helvetica Neue&#39;, Helvetica, Arial, sans-serif" font-weight="800" letter-spacing="1.5">
     <!-- Small raised 'C' -->
-    <text x="556" y="255" font-size="56">C</text>
+    <text x="598" y="258" font-size="28">C</text>
     <!-- Main 'CURDY' -->
-    <text x="602" y="282" font-size="80">CURDY</text>
+    <text x="622" y="272" font-size="40">CURDY</text>
   </g>
 </svg>
