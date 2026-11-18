@@ -1129,3 +1129,12 @@ html, body {
   }
 }
 
+
+/* McCurdy ATS-100 Mode */
+.theme-mccurdy {
+  background-color: #e5e2d9;
+}
+.theme-mccurdy .meter-unit {
+  background-color: #d9c8a5;
+  color: #000;
+}
