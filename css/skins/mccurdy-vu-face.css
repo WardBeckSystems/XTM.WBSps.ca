@@ -1,0 +1,4 @@
+/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.ca). All rights reserved. */
+/* McCurdy default (parchment) VU face: plain cream ATS-100 dial, no amber incandescent glow */
+body.theme-mccurdy .xt-face.xt-lamp-parchment { fill: url(#mc_vuface); }
+body.theme-mccurdy .xt-bloom.xt-lamp-parchment { display: none; }

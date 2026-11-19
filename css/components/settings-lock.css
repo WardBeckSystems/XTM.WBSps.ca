@@ -1,0 +1,114 @@
+/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.ca). All rights reserved. */
+/* -------------------------------------------------------------
+   Security Settings Lock Overlay (Requirement 2)
+   "Available to those that know... Hold CTRL for 5 seconds"
+   ------------------------------------------------------------- */
+.aux-drawer {
+  position: relative;
+}
+
+.drawer-gear-label {
+  font-size: 11px;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-left: 6px;
+  user-select: none;
+}
+
+.settings-lock-overlay {
+  position: absolute;
+  top: 42px;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(8, 10, 14, 0.94);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 30px;
+  transition: opacity 0.35s ease, visibility 0.35s ease;
+}
+
+.settings-lock-overlay.unlocked {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.lock-panel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  max-width: 480px;
+  padding: 28px 36px;
+  background: linear-gradient(180deg, #131720 0%, #0b0e14 100%);
+  border: 1px solid #1f293d;
+  border-radius: 12px;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(255, 255, 255, 0.05);
+}
+
+.lock-icon-shield {
+  margin-bottom: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: rgba(34, 197, 94, 0.1);
+  border: 1px solid rgba(34, 197, 94, 0.25);
+  box-shadow: 0 0 20px rgba(34, 197, 94, 0.15);
+}
+
+.lock-msg-main {
+  font-family: var(--font-sans);
+  font-size: 17px;
+  font-weight: 700;
+  color: #f1f5f9;
+  letter-spacing: 0.5px;
+  margin-bottom: 0;
+}
+
+.lock-progress-container {
+  width: 100%;
+  margin-top: 18px;
+  opacity: 0;
+  transform: translateY(6px);
+  pointer-events: none;
+  transition: opacity 0.25s ease, transform 0.25s ease;
+}
+
+.settings-lock-overlay.holding-unlock .lock-progress-container {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.lock-progress-bar {
+  width: 100%;
+  height: 8px;
+  background: #1e293b;
+  border-radius: 4px;
+  overflow: hidden;
+  border: 1px solid #334155;
+  margin-bottom: 8px;
+}
+
+.lock-progress-fill {
+  width: 0%;
+  height: 100%;
+  background: linear-gradient(90deg, #22c55e, #4ade80, #38bdf8);
+  box-shadow: 0 0 12px rgba(34, 197, 94, 0.8);
+  transition: width 0.05s linear;
+}
+
+.lock-countdown {
+  font-family: ui-monospace, monospace;
+  font-size: 12px;
+  color: #64748b;
+  font-weight: 700;
+}

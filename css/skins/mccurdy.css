@@ -1,0 +1,74 @@
+/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.ca). All rights reserved. */
+/* ---------------------------------------------------------------
+   Light Mode = McCurdy ATS-100 faceplate (toggle: McCurdy button)
+   Meters, LEDs, VFD and ballistics are identical in both modes; only the
+   panel and page chrome change.
+   --------------------------------------------------------------- */
+.mc-only { display: none; }
+body.theme-mccurdy .mc-only { display: inline; }
+body.theme-mccurdy .wbs-only { display: none; }
+
+body.theme-mccurdy {
+  --bg-deep: #dedad0;
+  --bg-panel: #e5e1d5;
+  --border-subtle: #b5b1a6;
+  --ink-primary: #232325;
+  --ink-secondary: #4a4740;
+  --ink-muted: #68655d;
+}
+html:has(body.theme-mccurdy) { background-color: #dedad0; }
+body.theme-mccurdy .xt-deg { fill: #232325; }
+body.theme-mccurdy .xt-btn-lbl { fill: #181b1e !important; }
+
+body.theme-mccurdy .aux-drawer { background: #dedad0; border-top-color: #b5b1a6; }
+body.theme-mccurdy .drawer-toggle {
+  background: linear-gradient(180deg, #e5e1d5 0%, #d2cec2 100%);
+  border-top-color: #b5b1a6;
+}
+body.theme-mccurdy .drawer-toggle:hover { background: #e9e5da; border-top-color: #3892d4; }
+body.theme-mccurdy .btn-settings-cog { color: #232325; }
+body.theme-mccurdy .drawer-gear-label { color: #68655d; }
+body.theme-mccurdy .wbs-bottom-logo { color: #232325 !important; }
+body.theme-mccurdy .wbs-bottom-text { color: #232325; }
+body.theme-mccurdy .drawer-grid { background: #dedad0; }
+body.theme-mccurdy .drawer-card { background: #e5e1d5; border-color: #b5b1a6; }
+body.theme-mccurdy .drawer-card h4,
+body.theme-mccurdy .drawer-row label { color: #232325; }
+body.theme-mccurdy .drawer-section-sub { color: #68655d; border-color: #b5b1a6; }
+body.theme-mccurdy .ctrl-select { background: #f4f1e8; color: #232325; border-color: #b5b1a6; }
+body.theme-mccurdy .ctrl-hint { color: #4a4740; }
+
+/* McCurdy: move the real front-panel buttons into the ATS-100 layout.
+   SVG user units; translate(tx,ty) scale(s) maps x -> tx + s*x. */
+#visualizerStage .xtm-btn { transform-box: view-box; transform-origin: 0 0; }
+body.theme-mccurdy #xtm_btn_UP     { transform: translate(681.5px, 78px) scale(0.5); }
+body.theme-mccurdy #xtm_btn_DOWN   { transform: translate(801.5px, 78px) scale(0.5); }
+body.theme-mccurdy #xtm_btn_lbl_UP,
+body.theme-mccurdy #xtm_btn_lbl_DOWN,
+body.theme-mccurdy #xtm_btn_lbl_MODE,
+body.theme-mccurdy #xtm_btn_lbl_SOURCE { display: none; }
+
+/* McCurdy: cream backgrounds for the POD-22 LED meter and the dBFS graph
+   (LED segments and traces themselves are unchanged). */
+body.theme-mccurdy .meter-stack { background-color: #dedad0; }
+body.theme-mccurdy .p22-bg { fill: #e5e1d5; }
+body.theme-mccurdy .p22-legend { fill: #232325; }
+body.theme-mccurdy .meter-unit.dbfs-unit {
+  --dbfs-bg: #e5e1d5;
+  background: #e5e1d5;
+  border-top-color: #b5b1a6;
+}
+body.theme-mccurdy .scope-toolbar { background: #dedad0; border-color: #b5b1a6; color: #232325; }
+body.theme-mccurdy .scope-toolbar-label,
+body.theme-mccurdy .scope-ctrl-item label { color: #4a4740; }
+body.theme-mccurdy .scope-tab-btn { background: #e9e5da; color: #232325; border-color: #b5b1a6; }
+body.theme-mccurdy .scope-tab-btn.active { background: #3892d4; color: #fff; border-color: #1b1c1e; }
+body.theme-mccurdy .scope-val-badge,
+body.theme-mccurdy .scope-meta-badge { background: #e9e5da; color: #232325; border-color: #b5b1a6; }
+
+/* McCurdy: the INPUT jacks are the MODE/SOURCE buttons, so the square ones are hidden */
+body.theme-mccurdy #xtm_btn_MODE,
+body.theme-mccurdy #xtm_btn_SOURCE { display: none; }
+.mc-jack circle { transition: stroke 0.1s ease; }
+.mc-jack:hover circle { stroke: #f4f6f8; }
+.mc-jack:active circle { stroke: #ff2d1f; stroke-width: 3; }

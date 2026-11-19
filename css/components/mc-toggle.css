@@ -1,0 +1,16 @@
+/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.ca). All rights reserved. */
+/* McCurdy mode switch (lives in the settings/footer bar) */
+.mc-toggle {
+  background: none;
+  border: 0;
+  padding: 2px 4px;
+  margin-right: 14px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  border-radius: 4px;
+  transition: transform 0.15s ease;
+}
+.mc-toggle:hover { transform: translateY(-1px); }
+.mc-toggle:focus-visible { outline: 2px solid #4ba7e8; outline-offset: 2px; }
+.mc-toggle svg { display: block; }

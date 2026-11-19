@@ -1,0 +1,133 @@
+/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.ca). All rights reserved. */
+/* Auxiliary Settings Drawer with Visible Tab styling */
+.aux-drawer {
+  width: 100%;
+  background: #0f1217;
+  border-top: 2px solid #202735;
+  flex: 0 0 auto;
+  font-size: 13px;
+  color: var(--ink-secondary);
+}
+
+.drawer-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 8px 20px;
+  background: #151922;
+  border-top: 1px solid #2a3447;
+  cursor: pointer;
+  font-weight: 700;
+  color: var(--ink-primary);
+  list-style: none;
+  transition: all 0.15s ease;
+}
+
+.drawer-toggle-left {
+  display: flex;
+  align-items: center;
+  min-width: 180px;
+}
+
+.btn-settings-cog {
+  background: transparent;
+  border: none;
+  color: #475569;
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.35;
+  transition: all 0.2s ease;
+}
+
+.btn-settings-cog:hover {
+  opacity: 0.95;
+  color: #38bdf8;
+  transform: rotate(45deg);
+}
+
+.drawer-tab-sub {
+  font-size: 12px;
+  color: #94a3b8;
+}
+
+.drawer-toggle-right {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  min-width: 180px;
+}
+
+.wbs-bottom-logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none;
+  opacity: 0.85;
+  transition: opacity 0.15s ease, transform 0.15s ease;
+}
+
+.wbs-bottom-logo:hover {
+  opacity: 1;
+  transform: translateY(-1px);
+}
+
+.wbs-logo-svg {
+  display: block;
+}
+
+.wbs-bottom-text {
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  color: #cbd5e1;
+}
+
+.drawer-toggle:hover {
+  background: #1e2430;
+  border-top-color: #38bdf8;
+}
+
+.drawer-tab-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #202736;
+  color: #38bdf8;
+  border: 1px solid #3b82f6;
+  padding: 3px 10px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+}
+
+.drawer-icon {
+  font-size: 15px;
+  color: var(--accent-blue);
+}
+
+.fps-badge {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  background: #0f2316;
+  color: #4ade80;
+  border: 1px solid rgba(74, 222, 128, 0.35);
+  padding: 2px 8px;
+  border-radius: 10px;
+  margin-left: 10px;
+}
+
+.active-source-badge {
+  margin-left: auto;
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  background: #1a222d;
+  color: var(--accent-green);
+  border: 1px solid rgba(157, 255, 58, 0.3);
+  padding: 3px 10px;
+  border-radius: 12px;
+}

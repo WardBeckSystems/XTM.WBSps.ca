@@ -1,0 +1,25 @@
+/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.ca). All rights reserved. */
+/* -------------------------------------------------------------
+   Dynamic Ambient Background Glow for LUFS Levels (Requirement 11)
+   > -24 LUFS: Green glow
+   > -18 LUFS: Orange glow
+   >= -12 LUFS: Red glow & red background
+   ------------------------------------------------------------- */
+.console-viewport {
+  transition: background 0.25s ease, box-shadow 0.25s ease;
+}
+
+.console-viewport.lufs-glow-green {
+  background: radial-gradient(ellipse at 50% 25%, #071f11 0%, #07130b 45%, #07080a 90%) !important;
+  box-shadow: inset 0 0 120px rgba(34, 197, 94, 0.25);
+}
+
+.console-viewport.lufs-glow-orange {
+  background: radial-gradient(ellipse at 50% 25%, #2a1506 0%, #170d04 45%, #07080a 90%) !important;
+  box-shadow: inset 0 0 140px rgba(249, 115, 22, 0.32);
+}
+
+.console-viewport.lufs-glow-red {
+  background: radial-gradient(ellipse at 50% 25%, #3a0a0a 0%, #200505 45%, #0e0303 90%) !important;
+  box-shadow: inset 0 0 180px rgba(239, 68, 68, 0.48);
+}

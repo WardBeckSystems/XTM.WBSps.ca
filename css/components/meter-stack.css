@@ -1,0 +1,54 @@
+/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.ca). All rights reserved. */
+/* Borderless Meter Stack - Edge-to-Edge Full Width */
+.meter-stack {
+  width: 100%;
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  margin: 0;
+  padding: 0;
+  background-color: var(--bg-deep);
+  overflow: hidden;
+}
+
+.meter-unit {
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  border: none;
+  background: transparent;
+  line-height: 0;
+  flex: 0 0 auto;
+}
+
+.meter-unit svg {
+  width: 100%;
+  height: auto;
+  display: block;
+  border: none !important;
+  border-radius: 0 !important;
+}
+
+.meter-unit.pod22 {
+  flex: 0 0 auto;
+}
+
+.meter-unit.pod22-wrap {
+  position: relative;
+  width: 100%;
+  line-height: 0;
+  overflow: hidden;
+}
+
+.meter-unit.dbfs-unit {
+  flex: 1 1 0px;
+  min-height: 150px;
+  line-height: normal;
+  border-top: 1px solid #161c28;
+  background: #07090c;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}

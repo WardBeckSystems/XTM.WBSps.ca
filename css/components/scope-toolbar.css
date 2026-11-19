@@ -1,0 +1,133 @@
+/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.ca). All rights reserved. */
+/* Distinct Scope Header & Tab Control Bar */
+.scope-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 6px 16px;
+  background: #0b0e14;
+  border-bottom: 1px solid #1c2433;
+  font-size: 11px;
+  font-family: var(--font-mono);
+  color: var(--ink-secondary);
+  flex: 0 0 auto;
+  z-index: 10;
+}
+
+.scope-tabs-group {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.scope-toolbar-label {
+  font-weight: 700;
+  color: #64748b;
+  margin-right: 4px;
+}
+
+.scope-tab-btn {
+  background: #111622;
+  color: #94a3b8;
+  border: 1px solid #243044;
+  border-bottom: 2px solid transparent;
+  padding: 4px 14px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  transition: all 0.15s ease;
+}
+
+.scope-tab-btn:hover {
+  background: #192334;
+  color: #f1f5f9;
+  border-color: #3b82f6;
+}
+
+.scope-tab-btn.active {
+  background: #162640;
+  color: #38bdf8;
+  border-color: #38bdf8;
+  border-bottom: 2px solid #38bdf8;
+  box-shadow: 0 0 12px rgba(56, 189, 248, 0.3);
+}
+
+.scope-sliders-group {
+  display: flex;
+  align-items: center;
+  gap: 22px;
+}
+
+.scope-ctrl-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.scope-ctrl-item label {
+  font-weight: 700;
+  color: #94a3b8;
+  white-space: nowrap;
+}
+
+.scope-ctrl-item input[type="range"] {
+  width: 95px;
+  accent-color: #38bdf8;
+  cursor: pointer;
+}
+
+.scope-val-badge {
+  background: #141f2e;
+  color: #38bdf8;
+  border: 1px solid rgba(56, 189, 248, 0.35);
+  padding: 1px 7px;
+  border-radius: 4px;
+  font-size: 10.5px;
+  min-width: 48px;
+  text-align: center;
+}
+
+.scope-clear-btn {
+  background: #1f1418;
+  color: #f87171;
+  border: 1px solid rgba(239, 68, 68, 0.45);
+  padding: 2px 9px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  transition: all 0.15s ease;
+  margin-left: 4px;
+}
+
+.scope-clear-btn:hover {
+  background: #dc2626;
+  color: #ffffff;
+  border-color: #dc2626;
+  box-shadow: 0 0 10px rgba(220, 38, 38, 0.5);
+}
+
+.scope-meta-badge {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  line-height: 1.2;
+}
+
+.scope-meta-badge .scope-title {
+  font-size: 11px;
+  font-weight: 800;
+  color: #cbd5e1;
+  letter-spacing: 0.5px;
+}
+
+.scope-meta-badge .scope-sub {
+  font-size: 9.5px;
+  color: #64748b;
+}

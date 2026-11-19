@@ -1,0 +1,18 @@
+/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.ca). All rights reserved. */
+.hint {
+  font-size: 11px;
+  color: var(--ink-muted);
+  font-family: var(--font-mono);
+}
+
+/* Never show page scroll bars: the console always fits the window. */
+html, body { height: 100%; overflow: hidden; }
+.console-viewport { height: 100vh; height: 100dvh; max-height: 100dvh; }
+.aux-drawer[open] .drawer-grid {
+  max-height: 55vh;
+  max-height: 55dvh;
+  overflow-y: auto;
+  scrollbar-width: none;
+}
+.aux-drawer[open] .drawer-grid::-webkit-scrollbar { display: none; }
+.drawer-toggle::-webkit-details-marker { display: none; }

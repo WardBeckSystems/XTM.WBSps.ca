@@ -1,0 +1,133 @@
+/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.ca). All rights reserved. */
+.drawer-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(330px, 1fr));
+  gap: 16px;
+  padding: 18px 24px 28px 24px;
+  background: #0f1115;
+}
+
+.drawer-card {
+  background: #15181e;
+  border: 1px solid var(--border-subtle);
+  border-radius: 8px;
+  padding: 16px 20px;
+  display: flex;
+  flex-direction: column;
+}
+
+.audio-card {
+  border-top: 3px solid #38bdf8;
+  background: linear-gradient(180deg, #131b28 0%, #0e121a 100%);
+}
+
+.meters-card {
+  border-top: 3px solid #4ade80;
+  background: linear-gradient(180deg, #111d17 0%, #0e121a 100%);
+}
+
+.chart-card {
+  border-top: 3px solid #ec4899;
+  background: linear-gradient(180deg, #1c1322 0%, #0e121a 100%);
+}
+
+.drawer-card h4 {
+  font-size: 13.5px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.9px;
+  color: var(--accent-blue);
+  margin-bottom: 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.audio-card h4 {
+  color: #38bdf8;
+}
+
+.meters-card h4 {
+  color: #4ade80;
+}
+
+.chart-card h4 {
+  color: #ec4899;
+}
+
+.drawer-section-sub {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  color: #64748b;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 10px 0 4px 0;
+  margin: 12px 0 10px 0;
+  text-transform: uppercase;
+}
+
+.drawer-section-sub:first-of-type {
+  margin-top: 0;
+  padding-top: 0;
+}
+
+.drawer-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  font-size: 12.5px;
+}
+
+.drawer-row:last-child {
+  margin-bottom: 0;
+}
+
+.ctrl-select {
+  background: #0a0b0d;
+  color: #f1f5f9;
+  border: 1px solid #2d333b;
+  border-radius: 5px;
+  padding: 4px 8px;
+  font-size: 12px;
+  max-width: 170px;
+  cursor: pointer;
+}
+
+.slider-box {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.slider-box input[type="range"] {
+  accent-color: var(--accent-amber);
+  width: 90px;
+  cursor: pointer;
+}
+
+.slider-box span {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  width: 44px;
+  text-align: right;
+  color: var(--accent-amber);
+}
+
+.chk-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+}
+
+.ctrl-hint {
+  font-size: 11.5px;
+  line-height: 1.4;
+  color: var(--ink-muted);
+}
+
+.ctrl-hint strong {
+  color: var(--accent-green);
+}

@@ -1,0 +1,15 @@
+/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.ca). All rights reserved. */
+:root {
+  --bg-deep: #0a0b0d;
+  --bg-panel: #0f1114;
+  --border-subtle: #1e2229;
+  --ink-primary: #f1f5f9;
+  --ink-secondary: #94a3b8;
+  --ink-muted: #64748b;
+  --accent-green: #9dff3a;
+  --accent-amber: #ffb43a;
+  --accent-red: #ff3b30;
+  --accent-blue: #38bdf8;
+  --font-mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  --font-sans: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}

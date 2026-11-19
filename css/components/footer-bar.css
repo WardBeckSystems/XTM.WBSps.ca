@@ -1,0 +1,14 @@
+/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.ca). All rights reserved. */
+/* Only the cog opens Settings, so only it looks clickable */
+.drawer-toggle { cursor: default; }
+.drawer-toggle:hover { background: #151922; border-top-color: #2a3447; }
+.btn-settings-cog { cursor: pointer; }
+
+/* Footer: Ward-Beck.ca, then McCurdyRadio.com on the far right */
+.mc-toggle { gap: 8px; margin-right: 0; margin-left: 18px; }
+.mc-toggle-text {
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  color: #cbd5e1;
+}

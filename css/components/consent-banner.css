@@ -1,0 +1,124 @@
+/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.ca). All rights reserved. */
+/* -------------------------------------------------------------
+   Cookie / Local Storage Consent Banner (Broadcast Style)
+   ------------------------------------------------------------- */
+.wbs-consent-banner {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: calc(100% - 48px);
+  max-width: 680px;
+  background: rgba(10, 14, 20, 0.96);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1.5px solid #16a34a;
+  box-shadow: 0 12px 42px rgba(0, 0, 0, 0.85), 0 0 25px rgba(34, 197, 94, 0.25);
+  border-radius: 8px;
+  padding: 14px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  z-index: 1000;
+  animation: slideUpFade 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes slideUpFade {
+  from {
+    opacity: 0;
+    transform: translate(-50%, 20px);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+}
+
+.consent-content {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex: 1;
+}
+
+.consent-icon {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+}
+
+.consent-text-block {
+  display: flex;
+  flex-direction: column;
+}
+
+.consent-headline {
+  font-size: 12px;
+  font-weight: 800;
+  color: #22c55e;
+  letter-spacing: 1px;
+}
+
+.consent-description {
+  margin: 3px 0 0 0;
+  font-size: 11.5px;
+  color: #cbd5e1;
+  line-height: 1.4;
+}
+
+.consent-buttons {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.btn-consent-allow {
+  background: #15803d;
+  color: #ffffff;
+  border: 1px solid #22c55e;
+  border-radius: 4px;
+  padding: 8px 16px;
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  transition: background 0.15s ease, box-shadow 0.15s ease;
+  white-space: nowrap;
+}
+
+.btn-consent-allow:hover {
+  background: #16a34a;
+  box-shadow: 0 0 12px rgba(34, 197, 94, 0.45);
+}
+
+.btn-consent-session {
+  background: #1e293b;
+  color: #94a3b8;
+  border: 1px solid #475569;
+  border-radius: 4px;
+  padding: 8px 14px;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+  white-space: nowrap;
+}
+
+.btn-consent-session:hover {
+  background: #334155;
+  color: #f1f5f9;
+}
+
+@media (max-width: 640px) {
+  .wbs-consent-banner {
+    flex-direction: column;
+    align-items: stretch;
+    bottom: 12px;
+    padding: 12px 14px;
+  }
+  .consent-buttons {
+    justify-content: flex-end;
+  }
+}
