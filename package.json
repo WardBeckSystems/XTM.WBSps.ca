@@ -5,7 +5,7 @@
   "main": "sw.js",
   "type": "module",
   "scripts": {
-    "build:wasm": "asc assembly/index.ts --config asconfig.json",
+    "build:wasm": "asc assembly/index.ts --config asconfig.json && node tools/stamp-copyright.mjs",
     "build": "npm run build:wasm && vite build",
     "dev": "vite",
     "preview": "vite preview"
@@ -18,5 +18,7 @@
   },
   "dependencies": {
     "js-yaml": "^5.5.0"
-  }
+  },
+  "license": "UNLICENSED",
+  "private": true
 }

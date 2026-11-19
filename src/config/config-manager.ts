@@ -1,3 +1,4 @@
+/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.ca). All rights reserved. */
 /**
  * Ward-Beck Systems Console Configuration & Memory Manager
  * Handles:

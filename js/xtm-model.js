@@ -1,3 +1,4 @@
+/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.ca). All rights reserved. */
 /**
  * WBS XTM Hardware Firmware Model (PIC16F874 / 42V400C Emulation)
  * Handles front panel state, EEPROM persistence, source selection,

@@ -1,3 +1,4 @@
+/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.ca). All rights reserved. */
 import type { MeterFrameTelemetry, TimeScaleMode } from '../types/telemetry';
 import type { XtmModel } from '../models/xtm-model';
 /**
@@ -72,7 +73,7 @@ export class DbfsView {
      anchored to the ABSOLUTE sample index, so blocks never re-phase as the graph scrolls. */
   static readonly PYR_LEVELS = 14;           // up to 16384-sample blocks
   absCount: number = 0;                      // total samples ever written (since last clear)
-  pyr: Map<Float32Array, Float32Array[]> = new Map();
+  pyr: Map<Float32Array, { max: Float32Array[]; sum: Float32Array[] }> = new Map();
   pyrFor: Float32Array | null = null;        // histL the pyramid was built for
 
   histL: Float32Array;
@@ -353,21 +354,28 @@ export class DbfsView {
     this.graphDirty = true;
   }
 
-  /* ---------------- Anti-shimmer peak pyramid ---------------- */
+  /* ---------------- Anti-shimmer pyramid (mip-mapped history) ----------------
+     Level l holds, for each fixed 2^l-sample block anchored to the ABSOLUTE sample index,
+     both the block max and the block sum (-> mean). Drawing samples it like a trilinear
+     texture: interpolated between neighbouring blocks AND between neighbouring levels, so
+     nothing snaps when a block edge or a level change passes a pixel column. */
   private pyrSources(): Float32Array[] {
     return [this.histL, this.histR, this.histSum, this.histDiff,
-            this.histNormL, this.histNormR, this.histNormSum, this.histNormDiff];
+            this.histNormL, this.histNormR, this.histNormSum, this.histNormDiff,
+            this.histLufsM, this.histLufsS, this.histLufsI];
   }
 
   private pyrReset(): void {
     this.pyr = new Map();
     const n = this.bufferSize;
     for (const src of this.pyrSources()) {
-      const levels: Float32Array[] = [new Float32Array(0)];
+      const max: Float32Array[] = [new Float32Array(0)];
+      const sum: Float32Array[] = [new Float32Array(0)];
       for (let l = 1; l <= DbfsView.PYR_LEVELS; l++) {
-        levels.push(new Float32Array((n >> l) + 2).fill(-60));
+        max.push(new Float32Array((n >> l) + 2).fill(-60));
+        sum.push(new Float32Array((n >> l) + 2).fill(0));
       }
-      this.pyr.set(src, levels);
+      this.pyr.set(src, { max, sum });
     }
     this.pyrFor = this.histL;
     this.absCount = 0;
@@ -378,49 +386,67 @@ export class DbfsView {
     if (this.count === 0 || this.pyrFor !== this.histL) this.pyrReset();
     const A = this.absCount;
     const h = this.head;
-    for (const [src, levels] of this.pyr) {
-      const v = src[h];
+    for (const [src, lv] of this.pyr) {
+      const v = src[h]!;
       for (let l = 1; l <= DbfsView.PYR_LEVELS; l++) {
-        const lv = levels[l]!;
-        const slot = Math.floor(A / (1 << l)) % lv.length;
-        if ((A & ((1 << l) - 1)) === 0 || v > lv[slot]!) lv[slot] = v;
+        const mx = lv.max[l]!, sm = lv.sum[l]!;
+        const slot = Math.floor(A / (1 << l)) % mx.length;
+        if ((A & ((1 << l) - 1)) === 0) { mx[slot] = v; sm[slot] = v; }
+        else { if (v > mx[slot]!) mx[slot] = v; sm[slot] = sm[slot]! + v; }
       }
     }
     this.absCount = A + 1;
   }
 
-  /**
-   * Max of hist over absolute sample range [aLo, aHi] using fixed, absolutely-anchored
-   * blocks (whole-slice max, no point sampling). Blocks are chosen so the range spans
-   * at least ~2 of them; a column's value therefore only changes when a block boundary
-   * crosses it, and old blocks keep their value as they slide left.
-   */
-  private pyrMax(hist: Float32Array, aLo: number, aHi: number): number {
-    const span = aHi - aLo;
-    const oldest = this.absCount - this.count;
-    let l = Math.floor(Math.log2(Math.max(1, span / 2)));
-    l = Math.max(0, Math.min(DbfsView.PYR_LEVELS, l));
-    let m = -Infinity;
-    if (l === 0) {
-      const bufLen = this.bufferSize;
-      const lo = Math.max(oldest, Math.floor(aLo)), hi = Math.min(this.absCount - 1, Math.ceil(aHi));
-      for (let a = lo; a <= hi; a++) {
-        const v = hist[(this.head - (this.absCount - a) + bufLen * 2) % bufLen]!;
-        if (v > m) m = v;
-      }
-      return m === -Infinity ? -60 : m;
-    }
-    const levels = this.pyr.get(hist);
-    if (!levels) return -60;
-    const lv = levels[l]!;
+  /** Raw sample at absolute index a (linear interpolation, clamped to the buffer). */
+  private rawAt(hist: Float32Array, a: number): number {
+    const oldest = this.absCount - this.count, newest = this.absCount - 1;
+    const ac = Math.max(oldest, Math.min(newest, a));
+    const a0 = Math.floor(ac), a1 = Math.min(newest, a0 + 1), t = ac - a0;
+    const n = this.bufferSize;
+    const i0 = ((this.head - (this.absCount - a0)) % n + n) % n;
+    const i1 = ((this.head - (this.absCount - a1)) % n + n) % n;
+    return hist[i0]! * (1 - t) + hist[i1]! * t;
+  }
+
+  /** Block value (max or mean) at level l, block index b, clamped to valid blocks. */
+  private blockAt(hist: Float32Array, l: number, b: number, useMean: boolean): number {
+    const lv = this.pyr.get(hist)!;
     const B = 1 << l;
-    const bLo = Math.max(Math.ceil(oldest / B), Math.floor(aLo / B));
-    const bHi = Math.min(Math.floor((this.absCount - 1) / B), Math.floor(aHi / B));
-    for (let b = bLo; b <= bHi; b++) {
-      const v = lv[b % lv.length]!;
-      if (v > m) m = v;
-    }
-    return m === -Infinity ? -60 : m;
+    const bOld = Math.ceil((this.absCount - this.count) / B), bNew = Math.floor((this.absCount - 1) / B);
+    const bc = Math.max(bOld, Math.min(bNew, b));
+    const slot = bc % lv.max[l]!.length;
+    if (!useMean) return lv.max[l]![slot]!;
+    const filled = Math.min(B, this.absCount - bc * B); // newest block may be partial
+    return lv.sum[l]![slot]! / Math.max(1, filled);
+  }
+
+  /** Level l sampled continuously at absolute position a (interpolated between block centres). */
+  private levelAt(hist: Float32Array, l: number, a: number, useMean: boolean): number {
+    if (l <= 0) return this.rawAt(hist, a);
+    const B = 1 << l;
+    const bf = a / B - 0.5;
+    const b0 = Math.floor(bf), t = bf - b0;
+    return this.blockAt(hist, l, b0, useMean) * (1 - t) + this.blockAt(hist, l, b0 + 1, useMean) * t;
+  }
+
+  /**
+   * Trilinear sample: level f = log2(samples per pixel) + extra blur, blended between the two
+   * nearest levels. pos = 0 (newest, right) .. 1 (oldest, left). Past ~50% the value fades
+   * from peak-hold (max) to the block mean and is progressively blurred, so the squeezed
+   * history smooths out instead of moiré-ing.
+   */
+  private pyrSample(hist: Float32Array, a: number, samplesPerPx: number, pos: number): number {
+    const sstep = (e0: number, e1: number, x: number) => { const t = Math.max(0, Math.min(1, (x - e0) / (e1 - e0))); return t * t * (3 - 2 * t); };
+    const blur = 2.5 * sstep(0.5, 1.0, pos);                 // up to ~2.5 extra octaves of smoothing at the far left
+    const f = Math.max(0, Math.min(DbfsView.PYR_LEVELS - 1, Math.log2(Math.max(1, samplesPerPx)) + blur));
+    const l0 = Math.floor(f), t = f - l0;
+    const sample = (useMean: boolean) =>
+      this.levelAt(hist, l0, a, useMean) * (1 - t) + this.levelAt(hist, l0 + 1, a, useMean) * t;
+    const wMean = sstep(0.35, 0.6, pos);                     // peak-hold right of centre, mean past 50%
+    const vMax = wMean < 1 ? sample(false) : 0;
+    const vMean = wMean > 0 ? sample(true) : 0;
+    return vMax * (1 - wMean) + vMean * wMean;
   }
 
   clear(): void {
@@ -1574,7 +1600,10 @@ export class DbfsView {
         // Column covers [px - 0.5, px + 0.5] on screen -> [kLo, kHi] in samples
         const kLo = kAtX(px - 0.5)[0];
         const kHi = kAtX(px + 0.5)[0];
-        const compressed = levelsReady && (kHi - kLo) > 2;
+        const spp = kHi - kLo;                         // samples per pixel at this column
+        const compressed = levelsReady && spp > 1.5;
+        const posX = 1 - Math.max(0, Math.min(1, (px - padL) / plotW)); // 0 = right/newest, 1 = left/oldest
+        const aMid = absBase + kClamped;
 
         const k0 = Math.floor(kClamped);
         const k1 = Math.min(targetSamples - 1, k0 + 1);
@@ -1585,10 +1614,10 @@ export class DbfsView {
         // Compressed columns: whole-slice max from fixed absolute blocks (no shimmer).
         // Uncompressed columns (<= 2 samples/px): sub-sample interpolation as before.
         let val = compressed
-          ? this.pyrMax(hist, absBase + kLo, absBase + kHi)
+          ? this.pyrSample(hist, aMid, spp, posX)
           : hist[idx0] * (1 - frac) + hist[idx1] * frac;
-        const normAt = (hn: Float32Array): number => compressed
-          ? this.pyrMax(hn, absBase + kLo, absBase + kHi)
+        const normAt = (hn: Float32Array): number => compressed && this.pyr.has(hn)
+          ? this.pyrSample(hn, aMid, spp, posX)
           : hn[idx0] * (1 - frac) + hn[idx1] * frac;
 
         if (histNorm) {

@@ -27,7 +27,7 @@ Both units share the exact same live audio input stream captured from your compu
 Run the included local server launcher from the terminal:
 
 ```bash
-cd /home/anthony/Documents/GitProjects/WBSps.ca/XTM.WBSps.ca
+cd XTM.WBSps.ca
 ./run.sh
 ```
 
@@ -132,3 +132,7 @@ XTM.WBSps.ca/
 ├── run.sh              # Terminal launch script
 └── README.md           # Documentation
 ```
+
+---
+
+Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.ca). All rights reserved.

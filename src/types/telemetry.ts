@@ -1,3 +1,4 @@
+/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.ca). All rights reserved. */
 /**
  * Ward-Beck Systems XTM-4 — Core Telemetry Contracts & Interfaces
  * Frozen types for stable V8 TurboFan hidden classes and compile-time verification.

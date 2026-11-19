@@ -1,5 +1,5 @@
+/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.ca). All rights reserved. */
 // Ward-Beck Systems XTM-4 — High-Performance WebAssembly Audio DSP Engine
-// Author: Ward-Beck Systems & Audio Engineering Team
 // Strict AssemblyScript / WebAssembly compiled binary
 
 // Max frame size (e.g. 2048 float samples)

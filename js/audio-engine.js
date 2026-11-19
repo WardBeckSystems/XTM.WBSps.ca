@@ -1,3 +1,4 @@
+/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.ca). All rights reserved. */
 /**
  * WBS XTM Precision Audio & Ballistics Engine
  * Handles sound card inputs, system output capture, test generator,

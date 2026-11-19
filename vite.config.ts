@@ -1,3 +1,4 @@
+/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.ca). All rights reserved. */
 import { defineConfig } from 'vite';
 
 export default defineConfig({
@@ -6,7 +7,12 @@ export default defineConfig({
     outDir: 'dist',
     assetsDir: 'assets',
     sourcemap: true,
-    target: 'es2022'
+    target: 'es2022',
+    rollupOptions: {
+      output: {
+        postBanner: '/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.ca). All rights reserved. */'
+      }
+    }
   },
   server: {
     port: 3000

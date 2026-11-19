@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.ca). All rights reserved.
 """
 Ward-Beck Systems XTM-4 Standalone Local Server
 Serves the XTM standalone web app and launches your default browser.

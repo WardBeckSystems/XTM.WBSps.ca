@@ -1,3 +1,4 @@
+/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.ca). All rights reserved. */
 declare namespace __AdaptedExports {
   /** Exported memory */
   export const memory: WebAssembly.Memory;

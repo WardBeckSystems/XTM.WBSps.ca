@@ -1,3 +1,4 @@
+/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.ca). All rights reserved. */
 /**
  * WBS POD-22 Stereo Loudness Meter - Pure Borderless View & SVG Renderer
  * High-performance 60+ FPS direct DOM update engine with smoked acrylic diffuser lens.

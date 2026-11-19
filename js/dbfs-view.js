@@ -1,3 +1,4 @@
+/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.ca). All rights reserved. */
 /**
  * dBFS & ITU-R BS.1770 / EBU R128 Loudness Over Time Audio Scope
  * Inspired by APK.softapp.TEST.AUDIO.DbfsMeters (LikeDotAudio) & professional broadcast mastering scopes.
