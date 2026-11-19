@@ -7,7 +7,6 @@ import '../css/xtm.css';
 import { initApp } from './app';
 
 if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', () => initApp());
 } else {
-  initApp();
+  window.initApp = initApp;
 }

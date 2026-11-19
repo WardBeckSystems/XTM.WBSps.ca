@@ -428,8 +428,9 @@
   <script type="module" src="/src/main.ts"></script>
 <script>
   document.getElementById("btnStartAudio").addEventListener("click", () => {
+    window.audioReady = true;
     document.getElementById("audioStartOverlay").style.display = "none";
-    // Attempt to resume audio context if it exists in main.ts
+    window.initApp();
     if (window.audioContext && window.audioContext.state === "suspended") {
       window.audioContext.resume();
     }

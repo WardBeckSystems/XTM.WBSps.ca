@@ -293,6 +293,7 @@ export async function initApp(): Promise<void> {
 
   /* ---------------- Core Audio Mode Synchronizer ---------------- */
   async function syncAudioWithHardwareMode(m: any) {
+  if (!window.audioReady) return;
     if (m.mode === 'SET') return;
 
     const modeKey = m.mode + ':' + (m.mode === 'A' ? m.a.src : (m.mode === 'D' ? m.d.src : m.s.pair[0]));

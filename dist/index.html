@@ -14,7 +14,7 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Ward-Beck Systems">
-  <script type="module" crossorigin src="./assets/index-D0xzzfv8.js"></script>
+  <script type="module" crossorigin src="./assets/index-DfKt5GgP.js"></script>
   <link rel="stylesheet" crossorigin href="./assets/index-B1pJYYR7.css">
 </head>
 <body>
@@ -427,10 +427,11 @@
 
   <!-- Application Scripts (Vite + TypeScript + WebAssembly Entrypoint) -->
 <script>
-  document.getElementById("btnStartAudio").addEventListener("click", () => {
+  document.getElementById("btnStartAudio").addEventListener("click", () => { window.initApp();
     document.getElementById("audioStartOverlay").style.display = "none";
     // Attempt to resume audio context if it exists in main.ts
-    if (window.audioContext && window.audioContext.state === "suspended") {
+    if (window.audioReady = true; window.audioContext window.audioContext && window.audioContext.state === "suspended"window.audioContext && window.audioContext.state === "suspended" window.audioContext.state === "suspended") {
+    initApp();
       window.audioContext.resume();
     }
   });
