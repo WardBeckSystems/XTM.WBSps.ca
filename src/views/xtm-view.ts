@@ -285,23 +285,7 @@ export class XtmView {
         s += `<text x="${vuxL.toFixed(1)}" y="${vuyL.toFixed(1)}" font-size="28" font-weight="800" text-anchor="middle" fill="${ink}" font-family="'Arial Narrow', Arial, sans-serif">VU</text>
               <text x="${vuxR.toFixed(1)}" y="${vuyR.toFixed(1)}" font-size="28" font-weight="800" text-anchor="middle" fill="${redBandCol}" font-family="'Arial Narrow', Arial, sans-serif">VU</text>`;
 
-        // Sifam markings (AL29, reticles, 23858/1, 23859/1, LAKLI) — hidden in McCurdy mode
-        s += `<g class="wbs-only">`;
-        // Sifam Stylized 'S' Logo with AL29
-        s += `<g transform="translate(${(x0 + 44).toFixed(1)}, ${(y0 + MH - 68).toFixed(1)})">
-                <path d="M4 14 C4 8 16 6 20 12 C24 18 10 22 10 28 C10 32 18 34 24 30" stroke="${ink}" stroke-width="3" fill="none"/>
-                <text x="32" y="27" font-size="16" font-weight="800" fill="${ink}" font-family="Arial, sans-serif">AL29</text>
-              </g>`;
-
-        // Alignment Reticle Crosshairs '+' on left and right
-        s += `<path d="M${(x0 + 44).toFixed(1)} ${(y0 + MH - 32).toFixed(1)} h 18 M${(x0 + 53).toFixed(1)} ${(y0 + MH - 41).toFixed(1)} v 18" stroke="rgba(20,16,8,0.5)" stroke-width="1.2"/>
-              <path d="M${(x0 + MW - 62).toFixed(1)} ${(y0 + MH - 32).toFixed(1)} h 18 M${(x0 + MW - 53).toFixed(1)} ${(y0 + MH - 41).toFixed(1)} v 18" stroke="rgba(20,16,8,0.5)" stroke-width="1.2"/>`;
-
-        // Authentic Lower Tab Calibration/Inventory Markings (23858/1, 23859/1, LAKLI)
-        s += `<text x="${(x0 + 135).toFixed(1)}" y="${(y0 + MH - 18).toFixed(1)}" font-size="11" font-weight="600" fill="${ink}" font-family="'Courier New', monospace">23858/1</text>
-              <text x="${(x0 + 135).toFixed(1)}" y="${(y0 + MH - 6).toFixed(1)}" font-size="11" font-weight="600" fill="${redBandCol}" font-family="'Courier New', monospace">23859/1</text>
-              <text x="${(x0 + MW - 135).toFixed(1)}" y="${(y0 + MH - 12).toFixed(1)}" font-size="11" font-weight="600" fill="${ink}" font-family="'Courier New', monospace" text-anchor="end">LAKLI</text>`;
-        s += `</g>`;
+        // (No writing on the lower half of the VU face: Sifam AL29 / reticle / inventory markings removed.)
       } else {
         // Simpson Standard Legend
         s += `<text x="${(x0 + 56).toFixed(0)}" y="${y0 + 58}" font-size="26" font-weight="800" fill="${ink}">VU</text>
@@ -378,16 +362,10 @@ export class XtmView {
     }
 
     // Heritage Center Logo: Authentic Rounded Rectangle [WBS] Per Image 1 on Sifam, WBS Path on Simpson
-    if (isSifam && kind === 'vu') {
-      s += `<g class="wbs-only" transform="translate(${(cx - 48).toFixed(1)}, ${(cy + 34).toFixed(1)})">
-              <rect x="0" y="0" width="96" height="30" rx="9" fill="none" stroke="${ink}" stroke-width="2.5"/>
-              <text x="48" y="21" font-size="18" font-weight="900" fill="${ink}" text-anchor="middle" letter-spacing="3" font-family="Arial, Helvetica, sans-serif">WBS</text>
-            </g>`;
-    } else {
-      s += `<g class="wbs-only" transform="translate(${(cx - 44.5).toFixed(1)}, ${(cy + 42).toFixed(1)}) scale(1.2)">
+    // Lower half of the face: just the WBS logo (no text badge, no other writing)
+    s += `<g class="wbs-only" transform="translate(${(cx - 44.5).toFixed(1)}, ${(cy + 42).toFixed(1)}) scale(1.2)">
               <path d="${WBS_LOGO_PATH}" fill="${ink}" fill-rule="evenodd"/>
             </g>`;
-    }
 
     // Hardware-Accelerated Dynamic 3D Needle Assembly
     const topY = py - (R + 34);
