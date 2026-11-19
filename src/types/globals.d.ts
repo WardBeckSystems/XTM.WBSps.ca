@@ -4,6 +4,9 @@
 export {};
 
 declare global {
+  /** Build time YYYY.MM.DD.HH.MM, injected by vite.config.ts. */
+  const __BUILD_STAMP__: string;
+
   interface Window {
     /** Set once the first user gesture has unlocked audio playback. */
     audioReady?: boolean;

@@ -4,9 +4,10 @@
 export function initUpdateCheck(): void {
   async function checkForUpdates() {
     try {
-      const response = await fetch('/manifest.json?cache=' + Date.now());
-      const manifest = await response.json();
-      if (manifest.version !== '1.1.0') {
+      const response = await fetch('./version.json?cache=' + Date.now(), { cache: 'no-store' });
+      if (!response.ok) return;
+      const { version } = await response.json();
+      if (version && version !== __BUILD_STAMP__) {
         if (confirm('A new update is available. Refresh to update?')) {
           window.location.reload();
         }
@@ -15,12 +16,12 @@ export function initUpdateCheck(): void {
       console.error('Update check failed', e);
     }
   }
-  setInterval(checkForUpdates, 3600000); // Hourly check
+  if (!import.meta.env.DEV) setInterval(checkForUpdates, 3600000); // Hourly check
 
   const footer = document.querySelector('footer');
   if (footer) {
     const ver = document.createElement('div');
-    ver.textContent = '2026.11.18.19.38';
+    ver.textContent = __BUILD_STAMP__;
     ver.style.fontSize = '10px';
     ver.style.color = '#777';
     footer.appendChild(ver);
