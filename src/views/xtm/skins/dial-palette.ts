@@ -1,6 +1,6 @@
 /*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.ca). All rights reserved. */
 /** Dial face fill + ink colour per meter kind and power state. */
-import { lampFill } from './lamps';
+import { lampFill } from './lamps/index';
 
 /** European black PPM dial gradient */
 export const BLACK_PPM_GRADIENT = `<radialGradient id="xblackppm" cx="50%" cy="38%" r="72%">

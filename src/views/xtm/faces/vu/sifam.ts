@@ -1,6 +1,6 @@
 /*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.ca). All rights reserved. */
 /**
- * SIFAM AL29 movement (meterStyle 'sifam', default): +-50 deg span,
+ * SIFAM AL29 movement (meterStyle 'sifam', model default): +-50 deg span,
  * mirrored VU / VU legends above the scale, slender tapered wand pointers.
  */
 import type { FaceCtx, VuFaceStyle } from '../face-types';

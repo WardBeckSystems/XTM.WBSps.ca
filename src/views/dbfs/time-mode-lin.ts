@@ -5,7 +5,6 @@ import type { TimeModeSpec, TimeStep } from './time-mode-spec';
 
 export const TIME_MODE_LIN: TimeModeSpec = {
   label: 'LINEAR',
-  warped: false,
   verticalGrid: true,
   steps: (capSec, formatTimeOfDay) => {
     const timeSteps: TimeStep[] = [];

@@ -2,61 +2,61 @@
 declare namespace __AdaptedExports {
   /** Exported memory */
   export const memory: WebAssembly.Memory;
-  /** assembly/index/inputBufferL */
+  /** assembly/core/buffers/inputBufferL */
   export const inputBufferL: {
     /** @type `~lib/staticarray/StaticArray<f32>` */
     get value(): ArrayLike<number>
   };
-  /** assembly/index/inputBufferR */
+  /** assembly/core/buffers/inputBufferR */
   export const inputBufferR: {
     /** @type `~lib/staticarray/StaticArray<f32>` */
     get value(): ArrayLike<number>
   };
-  /** assembly/index/outputTelemetry */
+  /** assembly/core/buffers/outputTelemetry */
   export const outputTelemetry: {
     /** @type `~lib/staticarray/StaticArray<f32>` */
     get value(): ArrayLike<number>
   };
   /**
-   * assembly/index/setPpmType
+   * assembly/ppm/setPpmType/setPpmType
    * @param type `i32`
    */
   export function setPpmType(type: number): void;
   /**
-   * assembly/index/setVuBallistics
+   * assembly/vu/setVuBallistics/setVuBallistics
    * @param f0 `f64`
    * @param zeta `f64`
    */
   export function setVuBallistics(f0: number, zeta: number): void;
   /**
-   * assembly/index/resetLoudness
+   * assembly/loudness/resetLoudness/resetLoudness
    */
   export function resetLoudness(): void;
   /**
-   * assembly/index/initDsp
+   * assembly/core/initDsp/initDsp
    * @param sr `f64`
    * @param refLevelDb `f64`
    * @param peakTrim `f64`
    */
   export function initDsp(sr: number, refLevelDb: number, peakTrim: number): void;
   /**
-   * assembly/index/setCalGain
+   * assembly/core/setCalGain/setCalGain
    * @param gain `f64`
    */
   export function setCalGain(gain: number): void;
   /**
-   * assembly/index/setRefLevel
+   * assembly/core/setRefLevel/setRefLevel
    * @param refLevelDb `f64`
    * @param isDigital `i32`
    */
   export function setRefLevel(refLevelDb: number, isDigital: number): void;
   /**
-   * assembly/index/setPeakTrim
+   * assembly/core/setPeakTrim/setPeakTrim
    * @param trimDb `f64`
    */
   export function setPeakTrim(trimDb: number): void;
   /**
-   * assembly/index/processBlock
+   * assembly/core/processBlock/processBlock
    * @param len `i32`
    */
   export function processBlock(len: number): void;

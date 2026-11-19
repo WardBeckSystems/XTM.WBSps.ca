@@ -5,7 +5,6 @@ import type { TimeModeSpec } from './time-mode-spec';
 
 export const TIME_MODE_SUPER_LOG: TimeModeSpec = {
   label: 'SUPER TRANSIENT LOG',
-  warped: true,
   verticalGrid: false,
   steps: (capSec, formatTimeOfDay) => [
     { sec: capSec,        label: formatTimeOfDay(capSec) },

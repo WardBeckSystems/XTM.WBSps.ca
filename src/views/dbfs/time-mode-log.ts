@@ -1,11 +1,9 @@
 /*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.ca). All rights reserved. */
 import type { TimeModeSpec } from './time-mode-spec';
 
-/* Logarithmic time scale (default): expanded recent transients, beta-warped x axis. */
 
 export const TIME_MODE_LOG: TimeModeSpec = {
   label: 'LOGARITHMIC',
-  warped: true,
   verticalGrid: false,
   steps: (capSec, formatTimeOfDay) => [
     { sec: capSec,        label: formatTimeOfDay(capSec) },
