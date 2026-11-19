@@ -17,6 +17,9 @@
   <link rel="stylesheet" href="css/xtm.css?v=20261117e">
 </head>
 <body>
+  <div id="audioStartOverlay" style="position:fixed; top:0; left:0; width:100%; height:100%; background:#0a0b0d; z-index:9999; display:flex; align-items:center; justify-content:center;">
+    <button id="btnStartAudio" style="background:#22c55e; color:black; font-weight:bold; padding:20px 40px; border-radius:8px; border:none; font-size:20px; cursor:pointer;">START METERS</button>
+  </div>
   <!-- Mode Toggle Logo Container -->
   <div id="logoContainer" style="display: flex; gap: 10px; padding: 10px; cursor: pointer;" onclick="toggleMode()">
     <div id="wbsLogo" class="logo-box">
@@ -430,6 +433,15 @@
 
   <!-- Application Scripts (Vite + TypeScript + WebAssembly Entrypoint) -->
   <script type="module" src="/src/main.ts"></script>
+<script>
+  document.getElementById("btnStartAudio").addEventListener("click", () => {
+    document.getElementById("audioStartOverlay").style.display = "none";
+    // Attempt to resume audio context if it exists in main.ts
+    if (window.audioContext && window.audioContext.state === "suspended") {
+      window.audioContext.resume();
+    }
+  });
+</script>
 <script>
   function toggleMode() {
     document.body.classList.toggle("theme-mccurdy");
