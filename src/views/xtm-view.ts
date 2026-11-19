@@ -367,6 +367,13 @@ export class XtmView {
     s += `<g class="wbs-only" transform="translate(${(cx - 44.5).toFixed(1)}, ${(cy + 42).toFixed(1)}) scale(1.2)">
               <path d="${WBS_LOGO_PATH}" fill="${ink}" fill-rule="evenodd"/>
             </g>`;
+    // McCurdy mode: the outlined McCurdy badge sits on the VU faces in the same spot
+    if (kind === 'vu' && !isBlackPpm) {
+      s += `<g class="mc-only" transform="translate(${(cx - 70).toFixed(1)}, ${(cy + 34).toFixed(1)})">
+              <rect x="0" y="0" width="140" height="34" rx="2" fill="none" stroke="${ink}" stroke-opacity="0.55" stroke-width="1.8"/>
+              <text x="70" y="26" text-anchor="middle" font-family="'Arial Black', Helvetica, sans-serif" font-size="24" font-weight="900" letter-spacing="-0.8" fill="none" stroke="${ink}" stroke-opacity="0.6" stroke-width="1.3">McCurdy</text>
+            </g>`;
+    }
 
     // Hardware-Accelerated Dynamic 3D Needle Assembly
     const topY = py - (R + 34);
@@ -521,11 +528,9 @@ export class XtmView {
       <text x="${cx}" y="${ly}" dominant-baseline="central" text-anchor="middle" font-family="Helvetica, Arial, sans-serif" font-size="20" font-weight="500" letter-spacing="2" fill="#636058">${label}</text>`;
     s += legend(687.5, 'INPUT 1', null) + legend(2512.5, 'INPUT 2', 1912);
 
-    // McCurdy outlined badge + model legend, bottom-left as on the ATS-100
+    // Model legend, bottom-left as on the ATS-100 (the McCurdy badge is on the VU faces)
     const font = `font-family="Helvetica, Arial, sans-serif"`;
-    s += `<rect x="70" y="${ly - 21}" width="190" height="42" rx="2" fill="none" stroke="#7a776e" stroke-width="2"/>
-      <text x="165" y="${ly + 11}" text-anchor="middle" font-family="'Arial Black', Helvetica, sans-serif" font-size="30" font-weight="900" letter-spacing="-1" fill="none" stroke="#7d7970" stroke-width="1.6">McCurdy</text>
-      <text x="278" y="${ly}" dominant-baseline="central" ${font} font-size="17" font-weight="500" letter-spacing="1.4" fill="#68655d">MODEL ATS-100 AUDIO TEST SET</text>`;
+    s += `<text x="70" y="${ly}" dominant-baseline="central" ${font} font-size="17" font-weight="500" letter-spacing="1.4" fill="#68655d">MODEL ATS-100 AUDIO TEST SET</text>`;
 
     s += `</g>`;
     return s;

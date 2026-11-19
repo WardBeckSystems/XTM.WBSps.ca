@@ -1711,8 +1711,8 @@ export class DbfsView {
     }
 
     // 4. Phase over time: its own scale band layered over the -32 .. -60 dBFS region.
-    //    Correlation r is shown as phase angle acos(r): 0 deg (in phase) at the bottom,
-    //    90 deg in the middle, 180 deg (out of phase) at the top.
+    //    Same convention as the front-panel phase LEDs (in phase lights the 180 deg end):
+    //    in phase (r = +1) at the top = 180, 90 in the middle, out of phase (r = -1) at the bottom = 0.
     if (this.plotPhase && minX < maxX) {
       const yTop = dbToY(-32), yBot = dbToY(-60);
       const degToY = (deg: number) => yBot - (deg / 180) * (yBot - yTop);
@@ -1762,7 +1762,7 @@ export class DbfsView {
           const k0 = Math.floor(k), k1 = Math.min(targetSamples - 1, k0 + 1), f = k - k0;
           r = this.histPhase[(startIdx + k0) % bufLen]! * (1 - f) + this.histPhase[(startIdx + k1) % bufLen]! * f;
         }
-        const deg = Math.acos(Math.max(-1, Math.min(1, r))) * 180 / Math.PI;
+        const deg = 180 - Math.acos(Math.max(-1, Math.min(1, r))) * 180 / Math.PI;
         const y = degToY(deg);
         if (c === 0) ctx.moveTo(px, y); else ctx.lineTo(px, y);
       }
