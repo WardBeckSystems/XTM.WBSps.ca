@@ -135,7 +135,7 @@ def upload_tree(ftp, local_dir, remote_base):
 
     return uploaded_files, total_bytes
 
-def verify_site(url, expected_str="XTM-4"):
+def verify_site(url, expected_str="Ward-Beck Systems"):
     """Verify that the site responds over HTTPS."""
     print(f"\nVerifying {url}...")
     ctx = ssl.create_default_context()
