@@ -189,7 +189,7 @@ export class Pod22View {
       </defs>
 
       <!-- Seamless Dark Borderless Console Surface -->
-      <rect width="${this.PW}" height="${this.PH}" fill="#08090b"/>
+      <rect class="p22-bg" width="${this.PW}" height="${this.PH}" fill="#08090b"/>
 
       <!-- ================= Borderless Meter Sections ================= -->
       <g id="pod_sections">
@@ -243,14 +243,14 @@ export class Pod22View {
         <!-- Section 1: VU RANGE Header (PR to 0 VU) -->
         <g class="pod-section-vu">
           <line x1="434" y1="182" x2="940" y2="182" stroke="#22c55e" stroke-width="3" stroke-linecap="round"/>
-          <text x="1005" y="183" dominant-baseline="central" font-size="12" font-weight="900" fill="#f0f0ec" letter-spacing="1.5" text-anchor="middle" font-family="'Arial Narrow', Arial, sans-serif">VU RANGE</text>
+          <text x="1005" y="183" dominant-baseline="central" font-size="12" font-weight="900" class="p22-legend" fill="#f0f0ec" letter-spacing="1.5" text-anchor="middle" font-family="'Arial Narrow', Arial, sans-serif">VU RANGE</text>
           <line x1="1070" y1="182" x2="1576" y2="182" stroke="#22c55e" stroke-width="3" stroke-linecap="round"/>
         </g>
 
         <!-- Section 2: PEAK RANGE Header (+1 to +14) -->
         <g class="pod-section-peak">
           <line x1="1624" y1="182" x2="1875" y2="182" stroke="#22c55e" stroke-width="3" stroke-linecap="round"/>
-          <text x="1945" y="183" dominant-baseline="central" font-size="12" font-weight="900" fill="#f0f0ec" letter-spacing="1.5" text-anchor="middle" font-family="'Arial Narrow', Arial, sans-serif">PEAK RANGE</text>
+          <text x="1945" y="183" dominant-baseline="central" font-size="12" font-weight="900" class="p22-legend" fill="#f0f0ec" letter-spacing="1.5" text-anchor="middle" font-family="'Arial Narrow', Arial, sans-serif">PEAK RANGE</text>
           <line x1="2015" y1="182" x2="2260" y2="182" stroke="#22c55e" stroke-width="3" stroke-linecap="round"/>
         </g>
 
@@ -264,12 +264,12 @@ export class Pod22View {
         <!-- Standard 2-Section VU & Peak Range -->
         <g class="pod-section-vu">
           <line x1="434" y1="182" x2="940" y2="182" stroke="#22c55e" stroke-width="3" stroke-linecap="round"/>
-          <text x="1005" y="183" dominant-baseline="central" font-size="12" font-weight="900" fill="#f0f0ec" letter-spacing="1.5" text-anchor="middle" font-family="'Arial Narrow', Arial, sans-serif">VU RANGE</text>
+          <text x="1005" y="183" dominant-baseline="central" font-size="12" font-weight="900" class="p22-legend" fill="#f0f0ec" letter-spacing="1.5" text-anchor="middle" font-family="'Arial Narrow', Arial, sans-serif">VU RANGE</text>
           <line x1="1070" y1="182" x2="1576" y2="182" stroke="#22c55e" stroke-width="3" stroke-linecap="round"/>
         </g>
         <g class="pod-section-peak">
           <line x1="1624" y1="182" x2="1900" y2="182" stroke="#22c55e" stroke-width="3" stroke-linecap="round"/>
-          <text x="1965" y="183" dominant-baseline="central" font-size="12" font-weight="900" fill="#f0f0ec" letter-spacing="1.5" text-anchor="middle" font-family="'Arial Narrow', Arial, sans-serif">PEAK RANGE</text>
+          <text x="1965" y="183" dominant-baseline="central" font-size="12" font-weight="900" class="p22-legend" fill="#f0f0ec" letter-spacing="1.5" text-anchor="middle" font-family="'Arial Narrow', Arial, sans-serif">PEAK RANGE</text>
           <line x1="2030" y1="182" x2="2306" y2="182" stroke="#22c55e" stroke-width="3" stroke-linecap="round"/>
         </g>
         `}

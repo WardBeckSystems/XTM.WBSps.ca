@@ -51,9 +51,18 @@ export async function initApp(): Promise<void> {
   if (btnOpenSettings) {
     btnOpenSettings.addEventListener('click', toggleSettings);
   }
-  if (drawerToggleLeft) {
-    drawerToggleLeft.addEventListener('click', toggleSettings);
+  // Only the cog icon opens/closes Settings: clicks anywhere else on the bar
+  // (label, empty space, logos) must not toggle the <details> drawer.
+  const drawerSummary = auxDrawer?.querySelector('summary');
+  if (drawerSummary) {
+    drawerSummary.addEventListener('click', (e: Event) => {
+      const t = e.target as Element | null;
+      if (t && t.closest('#btnOpenSettings')) return; // handled by toggleSettings
+      if (t && t.closest('a, button')) return;         // logos/McCurdy button do their own thing
+      e.preventDefault();
+    });
   }
+  void drawerToggleLeft;
 
   /* ---------------- Settings Lock: Hold CTRL 5s (Requirement 2) ---------------- */
   let isSettingsUnlocked = false;
@@ -292,7 +301,34 @@ export async function initApp(): Promise<void> {
   function dismissPrompt() {}
 
   /* ---------------- Core Audio Mode Synchronizer ---------------- */
+  // Whenever the input changes, step SENS up one value then back down one value
+  // (exactly like pressing UP then DOWN) to re-prime the audio engine's level chain.
+  let sensNudging = false;
+  function nudgeSens(m: any) {
+    if (sensNudging || !m.power || (m.mode !== 'A' && m.mode !== 'D')) return;
+    const st = m.mode === 'A' ? m.a : m.d;
+    const atTop = st.lvl >= 90;
+    sensNudging = true;
+    setTimeout(() => {
+      if (atTop) m.pressDown(); else m.pressUp();
+      setTimeout(() => {
+        if (atTop) m.pressUp(); else m.pressDown();
+        sensNudging = false;
+      }, 180);
+    }, 120);
+  }
+
   async function syncAudioWithHardwareMode(m: any) {
+    const before = lastModeKey;
+    await syncAudioCore(m);
+    if (lastModeKey !== before) {
+      // Source just (re)connected: re-assert the reference level, then step SENS up/down.
+      audio.setReferenceLevel(m.getActiveReferenceLevel(), m.mode === 'D');
+      nudgeSens(m);
+    }
+  }
+
+  async function syncAudioCore(m: any) {
   if (!window.audioReady) return;
     if (m.mode === 'SET') return;
 
@@ -423,9 +459,13 @@ export async function initApp(): Promise<void> {
   // One-click anywhere to initialize audio if not yet running
   document.addEventListener('pointerdown', async (e: any) => {
     if (!isAudioStarted && !e.target.closest('.aux-drawer')) {
+      window.audioReady = true;
+      if (window.audioContext && window.audioContext.state === "suspended") {
+        await window.audioContext.resume();
+      }
       await syncAudioWithHardwareMode(model);
     }
-  }, { passive: true });
+  }, { once: true, passive: true });
 
   /* ---------------- Audio Engine Status & Device Callbacks ---------------- */
   audio.onStatusChange = (status) => {
@@ -510,6 +550,8 @@ export async function initApp(): Promise<void> {
       try {
         await audio.connectSoundCard(selectedId);
         model.flash('CARD IN');
+        audio.setReferenceLevel(model.getActiveReferenceLevel(), (model.mode as string) === 'D');
+        nudgeSens(model);
       } catch (err) {
         console.error('Failed to connect selected device:', err);
         if (drawerSourceBadge) {
@@ -593,10 +635,29 @@ export async function initApp(): Promise<void> {
     });
   }
 
+  // Each page mode keeps its own VU lamp: dark (Ward-Beck) keeps the saved choice,
+  // McCurdy (light) mode defaults to vintage parchment but may be switched to amber etc.
+  const lampKey = () => document.body.classList.contains('theme-mccurdy') ? 'xtm.lamp.mccurdy' : 'xtm.lamp.dark';
+  const lsGet = (k: string): string | null => { try { return localStorage.getItem(k); } catch { return null; } };
+  const lsSet = (k: string, v: string) => { try { localStorage.setItem(k, v); } catch { /* storage blocked */ } };
+  const applyModeLamp = () => {
+    const mc = document.body.classList.contains('theme-mccurdy');
+    const lamp = lsGet(lampKey()) || (mc ? 'parchment' : (model.dialLamp || 'amber'));
+    if (lamp !== model.dialLamp) {
+      model.dialLamp = lamp;
+      view.isBuilt = false;
+    }
+    if (selectLampColor) selectLampColor.value = model.dialLamp;
+  };
+  if (!lsGet('xtm.lamp.dark')) lsSet('xtm.lamp.dark', model.dialLamp || 'amber');
+  applyModeLamp();
+  new MutationObserver(applyModeLamp).observe(document.body, { attributes: true, attributeFilter: ['class'] });
+
   if (selectLampColor) {
     selectLampColor.value = model.dialLamp || 'amber';
     selectLampColor.addEventListener('change', (e: any) => {
       model.dialLamp = e.target.value;
+      lsSet(lampKey(), model.dialLamp);
       model.saveEEPROM();
       view.isBuilt = false;
     });
@@ -797,6 +858,31 @@ export async function initApp(): Promise<void> {
     }
   });
 
+  // PWA/Update checker
+  async function checkForUpdates() {
+    try {
+      const response = await fetch('/manifest.json?cache=' + Date.now());
+      const manifest = await response.json();
+      if (manifest.version !== '1.1.0') {
+        if (confirm('A new update is available. Refresh to update?')) {
+          window.location.reload();
+        }
+      }
+    } catch (e) {
+      console.error('Update check failed', e);
+    }
+  }
+  setInterval(checkForUpdates, 3600000); // Hourly check
+
+  const footer = document.querySelector('footer');
+  if (footer) {
+    const ver = document.createElement('div');
+    ver.textContent = '2026.11.18.19.38';
+    ver.style.fontSize = '10px';
+    ver.style.color = '#777';
+    footer.appendChild(ver);
+  }
+
   /* ---------------- PWA "Install Page as App" Handler ---------------- */
   if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('sw.js').catch((err) => {
@@ -821,20 +907,25 @@ export async function initApp(): Promise<void> {
       pwaBanner.style.display = 'block';
     });
 
-    if (isMobile) {
-      if (isIos) {
-        if (pwaSubText) {
-          pwaSubText.innerHTML = 'Tap the Share icon <strong>[⎋]</strong> in Safari and choose <strong>Add to Home Screen</strong>';
-        }
-        if (btnPwaInstall) {
-          btnPwaInstall.textContent = 'How to Install';
-          btnPwaInstall.addEventListener('click', () => {
-            alert('To install this app on iOS:\n1. Tap the Share button in Safari (box with up arrow).\n2. Scroll down and tap "Add to Home Screen".');
-          });
-        }
+    // Android/desktop Chrome: the banner appears only once the browser fires
+    // beforeinstallprompt (above), so "Install App" always installs automatically.
+    // iOS Safari has no install API, so it gets the Add-to-Home-Screen steps instead.
+    if (isMobile && isIos) {
+      if (pwaSubText) {
+        pwaSubText.innerHTML = 'Tap the Share icon <strong>[⎋]</strong> in Safari and choose <strong>Add to Home Screen</strong>';
+      }
+      if (btnPwaInstall) {
+        btnPwaInstall.textContent = 'How to Install';
+        btnPwaInstall.addEventListener('click', () => {
+          alert('To install this app on iOS:\n1. Tap the Share button in Safari (box with up arrow).\n2. Scroll down and tap "Add to Home Screen".');
+        });
       }
       pwaBanner.style.display = 'block';
     }
+    window.addEventListener('appinstalled', () => {
+      pwaBanner.style.display = 'none';
+      deferredInstallPrompt = null;
+    });
 
     if (btnPwaInstall && !isIos) {
       btnPwaInstall.addEventListener('click', async () => {
@@ -846,7 +937,7 @@ export async function initApp(): Promise<void> {
           }
           deferredInstallPrompt = null;
         } else {
-          alert('To install this app:\nTap your browser\'s menu (⋮) and choose "Install app" or "Add to Home Screen".');
+          pwaBanner.style.display = 'none'; // no install offer available (already installed / unsupported)
         }
       });
     }

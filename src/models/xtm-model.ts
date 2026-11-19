@@ -27,7 +27,7 @@ export class XtmModel {
 
   public set: XtmModeStateSet = { scr: 'HP' };
 
-  public meterStyle: MeterStyle = 'simpson';
+  public meterStyle: MeterStyle = 'sifam';
   public dialLamp: string = 'amber';
   public ppmStyle: string = 'black';
   public artMode: string = 'svg';

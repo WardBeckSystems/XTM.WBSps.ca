@@ -38,11 +38,11 @@ const CAPTURE_STEPS = [
 
 // Discrete Capture Speed Intervals in Steps (15, 30, 60, 120, 240 FPS)
 const SPEED_STEPS = [
-  { fps: 15, label: '15 FPS (Eco)', warning: null },
-  { fps: 30, label: '30 FPS (Standard)', warning: null },
-  { fps: 60, label: '60 FPS (Default)', warning: null },
-  { fps: 120, label: '120 FPS (High)', warning: 'High Performance Mode (120 FPS): Requires a 120Hz+ high-refresh display and will increase CPU/GPU usage.' },
-  { fps: 240, label: '240 FPS (Ultra)', warning: 'Ultra Performance Mode (240 FPS): High frame rate capture. Requires a 240Hz+ gaming or pro mastering display and increases GPU/CPU load significantly.' }
+  { fps: 60, label: '60 FPS (Eco)', warning: null },
+  { fps: 120, label: '120 FPS (Standard)', warning: null },
+  { fps: 240, label: '240 FPS (Default)', warning: null },
+  { fps: 480, label: '480 FPS (High)', warning: null },
+  { fps: 960, label: '960 FPS (Ultra)', warning: null }
 ];
 
 export class DbfsView {
@@ -66,6 +66,15 @@ export class DbfsView {
   lastPushTime: number = 0;
 
   bufferSize: number;
+
+  /* Anti-shimmer peak pyramid (see pyrPush / pyrMax):
+     For each drawn history array, level l stores the max of fixed 2^l-sample blocks,
+     anchored to the ABSOLUTE sample index, so blocks never re-phase as the graph scrolls. */
+  static readonly PYR_LEVELS = 14;           // up to 16384-sample blocks
+  absCount: number = 0;                      // total samples ever written (since last clear)
+  pyr: Map<Float32Array, Float32Array[]> = new Map();
+  pyrFor: Float32Array | null = null;        // histL the pyramid was built for
+
   histL: Float32Array;
   histR: Float32Array;
   histSum: Float32Array;
@@ -122,6 +131,11 @@ export class DbfsView {
   hasSignalLost: boolean = false;
 
   PAL: Record<string, string>;
+  PAL_DARK: Record<string, string> | null = null;
+  static readonly PAL_MC: Record<string, string> = {
+    bg: '#e5e1d5', grid: '#cdc8bb', gridTime: '#d3cec2', textMuted: '#68655d',
+    textCyan: '#232325', lineL: '#232325', fillL: 'rgba(35, 35, 37, 0.08)'
+  };
 
   wrapper: HTMLElement | null = null;
   hudEl: HTMLElement | null = null;
@@ -178,7 +192,7 @@ export class DbfsView {
     // Adjustable Capture Controls (Max 10 minutes / 600 seconds ring buffer, default: 60s)
     this.maxCaptureSec = 600; // 10 minutes maximum capture time
     this.captureLength = 60;  // seconds (default: 60s timeline into the past)
-    this.captureSpeed = 60;   // 15 to 240 FPS (default 60 FPS)
+    this.captureSpeed = 240;   // 60 to 960 FPS (default 240 FPS)
     this.lastPushTime = 0;
 
     // 10-Minute Rolling Circular Ring Buffer Cache (e.g. 36,000 samples @ 60 FPS)
@@ -339,6 +353,76 @@ export class DbfsView {
     this.graphDirty = true;
   }
 
+  /* ---------------- Anti-shimmer peak pyramid ---------------- */
+  private pyrSources(): Float32Array[] {
+    return [this.histL, this.histR, this.histSum, this.histDiff,
+            this.histNormL, this.histNormR, this.histNormSum, this.histNormDiff];
+  }
+
+  private pyrReset(): void {
+    this.pyr = new Map();
+    const n = this.bufferSize;
+    for (const src of this.pyrSources()) {
+      const levels: Float32Array[] = [new Float32Array(0)];
+      for (let l = 1; l <= DbfsView.PYR_LEVELS; l++) {
+        levels.push(new Float32Array((n >> l) + 2).fill(-60));
+      }
+      this.pyr.set(src, levels);
+    }
+    this.pyrFor = this.histL;
+    this.absCount = 0;
+  }
+
+  /** Fold the sample just written at this.head into every block level. */
+  private pyrPush(): void {
+    if (this.count === 0 || this.pyrFor !== this.histL) this.pyrReset();
+    const A = this.absCount;
+    const h = this.head;
+    for (const [src, levels] of this.pyr) {
+      const v = src[h];
+      for (let l = 1; l <= DbfsView.PYR_LEVELS; l++) {
+        const lv = levels[l]!;
+        const slot = Math.floor(A / (1 << l)) % lv.length;
+        if ((A & ((1 << l) - 1)) === 0 || v > lv[slot]!) lv[slot] = v;
+      }
+    }
+    this.absCount = A + 1;
+  }
+
+  /**
+   * Max of hist over absolute sample range [aLo, aHi] using fixed, absolutely-anchored
+   * blocks (whole-slice max, no point sampling). Blocks are chosen so the range spans
+   * at least ~2 of them; a column's value therefore only changes when a block boundary
+   * crosses it, and old blocks keep their value as they slide left.
+   */
+  private pyrMax(hist: Float32Array, aLo: number, aHi: number): number {
+    const span = aHi - aLo;
+    const oldest = this.absCount - this.count;
+    let l = Math.floor(Math.log2(Math.max(1, span / 2)));
+    l = Math.max(0, Math.min(DbfsView.PYR_LEVELS, l));
+    let m = -Infinity;
+    if (l === 0) {
+      const bufLen = this.bufferSize;
+      const lo = Math.max(oldest, Math.floor(aLo)), hi = Math.min(this.absCount - 1, Math.ceil(aHi));
+      for (let a = lo; a <= hi; a++) {
+        const v = hist[(this.head - (this.absCount - a) + bufLen * 2) % bufLen]!;
+        if (v > m) m = v;
+      }
+      return m === -Infinity ? -60 : m;
+    }
+    const levels = this.pyr.get(hist);
+    if (!levels) return -60;
+    const lv = levels[l]!;
+    const B = 1 << l;
+    const bLo = Math.max(Math.ceil(oldest / B), Math.floor(aLo / B));
+    const bHi = Math.min(Math.floor((this.absCount - 1) / B), Math.floor(aHi / B));
+    for (let b = bLo; b <= bHi; b++) {
+      const v = lv[b % lv.length]!;
+      if (v > m) m = v;
+    }
+    return m === -Infinity ? -60 : m;
+  }
+
   clear(): void {
     this.head = 0;
     this.count = 0;
@@ -373,7 +457,7 @@ export class DbfsView {
     if (!this.container) return;
     const container = this.container;
     container.innerHTML = `
-      <div class="dbfs-inner" style="position:relative;width:100%;height:100%;flex:1;display:flex;flex-direction:column;background:#07090c;overflow:hidden;user-select:none;">
+      <div class="dbfs-inner" style="position:relative;width:100%;height:100%;flex:1;display:flex;flex-direction:column;background:var(--dbfs-bg, #07090c);overflow:hidden;user-select:none;">
         <!-- Hardware Accelerated Canvas Plot Area with Floating Hover HUD -->
         <div class="dbfs-canvas-wrapper" style="position:relative;width:100%;height:100%;flex:1;overflow:hidden;">
           <canvas id="dbfsCanvas" style="width:100%;height:100%;display:block;"></canvas>
@@ -636,7 +720,7 @@ export class DbfsView {
       speedSlider.max = String(SPEED_STEPS.length - 1);
       speedSlider.step = '1';
       let initIdx = SPEED_STEPS.findIndex(s => s.fps === this.captureSpeed);
-      if (initIdx < 0) initIdx = 2; // 60 FPS
+      if (initIdx < 0) initIdx = 2; // 240 FPS default
       speedSlider.value = String(initIdx);
       if (speedVal) speedVal.textContent = SPEED_STEPS[initIdx].label;
 
@@ -1118,6 +1202,8 @@ export class DbfsView {
     this.histLufsI[this.head] = vI;
     this.histPhase[this.head] = vP;
 
+    this.pyrPush();
+
     this.head = (this.head + 1) % this.bufferSize;
     if (this.count < this.bufferSize) this.count++;
 
@@ -1228,6 +1314,11 @@ export class DbfsView {
       const ctx = this.graphCtx;
       if (!ctx) return;
       this.graphDirty = false;
+
+      // Palette follows the page mode (McCurdy = cream paper)
+      const mc = document.body.classList.contains('theme-mccurdy');
+      if (!this.PAL_DARK) this.PAL_DARK = { ...this.PAL };
+      this.PAL = mc ? { ...this.PAL_DARK, ...DbfsView.PAL_MC } : this.PAL_DARK;
 
       // Background
       ctx.fillStyle = this.PAL.bg;
@@ -1459,9 +1550,9 @@ export class DbfsView {
 
       // Fixed pixel-column rendering with continuous sub-sample linear interpolation.
       // Guarantees zero horizontal vertex drift, zero decimation aliasing, and 100% rock-solid stability.
-      for (let c = 0; c <= numCols; c++) {
-        const px = maxX - c;
-        const normX = Math.max(0, Math.min(1, (px - padL) / plotW));
+      // Sample position (relative k, 0 = oldest visible) at a screen x; also returns u.
+      const kAtX = (x: number): [number, number] => {
+        const normX = Math.max(0, Math.min(1, (x - padL) / plotW));
         let tau;
         let u = 0;
         if (this.timeMode === 'lin') {
@@ -1470,17 +1561,35 @@ export class DbfsView {
           u = 1 - normX;
           tau = (Math.pow(1 + beta, u) - 1) / beta;
         }
-
         const age = Math.max(0, Math.min(capSec, tau * capSec));
-        const kFloat = (targetSamples - 1) - age * this.captureSpeed;
-        const kClamped = Math.max(0, Math.min(targetSamples - 1, kFloat));
+        const kf = (targetSamples - 1) - age * this.captureSpeed;
+        return [Math.max(0, Math.min(targetSamples - 1, kf)), u];
+      };
+      const absBase = this.absCount - targetSamples; // absolute index of k = 0
+      const levelsReady = this.pyr.has(hist) && this.pyrFor === this.histL;
+
+      for (let c = 0; c <= numCols; c++) {
+        const px = maxX - c;
+        const [kClamped, u] = kAtX(px);
+        // Column covers [px - 0.5, px + 0.5] on screen -> [kLo, kHi] in samples
+        const kLo = kAtX(px - 0.5)[0];
+        const kHi = kAtX(px + 0.5)[0];
+        const compressed = levelsReady && (kHi - kLo) > 2;
+
         const k0 = Math.floor(kClamped);
         const k1 = Math.min(targetSamples - 1, k0 + 1);
         const frac = kClamped - k0;
         const idx0 = (startIdx + k0) % bufLen;
         const idx1 = (startIdx + k1) % bufLen;
 
-        let val = hist[idx0] * (1 - frac) + hist[idx1] * frac;
+        // Compressed columns: whole-slice max from fixed absolute blocks (no shimmer).
+        // Uncompressed columns (<= 2 samples/px): sub-sample interpolation as before.
+        let val = compressed
+          ? this.pyrMax(hist, absBase + kLo, absBase + kHi)
+          : hist[idx0] * (1 - frac) + hist[idx1] * frac;
+        const normAt = (hn: Float32Array): number => compressed
+          ? this.pyrMax(hn, absBase + kLo, absBase + kHi)
+          : hn[idx0] * (1 - frac) + hn[idx1] * frac;
 
         if (histNorm) {
           if (this.timeMode !== 'lin') {
@@ -1490,7 +1599,7 @@ export class DbfsView {
             if (u > 0.05) {
               const b = Math.min(1.0, (u - 0.05) / 0.35);
               const smoothB = b * b * (3 - 2 * b);
-              const normVal = histNorm[idx0] * (1 - frac) + histNorm[idx1] * frac;
+              const normVal = normAt(histNorm);
               val = val * (1 - smoothB) + normVal * smoothB;
             }
           } else {
@@ -1499,7 +1608,7 @@ export class DbfsView {
             const samplesPerPx = (capSec * this.captureSpeed) / plotW;
             if (samplesPerPx > 4) {
               const b = Math.min(1.0, (samplesPerPx - 4) / 8);
-              const normVal = histNorm[idx0] * (1 - frac) + histNorm[idx1] * frac;
+              const normVal = normAt(histNorm);
               val = val * (1 - b) + normVal * b;
             }
           }
@@ -1551,10 +1660,12 @@ export class DbfsView {
     // 5. Perceived Loudness (Momentary LUFS - Orange Glow, NEVER FADES, EXACT)
     if (this.showLufs) {
       ctx.save();
-      ctx.shadowColor = '#f97316';
-      ctx.shadowBlur = 12 * dpr;
-      // Ambient neon glow stroke
-      drawCurve(this.histLufsM, 'rgba(249, 115, 22, 0.45)', fillLufs, 5.0, true, false);
+      if (!mc) {
+        ctx.shadowColor = '#f97316';
+        ctx.shadowBlur = 12 * dpr;
+      }
+      // Ambient neon glow stroke (dark mode); McCurdy: just the fill, no halo
+      drawCurve(this.histLufsM, mc ? null : 'rgba(249, 115, 22, 0.45)', fillLufs, 5.0, true, false);
       // Sharp luminous core (100% solid edge-to-edge)
       drawCurve(this.histLufsM, '#fb923c', null, 2.6, false, false);
       ctx.restore();
@@ -1624,7 +1735,7 @@ export class DbfsView {
       ctx.strokeStyle = isLimeLine && this.isHoveringLime ? '#4ade80' : g.lineCol;
       ctx.lineWidth = isLimeLine ? (this.isHoveringLime ? 2.0 * dpr : 1.2 * dpr) : 1.0 * dpr;
 
-      if (isLimeLine && this.isHoveringLime) {
+      if (isLimeLine && this.isHoveringLime && !mc) {
         ctx.shadowColor = 'rgba(74, 222, 128, 0.8)';
         ctx.shadowBlur = 6 * dpr;
       }
@@ -1637,9 +1748,12 @@ export class DbfsView {
 
       // Left margin label with crisp shadow for high legibility
       ctx.save();
-      ctx.shadowColor = 'rgba(0, 0, 0, 0.95)';
-      ctx.shadowBlur = 3 * dpr;
-      ctx.fillStyle = (g.bold || isLimeLine) ? g.labelCol : '#94a3b8';
+      // Dark mode: soft shadow for legibility. McCurdy (cream paper): crisp, no shadow.
+      if (!mc) {
+        ctx.shadowColor = 'rgba(0, 0, 0, 0.95)';
+        ctx.shadowBlur = 3 * dpr;
+      }
+      ctx.fillStyle = (g.bold || isLimeLine) ? g.labelCol : (mc ? '#4a4740' : '#94a3b8');
       ctx.fillText(g.label, padL - 10 * dpr, y);
       ctx.restore();
     });

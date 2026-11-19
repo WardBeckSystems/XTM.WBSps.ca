@@ -219,9 +219,15 @@ def main():
         print("✔ Build successful: dist/ ready for deployment.")
         import shutil
         print("Copying assets to dist/assets...")
-        os.makedirs("dist/assets", exist_ok=True)
-        for item in os.listdir("assets"):
-            shutil.copy(os.path.join("assets", item), os.path.join("dist/assets", item))
+        # Check if assets exist before trying to copy
+        if os.path.exists("assets"):
+            os.makedirs("dist/assets", exist_ok=True)
+            for item in os.listdir("assets"):
+                src_item = os.path.join("assets", item)
+                if os.path.isfile(src_item):
+                    shutil.copy(src_item, os.path.join("dist/assets", item))
+        else:
+            print("  ⚠ Warning: 'assets' folder not found, skipping asset copy.")
 
         dist_dir = HERE / "dist"
         upload_source = str(dist_dir) if dist_dir.is_dir() else str(HERE)

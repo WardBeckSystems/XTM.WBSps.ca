@@ -1,0 +1,548 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1900 525" width="100%" height="100%">
+  <defs>
+    <!-- Panel & Bezel Gradients -->
+    <linearGradient id="panelBg" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#e5e1d5" />
+      <stop offset="50%" stop-color="#dedad0" />
+      <stop offset="100%" stop-color="#d2cec2" />
+    </linearGradient>
+
+    <linearGradient id="bezelFrame" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#2a2a2c" />
+      <stop offset="100%" stop-color="#141416" />
+    </linearGradient>
+
+    <linearGradient id="vuFace" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#dfc784" />
+      <stop offset="25%" stop-color="#eedba1" />
+      <stop offset="85%" stop-color="#ebd699" />
+      <stop offset="100%" stop-color="#d5bd7b" />
+    </linearGradient>
+
+    <linearGradient id="ppmFace" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#191b1e" />
+      <stop offset="35%" stop-color="#24272b" />
+      <stop offset="100%" stop-color="#17191c" />
+    </linearGradient>
+
+    <linearGradient id="meterGlass" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.14" />
+      <stop offset="35%" stop-color="#ffffff" stop-opacity="0.03" />
+      <stop offset="65%" stop-color="#000000" stop-opacity="0.0" />
+      <stop offset="100%" stop-color="#000000" stop-opacity="0.22" />
+    </linearGradient>
+
+    <linearGradient id="blueBlock" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#4ba7e8" />
+      <stop offset="100%" stop-color="#3892d4" />
+    </linearGradient>
+
+    <linearGradient id="ledWindow" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#221011" />
+      <stop offset="50%" stop-color="#36181a" />
+      <stop offset="100%" stop-color="#1e0d0e" />
+    </linearGradient>
+
+    <radialGradient id="jackHole" cx="50%" cy="50%" r="50%">
+      <stop offset="55%" stop-color="#070708" />
+      <stop offset="82%" stop-color="#222326" />
+      <stop offset="94%" stop-color="#5a5c60" />
+      <stop offset="100%" stop-color="#151618" />
+    </radialGradient>
+
+    <!-- Drop Shadows -->
+    <filter id="meterInset" x="-5%" y="-5%" width="110%" height="110%">
+      <feDropShadow dx="0" dy="4" stdDeviation="4" flood-color="#000000" flood-opacity="0.65" />
+    </filter>
+
+    <filter id="buttonShadow" x="-10%" y="-10%" width="120%" height="125%">
+      <feDropShadow dx="0" dy="2" stdDeviation="1.5" flood-color="#000000" flood-opacity="0.5" />
+    </filter>
+
+    <!-- Reusable VU Meter Module (375 x 292) -->
+    <g id="vu-meter-unit">
+      <!-- Outer Black Molded Housing -->
+      <rect x="0" y="0" width="375" height="292" rx="3" fill="url(#bezelFrame)" stroke="#0d0d0e" stroke-width="2" />
+      <!-- Inner Bevel Step -->
+      <polygon points="0,0 375,0 351,24 24,24" fill="#36373a" />
+      <polygon points="0,292 375,292 351,268 24,268" fill="#111113" />
+      <polygon points="0,0 24,24 24,268 0,292" fill="#232426" />
+      <polygon points="375,0 351,24 351,268 375,292" fill="#191a1c" />
+      <rect x="24" y="24" width="327" height="244" fill="#0e0e10" />
+
+      <!-- Meter Dial Face -->
+      <g transform="translate(28, 28)">
+        <rect x="0" y="0" width="319" height="236" fill="url(#vuFace)" />
+        <!-- Top Shadow under Bezel -->
+        <rect x="0" y="0" width="319" height="14" fill="#000000" fill-opacity="0.18" />
+
+        <!-- Dial Pivot: (159.5, 250), Arc Radius: 172 -->
+        <g font-family="Helvetica, Arial, sans-serif" font-weight="600" text-anchor="middle">
+          <!-- Black Arc (-46 deg to +18 deg) -->
+          <path d="M 35.8 130.5 A 172 172 0 0 1 212.6 86.4" fill="none" stroke="#221e1a" stroke-width="2.2" />
+          <!-- Red Arc (+18 deg to +46 deg) -->
+          <path d="M 212.6 86.4 A 172 172 0 0 1 283.2 130.5" fill="none" stroke="#c82824" stroke-width="4.5" />
+
+          <!-- VU Labels -->
+          <text x="92" y="66" font-size="13" fill="#221e1a" transform="rotate(-24 92 66)">VU</text>
+          <text x="234" y="68" font-size="13" fill="#c82824" transform="rotate(24 234 68)">VU</text>
+
+          <!-- Black Scale Ticks & Numbers -->
+          <!-- -20 (-45 deg) -->
+          <g transform="translate(159.5, 250) rotate(-45)">
+            <line x1="0" y1="-172" x2="0" y2="-184" stroke="#221e1a" stroke-width="2" />
+            <text x="0" y="-190" font-size="14" fill="#221e1a">-20</text>
+          </g>
+          <!-- -15 (-38 deg) -->
+          <g transform="translate(159.5, 250) rotate(-38)">
+            <line x1="0" y1="-172" x2="0" y2="-180" stroke="#221e1a" stroke-width="1.5" />
+          </g>
+          <!-- -10 (-31 deg) -->
+          <g transform="translate(159.5, 250) rotate(-31)">
+            <line x1="0" y1="-172" x2="0" y2="-184" stroke="#221e1a" stroke-width="2" />
+            <text x="0" y="-190" font-size="14" fill="#221e1a">-10</text>
+          </g>
+          <!-- -8 (-26 deg) -->
+          <g transform="translate(159.5, 250) rotate(-26)">
+            <line x1="0" y1="-172" x2="0" y2="-179" stroke="#221e1a" stroke-width="1.4" />
+          </g>
+          <!-- -7 (-22 deg) -->
+          <g transform="translate(159.5, 250) rotate(-22)">
+            <line x1="0" y1="-172" x2="0" y2="-184" stroke="#221e1a" stroke-width="2" />
+            <text x="0" y="-190" font-size="14" fill="#221e1a">-7</text>
+          </g>
+          <!-- -6 (-17.5 deg) -->
+          <g transform="translate(159.5, 250) rotate(-17.5)">
+            <line x1="0" y1="-172" x2="0" y2="-179" stroke="#221e1a" stroke-width="1.4" />
+          </g>
+          <!-- -5 (-13 deg) -->
+          <g transform="translate(159.5, 250) rotate(-13)">
+            <line x1="0" y1="-172" x2="0" y2="-184" stroke="#221e1a" stroke-width="2" />
+            <text x="0" y="-190" font-size="14" fill="#221e1a">-5</text>
+          </g>
+          <!-- -4 (-8.5 deg) -->
+          <g transform="translate(159.5, 250) rotate(-8.5)">
+            <line x1="0" y1="-172" x2="0" y2="-179" stroke="#221e1a" stroke-width="1.4" />
+          </g>
+          <!-- -3 (-4 deg) -->
+          <g transform="translate(159.5, 250) rotate(-4)">
+            <line x1="0" y1="-172" x2="0" y2="-184" stroke="#221e1a" stroke-width="2" />
+            <text x="0" y="-190" font-size="14" fill="#221e1a">-3</text>
+          </g>
+          <!-- -2 (+3 deg) -->
+          <g transform="translate(159.5, 250) rotate(3)">
+            <line x1="0" y1="-172" x2="0" y2="-184" stroke="#221e1a" stroke-width="2" />
+            <text x="0" y="-190" font-size="14" fill="#221e1a">-2</text>
+          </g>
+          <!-- -1 (+10.5 deg) -->
+          <g transform="translate(159.5, 250) rotate(10.5)">
+            <line x1="0" y1="-172" x2="0" y2="-184" stroke="#221e1a" stroke-width="2" />
+            <text x="0" y="-190" font-size="14" fill="#221e1a">-1</text>
+          </g>
+          <!-- 0 (+18 deg) -->
+          <g transform="translate(159.5, 250) rotate(18)">
+            <line x1="0" y1="-172" x2="0" y2="-185" stroke="#221e1a" stroke-width="2.2" />
+            <text x="0" y="-191" font-size="15" font-weight="700" fill="#221e1a">0</text>
+          </g>
+
+          <!-- Red Scale Ticks & Numbers -->
+          <!-- +0.5 (+22 deg) -->
+          <g transform="translate(159.5, 250) rotate(22)">
+            <line x1="0" y1="-172" x2="0" y2="-179" stroke="#c82824" stroke-width="1.5" />
+          </g>
+          <!-- +1 (+26 deg) -->
+          <g transform="translate(159.5, 250) rotate(26)">
+            <line x1="0" y1="-172" x2="0" y2="-184" stroke="#c82824" stroke-width="2" />
+            <text x="0" y="-190" font-size="14" fill="#c82824">+1</text>
+          </g>
+          <!-- +2 (+35.5 deg) -->
+          <g transform="translate(159.5, 250) rotate(35.5)">
+            <line x1="0" y1="-172" x2="0" y2="-184" stroke="#c82824" stroke-width="2" />
+            <text x="0" y="-190" font-size="14" fill="#c82824">+2</text>
+          </g>
+          <!-- +3 (+45 deg) -->
+          <g transform="translate(159.5, 250) rotate(45)">
+            <line x1="0" y1="-172" x2="0" y2="-184" stroke="#c82824" stroke-width="2" />
+            <text x="0" y="-190" font-size="14" fill="#c82824">+3</text>
+          </g>
+
+          <!-- Lower Percentage Scale (0 to 100%) -->
+          <!-- 0 (-45 deg) -->
+          <g transform="translate(159.5, 250) rotate(-45)">
+            <circle cx="0" cy="-165" r="2" fill="#221e1a" />
+            <text x="0" y="-152" font-size="9.5" fill="#221e1a">0</text>
+          </g>
+          <!-- 10 (-39.5 deg) -->
+          <g transform="translate(159.5, 250) rotate(-39.5)">
+            <circle cx="0" cy="-165" r="1.4" fill="#221e1a" />
+          </g>
+          <!-- 20 (-34 deg) -->
+          <g transform="translate(159.5, 250) rotate(-34)">
+            <circle cx="0" cy="-165" r="2" fill="#221e1a" />
+            <text x="0" y="-152" font-size="9.5" fill="#221e1a">20</text>
+          </g>
+          <!-- 30 (-28.5 deg) -->
+          <g transform="translate(159.5, 250) rotate(-28.5)">
+            <circle cx="0" cy="-165" r="1.4" fill="#221e1a" />
+          </g>
+          <!-- 40 (-23 deg) -->
+          <g transform="translate(159.5, 250) rotate(-23)">
+            <circle cx="0" cy="-165" r="2" fill="#221e1a" />
+            <text x="0" y="-152" font-size="9.5" fill="#221e1a">40</text>
+          </g>
+          <!-- 50 (-17 deg) -->
+          <g transform="translate(159.5, 250) rotate(-17)">
+            <circle cx="0" cy="-165" r="1.4" fill="#221e1a" />
+          </g>
+          <!-- 60 (-11 deg) -->
+          <g transform="translate(159.5, 250) rotate(-11)">
+            <circle cx="0" cy="-165" r="2" fill="#221e1a" />
+            <text x="0" y="-152" font-size="9.5" fill="#221e1a">60</text>
+          </g>
+          <!-- 70 (-4.5 deg) -->
+          <g transform="translate(159.5, 250) rotate(-4.5)">
+            <circle cx="0" cy="-165" r="1.4" fill="#221e1a" />
+          </g>
+          <!-- 80 (+2 deg) -->
+          <g transform="translate(159.5, 250) rotate(2)">
+            <circle cx="0" cy="-165" r="2" fill="#221e1a" />
+            <text x="0" y="-152" font-size="9.5" fill="#221e1a">80</text>
+          </g>
+          <!-- 90 (+10 deg) -->
+          <g transform="translate(159.5, 250) rotate(10)">
+            <circle cx="0" cy="-165" r="1.4" fill="#221e1a" />
+          </g>
+          <!-- 100 (+18 deg) -->
+          <g transform="translate(159.5, 250) rotate(18)">
+            <circle cx="0" cy="-165" r="2.2" fill="#221e1a" />
+            <text x="0" y="-152" font-size="9.5" fill="#221e1a">100</text>
+          </g>
+        </g>
+
+        <!-- Needle at Rest (-44 deg) -->
+        <g transform="translate(159.5, 250) rotate(-44)">
+          <line x1="2" y1="0" x2="2" y2="-182" stroke="#000000" stroke-opacity="0.22" stroke-width="2.5" />
+          <polygon points="-2.5,0 2.5,0 0.8,-182 -0.8,-182" fill="#181715" />
+        </g>
+
+        <!-- Glass Reflection Overlay -->
+        <rect x="0" y="0" width="319" height="236" fill="url(#meterGlass)" />
+      </g>
+    </g>
+
+    <!-- Reusable PPM / TONE / PGM Meter Module (375 x 292) -->
+    <g id="ppm-meter-unit">
+      <!-- Outer Black Molded Housing -->
+      <rect x="0" y="0" width="375" height="292" rx="3" fill="url(#bezelFrame)" stroke="#0d0d0e" stroke-width="2" />
+      <!-- Inner Bevel Step -->
+      <polygon points="0,0 375,0 351,24 24,24" fill="#36373a" />
+      <polygon points="0,292 375,292 351,268 24,268" fill="#111113" />
+      <polygon points="0,0 24,24 24,268 0,292" fill="#232426" />
+      <polygon points="375,0 351,24 351,268 375,292" fill="#191a1c" />
+      <rect x="24" y="24" width="327" height="244" fill="#090a0c" />
+
+      <!-- Meter Dial Face -->
+      <g transform="translate(28, 28)">
+        <rect x="0" y="0" width="319" height="236" fill="url(#ppmFace)" />
+
+        <!-- Dial Pivot: (159.5, 245), Arc Radius: 170 -->
+        <g font-family="Helvetica, Arial, sans-serif" font-weight="500" text-anchor="middle" fill="#e5e7eb">
+          <!-- Main White Arc (-46 deg to +28 deg) -->
+          <path d="M 37.2 126.9 A 170 170 0 0 1 239.3 94.9" fill="none" stroke="#e5e7eb" stroke-width="2" />
+          <!-- Yellow Overload Arc (+28 deg to +46 deg) -->
+          <path d="M 239.3 94.9 A 170 170 0 0 1 281.8 126.9" fill="none" stroke="#e2b93b" stroke-width="6" />
+
+          <!-- TONE Header & - | + indicator -->
+          <text x="159.5" y="42" font-size="12.5" letter-spacing="1.2">TONE</text>
+          <text x="159.5" y="57" font-size="13">- | +</text>
+
+          <!-- PGM Label -->
+          <text x="275" y="75" font-size="11.5" letter-spacing="0.5" transform="rotate(24 275 75)">PGM</text>
+
+          <!-- Upper Scale (12, 8, 4, 0, 4, 8, 12) -->
+          <!-- 12 Left (-42 deg) -->
+          <g transform="translate(159.5, 245) rotate(-42)">
+            <line x1="0" y1="-170" x2="0" y2="-183" stroke="#e5e7eb" stroke-width="2" />
+            <text x="0" y="-189" font-size="13">12</text>
+          </g>
+          <!-- 8 Left (-27 deg) -->
+          <g transform="translate(159.5, 245) rotate(-27)">
+            <line x1="0" y1="-170" x2="0" y2="-183" stroke="#e5e7eb" stroke-width="2" />
+            <text x="0" y="-189" font-size="13">8</text>
+          </g>
+          <!-- 4 Left (-13.5 deg) -->
+          <g transform="translate(159.5, 245) rotate(-13.5)">
+            <line x1="0" y1="-170" x2="0" y2="-183" stroke="#e5e7eb" stroke-width="2" />
+            <text x="0" y="-189" font-size="13">4</text>
+          </g>
+          <!-- Center 0 TONE (0 deg) -->
+          <g transform="translate(159.5, 245) rotate(0)">
+            <line x1="0" y1="-170" x2="0" y2="-184" stroke="#e5e7eb" stroke-width="2.2" />
+          </g>
+          <!-- 4 Right (+13.5 deg) -->
+          <g transform="translate(159.5, 245) rotate(13.5)">
+            <line x1="0" y1="-170" x2="0" y2="-183" stroke="#e5e7eb" stroke-width="2" />
+            <text x="0" y="-189" font-size="13">4</text>
+          </g>
+          <!-- 8 Right (+27 deg) -->
+          <g transform="translate(159.5, 245) rotate(27)">
+            <line x1="0" y1="-170" x2="0" y2="-183" stroke="#e5e7eb" stroke-width="2" />
+            <text x="0" y="-189" font-size="13">8</text>
+          </g>
+          <!-- 12 Right (+42 deg) -->
+          <g transform="translate(159.5, 245) rotate(42)">
+            <line x1="0" y1="-170" x2="0" y2="-183" stroke="#e5e7eb" stroke-width="2" />
+            <text x="0" y="-189" font-size="13">12</text>
+          </g>
+
+          <!-- Lower Scale (-4, 0, +4, +8, +12, +16, +20) -->
+          <!-- -4 (-42 deg) -->
+          <g transform="translate(159.5, 245) rotate(-42)">
+            <line x1="0" y1="-170" x2="0" y2="-157" stroke="#e5e7eb" stroke-width="1.8" />
+            <text x="0" y="-142" font-size="12.5">-4</text>
+          </g>
+          <!-- -2 (-34.5 deg) -->
+          <g transform="translate(159.5, 245) rotate(-34.5)">
+            <line x1="0" y1="-170" x2="0" y2="-163" stroke="#e5e7eb" stroke-width="1.3" />
+          </g>
+          <!-- 0 (-27 deg) -->
+          <g transform="translate(159.5, 245) rotate(-27)">
+            <line x1="0" y1="-170" x2="0" y2="-157" stroke="#e5e7eb" stroke-width="1.8" />
+            <text x="0" y="-142" font-size="12.5">0</text>
+          </g>
+          <!-- +2 (-20.2 deg) -->
+          <g transform="translate(159.5, 245) rotate(-20.2)">
+            <line x1="0" y1="-170" x2="0" y2="-163" stroke="#e5e7eb" stroke-width="1.3" />
+          </g>
+          <!-- +4 (-13.5 deg) -->
+          <g transform="translate(159.5, 245) rotate(-13.5)">
+            <line x1="0" y1="-170" x2="0" y2="-157" stroke="#e5e7eb" stroke-width="1.8" />
+            <text x="0" y="-142" font-size="12.5">+4</text>
+          </g>
+          <!-- +6 (-6.7 deg) -->
+          <g transform="translate(159.5, 245) rotate(-6.7)">
+            <line x1="0" y1="-170" x2="0" y2="-163" stroke="#e5e7eb" stroke-width="1.3" />
+          </g>
+          <!-- +8 (0 deg) -->
+          <g transform="translate(159.5, 245) rotate(0)">
+            <line x1="0" y1="-170" x2="0" y2="-157" stroke="#e5e7eb" stroke-width="1.8" />
+            <text x="0" y="-142" font-size="12.5">+8</text>
+          </g>
+          <!-- +10 (+6.7 deg) -->
+          <g transform="translate(159.5, 245) rotate(6.7)">
+            <line x1="0" y1="-170" x2="0" y2="-163" stroke="#e5e7eb" stroke-width="1.3" />
+          </g>
+          <!-- +12 (+13.5 deg) -->
+          <g transform="translate(159.5, 245) rotate(13.5)">
+            <line x1="0" y1="-170" x2="0" y2="-157" stroke="#e5e7eb" stroke-width="1.8" />
+            <text x="0" y="-142" font-size="12.5">+12</text>
+          </g>
+          <!-- +14 (+20.2 deg) -->
+          <g transform="translate(159.5, 245) rotate(20.2)">
+            <line x1="0" y1="-170" x2="0" y2="-163" stroke="#e5e7eb" stroke-width="1.3" />
+          </g>
+          <!-- +16 (+27 deg) -->
+          <g transform="translate(159.5, 245) rotate(27)">
+            <line x1="0" y1="-170" x2="0" y2="-157" stroke="#e5e7eb" stroke-width="1.8" />
+            <text x="0" y="-142" font-size="12.5">+16</text>
+          </g>
+          <!-- +18 (+34.5 deg) -->
+          <g transform="translate(159.5, 245) rotate(34.5)">
+            <line x1="0" y1="-170" x2="0" y2="-163" stroke="#e5e7eb" stroke-width="1.3" />
+          </g>
+          <!-- +20 (+42 deg) -->
+          <g transform="translate(159.5, 245) rotate(42)">
+            <line x1="0" y1="-170" x2="0" y2="-157" stroke="#e5e7eb" stroke-width="1.8" />
+            <text x="0" y="-142" font-size="12.5">+20</text>
+          </g>
+        </g>
+
+        <!-- White Needle at Rest (-45.5 deg) -->
+        <g transform="translate(159.5, 245) rotate(-45.5)">
+          <polygon points="-2.4,0 2.4,0 0.8,-182 -0.8,-182" fill="#f3f4f6" />
+        </g>
+
+        <!-- Glass Reflection Overlay -->
+        <rect x="0" y="0" width="319" height="236" fill="url(#meterGlass)" />
+      </g>
+    </g>
+
+    <!-- Reusable Square Pushbutton Switch (36 x 30) -->
+    <g id="pushbutton">
+      <rect x="0" y="0" width="36" height="30" rx="2" fill="#101113" />
+      <rect x="2" y="2" width="32" height="26" rx="1.5" fill="#2a2b2f" filter="url(#buttonShadow)" />
+      <rect x="4" y="4" width="28" height="21" rx="1" fill="#1b1c1f" />
+      <line x1="4" y1="4.5" x2="32" y2="4.5" stroke="#45474d" stroke-width="1" />
+    </g>
+
+    <!-- Reusable Square Pushbutton with Indicator Dot (36 x 30) -->
+    <g id="pushbutton-dot">
+      <use href="#pushbutton" />
+      <circle cx="18" cy="14.5" r="4" fill="#3a3c42" stroke="#111214" stroke-width="1" />
+    </g>
+
+    <!-- Reusable 1/4" Phone Jack Assembly -->
+    <g id="phone-jack">
+      <!-- Outer Hex/Round Nut -->
+      <circle cx="0" cy="0" r="17.5" fill="#1c1d20" stroke="#0c0c0e" stroke-width="1.5" />
+      <circle cx="0" cy="0" r="14.5" fill="#2e3035" />
+      <circle cx="0" cy="0" r="11" fill="url(#jackHole)" />
+    </g>
+  </defs>
+
+  <!-- ===================================================================== -->
+  <!-- 19" 3U RACK FACEPLATE CHASSIS (1900 x 525 = 19.00" x 5.25" @ 100px/in)  -->
+  <!-- ===================================================================== -->
+  <g id="chassis">
+    <!-- Main Aluminum Front Panel -->
+    <rect x="0" y="0" width="1900" height="525" fill="url(#panelBg)" />
+    <!-- Top & Bottom Bevel Edges -->
+    <rect x="0" y="0" width="1900" height="3" fill="#f3f1eb" />
+    <rect x="0" y="522" width="1900" height="3" fill="#9a968b" />
+    <rect x="0" y="0" width="2" height="525" fill="#ebe8df" />
+    <rect x="1898" y="0" width="2" height="525" fill="#aba79c" />
+
+    <!-- Rack Mounting Slots (4 Corners) -->
+    <!-- Top Left -->
+    <rect x="16" y="44" width="38" height="24" rx="12" fill="#ffffff" stroke="#b5b1a6" stroke-width="1.5" />
+    <!-- Bottom Left -->
+    <rect x="16" y="457" width="38" height="24" rx="12" fill="#ffffff" stroke="#b5b1a6" stroke-width="1.5" />
+    <!-- Top Right -->
+    <rect x="1846" y="44" width="38" height="24" rx="12" fill="#ffffff" stroke="#b5b1a6" stroke-width="1.5" />
+    <!-- Bottom Right -->
+    <rect x="1846" y="457" width="38" height="24" rx="12" fill="#ffffff" stroke="#b5b1a6" stroke-width="1.5" />
+  </g>
+
+  <!-- ===================================================================== -->
+  <!-- LEFT CHANNEL METER BANK (INPUT 1)                                     -->
+  <!-- ===================================================================== -->
+  <g id="input-1-bank">
+    <!-- VU Meter 1 -->
+    <use href="#vu-meter-unit" x="88" y="44" filter="url(#meterInset)" />
+    <!-- PPM Meter 1 -->
+    <use href="#ppm-meter-unit" x="477" y="44" filter="url(#meterInset)" />
+
+    <!-- INPUT 1 Label & Horizontal Rule -->
+    <g transform="translate(88, 376)">
+      <line x1="0" y1="0" x2="334" y2="0" stroke="#7a776e" stroke-width="1.2" />
+      <text x="382" y="5" font-family="Helvetica, Arial, sans-serif" font-size="16" font-weight="500" letter-spacing="1.5" text-anchor="middle" fill="#636058">INPUT 1</text>
+      <line x1="430" y1="0" x2="764" y2="0" stroke="#7a776e" stroke-width="1.2" />
+    </g>
+
+    <!-- McCurdy Logo Box & Model Number -->
+    <g transform="translate(88, 412)">
+      <!-- Outline Box -->
+      <rect x="0" y="0" width="166" height="68" rx="3" fill="none" stroke="#858178" stroke-width="1.6" />
+      <!-- Stylized McCurdy Wordmark -->
+      <text x="83" y="45" font-family="Arial Black, Helvetica, sans-serif" font-size="27" font-weight="900" letter-spacing="-1" text-anchor="middle" fill="none" stroke="#7d7970" stroke-width="1.5">McCurdy</text>
+      <!-- Model Title -->
+      <text x="184" y="65" font-family="Helvetica, Arial, sans-serif" font-size="17" font-weight="500" letter-spacing="1.2" fill="#68655d">MODEL ATS-100 AUDIO TEST SET</text>
+    </g>
+  </g>
+
+  <!-- ===================================================================== -->
+  <!-- CENTER PHASE / RANGE / FILTER / TERMINATION / INPUTS MODULE           -->
+  <!-- ===================================================================== -->
+  <g id="center-control-column" transform="translate(872, 18)">
+    <!-- Phase Bar Label (0° ... 180°) -->
+    <text x="4" y="21" font-family="Helvetica, Arial, sans-serif" font-size="14" font-weight="700" fill="#232325">0°</text>
+    <text x="163" y="21" font-family="Helvetica, Arial, sans-serif" font-size="14" font-weight="700" fill="#232325">180°</text>
+
+    <!-- Horizontal Phase LED Display Window -->
+    <rect x="20" y="6" width="140" height="25" rx="2" fill="#171719" stroke="#5c5952" stroke-width="1" />
+    <rect x="23" y="9" width="134" height="19" fill="url(#ledWindow)" />
+
+    <!-- Digital Readout Window -->
+    <rect x="44" y="54" width="92" height="58" rx="2" fill="#151517" stroke="#5c5952" stroke-width="1" />
+    <rect x="48" y="58" width="84" height="50" fill="url(#ledWindow)" />
+    <!-- Subtle 7-segment display mask -->
+    <g opacity="0.14" stroke="#ff3b30" stroke-width="2.5" stroke-linecap="round">
+      <line x1="62" y1="68" x2="76" y2="68" />
+      <line x1="62" y1="83" x2="76" y2="83" />
+      <line x1="62" y1="98" x2="76" y2="98" />
+      <line x1="92" y1="68" x2="106" y2="68" />
+      <line x1="92" y1="83" x2="106" y2="83" />
+      <line x1="92" y1="98" x2="106" y2="98" />
+    </g>
+
+    <!-- RANGE Control Section -->
+    <text x="90" y="136" font-family="Helvetica, Arial, sans-serif" font-size="14" font-weight="700" letter-spacing="0.5" text-anchor="middle" fill="#232325">RANGE</text>
+
+    <!-- Up Arrow -->
+    <g transform="translate(27, 146)" stroke="#232325" stroke-width="2" fill="#232325">
+      <line x1="0" y1="26" x2="0" y2="4" />
+      <polygon points="0,0 -3.5,7 3.5,7" />
+    </g>
+
+    <!-- Range Up/Down Buttons -->
+    <use href="#pushbutton" x="50" y="143" />
+    <use href="#pushbutton" x="94" y="143" />
+
+    <!-- Down Arrow -->
+    <g transform="translate(153, 146)" stroke="#232325" stroke-width="2" fill="#232325">
+      <line x1="0" y1="0" x2="0" y2="22" />
+      <polygon points="0,26 -3.5,19 3.5,19" />
+    </g>
+
+    <!-- Blue Panel Zone: FILTER & TERMINATION -->
+    <g transform="translate(8, 185)">
+      <rect x="0" y="0" width="164" height="156" rx="10" fill="url(#blueBlock)" stroke="#1b1c1e" stroke-width="2.5" />
+
+      <!-- FILTER Row -->
+      <text x="82" y="21" font-family="Helvetica, Arial, sans-serif" font-size="14" font-weight="700" letter-spacing="0.5" text-anchor="middle" fill="#181b1e">FILTER</text>
+      <text x="22" y="48" font-family="Helvetica, Arial, sans-serif" font-size="14" font-weight="700" text-anchor="middle" fill="#181b1e">LP</text>
+      <use href="#pushbutton-dot" x="42" y="28" />
+      <use href="#pushbutton-dot" x="86" y="28" />
+      <text x="142" y="48" font-family="Helvetica, Arial, sans-serif" font-size="14" font-weight="700" text-anchor="middle" fill="#181b1e">HP</text>
+
+      <!-- Divider Line -->
+      <line x1="8" y1="73" x2="156" y2="73" stroke="#1b1c1e" stroke-width="2" />
+
+      <!-- TERMINATION Row -->
+      <text x="82" y="93" font-family="Helvetica, Arial, sans-serif" font-size="13.5" font-weight="700" letter-spacing="0.3" text-anchor="middle" fill="#181b1e">TERMINATION</text>
+
+      <text x="22" y="114" font-family="Helvetica, Arial, sans-serif" font-size="13.5" font-weight="700" text-anchor="middle" fill="#181b1e">600</text>
+      <text x="22" y="131" font-family="Helvetica, Arial, sans-serif" font-size="14" font-weight="700" text-anchor="middle" fill="#181b1e">Ω</text>
+
+      <use href="#pushbutton-dot" x="42" y="101" />
+      <use href="#pushbutton-dot" x="86" y="101" />
+
+      <text x="142" y="114" font-family="Helvetica, Arial, sans-serif" font-size="13.5" font-weight="700" text-anchor="middle" fill="#181b1e">150</text>
+      <text x="142" y="131" font-family="Helvetica, Arial, sans-serif" font-size="14" font-weight="700" text-anchor="middle" fill="#181b1e">Ω</text>
+    </g>
+
+    <!-- Blue Panel Zone: INPUT 1 & INPUT 2 Jacks (20kΩ) -->
+    <g transform="translate(8, 354)">
+      <rect x="0" y="0" width="114" height="110" rx="10" fill="url(#blueBlock)" stroke="#1b1c1e" stroke-width="2.5" />
+      <text x="57" y="22" font-family="Helvetica, Arial, sans-serif" font-size="13.5" font-weight="700" text-anchor="middle" fill="#181b1e">1  INPUT  2</text>
+
+      <use href="#phone-jack" x="30" y="56" />
+      <use href="#phone-jack" x="84" y="56" />
+
+      <text x="57" y="100" font-family="Helvetica, Arial, sans-serif" font-size="14" font-weight="700" text-anchor="middle" fill="#181b1e">20kΩ</text>
+    </g>
+
+    <!-- MONITOR Output Jack (Bottom Right of Center Section) -->
+    <g transform="translate(154, 410)">
+      <use href="#phone-jack" x="0" y="0" />
+      <text x="24" y="5" font-family="Helvetica, Arial, sans-serif" font-size="14" font-weight="700" letter-spacing="0.4" fill="#232325">MONITOR</text>
+    </g>
+  </g>
+
+  <!-- ===================================================================== -->
+  <!-- RIGHT CHANNEL METER BANK (INPUT 2)                                    -->
+  <!-- ===================================================================== -->
+  <g id="input-2-bank">
+    <!-- VU Meter 2 -->
+    <use href="#vu-meter-unit" x="1048" y="44" filter="url(#meterInset)" />
+    <!-- PPM Meter 2 -->
+    <use href="#ppm-meter-unit" x="1437" y="44" filter="url(#meterInset)" />
+
+    <!-- INPUT 2 Label & Horizontal Rule -->
+    <g transform="translate(1048, 376)">
+      <line x1="0" y1="0" x2="334" y2="0" stroke="#7a776e" stroke-width="1.2" />
+      <text x="382" y="5" font-family="Helvetica, Arial, sans-serif" font-size="16" font-weight="500" letter-spacing="1.5" text-anchor="middle" fill="#636058">INPUT 2</text>
+      <line x1="430" y1="0" x2="764" y2="0" stroke="#7a776e" stroke-width="1.2" />
+    </g>
+  </g>
+</svg>

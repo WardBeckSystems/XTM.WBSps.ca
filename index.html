@@ -5,25 +5,24 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Ward-Beck Systems</title>
   <meta name="description" content="Precision broadcast mastering visualizers: Ward-Beck Systems Precision Mastering Visualizers and Loudness Metering.">
-  <link rel="icon" type="image/svg+xml" href="favicon.svg">
-  <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
-  <link rel="apple-touch-icon" href="icon-192.png">
-  <link rel="manifest" href="manifest.json">
+  <link rel="icon" type="image/svg+xml" href="favicon.svg" vite-ignore>
+  <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png" vite-ignore>
+  <link rel="apple-touch-icon" href="icon-192.png" vite-ignore>
+  <link rel="manifest" href="manifest.json" vite-ignore>
   <meta name="theme-color" content="#07080a">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Ward-Beck Systems">
-  <link rel="stylesheet" href="css/xtm.css?v=20261117e">
+  <link rel="stylesheet" href="css/xtm.css?v=20261118b">
 </head>
-<body>
-  <div id="audioStartOverlay" style="position:fixed; top:0; left:0; width:100%; height:100%; background:#0a0b0d; z-index:9999; display:flex; align-items:center; justify-content:center;">
+<body class="">
+  <!-- <div id="audioStartOverlay" style="position:fixed; top:0; left:0; width:100%; height:100%; background:#0a0b0d; z-index:9999; display:flex; align-items:center; justify-content:center;">
     <button id="btnStartAudio" style="background:#22c55e; color:black; font-weight:bold; padding:20px 40px; border-radius:8px; border:none; font-size:20px; cursor:pointer;">START METERS</button>
-  </div>
-    <div id="mccurdyLogo" class="logo-box">
+  </div> -->
+    <div id="mccurdyLogo" class="logo-box" style="display:none;">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 520" width="68" height="20">
         <path d="M 140,185 Q 132,160 165,155 L 475,112 Q 500,108 525,112 L 835,155 Q 868,160 860,185 L 785,375 Q 775,398 748,402 L 525,442 Q 500,446 475,442 L 252,402 Q 225,398 215,375 Z" fill="#007acc" stroke="#f4f6f8" stroke-width="26" stroke-linejoin="round" />
-        <path d="M 248,175 L 322,175 L 322,200 C 342,178 368,170 394,173 C 418,176 434,188 444,206 C 464,180 494,170 524,173 C 564,177 586,206 586,250 L 586,322 L 782,322 L 770,350 L 586,350 L 586,362 L 608,362 L 608,385 L 498,385 L 498,362 L 520,362 L 520,350 L 452,350 L 452,322 L 520,322 L 520,255 C 520,230 508,218 488,218 C 468,218 454,232 454,258 L 454,305 L 390,305 L 390,255 C 390,230 378,218 358,218 C 338,218 324,232 324,258 L 324,362 L 346,362 L 346,385 L 248,385 L 248,362 L 268,362 L 268,200 L 248,200 Z" fill="#f4f6f8" />
         <g fill="#f4f6f8" font-family="'Helvetica Neue', Helvetica, Arial, sans-serif" font-weight="800" letter-spacing="1.5">
           <text x="598" y="258" font-size="28">C</text>
           <text x="622" y="272" font-size="40">CURDY</text>
@@ -71,7 +70,7 @@
     <!-- Minimalist Bottom Controls Drawer (Auxiliary Settings) -->
     <details class="aux-drawer" id="auxDrawer">
       <summary class="drawer-toggle">
-        <div class="drawer-toggle-left" id="drawerToggleLeft" title="Click to open/close Settings">
+        <div class="drawer-toggle-left" id="drawerToggleLeft">
           <button type="button" class="btn-settings-cog" id="btnOpenSettings" title="Settings (Calibration, Monitoring &amp; Ballistics)" aria-label="Settings">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <circle cx="12" cy="12" r="3"/>
@@ -82,12 +81,40 @@
         </div>
 
         <div class="drawer-toggle-right">
-          <a href="https://ward-beck.com" target="_blank" rel="noopener noreferrer" class="wbs-bottom-logo" title="Ward-Beck Systems" onclick="event.stopPropagation();">
+          <a href="https://ward-beck.ca" target="_blank" rel="noopener noreferrer" class="wbs-bottom-logo" title="Ward-Beck Systems" onclick="event.stopPropagation(); if (document.body.classList.contains('theme-mccurdy')) { event.preventDefault(); setMode(false); }">
             <svg viewBox="0 0 75 22" width="68" height="20" class="wbs-logo-svg">
               <path d="M2.43 4.14 C2.43 8.26 2.43 13.33 2.43 17.45 C2.43 20.03 31.29 20.41 33.55 20.41 C37.4 20.41 36.81 20.41 40.67 20.41 C42.87 20.41 71.66 20.03 71.66 17.45 L71.66 4.14 C71.66 1.57 42.82 1.26 40.67 1.23 L33.55 1.23 C31.29 1.23 2.43 1.57 2.43 4.14 Z M-0.03 3.81 C-0.03 7.93 -0.03 13.59 -0.03 17.71 C-0.03 21.6 31.29 21.6 33.55 21.6 C35.9 21.6 38.28 21.6 40.67 21.6 C42.87 21.6 74.06 21.6 74.06 17.71 L74.06 3.81 C74.06 -0 42.87 -0 40.67 -0 C36.81 -0 37.4 -0 33.55 -0 C31.29 -0 -0.03 -0 -0.03 3.81 Z M7.82 6.09 L13.37 16.43 L15.16 16.43 L9.61 6.09 L7.82 6.09 Z M17.85 6.09 L18.93 6.09 L18.59 6.09 L19.64 6.09 L15.16 16.43 L14.27 14.58 L17.87 6.03 L17.85 6.09 Z M18.74 6.09 L23.4 16.43 L25.19 16.43 L20.53 6.09 L18.74 6.09 Z M25.19 16.43 L30.56 6.09 L28.77 6.09 L24.29 14.58 L25.19 16.43 Z M32.53 6.09 L32.53 16.43 L34.32 16.43 L34.32 6.09 L32.53 6.09 Z M34.32 6.09 L46.14 6.09 L45.24 7.94 L34.32 7.94 L34.32 6.09 Z M45.24 7.94 L46.14 6.09 L47.57 7.01 L46.14 8.49 L45.24 7.94 Z M47.57 7.01 L47.93 7.94 L46.14 8.49 L47.57 7.01 Z M47.93 7.94 L46.14 8.49 L46.14 9.78 L47.93 10.34 L47.93 7.94 Z M47.93 10.34 L46.14 9.78 L45.78 10.34 L47.03 11.26 L47.93 10.34 Z M47.03 11.26 L45.78 12.18 L46.14 12.55 L47.93 12.18 L47.03 11.26 Z M47.93 12.18 L47.93 14.58 L46.14 14.03 L46.14 12.55 L47.93 12.18 Z M47.93 14.58 L47.57 15.51 L46.14 14.03 L47.93 14.58 Z M47.57 15.51 L46.14 16.43 L45.24 14.58 L46.14 14.03 L47.57 15.51 Z M46.14 16.43 L45.24 14.58 L34.32 14.58 L34.32 16.43 L46.14 16.43 Z M34.32 10.34 L34.32 12.18 L45.78 12.18 L45.78 10.34 L34.32 10.34 Z M45.78 10.34 L45.78 12.18 L47.03 11.26 L45.78 10.34 Z M66.19 7.94 L66.19 6.09 L51.69 6.09 L52.58 7.94 L66.19 7.94 Z M52.58 7.94 L51.69 6.09 L50.25 7.01 L51.69 8.49 L52.58 7.94 Z M51.69 8.49 L50.25 7.01 L49.9 7.94 L51.69 8.49 Z M49.9 7.94 L51.69 8.49 L51.69 9.78 L49.9 10.34 L49.9 7.94 Z M49.9 10.34 L51.69 9.78 L51.69 9.78 L50.25 11.26 L49.9 10.34 Z M51.69 9.78 L50.25 11.26 L51.69 12.18 L52.58 10.34 L51.69 9.78 Z M51.69 12.18 L52.58 10.34 L64.4 10.34 L63.5 12.18 L51.69 12.18 Z M63.5 12.18 L64.4 10.34 L65.83 11.26 L64.4 12.55 L63.5 12.18 Z M65.83 11.26 L64.4 12.55 L66.19 12.18 L65.83 11.26 Z M64.4 12.55 L66.19 12.18 L66.19 14.58 L64.4 14.03 L64.4 12.55 Z M66.19 14.58 L65.83 15.51 L64.4 14.03 L66.19 14.58 Z M65.83 15.51 L64.4 14.03 L63.5 14.58 L64.4 16.43 L65.83 15.51 Z M63.5 14.58 L64.4 16.43 L49.9 16.43 L49.9 14.58 L63.5 14.58 Z" fill="#22c55e" fill-rule="evenodd"/>
             </svg>
-            <span class="wbs-bottom-text">Ward-Beck Systems</span>
+            <span class="wbs-bottom-text">Ward-Beck.ca</span>
           </a>
+                    <button type="button" id="btnMcCurdyMode" class="mc-toggle" onclick="event.preventDefault(); event.stopPropagation(); resumeAudio();" aria-pressed="false" title="McCurdy (light) mode" aria-label="Switch to McCurdy light mode">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="120 95 760 365" width="62" height="30" aria-hidden="true">
+  <!-- Symmetrical Outer Shield with Blue fill -->
+  <path d="M 140,185 
+           Q 132,160 165,155 
+           L 475,112 
+           Q 500,108 525,112 
+           L 835,155 
+           Q 868,160 860,185 
+           L 785,375 
+           Q 775,398 748,402 
+           L 525,442 
+           Q 500,446 475,442 
+           L 252,402 
+           Q 225,398 215,375 
+           Z" fill="#007acc" stroke="#f4f6f8" stroke-width="26" stroke-linejoin="round" />
+
+  <!-- Lowercase 'm' -->
+  <path d="M 248,175 L 322,175 L 322,200 C 342,178 368,170 394,173 C 418,176 434,188 444,206 C 464,180 494,170 524,173 C 564,177 586,206 586,250 L 586,322 L 782,322 L 770,350 L 586,350 L 586,362 L 608,362 L 608,385 L 498,385 L 498,362 L 520,362 L 520,350 L 452,350 L 452,322 L 520,322 L 520,255 C 520,230 508,218 488,218 C 468,218 454,232 454,258 L 454,305 L 390,305 L 390,255 C 390,230 378,218 358,218 C 338,218 324,232 324,258 L 324,362 L 346,362 L 346,385 L 248,385 L 248,362 L 268,362 L 268,200 L 248,200 Z" fill="#f4f6f8" />
+
+  <!-- "CCURDY" Lettering -->
+  <g fill="#f4f6f8" font-family="'Helvetica Neue', Helvetica, Arial, sans-serif" font-weight="800" letter-spacing="1.5">
+    <text x="598" y="258" font-size="28">C</text>
+    <text x="622" y="272" font-size="40">CURDY</text>
+  </g>
+</svg>
+  <span class="mc-toggle-text">McCurdyRadio.com</span></button>
+          <span class="build-stamp" style="font-size: 0.7em; opacity: 0.6; margin-left: 12px;">2026.11.18.19.38</span>
         </div>
       </summary>
 
@@ -430,20 +457,46 @@
   </div>
 
   <!-- Application Scripts (Vite + TypeScript + WebAssembly Entrypoint) -->
-  <script type="module" src="/src/main.ts"></script>
-<script>
-  document.getElementById("btnStartAudio").addEventListener("click", () => {
+  <script type="module">
+    import { initApp } from '/src/app.ts';
     window.audioReady = true;
-    document.getElementById("audioStartOverlay").style.display = "none";
-    window.initApp();
+    initApp();
     if (window.audioContext && window.audioContext.state === "suspended") {
       window.audioContext.resume();
     }
-  });
-</script>
+  </script>
 <script>
-  function toggleMode() {
-    document.body.classList.toggle("theme-mccurdy");
+  // Light mode (McCurdy ATS-100 faceplate) <-> dark mode (Ward-Beck), remembered per browser.
+  function applyMode(mccurdy) {
+    document.body.classList.toggle("theme-mccurdy", mccurdy);
+    var btn = document.getElementById("btnMcCurdyMode");
+    if (btn) btn.setAttribute("aria-pressed", mccurdy ? "true" : "false");
+    var meta = document.querySelector('meta[name="theme-color"]');
+    if (meta) meta.setAttribute("content", mccurdy ? "#dedad0" : "#07080a");
+  }
+  function setMode(on) {
+    applyMode(on);
+    try { localStorage.setItem("xtm.mccurdy", on ? "1" : "0"); } catch (e) {}
+  }
+  // McCurdy logo -> McCurdy (light) mode; WBS logo (while in McCurdy mode) -> dark mode.
+  function toggleMode() { setMode(true); }
+</script>
+
+<div id="mccurdyLogo" style="display:none;"></div>
+<script>
+  // Load mode by site: mccurdyradio.com -> McCurdy; Ward-Beck sites -> default (Ward-Beck dark);
+  // anywhere else (e.g. localhost) -> the viewer's saved choice.
+  var host = location.hostname;
+  var onMcCurdyHost = /(^|\.)mccurdyradio\.com$/i.test(host);
+  var onWardBeckHost = /(^|\.)(ward-beck\.[a-z]+|wbsps\.ca)$/i.test(host);
+  if (onMcCurdyHost) { applyMode(true); }
+  else if (onWardBeckHost) { applyMode(false); }
+  else { try { applyMode(localStorage.getItem("xtm.mccurdy") === "1"); } catch (e) { applyMode(false); } }
+  function resumeAudio() {
+    toggleMode();
+    if (window.audioContext && window.audioContext.state === "suspended") {
+      window.audioContext.resume();
+    }
   }
 </script>
 </body>

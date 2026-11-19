@@ -97,7 +97,8 @@ export class XtmView {
 
   // DOM Element Caches for zero-allocation 60 FPS updates
   needleEls: (SVGElement | null)[] = [null, null, null, null];
-  phaseLedEls: (SVGElement | null)[] = [];
+  phaseLedEls: (SVGElement | null)[] = [];      // WBS round lamps
+  phaseLedRectEls: (SVGElement | null)[] = [];  // McCurdy rectangular segments
   vfdEl: SVGElement | null = null;
   modeTitleEl: SVGElement | null = null;
   btnEls: Record<string, ButtonElementBundle> = {};
@@ -124,16 +125,10 @@ export class XtmView {
       'A 12 12 0 0 0 1833 70',
       'H 1367',
       'A 12 12 0 0 0 1355 82',
-      'V 414',
-      'H 1392',
-      'A 40 40 0 0 1 1472 414',
-      'H 1506',
-      'A 40 40 0 0 1 1586 414',
-      'H 1620',
-      'A 40 40 0 0 1 1700 414',
-      'H 1734',
-      'A 40 40 0 0 1 1814 414',
-      'H 1845',
+      'V 402',
+      'A 12 12 0 0 0 1367 414',
+      'H 1833',
+      'A 12 12 0 0 0 1845 402',
       'Z'
     ].join(' ');
 
@@ -283,25 +278,30 @@ export class XtmView {
 
       if (isSifam) {
         // Authentic SIFAM AL29 VU Labels: Black VU above -7 tick, Red VU above +1 tick (Per Image 1)
-        const [vuxL, vuyL] = P(this.vuAngle(this.vuFrac(-7), true), R + 72);
-        const [vuxR, vuyR] = P(this.vuAngle(this.vuFrac(1), true), R + 72);
+        // Mirror the pair about the meter's centre line so both tags sit symmetrically.
+        const vuTagA = Math.abs(this.vuAngle(this.vuFrac(1), true));
+        const [vuxL, vuyL] = P(-vuTagA, R + 72);
+        const [vuxR, vuyR] = P(vuTagA, R + 72);
         s += `<text x="${vuxL.toFixed(1)}" y="${vuyL.toFixed(1)}" font-size="28" font-weight="800" text-anchor="middle" fill="${ink}" font-family="'Arial Narrow', Arial, sans-serif">VU</text>
               <text x="${vuxR.toFixed(1)}" y="${vuyR.toFixed(1)}" font-size="28" font-weight="800" text-anchor="middle" fill="${redBandCol}" font-family="'Arial Narrow', Arial, sans-serif">VU</text>`;
 
+        // Sifam markings (AL29, reticles, 23858/1, 23859/1, LAKLI) — hidden in McCurdy mode
+        s += `<g class="wbs-only">`;
         // Sifam Stylized 'S' Logo with AL29
         s += `<g transform="translate(${(x0 + 44).toFixed(1)}, ${(y0 + MH - 68).toFixed(1)})">
                 <path d="M4 14 C4 8 16 6 20 12 C24 18 10 22 10 28 C10 32 18 34 24 30" stroke="${ink}" stroke-width="3" fill="none"/>
-                <text x="30" y="23" font-size="14" font-weight="800" fill="${ink}" font-family="Arial, sans-serif">AL29</text>
+                <text x="32" y="27" font-size="16" font-weight="800" fill="${ink}" font-family="Arial, sans-serif">AL29</text>
               </g>`;
 
         // Alignment Reticle Crosshairs '+' on left and right
-        s += `<path d="M${(x0 + 64).toFixed(1)} ${(y0 + MH - 32).toFixed(1)} h 22 M${(x0 + 75).toFixed(1)} ${(y0 + MH - 43).toFixed(1)} v 22" stroke="rgba(20,16,8,0.35)" stroke-width="1.2"/>
-              <path d="M${(x0 + MW - 86).toFixed(1)} ${(y0 + MH - 32).toFixed(1)} h 22 M${(x0 + MW - 75).toFixed(1)} ${(y0 + MH - 43).toFixed(1)} v 22" stroke="rgba(20,16,8,0.35)" stroke-width="1.2"/>`;
+        s += `<path d="M${(x0 + 44).toFixed(1)} ${(y0 + MH - 32).toFixed(1)} h 18 M${(x0 + 53).toFixed(1)} ${(y0 + MH - 41).toFixed(1)} v 18" stroke="rgba(20,16,8,0.5)" stroke-width="1.2"/>
+              <path d="M${(x0 + MW - 62).toFixed(1)} ${(y0 + MH - 32).toFixed(1)} h 18 M${(x0 + MW - 53).toFixed(1)} ${(y0 + MH - 41).toFixed(1)} v 18" stroke="rgba(20,16,8,0.5)" stroke-width="1.2"/>`;
 
         // Authentic Lower Tab Calibration/Inventory Markings (23858/1, 23859/1, LAKLI)
-        s += `<text x="${(x0 + 130).toFixed(1)}" y="${(y0 + MH - 18).toFixed(1)}" font-size="13" font-weight="700" fill="${ink}" font-family="'Courier New', monospace">23858/1</text>
-              <text x="${(x0 + 130).toFixed(1)}" y="${(y0 + MH - 5).toFixed(1)}" font-size="13" font-weight="700" fill="${redBandCol}" font-family="'Courier New', monospace">23859/1</text>
-              <text x="${(x0 + MW - 130).toFixed(1)}" y="${(y0 + MH - 10).toFixed(1)}" font-size="13" font-weight="700" fill="${ink}" font-family="'Courier New', monospace" text-anchor="end">LAKLI</text>`;
+        s += `<text x="${(x0 + 135).toFixed(1)}" y="${(y0 + MH - 18).toFixed(1)}" font-size="11" font-weight="600" fill="${ink}" font-family="'Courier New', monospace">23858/1</text>
+              <text x="${(x0 + 135).toFixed(1)}" y="${(y0 + MH - 6).toFixed(1)}" font-size="11" font-weight="600" fill="${redBandCol}" font-family="'Courier New', monospace">23859/1</text>
+              <text x="${(x0 + MW - 135).toFixed(1)}" y="${(y0 + MH - 12).toFixed(1)}" font-size="11" font-weight="600" fill="${ink}" font-family="'Courier New', monospace" text-anchor="end">LAKLI</text>`;
+        s += `</g>`;
       } else {
         // Simpson Standard Legend
         s += `<text x="${(x0 + 56).toFixed(0)}" y="${y0 + 58}" font-size="26" font-weight="800" fill="${ink}">VU</text>
@@ -311,10 +311,9 @@ export class XtmView {
       // European Black PPM Scale: -12 to +12 dB
       const warnCol = '#facc15'; // YELLOW, NO RED!
       s += arc(this.ppmAngle(0, isSifam), this.ppmAngle(1, isSifam), R, 4, ink);
+      s += `<g class="wbs-only">`;
       s += arc(this.ppmAngle(18 / 24, isSifam), this.ppmAngle(1, isSifam), R + 8, 16, warnCol);
 
-      // TONE label at top
-      s += `<text x="${cx.toFixed(1)}" y="${(y0 + 80).toFixed(1)}" font-size="20" font-weight="800" text-anchor="middle" fill="${ink}">TONE</text>`;
 
       for (let d = -12; d <= 12; d += 2) {
         const a = this.ppmAngle((d + 12) / 24, isSifam);
@@ -327,21 +326,65 @@ export class XtmView {
         const a = this.ppmAngle((d + 12) / 24, isSifam);
         const [tx, ty] = P(a, R + 48);
         const col = (d >= 8 && isBlackPpm) ? '#facc15' : ink;
+        if (d === 0) {
+          // "T0NE": the zero of the scale is the O of TONE, centred on the 0 tick
+          const half = 8.5;
+          s += `<text x="${(tx - half).toFixed(1)}" y="${(ty + 8).toFixed(1)}" font-size="26" font-weight="700" text-anchor="end" fill="${col}">T</text>
+                <text x="${tx.toFixed(1)}" y="${(ty + 8).toFixed(1)}" font-size="26" font-weight="700" text-anchor="middle" fill="${col}">0</text>
+                <text x="${(tx + half).toFixed(1)}" y="${(ty + 8).toFixed(1)}" font-size="26" font-weight="700" text-anchor="start" fill="${col}">NE</text>`;
+          return;
+        }
         s += `<text x="${tx.toFixed(1)}" y="${(ty + 8).toFixed(1)}" font-size="26" font-weight="700" text-anchor="middle" fill="${col}">${d > 0 ? '+' + d : d}</text>`;
+      });
+
+      // Inner dBu scale under the arc: TONE = +8 dBu, so -12..+12 dB reads -4..+20
+      [-12, -8, -4, 0, 4, 8, 12].forEach(d => {
+        const v = d + 8;
+        const [ix, iy] = P(this.ppmAngle((d + 12) / 24, isSifam), R - 40);
+        s += `<text x="${ix.toFixed(1)}" y="${iy.toFixed(1)}" font-size="21" font-weight="600" text-anchor="middle" dominant-baseline="central" fill="${ink}" opacity="0.85">${v > 0 ? '+' + v : v}</text>`;
       });
 
       s += `<text x="${(x0 + 54).toFixed(0)}" y="${y0 + 58}" font-size="26" font-weight="800" fill="${isBlackPpm ? '#f8fafc' : ink}">PPM</text>
             <text x="${(x0 + MW - 56).toFixed(0)}" y="${y0 + 58}" font-size="26" font-weight="800" fill="#facc15" text-anchor="end">dB</text>`;
+      s += `</g>`;
+
+      // McCurdy ATS-100 PGM face (McCurdy mode only): outer dB-from-tone, inner dBu (TONE = +8)
+      {
+        const q = (d: number) => this.ppmAngle((d + 12) / 24, isSifam);
+        const yel = '#e3c22a';
+        let m = `<g class="mc-only">`;
+        m += arc(q(8), q(12), R + 9, 18, yel);
+        m += arc(q(8), q(12), R + 3, 1.6, '#1a1a1a') + arc(q(8), q(12), R + 15, 1.6, '#1a1a1a');
+        for (let d = -12; d <= 12; d += 2) {
+          const major = d % 4 === 0;
+          const [x1, y1] = P(q(d), major ? R - 16 : R), [x2, y2] = P(q(d), major ? R + 20 : R + 12);
+          m += `<line x1="${x1.toFixed(1)}" y1="${y1.toFixed(1)}" x2="${x2.toFixed(1)}" y2="${y2.toFixed(1)}" stroke="${ink}" stroke-width="${major ? 4 : 3}"/>`;
+        }
+        const lbl = (x: number, y: number, t: string, size = 24) =>
+          `<text x="${x.toFixed(1)}" y="${y.toFixed(1)}" font-size="${size}" font-weight="500" text-anchor="middle" dominant-baseline="central" fill="${ink}" font-family="Helvetica, Arial, sans-serif">${t}</text>`;
+        [-12, -8, -4, 4, 8, 12].forEach(d => { const [x, y] = P(q(d), R + 44); m += lbl(x, y, String(Math.abs(d))); });
+        const [tx, ty] = P(q(0), R + 30);
+        m += lbl(tx, ty - 34, 'TONE') + lbl(tx, ty - 4, '&#8722; | +', 22);
+        [-12, -8, -4, 0, 4, 8, 12].forEach(d => {
+          const v = d + 8;
+          const [x, y] = P(q(d), R - 42);
+          m += lbl(x, y, v > 0 ? '+' + v : String(v));
+        });
+        const [gx, gy] = P(this.ppmAngle(0.9, isSifam), R + 92);
+        m += lbl(gx, gy, 'PGM');
+        m += `</g>`;
+        s += m;
+      }
     }
 
     // Heritage Center Logo: Authentic Rounded Rectangle [WBS] Per Image 1 on Sifam, WBS Path on Simpson
     if (isSifam && kind === 'vu') {
-      s += `<g transform="translate(${(cx - 48).toFixed(1)}, ${(cy + 34).toFixed(1)})">
+      s += `<g class="wbs-only" transform="translate(${(cx - 48).toFixed(1)}, ${(cy + 34).toFixed(1)})">
               <rect x="0" y="0" width="96" height="30" rx="9" fill="none" stroke="${ink}" stroke-width="2.5"/>
               <text x="48" y="21" font-size="18" font-weight="900" fill="${ink}" text-anchor="middle" letter-spacing="3" font-family="Arial, Helvetica, sans-serif">WBS</text>
             </g>`;
     } else {
-      s += `<g transform="translate(${(cx - 44.5).toFixed(1)}, ${(cy + 42).toFixed(1)}) scale(1.2)">
+      s += `<g class="wbs-only" transform="translate(${(cx - 44.5).toFixed(1)}, ${(cy + 42).toFixed(1)}) scale(1.2)">
               <path d="${WBS_LOGO_PATH}" fill="${ink}" fill-rule="evenodd"/>
             </g>`;
     }
@@ -447,6 +490,152 @@ export class XtmView {
     return s;
   }
 
+
+  /* ---------------- McCurdy ATS-100 Faceplate (light mode) ----------------
+     Shown only when <body class="theme-mccurdy">. Meters, LEDs, VFD and
+     ballistics are untouched; this only swaps the panel around them. */
+  renderMcCurdyPanel(): string {
+    const W = this.VW, H = this.VH;
+    const MW = this.MW, MH = this.MH, cy = this.MYc;
+    const bx = 22, by = 18; // bezel thickness
+    let s = `<g class="mc-only">
+      <defs>
+        <linearGradient id="mc_panel" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#e5e1d5"/><stop offset="50%" stop-color="#dedad0"/><stop offset="100%" stop-color="#d2cec2"/>
+        </linearGradient>
+        <linearGradient id="mc_bezel" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#2a2a2c"/><stop offset="100%" stop-color="#141416"/>
+        </linearGradient>
+        <linearGradient id="mc_blue" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#4ba7e8"/><stop offset="100%" stop-color="#3892d4"/>
+        </linearGradient>
+        <radialGradient id="mc_jack" cx="50%" cy="50%" r="50%">
+          <stop offset="55%" stop-color="#070708"/><stop offset="82%" stop-color="#222326"/>
+          <stop offset="94%" stop-color="#5a5c60"/><stop offset="100%" stop-color="#151618"/>
+        </radialGradient>
+        <filter id="mc_shadow" x="-5%" y="-5%" width="110%" height="115%">
+          <feDropShadow dx="0" dy="4" stdDeviation="4" flood-color="#000" flood-opacity="0.55"/>
+        </filter>
+      </defs>
+      <rect x="1" y="1" width="${W - 2}" height="${H - 2}" rx="6" fill="url(#mc_panel)" stroke="#b5b1a6" stroke-width="2"/>
+      <line x1="4" y1="3" x2="${W - 4}" y2="3" stroke="#ffffff" stroke-opacity="0.7" stroke-width="2"/>`;
+
+    // Black stepped bezels behind each meter window
+    for (const cx of this.MX) {
+      const x0 = cx - MW / 2 - bx, y0 = cy - MH / 2 - by;
+      const w = MW + 2 * bx, h = MH + 2 * by;
+      s += `<g filter="url(#mc_shadow)">
+        <rect x="${x0}" y="${y0}" width="${w}" height="${h}" rx="4" fill="url(#mc_bezel)" stroke="#0d0d0e" stroke-width="2"/>
+        <polygon points="${x0},${y0} ${x0 + w},${y0} ${x0 + w - bx},${y0 + by} ${x0 + bx},${y0 + by}" fill="#36373a"/>
+        <polygon points="${x0},${y0 + h} ${x0 + w},${y0 + h} ${x0 + w - bx},${y0 + h - by} ${x0 + bx},${y0 + h - by}" fill="#111113"/>
+        <polygon points="${x0},${y0} ${x0 + bx},${y0 + by} ${x0 + bx},${y0 + h - by} ${x0},${y0 + h}" fill="#232426"/>
+        <polygon points="${x0 + w},${y0} ${x0 + w - bx},${y0 + by} ${x0 + w - bx},${y0 + h - by} ${x0 + w},${y0 + h}" fill="#191a1c"/>
+        <rect x="${x0 + bx}" y="${y0 + by}" width="${MW}" height="${MH}" fill="#0e0e10"/>
+      </g>`;
+    }
+
+    // INPUT 1 / INPUT 2 legends with hairlines between each meter pair
+    const ly = H - 26;
+    const legend = (cx: number, label: string, x0: number | null) => `
+      ${x0 === null ? '' : `<line x1="${x0}" y1="${ly}" x2="${cx - 70}" y2="${ly}" stroke="#5c5952" stroke-width="1.5"/>`}
+      <line x1="${cx + 70}" y1="${ly}" x2="${cx + 600}" y2="${ly}" stroke="#5c5952" stroke-width="1.5"/>
+      <text x="${cx}" y="${ly}" dominant-baseline="central" text-anchor="middle" font-family="Helvetica, Arial, sans-serif" font-size="20" font-weight="500" letter-spacing="2" fill="#636058">${label}</text>`;
+    s += legend(687.5, 'INPUT 1', null) + legend(2512.5, 'INPUT 2', 1912);
+
+    // McCurdy outlined badge + model legend, bottom-left as on the ATS-100
+    const font = `font-family="Helvetica, Arial, sans-serif"`;
+    s += `<rect x="70" y="${ly - 21}" width="190" height="42" rx="2" fill="none" stroke="#7a776e" stroke-width="2"/>
+      <text x="165" y="${ly + 11}" text-anchor="middle" font-family="'Arial Black', Helvetica, sans-serif" font-size="30" font-weight="900" letter-spacing="-1" fill="none" stroke="#7d7970" stroke-width="1.6">McCurdy</text>
+      <text x="278" y="${ly}" dominant-baseline="central" ${font} font-size="17" font-weight="500" letter-spacing="1.4" fill="#68655d">MODEL ATS-100 AUDIO TEST SET</text>`;
+
+    s += `</g>`;
+    return s;
+  }
+
+  renderMcCurdyCenter(): string {
+    // Layout mirrors the ATS-100 centre: red 2-digit RANGE window, UP/DOWN under it,
+    // MODE/SOURCE in their own blue INPUT box. The real buttons are moved there by CSS
+    // transforms (see .theme-mccurdy #xtm_btn_* in css/xtm.css), so they keep working.
+    const font = `font-family="Helvetica, Arial, sans-serif" font-weight="700"`;
+    const W = this.MC_WIN;
+    return `<g class="mc-only">
+      <defs>
+        <linearGradient id="mc_led" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#221011"/><stop offset="50%" stop-color="#36181a"/><stop offset="100%" stop-color="#1e0d0e"/>
+        </linearGradient>
+        <filter id="mc_redglow" x="-30%" y="-30%" width="160%" height="160%">
+          <feGaussianBlur stdDeviation="2.2" result="b"/>
+          <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+        </filter>
+      </defs>
+      <!-- RANGE section: rounded border around the LED window and UP/DOWN buttons -->
+      <rect x="1494" y="66" width="212" height="200" rx="14" fill="#e9e5da" stroke="#232325" stroke-width="3"/>
+      <!-- RANGE LED window -->
+      <rect x="${W.x - 4}" y="${W.y - 4}" width="${W.w + 8}" height="${W.h + 8}" rx="3" fill="#1b1c1e"/>
+      <rect x="${W.x}" y="${W.y}" width="${W.w}" height="${W.h}" rx="2" fill="url(#mc_led)"/>
+      <g id="xmc_digits" filter="url(#mc_redglow)"></g>
+      <text x="1600" y="${W.y + W.h + 22}" text-anchor="middle" ${font} font-size="17" letter-spacing="0.6" fill="#232325">RANGE</text>
+      <!-- UP / DOWN arrows either side of the moved buttons -->
+      <path d="M1522 248 V214 M1514 224 L1522 212 L1530 224" stroke="#232325" stroke-width="3" fill="none"/>
+      <path d="M1678 212 V246 M1670 236 L1678 248 L1686 236" stroke="#232325" stroke-width="3" fill="none"/>
+      <!-- 1 INPUT 2 box: the two jacks ARE the input buttons here (1 = MODE, 2 = SOURCE) -->
+      <rect x="1430" y="274" width="340" height="120" rx="8" fill="url(#mc_blue)" stroke="#1b1c1e" stroke-width="2.5"/>
+      <text x="1530" y="300" text-anchor="middle" ${font} font-size="17" fill="#181b1e">1</text>
+      <text x="1600" y="300" text-anchor="middle" ${font} font-size="17" fill="#181b1e">INPUT</text>
+      <text x="1670" y="300" text-anchor="middle" ${font} font-size="17" fill="#181b1e">2</text>
+      <g class="xtm-btn mc-jack" data-btn="MODE" style="cursor:pointer">
+        <title>Input 1 (MODE)</title>
+        <circle cx="1530" cy="346" r="27" fill="url(#mc_jack)" stroke="#1b1c1e" stroke-width="2"/>
+      </g>
+      <g class="xtm-btn mc-jack" data-btn="SOURCE" style="cursor:pointer">
+        <title>Input 2 (SOURCE)</title>
+        <circle cx="1670" cy="346" r="27" fill="url(#mc_jack)" stroke="#1b1c1e" stroke-width="2"/>
+      </g>
+    </g>`;
+  }
+
+  /* 2-digit red 7-segment RANGE readout for McCurdy mode */
+  readonly MC_WIN = { x: 1540, y: 80, w: 120, h: 56 };
+  lastMcDigits: string = '';
+
+  renderSevenSeg(text: string): string {
+    const SEG: Record<string, string> = {
+      '0': 'abcdef', '1': 'bc', '2': 'abged', '3': 'abgcd', '4': 'fgbc', '5': 'afgcd',
+      '6': 'afgedc', '7': 'abc', '8': 'abcdefg', '9': 'abcdfg', '-': 'g', ' ': ''
+    };
+    const W = this.MC_WIN;
+    const dw = 34, dh = 48, t = 6, gap = 14;
+    const x0 = W.x + (W.w - (2 * dw + gap)) / 2, y0 = W.y + (W.h - dh) / 2;
+    const on = '#ff2d1f', off = 'rgba(255,45,31,0.09)';
+    let out = '';
+    [...text.padStart(2).slice(-2)].forEach((ch, i) => {
+      const x = x0 + i * (dw + gap) + 3, y = y0, h2 = dh / 2;
+      const segs: Record<string, [number, number, number, number]> = {
+        a: [x + t / 2, y, dw - t, t], d: [x + t / 2, y + dh - t, dw - t, t], g: [x + t / 2, y + h2 - t / 2, dw - t, t],
+        f: [x - t / 2 + 1, y + t / 2, t, h2 - t], b: [x + dw - t / 2 - 1, y + t / 2, t, h2 - t],
+        e: [x - t / 2 + 1, y + h2 + t / 2, t, h2 - t], c: [x + dw - t / 2 - 1, y + h2 + t / 2, t, h2 - t]
+      };
+      const lit = SEG[ch] ?? '';
+      for (const k of 'abcdefg') {
+        const r = segs[k]!;
+        out += `<rect x="${r[0].toFixed(1)}" y="${r[1].toFixed(1)}" width="${r[2]}" height="${r[3]}" rx="2" fill="${lit.includes(k) ? on : off}" transform="skewX(-6)" transform-origin="${(x + dw / 2).toFixed(1)} ${(y + h2).toFixed(1)}"/>`;
+      }
+    });
+    return out;
+  }
+
+  mcRangeText(model: XtmModel): string {
+    if (!model.power) return '  ';
+    let v: number | null = null;
+    if (model.mode === 'A') v = model.lvlDb(model.a.lvl);
+    else if (model.mode === 'D') v = model.lvlDb(model.d.lvl);
+    else if (model.mode === 'S') v = model.toneCalLevels[model.toneCalIdx] ?? 0;
+    if (v === null) return '--';
+    const a = Math.min(99, Math.abs(Math.round(v)));
+    if (v < 0 && a < 10) return '-' + a;
+    return String(a).padStart(2, '0');
+  }
+
   /* ---------------- Build Complete Base SVG Shell ---------------- */
   buildShell(model: XtmModel): string {
     const on = model.power;
@@ -485,6 +674,10 @@ export class XtmView {
           <stop offset="100%" stop-color="#94a3b8"/>
         </radialGradient>
 
+        <linearGradient id="mc_vuface" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#dfc784"/><stop offset="25%" stop-color="#eedba1"/>
+          <stop offset="85%" stop-color="#ebd699"/><stop offset="100%" stop-color="#d5bd7b"/>
+        </linearGradient>
         <radialGradient id="xparchment" cx="50%" cy="38%" r="68%">
           <stop offset="0%" stop-color="#fffdf5"/>
           <stop offset="22%" stop-color="#fef3d6"/>
@@ -530,12 +723,13 @@ export class XtmView {
       </defs>
 
       <!-- Seamless Borderless Canvas -->
-      <rect width="${this.VW}" height="${this.VH}" fill="#0f1114"/>
+      <rect class="wbs-only" width="${this.VW}" height="${this.VH}" fill="#0f1114"/>
+      ${this.renderMcCurdyPanel()}
 
       <!-- Channel A Signature Green Console Frame -->
       <path d="M 630 414 H 49 A 14 14 0 0 1 35 400 V 30 A 14 14 0 0 1 49 16 H 1326 A 14 14 0 0 1 1340 30 V 400 A 14 14 0 0 1 1326 414 H 745"
-            fill="none" stroke="#22c55e" stroke-width="2.5" opacity="0.85"/>
-      <text x="687.5" y="414" dominant-baseline="central" font-size="18" font-weight="900" fill="#22c55e" text-anchor="middle" letter-spacing="3" font-family="'Arial Narrow', Arial, sans-serif">LEFT</text>
+            fill="none" stroke="#22c55e" stroke-width="2.5" opacity="0.85" class="wbs-only"/>
+      <text class="wbs-only" x="687.5" y="414" dominant-baseline="central" font-size="18" font-weight="900" fill="#22c55e" text-anchor="middle" letter-spacing="3" font-family="'Arial Narrow', Arial, sans-serif">LEFT</text>
 
       <!-- Channel A Pair: Meter 0 (VU) + Meter 1 (PPM) -->
       ${this.renderMeterShell(0, this.MX[0] ?? 373, this.MYc, 'vu', on, model.dialLamp, false, model.meterStyle)}
@@ -543,26 +737,32 @@ export class XtmView {
 
       <!-- Center Console Section -->
       <g>
-        <text x="1395" y="48" font-size="16" font-weight="700" fill="#718096" text-anchor="middle">0°</text>
+        <g class="mc-only">
+          <rect x="1408" y="24" width="384" height="36" rx="3" fill="#171719" stroke="#5c5952" stroke-width="1.5"/>
+          <rect x="1413" y="28" width="374" height="28" fill="url(#mc_led)"/>
+        </g>
+        <text class="xt-deg" x="1390" y="48" font-size="16" font-weight="700" fill="#718096" text-anchor="middle">0°</text>
         ${(() => {
           let ps = '';
           for (let i = 0; i < 8; i++) {
             const cx = 1438 + i * 46;
             const cy = 42;
             ps += `
-              <circle cx="${cx}" cy="${cy}" r="22" fill="#08090a" stroke="#25282f" stroke-width="2"/>
-              <rect id="xphase_led_${i}" x="${(cx-12).toFixed(1)}" y="${(cy-8).toFixed(1)}" width="24" height="16" fill="#142e17"/>`;
+              <circle class="wbs-only" cx="${cx}" cy="${cy}" r="22" fill="#08090a" stroke="#25282f" stroke-width="2"/>
+              <circle class="wbs-only" id="xphase_led_${i}" cx="${cx}" cy="${cy}" r="17" fill="#142e17"/>
+              <rect class="mc-only" id="xphase_ledr_${i}" x="${(cx-12).toFixed(1)}" y="${(cy-8).toFixed(1)}" width="24" height="16" fill="#4a1a17"/>`;
           }
           return ps;
         })()}
-        <text x="1805" y="48" font-size="16" font-weight="700" fill="#718096" text-anchor="middle">180°</text>
+        <text class="xt-deg" x="1812" y="48" font-size="16" font-weight="700" fill="#718096" text-anchor="middle">180°</text>
 
         <!-- Center Console Signature Solid Green Plate Stencil (Borders just the shape with scalloped notches) -->
-        <path d="${this.getCenterPlatePath()}" fill="#15803d" fill-rule="evenodd"/>
+        <path class="wbs-only" d="${this.getCenterPlatePath()}" fill="#15803d" fill-rule="evenodd"/>
+        ${this.renderMcCurdyCenter()}
 
         <!-- Center VFD Dot-Matrix Display Cutout Window -->
-        <rect x="${this.DISP.x}" y="${this.DISP.y}" width="${this.DISP.w}" height="${this.DISP.h}" rx="6" fill="#040605" stroke="#052e16" stroke-width="2.5"/>
-        <g id="xvfd_group" ${on ? 'filter="url(#xglow)"' : ''}></g>
+        <rect class="wbs-only" x="${this.DISP.x}" y="${this.DISP.y}" width="${this.DISP.w}" height="${this.DISP.h}" rx="6" fill="#040605" stroke="#052e16" stroke-width="2.5"/>
+        <g class="wbs-only" id="xvfd_group" ${on ? 'filter="url(#xglow)"' : ''}></g>
 
         <!-- Mode & Source Front-Panel Buttons (Rectangular pushbutton switches with white labels above) -->
         ${Object.keys(this.BX).map(b => {
@@ -573,7 +773,7 @@ export class XtmView {
           const botH = bh - topH - 5;
           return `
           <g class="xtm-btn" id="xtm_btn_${b}" data-btn="${b}" style="cursor:pointer">
-            <text id="xtm_btn_lbl_${b}" x="${x + this.BW / 2}" y="206" font-size="14" font-weight="900" text-anchor="middle"
+            <text class="xt-btn-lbl" id="xtm_btn_lbl_${b}" x="${x + this.BW / 2}" y="206" font-size="14" font-weight="900" text-anchor="middle"
                   fill="#ffffff" letter-spacing="1.5">${b}</text>
             <rect id="xtm_btn_border_${b}" x="${x}" y="${y}" width="${this.BW}" height="${bh}" rx="2"
                   fill="#0b0d10" stroke="#1f2937" stroke-width="2"/>
@@ -589,8 +789,8 @@ export class XtmView {
 
       <!-- Channel B Signature Green Console Frame -->
       <path d="M 2455 414 H 1874 A 14 14 0 0 1 1860 400 V 30 A 14 14 0 0 1 1874 16 H 3151 A 14 14 0 0 1 3165 30 V 400 A 14 14 0 0 1 3151 414 H 2570"
-            fill="none" stroke="#22c55e" stroke-width="2.5" opacity="0.85"/>
-      <text x="2512.5" y="414" dominant-baseline="central" font-size="18" font-weight="900" fill="#22c55e" text-anchor="middle" letter-spacing="3" font-family="'Arial Narrow', Arial, sans-serif">RIGHT</text>
+            fill="none" stroke="#22c55e" stroke-width="2.5" opacity="0.85" class="wbs-only"/>
+      <text class="wbs-only" x="2512.5" y="414" dominant-baseline="central" font-size="18" font-weight="900" fill="#22c55e" text-anchor="middle" letter-spacing="3" font-family="'Arial Narrow', Arial, sans-serif">RIGHT</text>
 
       <!-- Channel B Pair: Meter 2 (VU) + Meter 3 (PPM) -->
       ${this.renderMeterShell(2, this.MX[2] ?? 2198, this.MYc, 'vu', on, model.dialLamp, false, model.meterStyle)}
@@ -603,8 +803,11 @@ export class XtmView {
   /* ---------------- Explicit Shell Build Method ---------------- */
   build(model: XtmModel): void {
     if (!this.container) return;
+    
     this.container.innerHTML = this.buildShell(model);
     this.initDom();
+    this.lastMcDigits = '';
+    this.lastPhaseLed = -999;
     this.isBuilt = true;
   }
 
@@ -617,6 +820,7 @@ export class XtmView {
     this.phaseLedEls = [];
     for (let i = 0; i < 8; i++) {
       this.phaseLedEls[i] = this.container.querySelector<SVGElement>(`#xphase_led_${i}`);
+      this.phaseLedRectEls[i] = this.container.querySelector<SVGElement>(`#xphase_ledr_${i}`);
     }
     this.vfdEl = this.container.querySelector<SVGElement>('#xvfd_group');
     this.modeTitleEl = this.container.querySelector<SVGElement>('#xtm_mode_title');
@@ -730,14 +934,17 @@ export class XtmView {
 
     // 2. Phase Correlation LEDs
     const led = on ? levels.phaseLed : -1;
-    if (led !== this.lastPhaseLed) {
-      this.lastPhaseLed = led;
+    // McCurdy mode: all-red rectangular segments in one LED window
+    const mc = document.body.classList.contains('theme-mccurdy');
+    const ledKey = led + (mc ? 100 : 0);
+    if (ledKey !== this.lastPhaseLed) {
+      this.lastPhaseLed = ledKey;
       for (let i = 0; i < 8; i++) {
-        const el = this.phaseLedEls[i];
+        const el = mc ? this.phaseLedRectEls[i] : this.phaseLedEls[i];
         if (!el) continue;
         const isLit = on && i === led;
-        const litColor = i <= 1 ? '#ff4d36' : (i <= 3 ? '#ffb43a' : '#9dff3a');
-        const offColor = i <= 1 ? '#3a1810' : (i <= 3 ? '#3a2810' : '#142e17');
+        const litColor = mc ? '#ff2d1f' : (i <= 1 ? '#ff4d36' : (i <= 3 ? '#ffb43a' : '#9dff3a'));
+        const offColor = mc ? '#4a1a17' : (i <= 1 ? '#3a1810' : (i <= 3 ? '#3a2810' : '#142e17'));
         el.setAttribute('fill', isLit ? litColor : offColor);
         if (isLit) el.setAttribute('filter', 'url(#xledglow)');
         else el.removeAttribute('filter');
@@ -825,6 +1032,13 @@ export class XtmView {
       const dx = this.DISP.x + (this.DISP.w - w8) / 2;
       const dy = this.DISP.y + (this.DISP.h - 6 * p) / 2;
       this.vfdEl.innerHTML = this.renderDotMatrix(txt, dx, dy, p, vfdColor, vfdOffColor);
+    }
+
+    // McCurdy RANGE readout (only visible in McCurdy mode, kept current in both)
+    const mcTxt = this.mcRangeText(model);
+    if (mcTxt !== this.lastMcDigits && this.container) {
+      const g = this.container.querySelector<SVGElement>('#xmc_digits');
+      if (g) { g.innerHTML = this.renderSevenSeg(mcTxt); this.lastMcDigits = mcTxt; }
     }
 
     // 4. Status Title

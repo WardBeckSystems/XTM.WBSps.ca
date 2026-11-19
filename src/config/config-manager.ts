@@ -156,7 +156,7 @@ export class ConfigManager {
     const calLevel = model.toneCalLevels[model.toneCalIdx] ?? 0;
 
     return {
-      version: '1.0.0',
+      version: '1.1.0',
       timestamp: new Date().toISOString(),
       profileName: 'Ward-Beck Systems Broadcast Mastering Suite Profile',
       console: {

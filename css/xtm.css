@@ -1,21 +1,1264 @@
-/* --- EXISTING STYLES PRESERVED --- */
-/* (I will append the updated McCurdy theme, assuming original content is intact in the file) */
+:root {
+  --bg-deep: #0a0b0d;
+  --bg-panel: #0f1114;
+  --border-subtle: #1e2229;
+  --ink-primary: #f1f5f9;
+  --ink-secondary: #94a3b8;
+  --ink-muted: #64748b;
+  --accent-green: #9dff3a;
+  --accent-amber: #ffb43a;
+  --accent-red: #ff3b30;
+  --accent-blue: #38bdf8;
+  --font-mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  --font-sans: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
 
-/* Refined McCurdy ATS-100 Theme */
-.theme-mccurdy {
-  background-color: #d6d4c9 !important; /* Panel off-white/beige */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
-.theme-mccurdy .meter-unit {
-  background-color: #d6d4c9 !important;
+
+html, body {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  background-color: var(--bg-deep);
+  color: var(--ink-primary);
+  font-family: var(--font-sans);
+  overflow: hidden;
+  user-select: none;
+  -webkit-user-select: none;
 }
-/* Filter section blue background */
-.theme-mccurdy .filter-section {
-  background-color: #5dace2 !important;
-  color: #000 !important;
+
+/* Master Viewport Container */
+.console-viewport {
+  width: 100vw;
+  max-width: 100%;
+  height: 100vh;
+  max-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: flex-start;
+  position: relative;
+  background-color: var(--bg-deep);
+  overflow: hidden;
 }
-/* Button style */
-.theme-mccurdy button, .theme-mccurdy .btn {
-  background-color: #000 !important;
-  color: #fff !important;
-  border: 1px solid #333 !important;
+
+@keyframes pulse-glow {
+  0% { transform: scale(0.95); opacity: 0.8; }
+  50% { transform: scale(1.3); opacity: 1; }
+  100% { transform: scale(0.95); opacity: 0.8; }
+}
+
+/* Borderless Meter Stack - Edge-to-Edge Full Width */
+.meter-stack {
+  width: 100%;
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  margin: 0;
+  padding: 0;
+  background-color: var(--bg-deep);
+  overflow: hidden;
+}
+
+.meter-unit {
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  border: none;
+  background: transparent;
+  line-height: 0;
+  flex: 0 0 auto;
+}
+
+.meter-unit svg {
+  width: 100%;
+  height: auto;
+  display: block;
+  border: none !important;
+  border-radius: 0 !important;
+}
+
+.meter-unit.pod22 {
+  flex: 0 0 auto;
+}
+
+.meter-unit.pod22-wrap {
+  position: relative;
+  width: 100%;
+  line-height: 0;
+  overflow: hidden;
+}
+
+.meter-unit.dbfs-unit {
+  flex: 1 1 0px;
+  min-height: 150px;
+  line-height: normal;
+  border-top: 1px solid #161c28;
+  background: #07090c;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* Distinct Scope Header & Tab Control Bar */
+.scope-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 6px 16px;
+  background: #0b0e14;
+  border-bottom: 1px solid #1c2433;
+  font-size: 11px;
+  font-family: var(--font-mono);
+  color: var(--ink-secondary);
+  flex: 0 0 auto;
+  z-index: 10;
+}
+
+.scope-tabs-group {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.scope-toolbar-label {
+  font-weight: 700;
+  color: #64748b;
+  margin-right: 4px;
+}
+
+.scope-tab-btn {
+  background: #111622;
+  color: #94a3b8;
+  border: 1px solid #243044;
+  border-bottom: 2px solid transparent;
+  padding: 4px 14px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  transition: all 0.15s ease;
+}
+
+.scope-tab-btn:hover {
+  background: #192334;
+  color: #f1f5f9;
+  border-color: #3b82f6;
+}
+
+.scope-tab-btn.active {
+  background: #162640;
+  color: #38bdf8;
+  border-color: #38bdf8;
+  border-bottom: 2px solid #38bdf8;
+  box-shadow: 0 0 12px rgba(56, 189, 248, 0.3);
+}
+
+.scope-sliders-group {
+  display: flex;
+  align-items: center;
+  gap: 22px;
+}
+
+.scope-ctrl-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.scope-ctrl-item label {
+  font-weight: 700;
+  color: #94a3b8;
+  white-space: nowrap;
+}
+
+.scope-ctrl-item input[type="range"] {
+  width: 95px;
+  accent-color: #38bdf8;
+  cursor: pointer;
+}
+
+.scope-val-badge {
+  background: #141f2e;
+  color: #38bdf8;
+  border: 1px solid rgba(56, 189, 248, 0.35);
+  padding: 1px 7px;
+  border-radius: 4px;
+  font-size: 10.5px;
+  min-width: 48px;
+  text-align: center;
+}
+
+.scope-clear-btn {
+  background: #1f1418;
+  color: #f87171;
+  border: 1px solid rgba(239, 68, 68, 0.45);
+  padding: 2px 9px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  transition: all 0.15s ease;
+  margin-left: 4px;
+}
+
+.scope-clear-btn:hover {
+  background: #dc2626;
+  color: #ffffff;
+  border-color: #dc2626;
+  box-shadow: 0 0 10px rgba(220, 38, 38, 0.5);
+}
+
+.scope-meta-badge {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  line-height: 1.2;
+}
+
+.scope-meta-badge .scope-title {
+  font-size: 11px;
+  font-weight: 800;
+  color: #cbd5e1;
+  letter-spacing: 0.5px;
+}
+
+.scope-meta-badge .scope-sub {
+  font-size: 9.5px;
+  color: #64748b;
+}
+
+/* Floating Hover HUD for Scope Metrics */
+.dbfs-hover-hud {
+  position: absolute;
+  top: 14px;
+  right: 18px;
+  width: 260px;
+  background: rgba(10, 13, 18, 0.94);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(56, 189, 248, 0.35);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8), 0 0 15px rgba(56, 189, 248, 0.15);
+  border-radius: 8px;
+  padding: 12px 14px;
+  pointer-events: auto;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: #cbd5e1;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-8px);
+  transition: opacity 0.22s cubic-bezier(0.16, 1, 0.3, 1), transform 0.22s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.22s;
+  z-index: 30;
+}
+
+/* Appears smoothly when hovering over the scope canvas area or HUD itself */
+.dbfs-canvas-wrapper:hover .dbfs-hover-hud,
+.dbfs-canvas-wrapper.hovering .dbfs-hover-hud,
+.dbfs-hover-hud:hover {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.hud-header {
+  margin-bottom: 8px;
+}
+
+.hud-title {
+  display: block;
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-weight: 800;
+  color: #f1f5f9;
+  letter-spacing: 0.5px;
+}
+
+.hud-sub {
+  display: block;
+  font-size: 9.5px;
+  color: #64748b;
+  margin-top: 2px;
+}
+
+.hud-section {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.hud-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 11px;
+}
+
+/* Checkboxes for HUD Trace Display Toggles */
+.hud-toggle-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.hud-chk {
+  width: 12px;
+  height: 12px;
+  margin: 0;
+  cursor: pointer;
+  border-radius: 2px;
+  vertical-align: middle;
+  flex-shrink: 0;
+}
+
+.hud-chk-a { accent-color: #ffffff; }
+.hud-chk-b { accent-color: #ef4444; }
+.hud-chk-sum { accent-color: #22c55e; }
+.hud-chk-diff { accent-color: #06b6d4; }
+.hud-chk-m { accent-color: #f97316; }
+.hud-chk-s { accent-color: #c084fc; }
+.hud-chk-i { accent-color: #34d399; }
+
+.hud-row.trace-off {
+  opacity: 0.42;
+  transition: opacity 0.15s ease;
+}
+
+.hud-row.trace-off:hover {
+  opacity: 0.85;
+}
+
+.hud-label-a, .hud-val-a {
+  color: #ffffff;
+  font-weight: 700;
+}
+
+.hud-label-b, .hud-val-b {
+  color: #ef4444;
+  font-weight: 700;
+}
+
+.hud-label-sum, .hud-val-sum {
+  color: #22c55e;
+  font-weight: 700;
+}
+
+.hud-label-diff, .hud-val-diff {
+  color: #06b6d4;
+  font-weight: 700;
+}
+
+.hud-divider {
+  height: 1px;
+  background: #1e2638;
+  margin: 8px 0;
+}
+
+.hud-sec-title {
+  font-family: var(--font-sans);
+  font-size: 9.5px;
+  font-weight: 800;
+  color: #94a3b8;
+  letter-spacing: 0.5px;
+  margin-bottom: 4px;
+  text-transform: uppercase;
+}
+
+.hud-label-m, .hud-val-m {
+  color: rgb(244, 144, 44);
+  font-weight: 700;
+}
+
+.hud-label-s, .hud-val-s {
+  color: #c084fc;
+  font-weight: 700;
+}
+
+.hud-label-i, .hud-val-i {
+  color: #34d399;
+  font-weight: 700;
+}
+
+.hud-label-lra, .hud-val-lra {
+  color: #94a3b8;
+}
+
+.hud-max {
+  font-size: 10px;
+  color: #64748b;
+  margin-top: 2px;
+}
+
+/* Docked HUD Pinned in Scope Area (Never Overlapping POD-22 or Meters) */
+.dbfs-hover-hud.docked {
+  position: absolute;
+  top: 14px;
+  right: 18px;
+  width: 260px;
+  background: rgba(10, 13, 18, 0.96);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid #16a34a;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.8), 0 0 14px rgba(34, 197, 94, 0.22);
+  border-radius: 8px;
+  padding: 12px 14px;
+  opacity: 1 !important;
+  visibility: visible !important;
+  transform: none !important;
+  pointer-events: auto !important;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  z-index: 30;
+}
+
+.dbfs-hover-hud.docked:hover {
+  border-color: #22c55e;
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.85), 0 0 18px rgba(34, 197, 94, 0.32);
+}
+
+.hud-header {
+  margin-bottom: 8px;
+  cursor: grab;
+  user-select: none;
+}
+
+.hud-header:active {
+  cursor: grabbing;
+}
+
+.hud-dock-btn {
+  background: none;
+  border: none;
+  color: #94a3b8;
+  padding: 2px 4px;
+  cursor: pointer;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.15s, background 0.15s;
+}
+
+.hud-dock-btn:hover {
+  color: #22c55e;
+  background: rgba(34, 197, 94, 0.15);
+}
+
+@media (max-width: 900px) {
+  .pod22-hud-dock {
+    display: none !important;
+  }
+}
+
+.hud-clip {
+  color: #ef4444;
+  font-weight: 800;
+  margin-top: 2px;
+}
+
+/* Auxiliary Settings Drawer with Visible Tab styling */
+.aux-drawer {
+  width: 100%;
+  background: #0f1217;
+  border-top: 2px solid #202735;
+  flex: 0 0 auto;
+  font-size: 13px;
+  color: var(--ink-secondary);
+}
+
+.drawer-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 8px 20px;
+  background: #151922;
+  border-top: 1px solid #2a3447;
+  cursor: pointer;
+  font-weight: 700;
+  color: var(--ink-primary);
+  list-style: none;
+  transition: all 0.15s ease;
+}
+
+.drawer-toggle-left {
+  display: flex;
+  align-items: center;
+  min-width: 180px;
+}
+
+.btn-settings-cog {
+  background: transparent;
+  border: none;
+  color: #475569;
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.35;
+  transition: all 0.2s ease;
+}
+
+.btn-settings-cog:hover {
+  opacity: 0.95;
+  color: #38bdf8;
+  transform: rotate(45deg);
+}
+
+.drawer-tab-sub {
+  font-size: 12px;
+  color: #94a3b8;
+}
+
+.drawer-toggle-right {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  min-width: 180px;
+}
+
+.wbs-bottom-logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none;
+  opacity: 0.85;
+  transition: opacity 0.15s ease, transform 0.15s ease;
+}
+
+.wbs-bottom-logo:hover {
+  opacity: 1;
+  transform: translateY(-1px);
+}
+
+.wbs-logo-svg {
+  display: block;
+}
+
+.wbs-bottom-text {
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  color: #cbd5e1;
+}
+
+.drawer-toggle:hover {
+  background: #1e2430;
+  border-top-color: #38bdf8;
+}
+
+.drawer-tab-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #202736;
+  color: #38bdf8;
+  border: 1px solid #3b82f6;
+  padding: 3px 10px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+}
+
+.drawer-icon {
+  font-size: 15px;
+  color: var(--accent-blue);
+}
+
+.fps-badge {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  background: #0f2316;
+  color: #4ade80;
+  border: 1px solid rgba(74, 222, 128, 0.35);
+  padding: 2px 8px;
+  border-radius: 10px;
+  margin-left: 10px;
+}
+
+.active-source-badge {
+  margin-left: auto;
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  background: #1a222d;
+  color: var(--accent-green);
+  border: 1px solid rgba(157, 255, 58, 0.3);
+  padding: 3px 10px;
+  border-radius: 12px;
+}
+
+.drawer-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(330px, 1fr));
+  gap: 16px;
+  padding: 18px 24px 28px 24px;
+  background: #0f1115;
+}
+
+.drawer-card {
+  background: #15181e;
+  border: 1px solid var(--border-subtle);
+  border-radius: 8px;
+  padding: 16px 20px;
+  display: flex;
+  flex-direction: column;
+}
+
+.audio-card {
+  border-top: 3px solid #38bdf8;
+  background: linear-gradient(180deg, #131b28 0%, #0e121a 100%);
+}
+
+.meters-card {
+  border-top: 3px solid #4ade80;
+  background: linear-gradient(180deg, #111d17 0%, #0e121a 100%);
+}
+
+.chart-card {
+  border-top: 3px solid #ec4899;
+  background: linear-gradient(180deg, #1c1322 0%, #0e121a 100%);
+}
+
+.drawer-card h4 {
+  font-size: 13.5px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.9px;
+  color: var(--accent-blue);
+  margin-bottom: 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.audio-card h4 {
+  color: #38bdf8;
+}
+
+.meters-card h4 {
+  color: #4ade80;
+}
+
+.chart-card h4 {
+  color: #ec4899;
+}
+
+.drawer-section-sub {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  color: #64748b;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 10px 0 4px 0;
+  margin: 12px 0 10px 0;
+  text-transform: uppercase;
+}
+
+.drawer-section-sub:first-of-type {
+  margin-top: 0;
+  padding-top: 0;
+}
+
+.drawer-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  font-size: 12.5px;
+}
+
+.drawer-row:last-child {
+  margin-bottom: 0;
+}
+
+.ctrl-select {
+  background: #0a0b0d;
+  color: #f1f5f9;
+  border: 1px solid #2d333b;
+  border-radius: 5px;
+  padding: 4px 8px;
+  font-size: 12px;
+  max-width: 170px;
+  cursor: pointer;
+}
+
+.slider-box {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.slider-box input[type="range"] {
+  accent-color: var(--accent-amber);
+  width: 90px;
+  cursor: pointer;
+}
+
+.slider-box span {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  width: 44px;
+  text-align: right;
+  color: var(--accent-amber);
+}
+
+.chk-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+}
+
+.ctrl-hint {
+  font-size: 11.5px;
+  line-height: 1.4;
+  color: var(--ink-muted);
+}
+
+.ctrl-hint strong {
+  color: var(--accent-green);
+}
+
+/* PWA Mobile "Install Page as App" Prompt */
+.pwa-install-banner {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 9999;
+  width: calc(100% - 32px);
+  max-width: 480px;
+  background: rgba(12, 16, 23, 0.95);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1.5px solid rgba(34, 197, 94, 0.5);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8), 0 0 20px rgba(34, 197, 94, 0.2);
+  border-radius: 14px;
+  padding: 12px 16px;
+  animation: pwaSlideUp 0.35s ease-out;
+}
+
+@keyframes pwaSlideUp {
+  from { transform: translateX(-50%) translateY(30px); opacity: 0; }
+  to { transform: translateX(-50%) translateY(0); opacity: 1; }
+}
+
+.pwa-banner-content {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.pwa-icon {
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: rgba(34, 197, 94, 0.12);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(34, 197, 94, 0.3);
+}
+
+.pwa-text {
+  flex: 1;
+  min-width: 0;
+}
+
+.pwa-title {
+  font-size: 14px;
+  font-weight: 800;
+  color: #f8fafc;
+  letter-spacing: 0.3px;
+}
+
+.pwa-sub {
+  font-size: 11.5px;
+  color: #94a3b8;
+  margin-top: 2px;
+  line-height: 1.3;
+}
+
+.pwa-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.btn-pwa-install {
+  background: #22c55e;
+  color: #050608;
+  border: none;
+  font-size: 12.5px;
+  font-weight: 800;
+  padding: 7px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.15s ease, transform 0.1s ease;
+}
+
+.btn-pwa-install:hover {
+  background: #4ade80;
+  transform: scale(1.02);
+}
+
+.btn-pwa-dismiss {
+  background: transparent;
+  color: #64748b;
+  border: none;
+  font-size: 16px;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.btn-pwa-dismiss:hover {
+  color: #f8fafc;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+/* -------------------------------------------------------------
+   Security Settings Lock Overlay (Requirement 2)
+   "Available to those that know... Hold CTRL for 5 seconds"
+   ------------------------------------------------------------- */
+.aux-drawer {
+  position: relative;
+}
+
+.drawer-gear-label {
+  font-size: 11px;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-left: 6px;
+  user-select: none;
+}
+
+.settings-lock-overlay {
+  position: absolute;
+  top: 42px;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(8, 10, 14, 0.94);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 30px;
+  transition: opacity 0.35s ease, visibility 0.35s ease;
+}
+
+.settings-lock-overlay.unlocked {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.lock-panel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  max-width: 480px;
+  padding: 28px 36px;
+  background: linear-gradient(180deg, #131720 0%, #0b0e14 100%);
+  border: 1px solid #1f293d;
+  border-radius: 12px;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(255, 255, 255, 0.05);
+}
+
+.lock-icon-shield {
+  margin-bottom: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: rgba(34, 197, 94, 0.1);
+  border: 1px solid rgba(34, 197, 94, 0.25);
+  box-shadow: 0 0 20px rgba(34, 197, 94, 0.15);
+}
+
+.lock-msg-main {
+  font-family: var(--font-sans);
+  font-size: 17px;
+  font-weight: 700;
+  color: #f1f5f9;
+  letter-spacing: 0.5px;
+  margin-bottom: 0;
+}
+
+.lock-progress-container {
+  width: 100%;
+  margin-top: 18px;
+  opacity: 0;
+  transform: translateY(6px);
+  pointer-events: none;
+  transition: opacity 0.25s ease, transform 0.25s ease;
+}
+
+.settings-lock-overlay.holding-unlock .lock-progress-container {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.lock-progress-bar {
+  width: 100%;
+  height: 8px;
+  background: #1e293b;
+  border-radius: 4px;
+  overflow: hidden;
+  border: 1px solid #334155;
+  margin-bottom: 8px;
+}
+
+.lock-progress-fill {
+  width: 0%;
+  height: 100%;
+  background: linear-gradient(90deg, #22c55e, #4ade80, #38bdf8);
+  box-shadow: 0 0 12px rgba(34, 197, 94, 0.8);
+  transition: width 0.05s linear;
+}
+
+.lock-countdown {
+  font-family: ui-monospace, monospace;
+  font-size: 12px;
+  color: #64748b;
+  font-weight: 700;
+}
+
+/* Pro Card Accent Styling */
+.pro-card {
+  border: 1px solid rgba(56, 189, 248, 0.35) !important;
+  background: linear-gradient(180deg, #101622 0%, #0a0d14 100%) !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(56, 189, 248, 0.15) !important;
+}
+
+.card-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.pro-badge {
+  font-size: 9.5px;
+  font-weight: 900;
+  letter-spacing: 0.8px;
+  padding: 2px 6px;
+  border-radius: 4px;
+  background: rgba(56, 189, 248, 0.15);
+  color: #38bdf8;
+  border: 1px solid rgba(56, 189, 248, 0.4);
+}
+
+/* -------------------------------------------------------------
+   Dynamic Ambient Background Glow for LUFS Levels (Requirement 11)
+   > -24 LUFS: Green glow
+   > -18 LUFS: Orange glow
+   >= -12 LUFS: Red glow & red background
+   ------------------------------------------------------------- */
+.console-viewport {
+  transition: background 0.25s ease, box-shadow 0.25s ease;
+}
+
+.console-viewport.lufs-glow-green {
+  background: radial-gradient(ellipse at 50% 25%, #071f11 0%, #07130b 45%, #07080a 90%) !important;
+  box-shadow: inset 0 0 120px rgba(34, 197, 94, 0.25);
+}
+
+.console-viewport.lufs-glow-orange {
+  background: radial-gradient(ellipse at 50% 25%, #2a1506 0%, #170d04 45%, #07080a 90%) !important;
+  box-shadow: inset 0 0 140px rgba(249, 115, 22, 0.32);
+}
+
+.console-viewport.lufs-glow-red {
+  background: radial-gradient(ellipse at 50% 25%, #3a0a0a 0%, #200505 45%, #0e0303 90%) !important;
+  box-shadow: inset 0 0 180px rgba(239, 68, 68, 0.48);
+}
+
+/* -------------------------------------------------------------
+   Cookie / Local Storage Consent Banner (Broadcast Style)
+   ------------------------------------------------------------- */
+.wbs-consent-banner {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: calc(100% - 48px);
+  max-width: 680px;
+  background: rgba(10, 14, 20, 0.96);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1.5px solid #16a34a;
+  box-shadow: 0 12px 42px rgba(0, 0, 0, 0.85), 0 0 25px rgba(34, 197, 94, 0.25);
+  border-radius: 8px;
+  padding: 14px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  z-index: 1000;
+  animation: slideUpFade 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes slideUpFade {
+  from {
+    opacity: 0;
+    transform: translate(-50%, 20px);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+}
+
+.consent-content {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex: 1;
+}
+
+.consent-icon {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+}
+
+.consent-text-block {
+  display: flex;
+  flex-direction: column;
+}
+
+.consent-headline {
+  font-size: 12px;
+  font-weight: 800;
+  color: #22c55e;
+  letter-spacing: 1px;
+}
+
+.consent-description {
+  margin: 3px 0 0 0;
+  font-size: 11.5px;
+  color: #cbd5e1;
+  line-height: 1.4;
+}
+
+.consent-buttons {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.btn-consent-allow {
+  background: #15803d;
+  color: #ffffff;
+  border: 1px solid #22c55e;
+  border-radius: 4px;
+  padding: 8px 16px;
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  transition: background 0.15s ease, box-shadow 0.15s ease;
+  white-space: nowrap;
+}
+
+.btn-consent-allow:hover {
+  background: #16a34a;
+  box-shadow: 0 0 12px rgba(34, 197, 94, 0.45);
+}
+
+.btn-consent-session {
+  background: #1e293b;
+  color: #94a3b8;
+  border: 1px solid #475569;
+  border-radius: 4px;
+  padding: 8px 14px;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+  white-space: nowrap;
+}
+
+.btn-consent-session:hover {
+  background: #334155;
+  color: #f1f5f9;
+}
+
+@media (max-width: 640px) {
+  .wbs-consent-banner {
+    flex-direction: column;
+    align-items: stretch;
+    bottom: 12px;
+    padding: 12px 14px;
+  }
+  .consent-buttons {
+    justify-content: flex-end;
+  }
+}
+
+.hint {
+  font-size: 11px;
+  color: var(--ink-muted);
+  font-family: var(--font-mono);
+}
+
+/* Never show page scroll bars: the console always fits the window. */
+html, body { height: 100%; overflow: hidden; }
+.console-viewport { height: 100vh; height: 100dvh; max-height: 100dvh; }
+.aux-drawer[open] .drawer-grid {
+  max-height: 55vh;
+  max-height: 55dvh;
+  overflow-y: auto;
+  scrollbar-width: none;
+}
+.aux-drawer[open] .drawer-grid::-webkit-scrollbar { display: none; }
+.drawer-toggle::-webkit-details-marker { display: none; }
+
+/* McCurdy mode switch (lives in the settings/footer bar) */
+.mc-toggle {
+  background: none;
+  border: 0;
+  padding: 2px 4px;
+  margin-right: 14px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  border-radius: 4px;
+  transition: transform 0.15s ease;
+}
+.mc-toggle:hover { transform: translateY(-1px); }
+.mc-toggle:focus-visible { outline: 2px solid #4ba7e8; outline-offset: 2px; }
+.mc-toggle svg { display: block; }
+
+/* ---------------------------------------------------------------
+   Light Mode = McCurdy ATS-100 faceplate (toggle: McCurdy button)
+   Meters, LEDs, VFD and ballistics are identical in both modes; only the
+   panel and page chrome change.
+   --------------------------------------------------------------- */
+.mc-only { display: none; }
+body.theme-mccurdy .mc-only { display: inline; }
+body.theme-mccurdy .wbs-only { display: none; }
+
+body.theme-mccurdy {
+  --bg-deep: #dedad0;
+  --bg-panel: #e5e1d5;
+  --border-subtle: #b5b1a6;
+  --ink-primary: #232325;
+  --ink-secondary: #4a4740;
+  --ink-muted: #68655d;
+}
+html:has(body.theme-mccurdy) { background-color: #dedad0; }
+body.theme-mccurdy .xt-deg { fill: #232325; }
+body.theme-mccurdy .xt-btn-lbl { fill: #181b1e !important; }
+
+body.theme-mccurdy .aux-drawer { background: #dedad0; border-top-color: #b5b1a6; }
+body.theme-mccurdy .drawer-toggle {
+  background: linear-gradient(180deg, #e5e1d5 0%, #d2cec2 100%);
+  border-top-color: #b5b1a6;
+}
+body.theme-mccurdy .drawer-toggle:hover { background: #e9e5da; border-top-color: #3892d4; }
+body.theme-mccurdy .btn-settings-cog { color: #232325; }
+body.theme-mccurdy .drawer-gear-label { color: #68655d; }
+body.theme-mccurdy .wbs-bottom-logo { color: #232325 !important; }
+body.theme-mccurdy .wbs-bottom-text { color: #232325; }
+body.theme-mccurdy .drawer-grid { background: #dedad0; }
+body.theme-mccurdy .drawer-card { background: #e5e1d5; border-color: #b5b1a6; }
+body.theme-mccurdy .drawer-card h4,
+body.theme-mccurdy .drawer-row label { color: #232325; }
+body.theme-mccurdy .drawer-section-sub { color: #68655d; border-color: #b5b1a6; }
+body.theme-mccurdy .ctrl-select { background: #f4f1e8; color: #232325; border-color: #b5b1a6; }
+body.theme-mccurdy .ctrl-hint { color: #4a4740; }
+
+/* McCurdy: move the real front-panel buttons into the ATS-100 layout.
+   SVG user units; translate(tx,ty) scale(s) maps x -> tx + s*x. */
+#visualizerStage .xtm-btn { transform-box: view-box; transform-origin: 0 0; }
+body.theme-mccurdy #xtm_btn_UP     { transform: translate(681.5px, 78px) scale(0.5); }
+body.theme-mccurdy #xtm_btn_DOWN   { transform: translate(801.5px, 78px) scale(0.5); }
+body.theme-mccurdy #xtm_btn_lbl_UP,
+body.theme-mccurdy #xtm_btn_lbl_DOWN,
+body.theme-mccurdy #xtm_btn_lbl_MODE,
+body.theme-mccurdy #xtm_btn_lbl_SOURCE { display: none; }
+
+/* McCurdy: cream backgrounds for the POD-22 LED meter and the dBFS graph
+   (LED segments and traces themselves are unchanged). */
+body.theme-mccurdy .meter-stack { background-color: #dedad0; }
+body.theme-mccurdy .p22-bg { fill: #e5e1d5; }
+body.theme-mccurdy .p22-legend { fill: #232325; }
+body.theme-mccurdy .meter-unit.dbfs-unit {
+  --dbfs-bg: #e5e1d5;
+  background: #e5e1d5;
+  border-top-color: #b5b1a6;
+}
+body.theme-mccurdy .scope-toolbar { background: #dedad0; border-color: #b5b1a6; color: #232325; }
+body.theme-mccurdy .scope-toolbar-label,
+body.theme-mccurdy .scope-ctrl-item label { color: #4a4740; }
+body.theme-mccurdy .scope-tab-btn { background: #e9e5da; color: #232325; border-color: #b5b1a6; }
+body.theme-mccurdy .scope-tab-btn.active { background: #3892d4; color: #fff; border-color: #1b1c1e; }
+body.theme-mccurdy .scope-val-badge,
+body.theme-mccurdy .scope-meta-badge { background: #e9e5da; color: #232325; border-color: #b5b1a6; }
+
+/* McCurdy: the INPUT jacks are the MODE/SOURCE buttons, so the square ones are hidden */
+body.theme-mccurdy #xtm_btn_MODE,
+body.theme-mccurdy #xtm_btn_SOURCE { display: none; }
+.mc-jack circle { transition: stroke 0.1s ease; }
+.mc-jack:hover circle { stroke: #f4f6f8; }
+.mc-jack:active circle { stroke: #ff2d1f; stroke-width: 3; }
+
+/* Only the cog opens Settings, so only it looks clickable */
+.drawer-toggle { cursor: default; }
+.drawer-toggle:hover { background: #151922; border-top-color: #2a3447; }
+body.theme-mccurdy .drawer-toggle:hover { background: linear-gradient(180deg, #e5e1d5 0%, #d2cec2 100%); border-top-color: #b5b1a6; }
+.btn-settings-cog { cursor: pointer; }
+
+/* Footer: Ward-Beck.ca, then McCurdyRadio.com on the far right */
+.mc-toggle { gap: 8px; margin-right: 0; margin-left: 18px; }
+.mc-toggle-text {
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  color: #cbd5e1;
+}
+body.theme-mccurdy .mc-toggle-text { color: #232325; }
+
+/* Narrow / mobile footer: hide the build stamp, tighten spacing */
+@media (max-width: 700px) {
+  .build-stamp { display: none; }
+  .drawer-toggle { padding: 6px 10px; gap: 8px; }
+  .drawer-toggle-left, .drawer-toggle-right { min-width: 0; }
+  .drawer-gear-label { display: none; }
+  .wbs-bottom-text, .mc-toggle-text { font-size: 11px; }
+  .mc-toggle { margin-left: 10px; }
 }

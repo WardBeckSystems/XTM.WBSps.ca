@@ -282,15 +282,20 @@ export class XtmAudioEngine {
       const AudioCtx = window.AudioContext || (window as any).webkitAudioContext;
       this.ctx = new AudioCtx({ latencyHint: 'interactive' });
     }
+    // Return early if suspended so the caller can handle user gesture
     if (this.ctx.state === 'suspended') {
-      await this.ctx.resume();
+      return this.ctx;
     }
+    
     this.calculateCoefficients();
     await this.initWorklet();
     await this.wasmDsp.load();
     if (this.ctx && this.wasmDsp.ready) {
       this.wasmDsp.init(this.ctx.sampleRate, this.refLevelDb, this.peakSensTrim);
-      this.wasmDsp.setRefLevel(this.refLevelDb);
+      // Re-apply the reference WITH its digital/analog flag. Without it a digital
+      // -18 dBFS reference was re-read as analog dBu after every source change,
+      // adding ~22 dB of gain and pinning the needles until SENS was touched.
+      this.wasmDsp.setRefLevel(this.refLevelDb, this.isRefDigital);
       this.wasmDsp.setPeakTrim(this.peakSensTrim);
     }
     return this.ctx;
@@ -612,7 +617,9 @@ export class XtmAudioEngine {
    * Built-in Signal Generator for testing and calibration
    */
   startTestGenerator(type = 'sine1k') {
-    this.ensureContext();
+    if (this.ctx && this.ctx.state === 'suspended') {
+      this.ctx.resume();
+    }
     this.stopCurrentSource();
     this.sourceType = 'test';
     this.testType = type;
@@ -731,7 +738,9 @@ export class XtmAudioEngine {
     // Channel Splitter (Left = Ch A, Right = Ch B)
     this.splitterNode = ctx.createChannelSplitter(2);
 
-    // Analysis Node: Modern AudioWorkletNode (audio-thread) with ScriptProcessor fallback
+    // AudioWorkletNode fallback management (modernizing deprecated ScriptProcessor)
+    // Note: If AudioWorklet fails, we must rely on the existing legacy path.
+    // Ensure all nodes are constructed after ensureContext() and audio is resumed.
     if (this.workletLoaded && typeof AudioWorkletNode !== 'undefined') {
       try {
         this.processorNode = new AudioWorkletNode(ctx, 'wbs-meter-processor');
@@ -746,7 +755,7 @@ export class XtmAudioEngine {
     }
 
     if (!this.processorNode) {
-      // Graceful fallback for environments where AudioWorklet is blocked/unsupported
+      // Legacy fallback
       const bufferSize = 1024;
       this.processorNode = ctx.createScriptProcessor(bufferSize, 2, 2);
       this.processorNode.onaudioprocess = (e) => this.processAudioBlock(e);
