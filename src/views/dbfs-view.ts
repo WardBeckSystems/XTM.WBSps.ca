@@ -1711,10 +1711,10 @@ export class DbfsView {
     }
 
     // 4. Phase over time: its own scale band layered over the -32 .. -60 dBFS region.
-    //    Same convention as the front-panel phase LEDs (in phase lights the 180 deg end):
+    //    (band: -46 .. -60 dBFS) Same convention as the front-panel phase LEDs (in phase lights the 180 deg end):
     //    in phase (r = +1) at the top = 180, 90 in the middle, out of phase (r = -1) at the bottom = 0.
     if (this.plotPhase && minX < maxX) {
-      const yTop = dbToY(-32), yBot = dbToY(-60);
+      const yTop = dbToY(-46), yBot = dbToY(-60);   // half-height band at the bottom
       const degToY = (deg: number) => yBot - (deg / 180) * (yBot - yTop);
       const phaseCol = 'rgba(168, 85, 247, 0.85)';
 

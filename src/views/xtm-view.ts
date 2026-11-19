@@ -311,26 +311,10 @@ export class XtmView {
         const a = this.ppmAngle((d + 12) / 24, isSifam);
         const [tx, ty] = P(a, R + 48);
         const col = (d >= 8 && isBlackPpm) ? '#facc15' : ink;
-        if (d === 0) {
-          // "T0NE": the zero of the scale is the O of TONE, centred on the 0 tick
-          const half = 8.5;
-          s += `<text x="${(tx - half).toFixed(1)}" y="${(ty + 8).toFixed(1)}" font-size="26" font-weight="700" text-anchor="end" fill="${col}">T</text>
-                <text x="${tx.toFixed(1)}" y="${(ty + 8).toFixed(1)}" font-size="26" font-weight="700" text-anchor="middle" fill="${col}">0</text>
-                <text x="${(tx + half).toFixed(1)}" y="${(ty + 8).toFixed(1)}" font-size="26" font-weight="700" text-anchor="start" fill="${col}">NE</text>`;
-          return;
-        }
         s += `<text x="${tx.toFixed(1)}" y="${(ty + 8).toFixed(1)}" font-size="26" font-weight="700" text-anchor="middle" fill="${col}">${d > 0 ? '+' + d : d}</text>`;
       });
 
-      // Inner dBu scale under the arc: TONE = +8 dBu, so -12..+12 dB reads -4..+20
-      [-12, -8, -4, 0, 4, 8, 12].forEach(d => {
-        const v = d + 8;
-        const [ix, iy] = P(this.ppmAngle((d + 12) / 24, isSifam), R - 40);
-        s += `<text x="${ix.toFixed(1)}" y="${iy.toFixed(1)}" font-size="21" font-weight="600" text-anchor="middle" dominant-baseline="central" fill="${ink}" opacity="0.85">${v > 0 ? '+' + v : v}</text>`;
-      });
-
-      s += `<text x="${(x0 + 54).toFixed(0)}" y="${y0 + 58}" font-size="26" font-weight="800" fill="${isBlackPpm ? '#f8fafc' : ink}">PPM</text>
-            <text x="${(x0 + MW - 56).toFixed(0)}" y="${y0 + 58}" font-size="26" font-weight="800" fill="#facc15" text-anchor="end">dB</text>`;
+      // (WBS PPM face, per the XTM4: no PPM / dB / TONE legends, no inner dBu scale)
       s += `</g>`;
 
       // McCurdy ATS-100 PGM face (McCurdy mode only): outer dB-from-tone, inner dBu (TONE = +8)
@@ -528,9 +512,6 @@ export class XtmView {
       <text x="${cx}" y="${ly}" dominant-baseline="central" text-anchor="middle" font-family="Helvetica, Arial, sans-serif" font-size="20" font-weight="500" letter-spacing="2" fill="#636058">${label}</text>`;
     s += legend(687.5, 'INPUT 1', null) + legend(2512.5, 'INPUT 2', 1912);
 
-    // Model legend, bottom-left as on the ATS-100 (the McCurdy badge is on the VU faces)
-    const font = `font-family="Helvetica, Arial, sans-serif"`;
-    s += `<text x="70" y="${ly}" dominant-baseline="central" ${font} font-size="17" font-weight="500" letter-spacing="1.4" fill="#68655d">MODEL ATS-100 AUDIO TEST SET</text>`;
 
     s += `</g>`;
     return s;
