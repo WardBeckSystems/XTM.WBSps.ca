@@ -1772,6 +1772,15 @@ export class DbfsView {
     } // End of if (this.plotPhase)
     } // End of if (targetSamples >= 2)
 
+    // ── Orange loudness zone: light band between -24 LUFS (broadcast) and -14 LUFS (streaming) ──
+    {
+      const zTop = dbToY(-14), zBot = dbToY(-24);
+      ctx.save();
+      ctx.fillStyle = mc ? 'rgba(249, 115, 22, 0.08)' : 'rgba(249, 115, 22, 0.06)';
+      ctx.fillRect(padL, zTop, plotW, zBot - zTop);
+      ctx.restore();
+    }
+
     // ── Solid Reference Lines OVER the Graph: Subtle, Elegant & Less Intense ──
     ctx.save();
     ctx.font = `${Math.round(10 * dpr)}px ui-monospace, "SF Mono", monospace`;

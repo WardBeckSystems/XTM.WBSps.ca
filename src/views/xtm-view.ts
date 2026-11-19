@@ -190,6 +190,52 @@ export class XtmView {
   }
 
   /* ---------------- Static Meter Dial Movement Shell ---------------- */
+  /** PPM ballistics standard chosen in Settings; selects the PPM face in WBS mode. */
+  ppmStandard: string = 'type2';
+
+  /**
+   * Classic PPM faces for the non-default standards (WBS mode). The needle mapping is the
+   * same for all (-12 .. +12 dB about the alignment tone); only the engraving differs.
+   *   type1     DIN 45406: dB scale, alignment -9, permitted max 0, red 0 .. +3
+   *   nordic    Nordic N9: -12 .. TEST .. +12, red above +9 (PML)
+   *   fast_peak Digital quasi-peak in dBFS: alignment -18 dBFS, red above -9 dBFS
+   */
+  renderAltPpmFace(P: (a: number, r: number) => [number, number],
+                   arc: (a0: number, a1: number, r: number, w: number, col: string) => string,
+                   ink: string, isSifam: boolean): string {
+    const R = this.R;
+    const q = (d: number) => this.ppmAngle((d + 12) / 24, isSifam);
+    const red = '#ef4444';
+    type Face = { offset: number; majors: number[]; minors: number[]; redFrom: number; caption: string; fmt: (L: number) => string };
+    const faces: Record<string, Face> = {
+      type1:     { offset: -9,  majors: [-20, -15, -10, -5, 0, 3], minors: [-17.5, -12.5, -7.5, -2.5, 1, 2], redFrom: 0,
+                   caption: 'DIN', fmt: (L) => (L > 0 ? '+' + L : String(L)) },
+      nordic:    { offset: 0,   majors: [-12, -6, 0, 6, 9, 12], minors: [-9, -3, 3], redFrom: 9,
+                   caption: 'NORDIC', fmt: (L) => (L === 0 ? 'TEST' : L > 0 ? '+' + L : String(L)) },
+      fast_peak: { offset: -18, majors: [-30, -24, -18, -12, -6], minors: [-27, -21, -15, -9], redFrom: -9,
+                   caption: 'dBFS', fmt: (L) => String(L) },
+    };
+    const f = faces[this.ppmStandard] ?? faces.nordic!;
+    const dOf = (L: number) => L - f.offset;           // engraved value -> dB about tone
+    let s = arc(q(dOf(f.redFrom)), q(12), R + 8, 16, red);
+    for (const L of f.minors) {
+      const d = dOf(L); if (d < -12 || d > 12) continue;
+      const [x1, y1] = P(q(d), R), [x2, y2] = P(q(d), R + 14);
+      s += `<line x1="${x1.toFixed(1)}" y1="${y1.toFixed(1)}" x2="${x2.toFixed(1)}" y2="${y2.toFixed(1)}" stroke="${L >= f.redFrom ? red : ink}" stroke-width="4"/>`;
+    }
+    for (const L of f.majors) {
+      const d = dOf(L); if (d < -12 || d > 12) continue;
+      const col = L >= f.redFrom ? red : ink;
+      const [x1, y1] = P(q(d), R), [x2, y2] = P(q(d), R + 24);
+      s += `<line x1="${x1.toFixed(1)}" y1="${y1.toFixed(1)}" x2="${x2.toFixed(1)}" y2="${y2.toFixed(1)}" stroke="${col}" stroke-width="4"/>`;
+      const [tx, ty] = P(q(d), R + 48);
+      s += `<text x="${tx.toFixed(1)}" y="${(ty + 8).toFixed(1)}" font-size="${f.fmt(L).length > 3 ? 22 : 26}" font-weight="700" text-anchor="middle" fill="${col}">${f.fmt(L)}</text>`;
+    }
+    const [cx0, cy0] = P(0, R - 70);
+    s += `<text x="${cx0.toFixed(1)}" y="${cy0.toFixed(1)}" font-size="18" font-weight="800" letter-spacing="2" text-anchor="middle" fill="${ink}" opacity="0.8">${f.caption}</text>`;
+    return s;
+  }
+
   renderMeterShell(id: number, cx: number, cy: number, kind: 'vu' | 'ppm', isPowered: boolean, dialLamp: string, isBlackPpm = false, meterStyle = 'simpson'): string {
     const MW = this.MW, MH = this.MH;
     const x0 = cx - MW / 2, y0 = cy - MH / 2;
@@ -297,8 +343,10 @@ export class XtmView {
       const warnCol = '#facc15'; // YELLOW, NO RED!
       s += arc(this.ppmAngle(0, isSifam), this.ppmAngle(1, isSifam), R, 4, ink);
       s += `<g class="wbs-only">`;
+      if (this.ppmStandard !== 'type2') {
+        s += this.renderAltPpmFace(P, arc, ink, isSifam);
+      } else {
       s += arc(this.ppmAngle(18 / 24, isSifam), this.ppmAngle(1, isSifam), R + 8, 16, warnCol);
-
 
       for (let d = -12; d <= 12; d += 2) {
         const a = this.ppmAngle((d + 12) / 24, isSifam);
@@ -315,6 +363,7 @@ export class XtmView {
       });
 
       // (WBS PPM face, per the XTM4: no PPM / dB / TONE legends, no inner dBu scale)
+      }
       s += `</g>`;
 
       // McCurdy ATS-100 PGM face (McCurdy mode only): outer dB-from-tone, inner dBu (TONE = +8)

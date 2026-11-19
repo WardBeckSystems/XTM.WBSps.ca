@@ -697,8 +697,12 @@ export async function initApp(): Promise<void> {
 
   if (selectPpmBallistics) {
     selectPpmBallistics.value = audio.ppmBallisticPreset || 'type2';
+    view.ppmStandard = selectPpmBallistics.value;
+    view.isBuilt = false;
     selectPpmBallistics.addEventListener('change', (e: any) => {
       audio.setPpmType(e.target.value);
+      view.ppmStandard = e.target.value;   // PPM face follows the chosen standard
+      view.isBuilt = false;
       if (dbfsView) configManager.saveConfig(model, audio, podView, dbfsView);
     });
   }
