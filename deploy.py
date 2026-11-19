@@ -217,6 +217,11 @@ def main():
             print(f"Build failed:\n{res.stderr}\n{res.stdout}", file=sys.stderr)
             sys.exit(1)
         print("✔ Build successful: dist/ ready for deployment.")
+        import shutil
+        print("Copying assets to dist/assets...")
+        os.makedirs("dist/assets", exist_ok=True)
+        for item in os.listdir("assets"):
+            shutil.copy(os.path.join("assets", item), os.path.join("dist/assets", item))
 
         dist_dir = HERE / "dist"
         upload_source = str(dist_dir) if dist_dir.is_dir() else str(HERE)
