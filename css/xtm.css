@@ -1263,3 +1263,7 @@ body.theme-mccurdy .mc-toggle-text { color: #232325; }
   .wbs-bottom-text, .mc-toggle-text { font-size: 11px; }
   .mc-toggle { margin-left: 10px; }
 }
+
+/* McCurdy default (parchment) VU face: plain cream ATS-100 dial, no amber incandescent glow */
+body.theme-mccurdy .xt-face.xt-lamp-parchment { fill: url(#mc_vuface); }
+body.theme-mccurdy .xt-bloom.xt-lamp-parchment { display: none; }

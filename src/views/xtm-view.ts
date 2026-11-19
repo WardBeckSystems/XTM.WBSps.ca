@@ -270,11 +270,11 @@ export class XtmView {
     let s = `<clipPath id="xmc${id}"><rect x="${x0}" y="${y0}" width="${MW}" height="${MH}" rx="28"/></clipPath>
     <g clip-path="url(#xmc${id})">
       <!-- Base Dial Plate Background with Rich Radiance Gradient -->
-      <rect x="${x0}" y="${y0}" width="${MW}" height="${MH}" rx="28" fill="${fillGrad}"/>`;
+      <rect class="xt-face xt-lamp-${kind === 'vu' && !isBlackPpm ? dialLamp : 'ppm'}" x="${x0}" y="${y0}" width="${MW}" height="${MH}" rx="28" fill="${fillGrad}"/>`;
 
     // Warm Incandescent Filament Halo Glow behind VU scales
     if (kind === 'vu' && isPowered && dialLamp !== 'white') {
-      s += `<ellipse cx="${cx}" cy="${y0 + 115}" rx="${(MW * 0.42).toFixed(1)}" ry="82" fill="url(#xincand_bloom)"/>`;
+      s += `<ellipse class="xt-bloom xt-lamp-${dialLamp}" cx="${cx}" cy="${y0 + 115}" rx="${(MW * 0.42).toFixed(1)}" ry="82" fill="url(#xincand_bloom)"/>`;
     }
 
     if (kind === 'vu') {

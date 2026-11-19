@@ -889,7 +889,7 @@ export async function initApp(): Promise<void> {
   }
 
   /* ---------------- PWA "Install Page as App" Handler ---------------- */
-  if ('serviceWorker' in navigator) {
+  if ('serviceWorker' in navigator && !import.meta.env.DEV) { // not in the Vite dev server (it would cache dev modules)
     // Cache-first: the stored copy loads instantly; sw.js compares with the server in the
     // background and stores any new version for the next load.
     navigator.serviceWorker.addEventListener('message', (ev: MessageEvent) => {
