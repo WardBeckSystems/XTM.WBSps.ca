@@ -14,10 +14,13 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Ward-Beck Systems">
-  <script type="module" crossorigin src="./assets/index-CiQX76x7.js"></script>
-  <link rel="stylesheet" crossorigin href="./assets/index-J5i3TwVY.css">
+  <script type="module" crossorigin src="./assets/index-D0xzzfv8.js"></script>
+  <link rel="stylesheet" crossorigin href="./assets/index-B1pJYYR7.css">
 </head>
 <body>
+  <div id="audioStartOverlay" style="position:fixed; top:0; left:0; width:100%; height:100%; background:#0a0b0d; z-index:9999; display:flex; align-items:center; justify-content:center;">
+    <button id="btnStartAudio" style="background:#22c55e; color:black; font-weight:bold; padding:20px 40px; border-radius:8px; border:none; font-size:20px; cursor:pointer;">START METERS</button>
+  </div>
   <!-- Mode Toggle Logo Container -->
   <div id="logoContainer" style="display: flex; gap: 10px; padding: 10px; cursor: pointer;" onclick="toggleMode()">
     <div id="wbsLogo" class="logo-box">
@@ -430,6 +433,15 @@
   </div>
 
   <!-- Application Scripts (Vite + TypeScript + WebAssembly Entrypoint) -->
+<script>
+  document.getElementById("btnStartAudio").addEventListener("click", () => {
+    document.getElementById("audioStartOverlay").style.display = "none";
+    // Attempt to resume audio context if it exists in main.ts
+    if (window.audioContext && window.audioContext.state === "suspended") {
+      window.audioContext.resume();
+    }
+  });
+</script>
 <script>
   function toggleMode() {
     document.body.classList.toggle("theme-mccurdy");

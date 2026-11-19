@@ -313,6 +313,9 @@ export class XtmView {
       s += arc(this.ppmAngle(0, isSifam), this.ppmAngle(1, isSifam), R, 4, ink);
       s += arc(this.ppmAngle(18 / 24, isSifam), this.ppmAngle(1, isSifam), R + 8, 16, warnCol);
 
+      // TONE label at top
+      s += `<text x="${cx.toFixed(1)}" y="${(y0 + 80).toFixed(1)}" font-size="20" font-weight="800" text-anchor="middle" fill="${ink}">TONE</text>`;
+
       for (let d = -12; d <= 12; d += 2) {
         const a = this.ppmAngle((d + 12) / 24, isSifam);
         const [x1, y1] = P(a, R), [x2, y2] = P(a, R + (d % 4 ? 14 : 24));
@@ -548,7 +551,7 @@ export class XtmView {
             const cy = 42;
             ps += `
               <circle cx="${cx}" cy="${cy}" r="22" fill="#08090a" stroke="#25282f" stroke-width="2"/>
-              <circle id="xphase_led_${i}" cx="${cx}" cy="${cy}" r="16" fill="#142e17"/>`;
+              <rect id="xphase_led_${i}" x="${(cx-12).toFixed(1)}" y="${(cy-8).toFixed(1)}" width="24" height="16" fill="#142e17"/>`;
           }
           return ps;
         })()}
