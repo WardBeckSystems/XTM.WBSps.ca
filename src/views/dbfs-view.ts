@@ -1755,9 +1755,22 @@ export class DbfsView {
     ctx.textBaseline = 'middle';
     ctx.setLineDash([]); // 100% Solid Lines
 
+    // Short graphs (e.g. phone in landscape): thin the grid so labels never overlap.
+    // Important (bold) lines win first; ordinary lines are kept only where there is room,
+    // and a skipped ordinary line is dropped entirely (line + label).
+    const minGap = 13 * dpr;
+    const keptY: number[] = [];
+    const showLabel = new Set<number>();
+    const ranked = [...activeGridDbs].sort((p, q) => Number(q.bold) - Number(p.bold));
+    for (const g of ranked) {
+      const yy = dbToY(g.db);
+      if (keptY.every(k => Math.abs(k - yy) >= minGap)) { keptY.push(yy); showLabel.add(g.db); }
+    }
+
     activeGridDbs.forEach(g => {
       const y = Math.round(dbToY(g.db));
       const isLimeLine = (g.db === -20);
+      if (!showLabel.has(g.db) && !g.bold && !isLimeLine) return; // no room: skip this ordinary line
 
       ctx.save();
       ctx.setLineDash([]); // Solid lines
@@ -1783,7 +1796,7 @@ export class DbfsView {
         ctx.shadowBlur = 3 * dpr;
       }
       ctx.fillStyle = (g.bold || isLimeLine) ? g.labelCol : (mc ? '#4a4740' : '#94a3b8');
-      ctx.fillText(g.label, padL - 10 * dpr, y);
+      if (showLabel.has(g.db)) ctx.fillText(g.label, padL - 10 * dpr, y);
       ctx.restore();
     });
     ctx.restore();

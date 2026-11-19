@@ -886,7 +886,12 @@ export async function initApp(): Promise<void> {
 
   /* ---------------- PWA "Install Page as App" Handler ---------------- */
   if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('sw.js').catch((err) => {
+    // Cache-first: the stored copy loads instantly; sw.js compares with the server in the
+    // background and stores any new version for the next load.
+    navigator.serviceWorker.addEventListener('message', (ev: MessageEvent) => {
+      if (ev.data?.type === 'xtm-update-ready') console.info('XTM: new version stored; it will load next time.');
+    });
+    navigator.serviceWorker.register('sw.js', { updateViaCache: 'none' }).catch((err) => {
       console.warn('Service worker registration failed:', err);
     });
   }
