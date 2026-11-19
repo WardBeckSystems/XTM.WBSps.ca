@@ -362,7 +362,7 @@ export class DbfsView {
   private pyrSources(): Float32Array[] {
     return [this.histL, this.histR, this.histSum, this.histDiff,
             this.histNormL, this.histNormR, this.histNormSum, this.histNormDiff,
-            this.histLufsM, this.histLufsS, this.histLufsI];
+            this.histLufsM, this.histLufsS, this.histLufsI, this.histPhase];
   }
 
   private pyrReset(): void {
@@ -436,14 +436,14 @@ export class DbfsView {
    * from peak-hold (max) to the block mean and is progressively blurred, so the squeezed
    * history smooths out instead of moiré-ing.
    */
-  private pyrSample(hist: Float32Array, a: number, samplesPerPx: number, pos: number): number {
+  private pyrSample(hist: Float32Array, a: number, samplesPerPx: number, pos: number, meanOnly = false): number {
     const sstep = (e0: number, e1: number, x: number) => { const t = Math.max(0, Math.min(1, (x - e0) / (e1 - e0))); return t * t * (3 - 2 * t); };
     const blur = 2.5 * sstep(0.5, 1.0, pos);                 // up to ~2.5 extra octaves of smoothing at the far left
     const f = Math.max(0, Math.min(DbfsView.PYR_LEVELS - 1, Math.log2(Math.max(1, samplesPerPx)) + blur));
     const l0 = Math.floor(f), t = f - l0;
     const sample = (useMean: boolean) =>
       this.levelAt(hist, l0, a, useMean) * (1 - t) + this.levelAt(hist, l0 + 1, a, useMean) * t;
-    const wMean = sstep(0.35, 0.6, pos);                     // peak-hold right of centre, mean past 50%
+    const wMean = meanOnly ? 1 : sstep(0.35, 0.6, pos);      // peak-hold right of centre, mean past 50%
     const vMax = wMean < 1 ? sample(false) : 0;
     const vMean = wMean > 0 ? sample(true) : 0;
     return vMax * (1 - wMean) + vMean * wMean;
@@ -1710,40 +1710,64 @@ export class DbfsView {
       drawCurve(this.histLufsI, this.PAL.textInteg, null, 2.0, false, false);
     }
 
-    // 4. Phase Correlation Trace Plotted Across Time (Requirement 18)
+    // 4. Phase over time: its own scale band layered over the -32 .. -60 dBFS region.
+    //    Correlation r is shown as phase angle acos(r): 0 deg (in phase) at the bottom,
+    //    90 deg in the middle, 180 deg (out of phase) at the top.
     if (this.plotPhase && minX < maxX) {
+      const yTop = dbToY(-32), yBot = dbToY(-60);
+      const degToY = (deg: number) => yBot - (deg / 180) * (yBot - yTop);
+      const phaseCol = 'rgba(168, 85, 247, 0.85)';
+
+      // Band, guide lines and scale
+      ctx.save();
+      ctx.fillStyle = mc ? 'rgba(168, 85, 247, 0.06)' : 'rgba(168, 85, 247, 0.05)';
+      ctx.fillRect(padL, yTop, plotW, yBot - yTop);
+      ctx.setLineDash([3 * dpr, 4 * dpr]);
+      ctx.lineWidth = 1 * dpr;
+      ctx.strokeStyle = 'rgba(168, 85, 247, 0.35)';
+      for (const d of [0, 90, 180]) {
+        const y = Math.round(degToY(d)) + 0.5;
+        ctx.beginPath(); ctx.moveTo(padL, y); ctx.lineTo(padL + plotW, y); ctx.stroke();
+      }
+      ctx.setLineDash([]);
+      ctx.font = `bold ${Math.round(10 * dpr)}px ui-monospace, "SF Mono", monospace`;
+      ctx.textAlign = 'right';
+      ctx.fillStyle = phaseCol;
+      const xr = padL + plotW - 4 * dpr;
+      ctx.textBaseline = 'top';    ctx.fillText('180\u00b0 PHASE', xr, yTop + 2 * dpr);
+      ctx.textBaseline = 'middle'; ctx.fillText('90\u00b0', xr, degToY(90));
+      ctx.textBaseline = 'bottom'; ctx.fillText('0\u00b0', xr, yBot - 2 * dpr);
+      ctx.restore();
+
+      // Trace (smoothed like the level lines when the history is squeezed)
+      const kAt = (x: number): number => {
+        const normX = Math.max(0, Math.min(1, (x - padL) / plotW));
+        const tau = this.timeMode === 'lin' ? 1 - normX : (Math.pow(1 + beta, 1 - normX) - 1) / beta;
+        const age = Math.max(0, Math.min(capSec, tau * capSec));
+        return Math.max(0, Math.min(targetSamples - 1, (targetSamples - 1) - age * this.captureSpeed));
+      };
+      const absBase = this.absCount - targetSamples;
+      const usePyr = this.pyr.has(this.histPhase) && this.pyrFor === this.histL;
       ctx.beginPath();
-      const phaseBaseY = padT + plotH - 4 * dpr;
-      const phaseHeight = 20 * dpr;
       const numCols = maxX - minX;
       for (let c = 0; c <= numCols; c++) {
         const px = maxX - c;
-        const normX = Math.max(0, Math.min(1, (px - padL) / plotW));
-        let tau;
-        if (this.timeMode === 'lin') {
-          tau = 1 - normX;
+        const k = kAt(px);
+        const spp = kAt(px + 0.5) - kAt(px - 0.5);
+        let r: number;
+        if (usePyr && spp > 1.5) {
+          const pos = 1 - Math.max(0, Math.min(1, (px - padL) / plotW));
+          r = this.pyrSample(this.histPhase, absBase + k, spp, pos, true);
         } else {
-          const u = 1 - normX;
-          tau = (Math.pow(1 + beta, u) - 1) / beta;
+          const k0 = Math.floor(k), k1 = Math.min(targetSamples - 1, k0 + 1), f = k - k0;
+          r = this.histPhase[(startIdx + k0) % bufLen]! * (1 - f) + this.histPhase[(startIdx + k1) % bufLen]! * f;
         }
-        const age = Math.max(0, Math.min(capSec, tau * capSec));
-        const kFloat = (targetSamples - 1) - age * this.captureSpeed;
-        const kClamped = Math.max(0, Math.min(targetSamples - 1, kFloat));
-        const k0 = Math.floor(kClamped);
-        const k1 = Math.min(targetSamples - 1, k0 + 1);
-        const frac = kClamped - k0;
-        const idx0 = (startIdx + k0) % bufLen;
-        const idx1 = (startIdx + k1) % bufLen;
-        const pVal = this.histPhase[idx0] * (1 - frac) + this.histPhase[idx1] * frac;
-        const y = phaseBaseY - (pVal + 1) * 0.5 * phaseHeight;
-        if (c === 0) {
-          ctx.moveTo(px, y);
-        } else {
-          ctx.lineTo(px, y);
-        }
+        const deg = Math.acos(Math.max(-1, Math.min(1, r))) * 180 / Math.PI;
+        const y = degToY(deg);
+        if (c === 0) ctx.moveTo(px, y); else ctx.lineTo(px, y);
       }
-      ctx.strokeStyle = 'rgba(168, 85, 247, 0.75)'; // Soft purple phase correlation trace
-      ctx.lineWidth = 1.3 * dpr;
+      ctx.strokeStyle = phaseCol;
+      ctx.lineWidth = 1.4 * dpr;
       ctx.stroke();
     } // End of if (this.plotPhase)
     } // End of if (targetSamples >= 2)
