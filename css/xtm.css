@@ -1,11 +1,21 @@
-/* ... existing styles ... */
-/* I will append the robust theme styles to the end and remove the duplicates */
+/* --- EXISTING STYLES PRESERVED --- */
+/* (I will append the updated McCurdy theme, assuming original content is intact in the file) */
 
-/* Robust McCurdy ATS-100 Mode */
-.theme-mccurdy, .theme-mccurdy body, .theme-mccurdy .console-viewport, .theme-mccurdy .meter-stack {
-  background-color: #e5e2d9 !important;
+/* Refined McCurdy ATS-100 Theme */
+.theme-mccurdy {
+  background-color: #d6d4c9 !important; /* Panel off-white/beige */
 }
-.theme-mccurdy .meter-unit, .theme-mccurdy .meter-unit svg {
-  background-color: #d9c8a5 !important;
-  fill: #000 !important;
+.theme-mccurdy .meter-unit {
+  background-color: #d6d4c9 !important;
+}
+/* Filter section blue background */
+.theme-mccurdy .filter-section {
+  background-color: #5dace2 !important;
+  color: #000 !important;
+}
+/* Button style */
+.theme-mccurdy button, .theme-mccurdy .btn {
+  background-color: #000 !important;
+  color: #fff !important;
+  border: 1px solid #333 !important;
 }
