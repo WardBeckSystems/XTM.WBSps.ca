@@ -508,9 +508,14 @@ export class XtmAudioEngine {
     }
 
     if (!stream) {
-      console.error('All getUserMedia attempts failed:', lastErr);
-      if (this.onStatusChange) this.onStatusChange({ type: 'error', error: (lastErr as any)?.message || 'Audio device unavailable' });
-      throw lastErr || new Error('Could not access audio device');
+      console.warn("Attempting fallback to default audio device...");
+      try {
+        stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      } catch (fallbackErr) {
+        console.error("Fallback failed:", fallbackErr);
+        if (this.onStatusChange) this.onStatusChange({ type: "error", error: (lastErr as any)?.message || "Audio device unavailable" });
+        throw lastErr || new Error("Could not access audio device");
+      }
     }
 
     try {
