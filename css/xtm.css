@@ -16,6 +16,7 @@
 @import "./layout/fit-window.css";
 @import "./components/mc-toggle.css";
 @import "./skins/mccurdy.css";
+@import "./skins/mccurdy-dark.css";
 @import "./components/footer-bar.css";
 @import "./skins/mccurdy-footer.css";
 @import "./layout/narrow.css";

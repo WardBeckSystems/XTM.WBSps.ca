@@ -1,10 +1,18 @@
 /*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.ca). All rights reserved. */
 /* Narrow / mobile footer: hide the build stamp, tighten spacing */
-@media (max-width: 700px) {
+@media (max-width: 960px) {
   .build-stamp { display: none; }
+  .drawer-toggle-right { gap: 10px; }
+  .wbs-bottom-text, .mc-toggle-text, .footer-btn-text { font-size: 11px; }
+}
+@media (max-width: 760px) {
   .drawer-toggle { padding: 6px 10px; gap: 8px; }
   .drawer-toggle-left, .drawer-toggle-right { min-width: 0; }
   .drawer-gear-label { display: none; }
-  .wbs-bottom-text, .mc-toggle-text { font-size: 11px; }
-  .mc-toggle { margin-left: 10px; }
+  .drawer-toggle-right { gap: 8px; }
+}
+@media (max-width: 640px) {
+  .wbs-bottom-text, .mc-toggle-text, .footer-btn-text { display: none; }
+  .drawer-toggle-right { gap: 8px; }
+  .mc-toggle, .footer-style-btn { padding: 2px 2px; }
 }

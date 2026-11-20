@@ -27,4 +27,8 @@ export interface VuFaceStyle {
   vuNeedle(px: number, py: number, R: number): NeedleParts;
   /** PPM pointer on the same movement style */
   ppmNeedle(px: number, py: number, R: number): NeedleParts;
+  /** Optional custom scale renderer for this face variant */
+  renderScale?(ctx: FaceCtx): string;
+  /** Optional custom face logo renderer */
+  faceLogo?(cx: number, cy: number, ink: string): string;
 }

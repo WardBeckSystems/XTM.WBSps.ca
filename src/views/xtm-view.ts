@@ -190,7 +190,7 @@ export class XtmView {
 
     // 2. Phase Correlation LEDs (McCurdy mode: all-red rectangular segments in one window)
     const led = on ? levels.phaseLed : -1;
-    const mc = document.body.classList.contains('theme-mccurdy');
+    const mc = document.body.classList.contains('theme-mccurdy') || document.body.classList.contains('theme-mccurdy-dark');
     const ledKey = phaseLedKey(led, mc);
     if (ledKey !== this.lastPhaseLed) {
       this.lastPhaseLed = ledKey;

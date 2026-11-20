@@ -4,13 +4,18 @@
   background: none;
   border: 0;
   padding: 2px 4px;
-  margin-right: 14px;
   cursor: pointer;
   display: inline-flex;
   align-items: center;
+  gap: 8px;
   border-radius: 4px;
-  transition: transform 0.15s ease;
+  text-decoration: none;
+  opacity: 0.85;
+  transition: opacity 0.15s ease, transform 0.15s ease;
 }
-.mc-toggle:hover { transform: translateY(-1px); }
+.mc-toggle:hover {
+  opacity: 1;
+  transform: translateY(-1px);
+}
 .mc-toggle:focus-visible { outline: 2px solid #4ba7e8; outline-offset: 2px; }
 .mc-toggle svg { display: block; }

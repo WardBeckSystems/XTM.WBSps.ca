@@ -41,16 +41,20 @@ export function renderMeterShell(id: number, cx: number, cy: number, kind: 'vu' 
   }
 
   if (kind === 'vu') {
-    s += renderVuScale(ctx);
+    s += style.renderScale ? style.renderScale(ctx) : renderVuScale(ctx);
     s += style.legend(ctx);
   } else {
     s += renderPpmFace(ctx, ppmStandard, isBlackPpm);
   }
 
-  // Lower half of the face: WBS logo (WBS skin) / McCurdy badge on VU faces (McCurdy skin)
-  s += renderWbsFaceLogo(cx, cy, ink);
-  if (kind === 'vu' && !isBlackPpm) {
-    s += renderMcCurdyVuBadge(cx, cy, ink);
+  // Lower half of the face: Custom style face logo OR default WBS / McCurdy logo
+  if (style.faceLogo) {
+    s += style.faceLogo(cx, cy, ink);
+  } else {
+    s += renderWbsFaceLogo(cx, cy, ink);
+    if (kind === 'vu' && !isBlackPpm) {
+      s += renderMcCurdyVuBadge(cx, cy, ink);
+    }
   }
 
   // Hardware-accelerated rotating needle assembly

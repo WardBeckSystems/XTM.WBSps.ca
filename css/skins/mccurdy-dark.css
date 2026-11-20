@@ -1,0 +1,150 @@
+/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.ca). All rights reserved. */
+/* ---------------------------------------------------------------
+   McCurdy Dark Mode: Dark Navy (#0d172a) palette
+   Based on McCurdy gemini-svg (2).svg specification
+   --------------------------------------------------------------- */
+body.theme-mccurdy-dark .mc-only { display: inline; }
+body.theme-mccurdy-dark .wbs-only { display: none; }
+
+body.theme-mccurdy-dark {
+  --bg-deep: #0d172a;
+  --bg-panel: #09111e;
+  --border-subtle: #1e293b;
+  --ink-primary: #f4f6f8;
+  --ink-secondary: #94a3b8;
+  --ink-muted: #64748b;
+  --accent-blue: #38bdf8;
+}
+
+html:has(body.theme-mccurdy-dark) { background-color: #0d172a; }
+
+body.theme-mccurdy-dark .xt-deg { fill: #f4f6f8; }
+body.theme-mccurdy-dark .xt-btn-lbl { fill: #f4f6f8 !important; }
+
+body.theme-mccurdy-dark .aux-drawer {
+  background: #0d172a;
+  border-top-color: #1e293b;
+}
+
+body.theme-mccurdy-dark .drawer-toggle {
+  background: linear-gradient(180deg, #131f37 0%, #0d172a 100%);
+  border-top-color: #1e293b;
+  color: #f4f6f8;
+}
+
+body.theme-mccurdy-dark .drawer-toggle:hover {
+  background: #172540;
+  border-top-color: #38bdf8;
+}
+
+body.theme-mccurdy-dark .btn-settings-cog { color: #94a3b8; }
+body.theme-mccurdy-dark .btn-settings-cog:hover { color: #38bdf8; }
+body.theme-mccurdy-dark .drawer-gear-label { color: #64748b; }
+body.theme-mccurdy-dark .wbs-bottom-logo { color: #f4f6f8 !important; }
+body.theme-mccurdy-dark .wbs-bottom-text { color: #cbd5e1; }
+body.theme-mccurdy-dark .mc-toggle-text { color: #cbd5e1; }
+
+body.theme-mccurdy-dark .drawer-grid { background: #0d172a; }
+body.theme-mccurdy-dark .drawer-card {
+  background: #0f1c32;
+  border-color: #1e293b;
+}
+
+body.theme-mccurdy-dark .drawer-card h4,
+body.theme-mccurdy-dark .drawer-row label { color: #f4f6f8; }
+body.theme-mccurdy-dark .drawer-section-sub { color: #94a3b8; border-color: #1e293b; }
+body.theme-mccurdy-dark .ctrl-select {
+  background: #132238;
+  color: #f4f6f8;
+  border-color: #1e3a5f;
+}
+body.theme-mccurdy-dark .ctrl-hint { color: #94a3b8; }
+
+/* McCurdy Dark: Meter stack, POD-22, Scope */
+body.theme-mccurdy-dark .meter-stack { background-color: #0d172a; }
+body.theme-mccurdy-dark .p22-bg { fill: #09111e; }
+body.theme-mccurdy-dark .p22-legend { fill: #94a3b8; }
+body.theme-mccurdy-dark .meter-unit.dbfs-unit {
+  --dbfs-bg: #09111e;
+  background: #09111e;
+  border-top-color: #1e293b;
+}
+
+body.theme-mccurdy-dark .scope-toolbar {
+  background: #0d172a;
+  border-color: #1e293b;
+  color: #f4f6f8;
+}
+body.theme-mccurdy-dark .scope-toolbar-label,
+body.theme-mccurdy-dark .scope-ctrl-item label { color: #94a3b8; }
+body.theme-mccurdy-dark .scope-tab-btn {
+  background: #172540;
+  color: #cbd5e1;
+  border-color: #1e3a5f;
+}
+body.theme-mccurdy-dark .scope-tab-btn.active {
+  background: #0284c7;
+  color: #fff;
+  border-color: #38bdf8;
+}
+body.theme-mccurdy-dark .scope-val-badge,
+body.theme-mccurdy-dark .scope-meta-badge {
+  background: #172540;
+  color: #38bdf8;
+  border-color: #1e3a5f;
+}
+
+/* McCurdy ATS-100 buttons & jacks in dark navy */
+body.theme-mccurdy-dark #xtm_btn_UP { transform: translate(681.5px, 78px) scale(0.5); }
+body.theme-mccurdy-dark #xtm_btn_DOWN { transform: translate(801.5px, 78px) scale(0.5); }
+body.theme-mccurdy-dark #xtm_btn_lbl_UP,
+body.theme-mccurdy-dark #xtm_btn_lbl_DOWN,
+body.theme-mccurdy-dark #xtm_btn_lbl_MODE,
+body.theme-mccurdy-dark #xtm_btn_lbl_SOURCE { display: none; }
+body.theme-mccurdy-dark #xtm_btn_MODE,
+body.theme-mccurdy-dark #xtm_btn_SOURCE { display: none; }
+
+/* McCurdy Panel SVG dark navy overrides */
+body.theme-mccurdy-dark .mc-panel-bg {
+  fill: #0d172a !important;
+  stroke: #1e293b !important;
+}
+body.theme-mccurdy-dark .mc-only text {
+  fill: #94a3b8;
+}
+body.theme-mccurdy-dark .mc-only line {
+  stroke: #1e293b;
+}
+body.theme-mccurdy-dark .mc-range-box {
+  fill: #0a1120 !important;
+  stroke: #1e3a5f !important;
+}
+body.theme-mccurdy-dark .mc-range-text {
+  fill: #f4f6f8 !important;
+}
+body.theme-mccurdy-dark .mc-range-arrow {
+  stroke: #38bdf8 !important;
+}
+body.theme-mccurdy-dark .mc-input-box {
+  stroke: #1e3a5f !important;
+}
+body.theme-mccurdy-dark .mc-input-text {
+  fill: #f4f6f8 !important;
+}
+
+/* McCurdy Folded Sheet Metal Chassis Dark Navy Overrides */
+body.theme-mccurdy-dark .mc-top-rim {
+  fill: #1e293b !important;
+}
+body.theme-mccurdy-dark .mc-top-vents {
+  fill: #0a1120 !important;
+}
+body.theme-mccurdy-dark .mc-bottom-rim {
+  fill: #0f172a !important;
+}
+body.theme-mccurdy-dark .mc-bottom-vents {
+  fill: #05080f !important;
+}
+body.theme-mccurdy-dark .mc-rack-flange {
+  fill: #090e17 !important;
+}

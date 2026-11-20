@@ -4,8 +4,71 @@
 .drawer-toggle:hover { background: #151922; border-top-color: #2a3447; }
 .btn-settings-cog { cursor: pointer; }
 
-/* Footer: Ward-Beck.ca, then McCurdyRadio.com on the far right */
-.mc-toggle { gap: 8px; margin-right: 0; margin-left: 18px; }
+/* Footer Style Switch Buttons (Ward-Beck & McCurdy - pure in-app style controls, no navigation) */
+.footer-style-btn {
+  background: none;
+  border: 0;
+  padding: 2px 4px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border-radius: 4px;
+  text-decoration: none;
+  opacity: 0.9;
+  transition: opacity 0.15s ease, transform 0.15s ease;
+  font-family: inherit;
+}
+
+.footer-style-btn:hover {
+  opacity: 1;
+  transform: translateY(-1px);
+}
+
+.footer-style-btn:focus-visible {
+  outline: 2px solid #38bdf8;
+  outline-offset: 2px;
+}
+
+.footer-style-btn svg {
+  display: block;
+}
+
+.footer-btn-text {
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+}
+
+.wbs-ca-text,
+.wbs-com-text {
+  color: #f8fafc;
+}
+
+.mc-ca-text {
+  color: #0284c7;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.mc-com-text {
+  color: #a855f7;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+body.theme-mccurdy .wbs-ca-text,
+body.theme-mccurdy .wbs-com-text {
+  color: #1e293b;
+}
+
+body.theme-mccurdy-dark .wbs-ca-text,
+body.theme-mccurdy-dark .wbs-com-text {
+  color: #f8fafc;
+}
+
+/* Legacy class compatibility */
+.mc-toggle { gap: 8px; margin-right: 0; }
 .mc-toggle-text {
   font-size: 13px;
   font-weight: 800;
