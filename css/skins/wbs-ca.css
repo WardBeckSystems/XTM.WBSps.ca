@@ -1,12 +1,26 @@
 /*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.ca). All rights reserved. */
 /* ---------------------------------------------------------------
-   Vintage Ward-Beck Mode (Ward-Beck.ca - Orange Logo)
-   Replaces the modern green plate, VFD screen, and buttons with the
-   authentic Ward-Beck DR Vernier dial scale, Bakelite fluted knob,
-   and jeweled AC pilot lamp assembly.
+   Vintage Ward-Beck Mode (Ward-Beck.ca - Petrol / Slate Blue Baked Enamel)
+   - Slate-blue broadcast chassis (#436478 to #2c4454).
+   - High-fidelity 3D molded bezels with mechanical trimmer screws and 4-corner chassis screws.
+   - DR Vernier dial scale with crisp silver-white silkscreening, Bakelite fluted knob, and jeweled AC lamp.
+   - Replaces the modern green plate, VFD screen, pushbuttons, and neon green channel outlines.
    --------------------------------------------------------------- */
 .wbs-ca-only {
   display: none;
+}
+
+body.theme-wbs-ca {
+  --bg-deep: #121922;
+  --bg-panel: #2c4454;
+  --border-subtle: #3a566b;
+  --ink-primary: #f8fafc;
+  --ink-secondary: #cbd5e1;
+  --ink-muted: #94a3b8;
+}
+
+html:has(body.theme-wbs-ca) {
+  background-color: #121922;
 }
 
 body.theme-wbs-ca .wbs-ca-only {
@@ -17,7 +31,42 @@ body.theme-wbs-ca .wbs-modern-only {
   display: none !important;
 }
 
+body.theme-wbs-ca .wbs-frame-green {
+  display: none !important;
+}
+
+body.theme-wbs-ca .wbs-dark-canvas {
+  display: none !important;
+}
+
 body.theme-wbs-ca .mc-only {
+  display: none !important;
+}
+
+body.theme-wbs-ca .meter-stack {
+  background-color: #121922;
+}
+
+body.theme-wbs-ca .scope-toolbar {
+  background: #141f2c;
+  border-color: #243547;
+  color: #f1f5f9;
+}
+
+body.theme-wbs-ca .scope-tab-btn {
+  background: #1c2b3d;
+  color: #cbd5e1;
+  border-color: #2e445f;
+}
+
+body.theme-wbs-ca .scope-tab-btn.active {
+  background: #f97316;
+  color: #ffffff;
+  border-color: #fb923c;
+}
+
+/* In non-wbs-ca modes, hide wbs-ca elements */
+body:not(.theme-wbs-ca) .wbs-ca-only {
   display: none !important;
 }
 
@@ -25,17 +74,15 @@ body.theme-wbs-ca .mc-only {
 body.theme-mccurdy .wbs-ca-only,
 body.theme-mccurdy-dark .wbs-ca-only,
 body.theme-mccurdy .wbs-modern-only,
-body.theme-mccurdy-dark .wbs-modern-only {
+body.theme-mccurdy-dark .wbs-modern-only,
+body.theme-mccurdy .wbs-frame-green,
+body.theme-mccurdy-dark .wbs-frame-green {
   display: none !important;
 }
 
 /* Default state: if not theme-wbs-ca and not mccurdy, modern WBS center is shown */
 body:not(.theme-wbs-ca):not(.theme-mccurdy):not(.theme-mccurdy-dark) .wbs-modern-only {
   display: inline;
-}
-
-body:not(.theme-wbs-ca) .wbs-ca-only {
-  display: none !important;
 }
 
 /* Rotary knob hover & active animations for vintage feel */
@@ -47,4 +94,13 @@ body:not(.theme-wbs-ca) .wbs-ca-only {
 }
 .wbs-ac-pilot-lamp:hover {
   filter: brightness(1.15);
+}
+
+/* 3D Meter Bezel Trimmer Screw Hover Styling */
+.trim-screw {
+  cursor: pointer;
+  transition: filter 0.15s ease;
+}
+.trim-screw:hover {
+  filter: brightness(1.2);
 }

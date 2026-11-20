@@ -30,10 +30,10 @@ export function renderMeterShell(id: number, cx: number, cy: number, kind: 'vu' 
   const { fill: fillGrad, ink } = dialPalette(isPpm, isPowered, dialLamp);
   const ctx: FaceCtx = { P, arc, ink, isSifam, x0, y0 };
 
-  let s = `<clipPath id="xmc${id}"><rect x="${x0}" y="${y0}" width="${MW}" height="${MH}" rx="28"/></clipPath>
+  let s = `<clipPath id="xmc${id}"><rect x="${x0}" y="${y0}" width="${MW}" height="${MH}" rx="5"/></clipPath>
     <g clip-path="url(#xmc${id})">
       <!-- Base Dial Plate Background with Rich Radiance Gradient -->
-      <rect class="xt-face xt-lamp-${kind === 'vu' && !isBlackPpm ? dialLamp : 'ppm'}" x="${x0}" y="${y0}" width="${MW}" height="${MH}" rx="28" fill="${fillGrad}"/>`;
+      <rect class="xt-face xt-lamp-${kind === 'vu' && !isBlackPpm ? dialLamp : 'ppm'}" x="${x0}" y="${y0}" width="${MW}" height="${MH}" rx="5" fill="${fillGrad}"/>`;
 
   // Warm incandescent filament halo glow behind VU scales
   if (kind === 'vu' && isPowered && lampHasBloom(dialLamp)) {
@@ -62,6 +62,6 @@ export function renderMeterShell(id: number, cx: number, cy: number, kind: 'vu' 
   s += renderNeedleGroup(id, restAngle(isSifam), px, py, needle);
 
   s += chamberShadows(x0, y0);
-  s += bezelRim(x0, y0);
+  s += bezelRim(x0, y0, cx);
   return s;
 }

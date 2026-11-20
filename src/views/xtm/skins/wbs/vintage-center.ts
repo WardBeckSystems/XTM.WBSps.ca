@@ -1,9 +1,9 @@
 /*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.ca). All rights reserved. */
 /**
  * Ward-Beck Systems Vintage Centre Console (Ward-Beck.ca):
- * - Authentic enamel / warm grey front panel module with anodized top/bottom lip.
- * - Slotted nickel chassis mounting screws.
- * - DR Differential Decade / Vernier Dial Scale (-10..-50 left, +10..+30 right, sub-ticks 2,4,6,8).
+ * - Broadcast slate-blue baked enamel panel cassette matching wbs_mccurdy_dual_channel panel.
+ * - Top & bottom brushed/anodized lips and slotted nickel chassis mounting screws.
+ * - DR Differential Decade / Vernier Dial Scale with crisp silver-white silkscreening.
  * - Skirted fluted Bakelite instrument knob with high-contrast white index line and pointer.
  * - AC jeweled pilot indicator lamp assembly with chrome collar and warm incandescent filament glow.
  */
@@ -13,11 +13,11 @@ export function renderVintageWbsCenter(isPowered = true): string {
   // Translation for hardware (knob at x=1530, y=215; AC lamp at x=1724, y=213)
   // From gemini-svg (8).svg origin (262, 184): dx = 1268, dy = 31
   return `<g class="wbs-ca-only" id="vintage-wbs-center">
-    <!-- Main Cassette Panel Housing -->
-    <rect x="1350" y="16" width="500" height="398" rx="10" fill="url(#panelGrad)" stroke="#1a1c1e" stroke-width="2.5" />
+    <!-- Main Cassette Panel Housing in McCurdy / WBS Slate-Blue Baked Enamel -->
+    <rect x="1350" y="16" width="500" height="398" rx="8" fill="url(#wbsSlateBlueGrad)" stroke="#1a2632" stroke-width="2.5" />
     
     <!-- Top Brushed / Anodized Chassis Lip -->
-    <path d="M 1350 26 A 10 10 0 0 1 1360 16 H 1840 A 10 10 0 0 1 1850 26 V 48 H 1350 Z" fill="url(#topChassisGrad)" />
+    <path d="M 1350 24 A 8 8 0 0 1 1358 16 H 1842 A 8 8 0 0 1 1850 24 V 48 H 1350 Z" fill="url(#topChassisGrad)" />
     <line x1="1350" y1="48" x2="1850" y2="48" stroke="#b8b6ae" stroke-width="1.2" />
 
     <!-- Corner Slotted Screws (Top Chassis Lip) -->
@@ -31,8 +31,8 @@ export function renderVintageWbsCenter(isPowered = true): string {
     </g>
 
     <!-- Lower Panel Edge Highlight & Rim -->
-    <line x1="1350" y1="382" x2="1850" y2="382" stroke="#9e9c94" stroke-width="1.2" />
-    <path d="M 1350 382 H 1850 V 404 A 10 10 0 0 1 1840 414 H 1360 A 10 10 0 0 1 1350 404 Z" fill="#eceae4" />
+    <line x1="1350" y1="382" x2="1850" y2="382" stroke="#1b2b36" stroke-width="1.2" />
+    <path d="M 1350 382 H 1850 V 406 A 8 8 0 0 1 1842 414 H 1358 A 8 8 0 0 1 1350 406 Z" fill="#233744" />
 
     <!-- Corner Slotted Screws (Bottom Lip) -->
     <g transform="translate(1372, 398)">
@@ -47,43 +47,43 @@ export function renderVintageWbsCenter(isPowered = true): string {
     <!-- Hardware Group: DR Dial Scale + Fluted Instrument Knob + AC Pilot Lamp -->
     <g transform="translate(1268, 31)">
       <!-- DR Differential Decade / Vernier Dial Scale & Markings (Center: x=262, y=184) -->
-      <g id="dr-dial-scale" font-family="'Helvetica Neue', Helvetica, Arial, sans-serif" fill="#3a3936" stroke="#3a3936">
+      <g id="dr-dial-scale" font-family="'Helvetica Neue', Helvetica, Arial, sans-serif" fill="#f1f5f9" stroke="#f1f5f9">
         <!-- Top Header "DR" and "- 0 +" -->
-        <text x="262" y="72" font-size="13.5" font-weight="600" text-anchor="middle" stroke="none" letter-spacing="0.8">DR</text>
-        <text x="249" y="88" font-size="12" font-weight="600" text-anchor="middle" stroke="none">–</text>
-        <text x="262" y="89" font-size="12.5" font-weight="600" text-anchor="middle" stroke="none">0</text>
-        <text x="275" y="88" font-size="12" font-weight="600" text-anchor="middle" stroke="none">+</text>
+        <text x="262" y="72" font-size="13.5" font-weight="700" text-anchor="middle" stroke="none" letter-spacing="1">DR</text>
+        <text x="249" y="88" font-size="12" font-weight="700" text-anchor="middle" stroke="none">–</text>
+        <text x="262" y="89" font-size="12.5" font-weight="700" text-anchor="middle" stroke="none">0</text>
+        <text x="275" y="88" font-size="12" font-weight="700" text-anchor="middle" stroke="none">+</text>
 
         <!-- Center Zero Index Line (0 deg) -->
         <g transform="translate(262, 184)">
-          <line x1="0" y1="-72" x2="0" y2="-91" stroke-width="1.6" />
+          <line x1="0" y1="-72" x2="0" y2="-91" stroke-width="1.8" />
         </g>
 
         <!-- LEFT SIDE SCALE (-10 to -50, every 36 deg per 10 units = 7.2 deg per 2 units) -->
         <!-- Major Ticks & Labels (-10, -20, -30, -40, -50) -->
         <g transform="translate(262, 184) rotate(-36)">
-          <line x1="0" y1="-72" x2="0" y2="-91" stroke-width="1.6" />
-          <text x="0" y="-96" font-size="12" font-weight="600" text-anchor="middle" stroke="none" transform="rotate(36, 0, -100)">10</text>
+          <line x1="0" y1="-72" x2="0" y2="-91" stroke-width="1.8" />
+          <text x="0" y="-96" font-size="12" font-weight="700" text-anchor="middle" stroke="none" transform="rotate(36, 0, -100)">10</text>
         </g>
         <g transform="translate(262, 184) rotate(-72)">
-          <line x1="0" y1="-72" x2="0" y2="-91" stroke-width="1.6" />
-          <text x="0" y="-96" font-size="12" font-weight="600" text-anchor="middle" stroke="none" transform="rotate(72, 0, -100)">20</text>
+          <line x1="0" y1="-72" x2="0" y2="-91" stroke-width="1.8" />
+          <text x="0" y="-96" font-size="12" font-weight="700" text-anchor="middle" stroke="none" transform="rotate(72, 0, -100)">20</text>
         </g>
         <g transform="translate(262, 184) rotate(-108)">
-          <line x1="0" y1="-72" x2="0" y2="-91" stroke-width="1.6" />
-          <text x="0" y="-96" font-size="12" font-weight="600" text-anchor="middle" stroke="none" transform="rotate(108, 0, -100)">30</text>
+          <line x1="0" y1="-72" x2="0" y2="-91" stroke-width="1.8" />
+          <text x="0" y="-96" font-size="12" font-weight="700" text-anchor="middle" stroke="none" transform="rotate(108, 0, -100)">30</text>
         </g>
         <g transform="translate(262, 184) rotate(-144)">
-          <line x1="0" y1="-72" x2="0" y2="-91" stroke-width="1.6" />
-          <text x="0" y="-96" font-size="12" font-weight="600" text-anchor="middle" stroke="none" transform="rotate(144, 0, -100)">40</text>
+          <line x1="0" y1="-72" x2="0" y2="-91" stroke-width="1.8" />
+          <text x="0" y="-96" font-size="12" font-weight="700" text-anchor="middle" stroke="none" transform="rotate(144, 0, -100)">40</text>
         </g>
         <g transform="translate(262, 184) rotate(-180)">
-          <line x1="0" y1="-72" x2="0" y2="-91" stroke-width="1.6" />
-          <text x="0" y="-96" font-size="12" font-weight="600" text-anchor="middle" stroke="none" transform="rotate(180, 0, -100)">50</text>
+          <line x1="0" y1="-72" x2="0" y2="-91" stroke-width="1.8" />
+          <text x="0" y="-96" font-size="12" font-weight="700" text-anchor="middle" stroke="none" transform="rotate(180, 0, -100)">50</text>
         </g>
 
         <!-- Left Sub-Numerals (2, 4, 6, 8 between each major division) -->
-        <g font-size="7.5" font-weight="600" text-anchor="middle" stroke="none" fill="#52504c">
+        <g font-size="7.5" font-weight="700" text-anchor="middle" stroke="none" fill="#cbd5e1">
           <!-- 0 to -10 -->
           <text x="251" y="99">2</text>
           <text x="240" y="101">4</text>
@@ -114,20 +114,20 @@ export function renderVintageWbsCenter(isPowered = true): string {
         <!-- RIGHT SIDE SCALE (+10 to +30, every 36 deg per 10 units) -->
         <!-- Major Ticks & Labels (+10, +20, +30) -->
         <g transform="translate(262, 184) rotate(36)">
-          <line x1="0" y1="-72" x2="0" y2="-91" stroke-width="1.6" />
-          <text x="0" y="-96" font-size="12" font-weight="600" text-anchor="middle" stroke="none" transform="rotate(-36, 0, -100)">10</text>
+          <line x1="0" y1="-72" x2="0" y2="-91" stroke-width="1.8" />
+          <text x="0" y="-96" font-size="12" font-weight="700" text-anchor="middle" stroke="none" transform="rotate(-36, 0, -100)">10</text>
         </g>
         <g transform="translate(262, 184) rotate(72)">
-          <line x1="0" y1="-72" x2="0" y2="-91" stroke-width="1.6" />
-          <text x="0" y="-96" font-size="12" font-weight="600" text-anchor="middle" stroke="none" transform="rotate(-72, 0, -100)">20</text>
+          <line x1="0" y1="-72" x2="0" y2="-91" stroke-width="1.8" />
+          <text x="0" y="-96" font-size="12" font-weight="700" text-anchor="middle" stroke="none" transform="rotate(-72, 0, -100)">20</text>
         </g>
         <g transform="translate(262, 184) rotate(108)">
-          <line x1="0" y1="-72" x2="0" y2="-91" stroke-width="1.6" />
-          <text x="0" y="-96" font-size="12" font-weight="600" text-anchor="middle" stroke="none" transform="rotate(-108, 0, -100)">30</text>
+          <line x1="0" y1="-72" x2="0" y2="-91" stroke-width="1.8" />
+          <text x="0" y="-96" font-size="12" font-weight="700" text-anchor="middle" stroke="none" transform="rotate(-108, 0, -100)">30</text>
         </g>
 
         <!-- Right Sub-Numerals (2, 4, 6, 8 between major divisions) -->
-        <g font-size="7.5" font-weight="600" text-anchor="middle" stroke="none" fill="#52504c">
+        <g font-size="7.5" font-weight="700" text-anchor="middle" stroke="none" fill="#cbd5e1">
           <!-- 0 to +10 -->
           <text x="273" y="99">2</text>
           <text x="284" y="101">4</text>
@@ -203,7 +203,7 @@ export function renderVintageWbsCenter(isPowered = true): string {
         <circle cx="461" cy="184" r="2.8" fill="#ffffff" fill-opacity="0.9" />
 
         <!-- "AC" Panel Silkscreen Label -->
-        <text x="456" y="220" font-family="'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="12.5" font-weight="600" fill="#3a3936" text-anchor="middle" letter-spacing="0.6">AC</text>
+        <text x="456" y="220" font-family="'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="12.5" font-weight="700" fill="#f1f5f9" text-anchor="middle" letter-spacing="0.8">AC</text>
       </g>
     </g>
   </g>`;
