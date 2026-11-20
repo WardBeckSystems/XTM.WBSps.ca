@@ -41,30 +41,35 @@
 }
 
 .wbs-ca-text,
-.wbs-com-text {
-  color: #f8fafc;
-}
-
-.mc-ca-text {
-  color: #0284c7;
-  text-decoration: underline;
-  text-underline-offset: 2px;
-}
-
+.wbs-com-text,
+.mc-ca-text,
 .mc-com-text {
-  color: #a855f7;
-  text-decoration: underline;
-  text-underline-offset: 2px;
+  color: #f8fafc;
+  text-decoration: none;
+}
+
+.footer-style-btn:hover .mc-ca-text,
+.footer-style-btn:hover .mc-com-text,
+.footer-style-btn:hover .wbs-ca-text,
+.footer-style-btn:hover .wbs-com-text {
+  color: #ffffff;
+  text-decoration: none;
 }
 
 body.theme-mccurdy .wbs-ca-text,
-body.theme-mccurdy .wbs-com-text {
+body.theme-mccurdy .wbs-com-text,
+body.theme-mccurdy .mc-ca-text,
+body.theme-mccurdy .mc-com-text {
   color: #1e293b;
+  text-decoration: none;
 }
 
 body.theme-mccurdy-dark .wbs-ca-text,
-body.theme-mccurdy-dark .wbs-com-text {
+body.theme-mccurdy-dark .wbs-com-text,
+body.theme-mccurdy-dark .mc-ca-text,
+body.theme-mccurdy-dark .mc-com-text {
   color: #f8fafc;
+  text-decoration: none;
 }
 
 /* Legacy class compatibility */

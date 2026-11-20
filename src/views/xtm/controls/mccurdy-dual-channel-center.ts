@@ -32,17 +32,17 @@ export function renderMcCurdyDualChannelCenter(options: DualChannelCenterOptions
     color = '#edeae0'
   } = options;
 
-  // Knob center (upper-left of center section)
-  const knobCx = cx - 68;
-  const knobCy = cy - 14;
+  // Left Column (Upper): 31-step detailed attenuator knob
+  const knobCx = cx - 74;
+  const knobCy = cy - 36;
 
-  // Stick (bat-handle toggle switch) positioned directly BELOW the knob
-  const stickCx = knobCx;
-  const stickCy = knobCy + 96;
+  // Left Column (Lower): 2-Position Range Switch directly BELOW the big knob
+  const rangeCx = knobCx;
+  const rangeCy = knobCy + 130;
 
-  // Range switch center (upper-right of center section)
-  const rangeCx = cx + 108;
-  const rangeCy = cy - 40;
+  // Right Column (Upper): Chrome bat-handle toggle switch
+  const stickCx = cx + 88;
+  const stickCy = cy - 36;
 
   // Attenuator rotor angle
   const angleDeg = -258.75 + stepIndex * 11.25;
@@ -58,14 +58,14 @@ export function renderMcCurdyDualChannelCenter(options: DualChannelCenterOptions
       <!-- 31-Step Detailed Attenuator Knob -->
       ${renderMcCurdyAttenuatorKnob(knobCx, knobCy, angleDeg)}
 
-      <!-- Chrome Bat-Handle Toggle Switch / Stick (Directly BELOW the Knob) -->
-      ${renderMcCurdyToggleSwitch({ cx: stickCx, cy: stickCy, angleDeg: toggleAngle, topLabel: 'MTR', midLabel: 'CAL', botLabel: 'MON', color })}
-
-      <!-- 2-Position Range Switch Cluster with Guidance Routing Lines -->
+      <!-- 2-Position Range Switch Cluster (Positioned Directly BELOW the Big Knob) -->
       ${renderMcCurdyRangeSwitch(rangeCx, rangeCy, isHighRange, color)}
 
-      <!-- Blue 1 INPUT 2 Dual Phone Jack Block -->
-      <g id="blue-input-jack-block" transform="translate(${cx + 38}, ${cy + 24})">
+      <!-- Chrome Bat-Handle Toggle Switch / Stick (Upper Right) -->
+      ${renderMcCurdyToggleSwitch({ cx: stickCx, cy: stickCy, angleDeg: toggleAngle, topLabel: 'MTR', midLabel: 'CAL', botLabel: 'MON', color })}
+
+      <!-- Blue 1 INPUT 2 Dual Phone Jack Block (Lower Right) -->
+      <g id="blue-input-jack-block" transform="translate(${cx + 18}, ${cy + 32})">
         <rect x="0" y="0" width="140" height="70" rx="5" fill="url(#blueJackPanelGrad)" stroke="#163b59" stroke-width="1.4" />
         <line x1="2" y1="1.5" x2="138" y2="1.5" stroke="#7ac0f5" stroke-width="0.9" stroke-opacity="0.7" />
 

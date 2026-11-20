@@ -25,9 +25,9 @@ export interface McCurdyDualKnobsOptions {
 export function renderMcCurdyDualKnobs(options: McCurdyDualKnobsOptions = {}): string {
   const {
     mainCx = 312,
-    mainCy = 146,
-    rangeCx = 548,
-    rangeCy = 146,
+    mainCy = 96,
+    rangeCx = 312,
+    rangeCy = 226,
     stepIndex = 15,
     isHighRange = false,
     color = '#edeae0'

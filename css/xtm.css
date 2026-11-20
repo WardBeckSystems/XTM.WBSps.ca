@@ -1,6 +1,7 @@
 /*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.ca). All rights reserved. */
 /* Entry stylesheet: imports the parts in original cascade order. */
 @import "./skins/wbs-dark.css";
+@import "./skins/wbs-ca.css";
 @import "./base/reset.css";
 @import "./base/viewport.css";
 @import "./components/meter-stack.css";

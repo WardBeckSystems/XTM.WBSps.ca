@@ -5,6 +5,7 @@ import { BLACK_PPM_GRADIENT } from '../skins/dial-palette';
 import { MC_VUFACE_GRADIENT } from '../skins/mccurdy/vu-face-gradient';
 import { CHAMBER_GRADIENTS } from '../meter/chamber';
 import { GREEN_PANEL_GRADIENT } from '../skins/wbs/frames';
+import { WBS_VINTAGE_DEFS } from '../skins/wbs/vintage-defs';
 
 const GLOW_FILTERS = `<filter id="xglow" x="-50%" y="-50%" width="200%" height="200%">
           <feGaussianBlur stdDeviation="3.5" result="b"/>
@@ -30,6 +31,8 @@ export const SHELL_DEFS = `<defs>
         ${CHAMBER_GRADIENTS}
 
         ${GREEN_PANEL_GRADIENT}
+
+        ${WBS_VINTAGE_DEFS}
 
         ${GLOW_FILTERS}
       </defs>`;
