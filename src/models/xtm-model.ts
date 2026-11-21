@@ -38,6 +38,9 @@ export class XtmModel {
   public artMode: string = 'svg';
   public vfdMetric: string = 'lufs';
 
+  public isLockedExpanded: boolean = false;
+  public autoRange: boolean = false;
+
   public flashMsg: string | null = null;
   public flashTimer: any = null;
   public isIdle: boolean = true;
@@ -280,16 +283,25 @@ export class XtmModel {
 
   public setSensitivityDb(db: number): void {
     if (!this.power) return;
-    const lvl = Math.max(0, Math.min(90, Math.round(db + 60)));
+    const clampedDb = Math.max(-60, Math.min(30, db));
+    const lvl = Math.max(0, Math.min(90, Math.round(clampedDb + 60)));
     this.a.lvl = lvl;
     this.d.lvl = lvl;
-    if (this.mcRangeMode === 'inner') {
-      const step = (db - (-30)) / 2;
-      if (step >= 0 && step <= 30) this.mcAttenuatorStep = Math.round(step);
-    } else if (this.mcRangeMode === 'outer') {
-      const step = (db - (-50)) / 2;
-      if (step >= 0 && step <= 30) this.mcAttenuatorStep = Math.round(step);
+
+    if (clampedDb > 10 && this.mcRangeMode === 'outer') {
+      this.mcRangeMode = 'inner';
+    } else if (clampedDb < -30 && this.mcRangeMode === 'inner') {
+      this.mcRangeMode = 'outer';
     }
+
+    if (this.mcRangeMode === 'inner') {
+      const step = (clampedDb - (-30)) / 2;
+      this.mcAttenuatorStep = Math.max(0, Math.min(30, Math.round(step)));
+    } else if (this.mcRangeMode === 'outer') {
+      const step = (clampedDb - (-50)) / 2;
+      this.mcAttenuatorStep = Math.max(0, Math.min(30, Math.round(step)));
+    }
+
     this.flash('SENS ' + this.lvlChars(lvl));
     this.saveEEPROM();
     this.notify();
@@ -313,6 +325,18 @@ export class XtmModel {
 
   public pressDown(): void {
     if (!this.power) return;
+    const isMc = typeof document !== 'undefined' && (document.body?.classList.contains('theme-mccurdy') || document.body?.classList.contains('theme-mccurdy-dark'));
+    if (isMc) {
+      if (this.mcAttenuatorStep > 0) {
+        this.mcAttenuatorStep--;
+      } else if (this.mcRangeMode === 'inner') {
+        this.mcRangeMode = 'outer';
+        this.mcAttenuatorStep = 20; // -10 dB
+      }
+      this.applyMccurdySensitivity();
+      return;
+    }
+
     if (this.mode === 'SET') {
       if (this.set.scr === 'HP') this.hp = 0;
       else this.term = 1;
@@ -339,6 +363,18 @@ export class XtmModel {
 
   public pressUp(): void {
     if (!this.power) return;
+    const isMc = typeof document !== 'undefined' && (document.body?.classList.contains('theme-mccurdy') || document.body?.classList.contains('theme-mccurdy-dark'));
+    if (isMc) {
+      if (this.mcAttenuatorStep < 30) {
+        this.mcAttenuatorStep++;
+      } else if (this.mcRangeMode === 'outer') {
+        this.mcRangeMode = 'inner';
+        this.mcAttenuatorStep = 20; // +10 dB
+      }
+      this.applyMccurdySensitivity();
+      return;
+    }
+
     if (this.mode === 'SET') {
       if (this.set.scr === 'HP') this.hp = 1;
       else this.term = 0;
@@ -374,6 +410,22 @@ export class XtmModel {
     return 4;
   }
 
+  public toggleLockedExpanded(): boolean {
+    this.isLockedExpanded = !this.isLockedExpanded;
+    this.flash(this.isLockedExpanded ? 'LOCKED  ' : 'UNLOCKED');
+    this.saveEEPROM();
+    this.notify();
+    return this.isLockedExpanded;
+  }
+
+  public toggleAutoRange(): boolean {
+    this.autoRange = !this.autoRange;
+    this.flash(this.autoRange ? 'AUTO ON ' : 'AUTO OFF');
+    this.saveEEPROM();
+    this.notify();
+    return this.autoRange;
+  }
+
   public saveEEPROM(): void {
     try {
       const state = {
@@ -392,7 +444,9 @@ export class XtmModel {
         mcAttenuatorStep: this.mcAttenuatorStep,
         toneCalIdx: this.toneCalIdx,
         toneCalLevel: this.toneCalLevels[this.toneCalIdx] ?? 0,
-        vfdMetric: this.vfdMetric
+        vfdMetric: this.vfdMetric,
+        isLockedExpanded: this.isLockedExpanded,
+        autoRange: this.autoRange
       };
       localStorage.setItem('wbs_xtm4_eeprom', JSON.stringify(state));
     } catch (_) {}
@@ -416,6 +470,8 @@ export class XtmModel {
         if (obj.dialLamp) this.dialLamp = obj.dialLamp;
         if (obj.dialBg) this.dialBg = obj.dialBg;
         if (obj.ppmStyle) this.ppmStyle = obj.ppmStyle;
+        if (typeof obj.isLockedExpanded === 'boolean') this.isLockedExpanded = obj.isLockedExpanded;
+        if (typeof obj.autoRange === 'boolean') this.autoRange = obj.autoRange;
         if (typeof localStorage !== 'undefined' && localStorage.getItem('wbs_xtm4_tone_cal_dbfs_v3') !== 'true') {
           this.toneCalIdx = this.toneCalLevels.indexOf(-18);
           localStorage.setItem('wbs_xtm4_tone_cal_dbfs_v3', 'true');

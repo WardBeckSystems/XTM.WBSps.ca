@@ -109,11 +109,11 @@ export function createAudioSync(ctx: AppContext, refs: DrawerControls): AudioSyn
         if (drawerSourceBadge) {
           drawerSourceBadge.textContent = 'Source: Computer Audio Output';
         }
-        const sysMode = (typeof localStorage !== 'undefined' && localStorage.getItem('xtm.sysaudio.surface')) || 'loopback';
-        let connected = false;
+        const sysMode = (typeof localStorage !== 'undefined' && localStorage.getItem('xtm.sysaudio.surface')) || 'browser';
+        let connected = audio.sourceType === 'system' && !!audio.stream && audio.stream.active;
 
-        // Auto / OS loopback: try native OS audio bridge first (100% banner-free)
-        if (sysMode === 'loopback' || sysMode === 'auto') {
+        // Auto / OS loopback: try native OS audio bridge first if explicitly configured
+        if (!connected && (sysMode === 'loopback' || sysMode === 'auto')) {
           try {
             const devices = await audio.getAudioInputDevices();
             const loopback = devices.find(d =>
@@ -131,7 +131,7 @@ export function createAudioSync(ctx: AppContext, refs: DrawerControls): AudioSyn
 
         // Fall back to getDisplayMedia
         if (!connected) {
-          const surface = (sysMode === 'browser') ? 'browser' : 'monitor';
+          const surface = (sysMode === 'monitor') ? 'monitor' : 'browser';
           const ok = await audio.connectSystemAudio(surface);
           if (!ok) {
             // Gracefully fallback to Reference Tone generator if user cancels or permission denied

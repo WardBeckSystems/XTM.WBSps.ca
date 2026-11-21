@@ -52,3 +52,61 @@
   flex-direction: column;
   overflow: hidden;
 }
+
+/* -------------------------------------------------------------
+   XTM-4 Expanded Meters & Locked Center Section Mode
+   Triggered by click-and-hold on dial logo for a few seconds.
+   Reverted when user changes meter sets.
+   ------------------------------------------------------------- */
+.xtm-meter-group,
+.xtm-phase-row-assembly,
+.xtm-center-controls-group,
+.xtm-channel-frame {
+  transition: transform 0.45s cubic-bezier(0.2, 0.9, 0.3, 1), opacity 0.35s ease;
+}
+
+/* When expanded, all 4 meters grow and translate to close the gap between meters */
+.xtm-expanded-meters #xtm_meter_group_0 {
+  transform: translate(25px, 0px) scale(1.10);
+  transform-origin: 373px 210px;
+}
+
+.xtm-expanded-meters #xtm_meter_group_1 {
+  transform: translate(-25px, 0px) scale(1.10);
+  transform-origin: 1002px 210px;
+}
+
+.xtm-expanded-meters #xtm_meter_group_2 {
+  transform: translate(25px, 0px) scale(1.10);
+  transform-origin: 2198px 210px;
+}
+
+.xtm-expanded-meters #xtm_meter_group_3 {
+  transform: translate(-25px, 0px) scale(1.10);
+  transform-origin: 2827px 210px;
+}
+
+.xtm-expanded-meters #xtm_channel_a_frame {
+  transform: scale(1.08);
+  transform-origin: 687px 210px;
+}
+
+.xtm-expanded-meters #xtm_channel_b_frame {
+  transform: scale(1.08);
+  transform-origin: 2512px 210px;
+}
+
+/* Phase LED bar moves DOWN into bottom shelf */
+.xtm-expanded-meters #xtm_phase_row_assembly {
+  transform: translateY(346px);
+}
+
+/* Middle section locks in place with preserved settings and locked badge */
+.xtm-expanded-meters #xtm_center_controls_group {
+  transform: scale(0.92);
+  transform-origin: 1600px 220px;
+}
+
+.xtm-expanded-meters #xtm_center_locked_badge {
+  opacity: 1 !important;
+}

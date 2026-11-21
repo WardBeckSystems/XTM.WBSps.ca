@@ -9,18 +9,22 @@ import type { XtmAudioEngine } from '../../audio-engine';
  * Connect to System Audio Output
  * Uses getDisplayMedia to capture computer audio
  */
-export async function connectSystemAudio(engine: XtmAudioEngine, preferredSurface: 'monitor' | 'browser' | 'window' = 'monitor'): Promise<boolean> {
-  if (engine.sourceType === 'system' && engine.stream && engine.stream.active) {
+export async function connectSystemAudio(
+  engine: XtmAudioEngine,
+  preferredSurface: 'monitor' | 'browser' | 'window' = 'browser',
+  forcePrompt = false
+): Promise<boolean> {
+  if (!forcePrompt && engine.sourceType === 'system' && engine.stream && engine.stream.active) {
     return true;
   }
 
   try {
-    const savedSurface = (typeof localStorage !== 'undefined' && localStorage.getItem('xtm.sysaudio.surface')) || preferredSurface || 'monitor';
+    const savedSurface = (typeof localStorage !== 'undefined' && localStorage.getItem('xtm.sysaudio.surface')) || preferredSurface || 'browser';
     // Must prompt for display media IMMEDIATELY while user activation gesture is valid!
     // Any preceding 'await' (like await ensureContext()) would discard transient user activation.
     const displayPromise = (navigator.mediaDevices as any).getDisplayMedia({
       video: {
-        displaySurface: savedSurface
+        displaySurface: savedSurface === 'monitor' ? 'monitor' : 'browser'
       },
       audio: {
         echoCancellation: false,
@@ -30,6 +34,7 @@ export async function connectSystemAudio(engine: XtmAudioEngine, preferredSurfac
       systemAudio: 'include',
       surfaceSwitching: 'include',
       selfBrowserSurface: 'exclude',
+      preferCurrentTab: false,
       monitorTypeSurfaces: 'include'
     });
 

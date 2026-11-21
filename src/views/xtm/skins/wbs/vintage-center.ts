@@ -8,12 +8,16 @@
 
 export function renderVintageWbsCenter(isPowered = true): string {
   return `<g class="wbs-ca-only" id="vintage-wbs-center">
-    <!-- 1. Centered DR Vernier Dial Scale + Fluted Instrument Knob (Centered at x=1600, y=146, Scale=1.10 - Taller Knob) -->
-    <g transform="translate(1600, 146) scale(1.10)">
+    <!-- 1. Centered DR Vernier Dial Scale + Fluted Instrument Knob (Centered at x=1600, y=182, Scale=1.10 - Taller Knob) -->
+    <g transform="translate(1600, 182) scale(1.10)">
       <!-- DR Differential Decade / Vernier Dial Scale & Markings (Origin at 0, 0) -->
       <g id="dr-dial-scale" font-family="'Helvetica Neue', Helvetica, Arial, sans-serif" fill="#2A2B2A" stroke="#2A2B2A">
-        <!-- Top Header "DR" and "- 0 +" -->
-        <text x="0" y="-112" font-size="14" font-weight="700" text-anchor="middle" stroke="none" letter-spacing="1.2">DR</text>
+        <!-- Top Header "DR" and "- 0 +" with interactive Auto-Range toggle -->
+        <g class="xtm-btn dr-auto-btn" data-btn="TOGGLE_AUTORANGE" style="cursor: pointer;">
+          <title>Click to toggle Auto-Range VU Sensitivity</title>
+          <text x="0" y="-112" font-size="14" font-weight="700" text-anchor="middle" stroke="none" letter-spacing="1.2">DR</text>
+          <text id="dr_auto_badge" x="22" y="-112" font-size="9" font-weight="800" text-anchor="start" stroke="none" fill="#16a34a" style="display: none;">AUTO</text>
+        </g>
         <text x="-13" y="-96" font-size="12" font-weight="700" text-anchor="middle" stroke="none">–</text>
         <text x="0" y="-95" font-size="12.5" font-weight="700" text-anchor="middle" stroke="none">0</text>
         <text x="13" y="-96" font-size="12" font-weight="700" text-anchor="middle" stroke="none">+</text>
@@ -153,8 +157,8 @@ export function renderVintageWbsCenter(isPowered = true): string {
       </g>
     </g>
 
-    <!-- 2. AC Pilot Indicator Lamp Assembly (Placed in Right Margin at cx=1785, cy=146) -->
-    <g id="ac-pilot-lamp" class="wbs-ac-pilot-lamp" transform="translate(1785, 146)" filter="url(#lampDropShadow)">
+    <!-- 2. AC Pilot Indicator Lamp Assembly (Placed in Right Margin at cx=1785, cy=182) -->
+    <g id="ac-pilot-lamp" class="wbs-ac-pilot-lamp" transform="translate(1785, 182)" filter="url(#lampDropShadow)">
       <title>AC Mains Pilot Lamp ${isPowered ? '(Energized)' : '(Off)'}</title>
       <!-- Outer Chrome Mounting Collar / Nut -->
       <ellipse cx="-4" cy="-1" rx="17.5" ry="18.5" fill="url(#chromeBezelGrad)" stroke="#383c42" stroke-width="0.9" />
@@ -185,7 +189,7 @@ export function renderWinkSwitchCluster(isPowered = true): string {
     { num: 4, sub: 'TEST GEN' }
   ];
 
-  const y = 308;
+  const y = 342;
   const bw = 90;
   const bh = 38; // Shorter buttons per specification
   const totalW = bw * 4; // 360px wide, centered at 1600
@@ -194,9 +198,9 @@ export function renderWinkSwitchCluster(isPowered = true): string {
   let out = `
     <!-- INPUT SELECTOR Header & Hairline Rules (Above switches) -->
     <g ${font}>
-      <line x1="1380" y1="284" x2="1515" y2="284" stroke="#8C897B" stroke-width="1.2" stroke-opacity="0.8" />
-      <text x="1600" y="287.5" font-size="10.5" font-weight="700" fill="#2A2B2A" text-anchor="middle" letter-spacing="2.5">INPUT SELECTOR</text>
-      <line x1="1685" y1="284" x2="1820" y2="284" stroke="#8C897B" stroke-width="1.2" stroke-opacity="0.8" />
+      <line x1="1380" y1="319" x2="1515" y2="319" stroke="#8C897B" stroke-width="1.2" stroke-opacity="0.8" />
+      <text x="1600" y="322.5" font-size="10.5" font-weight="700" fill="#2A2B2A" text-anchor="middle" letter-spacing="2.5">INPUT SELECTOR</text>
+      <line x1="1685" y1="319" x2="1820" y2="319" stroke="#8C897B" stroke-width="1.2" stroke-opacity="0.8" />
     </g>
 
     <!-- Continuous Outer Recessed Bezel Housing for 4 Butted Switches -->
@@ -211,9 +215,6 @@ export function renderWinkSwitchCluster(isPowered = true): string {
     const midY = y + bh / 2;
 
     out += `
-      <!-- Silkscreen Header Above Button ${i} -->
-      <text x="${x + bw / 2}" y="${y - 6}" ${font} font-size="9" font-weight="800" fill="#2A2B2A" text-anchor="middle" letter-spacing="1">INPUT ${i}</text>
-
       <!-- WINK SWITCH: INPUT ${i} -->
       <g class="xtm-btn wink-switch ${i === 1 ? 'wink-open' : ''}" id="wink_btn_${i}" data-btn="INPUT_${i}" data-input="${i}" style="cursor:pointer" role="button" tabindex="0" aria-label="Input ${i} (${sw.sub})">
         <title>Input ${i}: ${sw.sub} (Wink Selector Switch)</title>

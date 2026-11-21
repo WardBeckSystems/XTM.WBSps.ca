@@ -89,7 +89,7 @@ export function initDeviceSelector(ctx: AppContext, refs: DrawerControls, sync: 
   const { selectDevice, drawerSourceBadge, btnBridgeOsAudio, selectSysAudioMode } = refs;
 
   if (selectSysAudioMode) {
-    const saved = localStorage.getItem('xtm.sysaudio.surface') || 'monitor';
+    const saved = localStorage.getItem('xtm.sysaudio.surface') || 'browser';
     selectSysAudioMode.value = saved;
     selectSysAudioMode.addEventListener('change', (e: any) => {
       localStorage.setItem('xtm.sysaudio.surface', e.target.value);

@@ -86,6 +86,12 @@ export class XtmView {
   mcInputEls: (SVGElement | null)[] = [null, null, null, null, null];
   vuShatterEls: (SVGElement | null)[] = [null, null, null, null];
 
+  panelEl: SVGElement | null = null;
+  lockedBadgeEl: SVGElement | null = null;
+  drAutoBadgeEl: SVGElement | null = null;
+  drPointerEl: SVGElement | null = null;
+  drRotorEl: SVGElement | null = null;
+
   // VU Meter Overload Glass Shatter State
   isGlassShattered: boolean = false;
   vuRedStartTime: number = 0;
@@ -102,6 +108,10 @@ export class XtmView {
   lastActiveInput: number = -999;
   lastMcRangeMode: string = '';
   lastMcAttenuatorStep: number = -999;
+  lastLockedExpanded: boolean = false;
+  lastAutoRangeState: boolean = false;
+  lastAutoRangeTime: number = 0;
+  lastDrKnobDb: number = -999;
 
   /* 2-digit red 7-segment RANGE readout for McCurdy mode */
   readonly MC_WIN = MC_WIN;
@@ -193,6 +203,12 @@ export class XtmView {
       this.container.querySelector<SVGElement>('#vu_shatter_2'),
       null
     ];
+
+    this.panelEl = this.container.querySelector<SVGElement>('#xtm_master_panel');
+    this.lockedBadgeEl = this.container.querySelector<SVGElement>('#xtm_center_locked_badge');
+    this.drAutoBadgeEl = this.container.querySelector<SVGElement>('#dr_auto_badge');
+    this.drPointerEl = this.container.querySelector<SVGElement>('#wbs_vintage_knob_pointer');
+    this.drRotorEl = this.container.querySelector<SVGElement>('#wbs_vintage_knob_rotor');
 
     this.attachEvents();
   }
@@ -302,29 +318,31 @@ export class XtmView {
       this.vuCleanStartTime = 0;
     }
 
-    // VU In-The-Red Overload Detection (>= 0 dB VU is red zone, shatter if in red >= 2.5 seconds)
-    const inRed = on && levels.hasAudio && (
-      (levels.vuDb && (levels.vuDb[0] >= 0 || levels.vuDb[1] >= 0)) ||
-      (levels.vu && (levels.vu[0] >= 1.0 || levels.vu[1] >= 1.0))
+    // Glass Cracking Overload Detection: past 0 peak constant for 20 seconds
+    const pastZeroPeak = on && levels.hasAudio && (
+      (levels.ppmDb && (levels.ppmDb[0] > 0 || levels.ppmDb[1] > 0)) ||
+      (levels.ppm && (levels.ppm[0] > 0.5 || levels.ppm[1] > 0.5)) ||
+      (levels.peak && (levels.peak[0] || levels.peak[1])) ||
+      (levels.dbfs && (levels.dbfs[0] >= 0 || levels.dbfs[1] >= 0))
     );
 
-    if (inRed) {
+    if (pastZeroPeak) {
       this.vuCleanStartTime = 0;
       this.isHealing = false;
       if (this.vuRedStartTime === 0) {
         this.vuRedStartTime = now;
-      } else if (!this.isGlassShattered && (now - this.vuRedStartTime >= 2500)) {
+      } else if (!this.isGlassShattered && (now - this.vuRedStartTime >= 20000)) {
         this.isGlassShattered = true;
         this.triggerRandomShatter();
       }
     } else {
       this.vuRedStartTime = 0;
-      // Procedural Self-Healing: when out of the red, the glass fractures heal and dissolve away
+      // Procedural Self-Healing: when out of overload, the glass fractures heal and dissolve away
       if (this.isGlassShattered) {
         if (this.vuCleanStartTime === 0) {
           this.vuCleanStartTime = now;
         } else if (!this.isHealing && (now - this.vuCleanStartTime >= 2000)) {
-          // Out of red for 2.0s -> start smooth self-healing fade
+          // Out of overload for 2.0s -> start smooth self-healing fade
           this.isHealing = true;
           this.updateShatterState(false, false);
         } else if (this.isHealing && (now - this.vuCleanStartTime >= 3900)) {
@@ -394,6 +412,72 @@ export class XtmView {
         const angle = (mcStep - 15) * 9;
         rotor.setAttribute('transform', `translate(${cx}, ${cy}) rotate(${angle.toFixed(1)})`);
       }
+    }
+
+    // 9. Locked Expanded Meters State
+    if (this.lastLockedExpanded !== model.isLockedExpanded) {
+      this.lastLockedExpanded = model.isLockedExpanded;
+      if (this.panelEl) {
+        this.panelEl.classList.toggle('xtm-expanded-meters', model.isLockedExpanded);
+      }
+      if (this.lockedBadgeEl) {
+        this.lockedBadgeEl.style.opacity = model.isLockedExpanded ? '1' : '0';
+      }
+    }
+
+    // 10. Auto-Range Indicator Badge & Continuous Auto-Range Adaptation
+    if (this.lastAutoRangeState !== model.autoRange) {
+      this.lastAutoRangeState = model.autoRange;
+      if (this.drAutoBadgeEl) {
+        this.drAutoBadgeEl.style.display = model.autoRange ? 'inline' : 'none';
+      }
+    }
+
+    if (model.autoRange && on && levels.hasAudio) {
+      if (now - this.lastAutoRangeTime >= 350) {
+        this.lastAutoRangeTime = now;
+        this.processAutoRange(model, levels);
+      }
+    }
+
+    // 11. Vintage Ward-Beck DR Vernier Knob Pointer & Rotor Rotation (-50 to +30 dB)
+    const currentSensDb = model.mode === 'A' ? model.lvlDb(model.a.lvl) : (model.mode === 'D' ? model.lvlDb(model.d.lvl) : model.getMcCurdySensitivityDb());
+    if (this.lastDrKnobDb !== currentSensDb) {
+      this.lastDrKnobDb = currentSensDb;
+      const angle = Math.max(-180, Math.min(108, currentSensDb * 3.6));
+      if (this.drPointerEl) {
+        this.drPointerEl.setAttribute('transform', `rotate(${angle.toFixed(1)})`);
+      }
+      if (this.drRotorEl) {
+        this.drRotorEl.setAttribute('transform', `rotate(${angle.toFixed(1)})`);
+      }
+    }
+  }
+
+  /* ---------------- Auto-Range Sensitivity Processor ---------------- */
+  private processAutoRange(model: XtmModel, levels: MeterFrameTelemetry): void {
+    if (!model.power || !levels.hasAudio) return;
+    const maxVu = Math.max(levels.vuDb[0], levels.vuDb[1]);
+    const maxPpm = levels.ppmDb ? Math.max(levels.ppmDb[0], levels.ppmDb[1]) : -99;
+    const isPeakHot = (levels.peak && (levels.peak[0] || levels.peak[1])) || maxPpm > 3.0;
+
+    let currentDb = model.getActiveReferenceLevel();
+    const isMc = typeof document !== 'undefined' && (document.body?.classList.contains('theme-mccurdy') || document.body?.classList.contains('theme-mccurdy-dark'));
+    if (isMc) {
+      currentDb = model.getMcCurdySensitivityDb();
+    }
+
+    // Auto-range rule (ceiling +30 dB, floor -50 dB):
+    // If signal pins VU meter (> +0.5 VU) or peak/PPM is hot, increase reference level (less gain, up to +30 dB)
+    if ((maxVu > 0.5 || isPeakHot) && currentDb < 30) {
+      const step = (maxVu > 2.0 || isPeakHot) ? 2 : 1;
+      const targetDb = Math.min(30, currentDb + step);
+      model.setSensitivityDb(targetDb);
+    } else if (maxVu < -6.0 && maxVu > -40.0 && currentDb > -50) {
+      // If signal is low (< -6 VU but not silence), decrease reference level (more gain)
+      const step = maxVu < -12.0 ? 2 : 1;
+      const targetDb = Math.max(-50, currentDb - step);
+      model.setSensitivityDb(targetDb);
     }
   }
 

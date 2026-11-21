@@ -21,7 +21,7 @@ export function buildShellSvg(o: ShellOptions): string {
   const meter = (id: number, fallbackX: number, kind: 'vu' | 'ppm') =>
     renderMeterShell(id, MX[id] ?? fallbackX, MYc, kind, on, o.dialLamp, kind === 'ppm', o.meterStyle, o.ppmStandard, dialBg);
 
-  return `<svg viewBox="0 0 ${VW} ${VH}" role="img" aria-label="Ward-Beck Systems XTM Master Visualizer" style="width:100%;display:block;border-radius:0">
+  return `<svg class="xtm-master-panel" id="xtm_master_panel" viewBox="0 0 ${VW} ${VH}" role="img" aria-label="Ward-Beck Systems XTM Master Visualizer" style="width:100%;display:block;border-radius:0">
       ${SHELL_DEFS}
 
       <!-- Seamless Borderless Canvas -->
@@ -29,7 +29,9 @@ export function buildShellSvg(o: ShellOptions): string {
       ${renderMcCurdyPanel()}
 
       <!-- Channel A Signature Green Console Frame -->
-      ${CHANNEL_A_FRAME}
+      <g id="xtm_channel_a_frame" class="xtm-channel-frame">
+        ${CHANNEL_A_FRAME}
+      </g>
 
       <!-- Channel A Pair: Meter 0 (VU) + Meter 1 (PPM) -->
       ${meter(0, 373, 'vu')}
@@ -39,7 +41,9 @@ export function buildShellSvg(o: ShellOptions): string {
       ${renderCenterConsole(on)}
 
       <!-- Channel B Signature Green Console Frame -->
-      ${CHANNEL_B_FRAME}
+      <g id="xtm_channel_b_frame" class="xtm-channel-frame">
+        ${CHANNEL_B_FRAME}
+      </g>
 
       <!-- Channel B Pair: Meter 2 (VU) + Meter 3 (PPM) -->
       ${meter(2, 2198, 'vu')}

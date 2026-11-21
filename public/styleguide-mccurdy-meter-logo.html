@@ -497,21 +497,22 @@
     <div class="header-inner">
       <div class="brand-cluster">
         <a href="https://likedotaudio.github.io/WBSps.ca/" title="WBSps.ca Archive Home" style="display:flex;align-items:center;text-decoration:none;">
-          <!-- Exact Vector Cartouche in Header -->
+          <!-- Exact Vector Cartouche in Header (gemini-svg (13).svg) -->
           <div class="mccurdy-header-badge">
-            <svg viewBox="0 0 100 32" width="76" height="24">
-              <path d="M 2.0,6.8 L 50.0,2.0 L 98.0,6.8 L 93.6,25.2 L 50.0,30.0 L 6.4,25.2 Z"
-                    fill="#365467" stroke="#d9e2e8" stroke-width="1.8" stroke-linejoin="round" />
-              <text x="50" y="20.5" font-family="'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="13" font-weight="700" fill="#e1e9ef" text-anchor="middle" letter-spacing="0.5">
-                M<tspan font-size="10.2" dy="-0.4">c</tspan><tspan font-size="13" dy="0.4">CURDY</tspan>
-              </text>
+            <svg viewBox="0 0 600 220" width="76" height="28">
+              <path d="M 294,14 Q 300,12.5 306,14 L 556,48 Q 566,49.5 562,60 L 517,156 Q 514,162 506,163 L 306,204 Q 300,205.5 294,204 L 94,163 Q 86,162 83,156 L 38,60 Q 34,49.5 44,48 Z"
+                    fill="#365467" stroke="#d9e2e8" stroke-width="3" stroke-linejoin="round" />
+              <path fill="#e1e9ef" d="M 101,46 L 139,46 L 139,62 C 149,49 164,43 181,43 C 199,43 213,50 221,63 C 231,49 246,43 263,43 C 289,43 306,59 306,87 L 306,156 L 317,156 L 317,163 L 271,163 L 271,156 L 281,156 L 281,89 C 281,71 271,61 255,61 C 239,61 227,72 227,91 L 227,156 L 238,156 L 238,163 L 192,163 L 192,156 L 202,156 L 202,89 C 202,71 192,61 176,61 C 160,61 148,72 148,91 L 148,156 L 159,156 L 159,163 L 113,163 L 113,156 L 123,156 L 123,54 L 101,54 Z" />
+              <text x="323" y="84" font-family="Georgia, 'Times New Roman', serif" font-weight="bold" font-size="33" fill="#e1e9ef">C</text>
+              <text x="349" y="109" font-family="Georgia, 'Times New Roman', serif" font-weight="bold" font-size="56" letter-spacing="1.5" fill="#e1e9ef">CURDY</text>
+              <path fill="#1a1715" d="M 264,118 L 523,118 A 11,11 0 0 1 523,140 L 264,140 A 11,11 0 0 1 264,118 Z" />
             </svg>
           </div>
         </a>
         <div class="title-block">
           <h1>
             <span><a href="https://likedotaudio.github.io/WBSps.ca/" style="color:inherit;text-decoration:none;">WBSps.ca</a> • McCurdy Meter Dial Cartouche</span>
-            <span class="pill">STYLEGUIDE V1.0</span>
+            <span class="pill">STYLEGUIDE V2.0</span>
           </h1>
           <p>Official vector specification and engineering guidelines for the analog meter movement badge.</p>
         </div>
@@ -523,7 +524,7 @@
         <a href="#palette">Color Palette</a>
         <a href="#typography">Typography</a>
         <a href="#geometry">Vector Blueprint</a>
-        <a href="#rules">Rules</a>
+        <a href="#scaling">Scaling Rules</a>
         <a href="#tokens">Code Tokens</a>
         <a href="styleguide-m600.html" style="color:var(--text-secondary);">M600 Guide →</a>
       </nav>
@@ -544,22 +545,92 @@
         <!-- Left: Interactive Canvas -->
         <div id="previewCanvas" class="preview-canvas-wrapper">
           <!-- Physical Reference Photo Pill -->
-          <div class="reference-photo-badge">
-            <img src="images/mccurdy-meter-logo-ref.png" alt="Physical Reference" />
-            <span>Physical Reference Photo</span>
+          <div class="reference-photo-badge" style="gap: 0.8rem;">
+            <div style="display:flex;align-items:center;gap:0.4rem;">
+              <img src="images/mccurdy-badge-photo.jpg" alt="Physical Reference Badge" style="height: 28px; width: auto; border-radius: 3px;" />
+              <span>Vintage Plate Photo</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:0.4rem;border-left:1px solid rgba(255,255,255,0.2);padding-left:0.6rem;">
+              <img src="images/mccurdy-meter-logo-ref.png" alt="Physical Reference Dial" style="height: 28px; width: auto; border-radius: 3px;" />
+              <span>Meter Dial Photo</span>
+            </div>
           </div>
 
-          <!-- Dynamic SVG Cartouche Badge -->
-          <div id="svgContainer" style="width: 320px; transition: transform 0.2s ease;">
-            <svg id="liveSvg" viewBox="0 0 100 32" width="100%" height="100%" style="overflow: visible; filter: drop-shadow(0 4px 10px rgba(0,0,0,0.5));">
-              <path id="cartoucheBezel" d="M 2.0,6.8 L 50.0,2.0 L 98.0,6.8 L 93.6,25.2 L 50.0,30.0 L 6.4,25.2 Z"
-                    fill="#365467" stroke="#d9e2e8" stroke-width="1.8" stroke-linejoin="round" />
-              <text id="cartoucheWordmark" x="50" y="20.5"
-                    font-family="'Helvetica Neue', Helvetica, Arial, sans-serif"
-                    font-size="13" font-weight="700" fill="#e1e9ef"
-                    text-anchor="middle" letter-spacing="0.5">
-                M<tspan font-size="10.2" dy="-0.4">c</tspan><tspan font-size="13" dy="0.4">CURDY</tspan>
-              </text>
+          <!-- Dynamic SVG Cartouche Badge (gemini-svg (13).svg) -->
+          <div id="svgContainer" style="width: 380px; transition: transform 0.2s ease;">
+            <svg id="liveSvg" viewBox="0 0 600 220" width="100%" height="100%" style="overflow: visible; filter: drop-shadow(0 4px 10px rgba(0,0,0,0.5));">
+              <defs>
+                <path id="badge-shape" d="
+                  M 294,14
+                  Q 300,12.5 306,14
+                  L 556,48
+                  Q 566,49.5 562,60
+                  L 517,156
+                  Q 514,162 506,163
+                  L 306,204
+                  Q 300,205.5 294,204
+                  L 94,163
+                  Q 86,162 83,156
+                  L 38,60
+                  Q 34,49.5 44,48
+                  Z" />
+              </defs>
+
+              <!-- Elongated Faceted Hexagonal Body -->
+              <use id="cartoucheBezel" href="#badge-shape" fill="#f5ede3" stroke="#1a1715" stroke-width="2.5" />
+
+              <!-- Lowercase Serif 'm' with Tall Stem -->
+              <path id="cartoucheM" fill="#1a1715" d="
+                M 101,46
+                L 139,46
+                L 139,62
+                C 149,49 164,43 181,43
+                C 199,43 213,50 221,63
+                C 231,49 246,43 263,43
+                C 289,43 306,59 306,87
+                L 306,156
+                L 317,156
+                L 317,163
+                L 271,163
+                L 271,156
+                L 281,156
+                L 281,89
+                C 281,71 271,61 255,61
+                C 239,61 227,72 227,91
+                L 227,156
+                L 238,156
+                L 238,163
+                L 192,163
+                L 192,156
+                L 202,156
+                L 202,89
+                C 202,71 192,61 176,61
+                C 160,61 148,72 148,91
+                L 148,156
+                L 159,156
+                L 159,163
+                L 113,163
+                L 113,156
+                L 123,156
+                L 123,54
+                L 101,54
+                Z" />
+
+              <!-- Serif 'cCURDY' Letterforms -->
+              <text id="cartoucheC" x="323" y="84" font-family="Georgia, 'Times New Roman', serif" font-weight="bold" font-size="33" fill="#1a1715">C</text>
+              <text id="cartoucheCURDY" x="349" y="109" font-family="Georgia, 'Times New Roman', serif" font-weight="bold" font-size="56" letter-spacing="1.5" fill="#1a1715">CURDY</text>
+
+              <!-- Horizontal Capsule / Pill Bar Underline -->
+              <path id="cartouchePill" fill="#1a1715" d="
+                M 264,118
+                L 523,118
+                A 11,11 0 0 1 523,140
+                L 264,140
+                A 11,11 0 0 1 264,118
+                Z" />
+
+              <!-- Micro-text inside Pill (Hidden when small <160px for sub-pixel acuity) -->
+              <text id="cartoucheRadio" class="mc-micro-text" x="396" y="133.5" font-family="Arial, Helvetica, sans-serif" font-weight="bold" font-size="12.5" letter-spacing="1.2" text-anchor="middle" fill="#f5ede3">RADIO INDUSTRIES LIMITED</text>
             </svg>
           </div>
         </div>
@@ -569,25 +640,28 @@
           <h3>Inspector Controls</h3>
 
           <div class="ctrl-group">
-            <label>Scale / Size: <span id="valScale">320 px</span></label>
-            <input type="range" id="inputScale" min="120" max="440" value="320" />
+            <label>Scale / Size: <span id="valScale">380 px</span></label>
+            <input type="range" id="inputScale" min="60" max="600" value="380" />
+            <div id="scaleModeIndicator" style="margin-top: 0.2rem; font-size: 0.72rem; padding: 0.35rem 0.6rem; border-radius: 4px; background: rgba(34, 197, 94, 0.15); color: #4ade80; border: 1px solid rgba(34, 197, 94, 0.3);">
+              <strong>Full Scale (≥160px):</strong> Full typography with "RADIO INDUSTRIES LIMITED" displayed.
+            </div>
           </div>
 
           <div class="ctrl-group">
-            <label>Bezel Stroke Width: <span id="valStroke">1.8 px</span></label>
-            <input type="range" id="inputStroke" min="1.0" max="3.5" step="0.1" value="1.8" />
+            <label>Bezel Stroke Width: <span id="valStroke">2.5 px</span></label>
+            <input type="range" id="inputStroke" min="1.0" max="6.0" step="0.2" value="2.5" />
           </div>
 
           <div class="ctrl-group">
-            <label>Letter Spacing: <span id="valTracking">+0.5 px</span></label>
-            <input type="range" id="inputTracking" min="0.0" max="2.0" step="0.1" value="0.5" />
+            <label>Letter Spacing: <span id="valTracking">+1.5 px</span></label>
+            <input type="range" id="inputTracking" min="0.0" max="4.0" step="0.2" value="1.5" />
           </div>
 
           <div class="ctrl-group">
             <label>Dial Environment Theme:</label>
             <div class="btn-row">
-              <button class="btn-action theme-btn" data-theme="slate">Studio Slate</button>
               <button class="btn-action theme-btn" data-theme="cream">Cream Dial</button>
+              <button class="btn-action theme-btn" data-theme="slate">Studio Slate</button>
               <button class="btn-action theme-btn" data-theme="black">Black Face</button>
               <button class="btn-action theme-btn" data-theme="transparent">Transparent</button>
             </div>
@@ -797,62 +871,60 @@
     <section id="geometry">
       <div class="section-header">
         <h2>04 / Vector Blueprint &amp; Cartouche Geometry</h2>
-        <span>Mathematical coordinates, angles and construction of the 6-point faceted hexagon</span>
+        <span>Mathematical coordinates, angles and construction on the 600 × 220 grid</span>
       </div>
 
       <div class="spec-two-col">
         <!-- Coordinate Table -->
         <div class="spec-box">
-          <h3>Normalized Hexagonal Grid (100 × 32 Units)</h3>
+          <h3>Normalized Master Grid (600 × 220 Units)</h3>
           <p style="font-size: 0.82rem; color: var(--text-secondary); margin-bottom: 1rem;">
-            The cartouche outline is composed of an elongated 6-point faceted polygon with a subtle roof apex and bottom keel:
+            The cartouche outline is composed of an elongated 6-point faceted polygon with roof apex and bottom keel, filleted at all corners with smooth quadratic curves:
           </p>
 
           <table class="geom-table">
             <thead>
               <tr>
-                <th>Vertex</th>
-                <th>X</th>
-                <th>Y</th>
-                <th>Segment Description</th>
+                <th>Feature</th>
+                <th>Coordinates / Vector</th>
+                <th>Description</th>
               </tr>
             </thead>
             <tbody>
               <tr>
-                <td><strong>V1</strong></td>
-                <td>50.0</td>
-                <td>2.0</td>
-                <td>Top Center Roof Apex (Peak pointing upward)</td>
+                <td><strong>Top Ridge Apex</strong></td>
+                <td>(300, 13) [Q 294,14 to 306,14]</td>
+                <td>Subtle upward roof apex with rounded crest fillet</td>
               </tr>
               <tr>
-                <td><strong>V2</strong></td>
-                <td>98.0</td>
-                <td>6.8</td>
-                <td>Top-Right Corner (Slope: -5.7° pitch)</td>
+                <td><strong>Top-Right Corner</strong></td>
+                <td>(556, 48) &rarr; (562, 60)</td>
+                <td>Sloped upper wing facet (downward pitch: 7.7°)</td>
               </tr>
               <tr>
-                <td><strong>V3</strong></td>
-                <td>93.6</td>
-                <td>25.2</td>
-                <td>Bottom-Right Corner (Inward rake: 12.3°)</td>
+                <td><strong>Bottom-Right Corner</strong></td>
+                <td>(517, 156) &rarr; (506, 163)</td>
+                <td>Inwardly raked side corner (inward pitch: 25.1°)</td>
               </tr>
               <tr>
-                <td><strong>V4</strong></td>
-                <td>50.0</td>
-                <td>30.0</td>
-                <td>Bottom Center Keel Apex (Point pointing downward)</td>
+                <td><strong>Bottom Keel Apex</strong></td>
+                <td>(300, 205) [Q 306,204 to 294,204]</td>
+                <td>Subtle downward keel apex with rounded point fillet</td>
               </tr>
               <tr>
-                <td><strong>V5</strong></td>
-                <td>6.4</td>
-                <td>25.2</td>
-                <td>Bottom-Left Corner (Slope: -5.7° pitch)</td>
+                <td><strong>Bottom-Left Corner</strong></td>
+                <td>(94, 163) &rarr; (83, 156)</td>
+                <td>Symmetrical bottom-left raked corner</td>
               </tr>
               <tr>
-                <td><strong>V6</strong></td>
-                <td>2.0</td>
-                <td>6.8</td>
-                <td>Top-Left Corner (Inward rake: 12.3°)</td>
+                <td><strong>Top-Left Corner</strong></td>
+                <td>(38, 60) &rarr; (44, 48)</td>
+                <td>Symmetrical top-left sloped wing facet</td>
+              </tr>
+              <tr>
+                <td><strong>Underline Pill Bar</strong></td>
+                <td>x: 264 to 523, y: 118 to 140 (h=22)</td>
+                <td>Rounded capsule bar under 'cCURDY' (rx=11)</td>
               </tr>
             </tbody>
           </table>
@@ -862,136 +934,184 @@
         <div class="spec-box" style="display: flex; flex-direction: column; justify-content: space-between;">
           <h3>Blueprint Vector Dimensioning</h3>
           <div style="background: #0c0e12; border: 1px solid var(--border-subtle); border-radius: 6px; padding: 1.5rem; display: flex; align-items: center; justify-content: center;">
-            <svg viewBox="-5 -5 110 42" width="100%" height="auto" style="overflow: visible;">
+            <svg viewBox="0 0 600 220" width="100%" height="auto" style="overflow: visible;">
               <!-- Grid Background Lines -->
-              <line x1="50" y1="-2" x2="50" y2="34" stroke="#2a303c" stroke-width="0.75" stroke-dasharray="2,2" />
-              <line x1="0" y1="16" x2="100" y2="16" stroke="#2a303c" stroke-width="0.75" stroke-dasharray="2,2" />
+              <line x1="300" y1="0" x2="300" y2="220" stroke="#2a303c" stroke-width="1.5" stroke-dasharray="4,4" />
+              <line x1="0" y1="110" x2="600" y2="110" stroke="#2a303c" stroke-width="1.5" stroke-dasharray="4,4" />
 
               <!-- Outer Dimension Guides -->
-              <rect x="2" y="2" width="96" height="28" fill="none" stroke="#334155" stroke-width="0.6" stroke-dasharray="1.5,1.5" />
+              <rect x="38" y="14" width="524" height="190" fill="none" stroke="#334155" stroke-width="1.0" stroke-dasharray="3,3" />
 
               <!-- Main Polygon -->
-              <path d="M 2.0,6.8 L 50.0,2.0 L 98.0,6.8 L 93.6,25.2 L 50.0,30.0 L 6.4,25.2 Z"
-                    fill="rgba(0, 122, 204, 0.12)" stroke="#007acc" stroke-width="1.8" stroke-linejoin="round" />
+              <path d="M 294,14 Q 300,12.5 306,14 L 556,48 Q 566,49.5 562,60 L 517,156 Q 514,162 506,163 L 306,204 Q 300,205.5 294,204 L 94,163 Q 86,162 83,156 L 38,60 Q 34,49.5 44,48 Z"
+                    fill="rgba(0, 122, 204, 0.12)" stroke="#007acc" stroke-width="2.5" stroke-linejoin="round" />
+
+              <!-- Underline Pill -->
+              <path d="M 264,118 L 523,118 A 11,11 0 0 1 523,140 L 264,140 A 11,11 0 0 1 264,118 Z" fill="rgba(56, 189, 248, 0.25)" stroke="#38bdf8" stroke-width="1.5"/>
 
               <!-- Vertex Dots -->
-              <circle cx="50.0" cy="2.0" r="1.8" fill="#38bdf8" />
-              <circle cx="98.0" cy="6.8" r="1.8" fill="#38bdf8" />
-              <circle cx="93.6" cy="25.2" r="1.8" fill="#38bdf8" />
-              <circle cx="50.0" cy="30.0" r="1.8" fill="#38bdf8" />
-              <circle cx="6.4" cy="25.2" r="1.8" fill="#38bdf8" />
-              <circle cx="2.0" cy="6.8" r="1.8" fill="#38bdf8" />
+              <circle cx="300" cy="13" r="4.5" fill="#38bdf8" />
+              <circle cx="560" cy="54" r="4.5" fill="#38bdf8" />
+              <circle cx="512" cy="160" r="4.5" fill="#38bdf8" />
+              <circle cx="300" cy="205" r="4.5" fill="#38bdf8" />
+              <circle cx="88" cy="160" r="4.5" fill="#38bdf8" />
+              <circle cx="41" cy="54" r="4.5" fill="#38bdf8" />
 
-              <!-- Angle Indicators -->
-              <text x="50" y="-3.5" font-size="3" fill="#94a3b8" text-anchor="middle" font-family="monospace">Apex Pitch: ~6°</text>
-              <text x="100" y="16.5" font-size="2.8" fill="#94a3b8" text-anchor="start" font-family="monospace">Rake: 12.3°</text>
+              <!-- Annotations -->
+              <text x="300" y="-4" font-size="14" fill="#94a3b8" text-anchor="middle" font-family="monospace">Apex Pitch: ~7.7°</text>
+              <text x="575" y="110" font-size="13" fill="#94a3b8" text-anchor="start" font-family="monospace">Rake: 25.1°</text>
             </svg>
           </div>
           <div style="font-size: 0.78rem; color: var(--text-muted); margin-top: 0.8rem; font-family: ui-monospace, monospace;">
-            Aspect Ratio: 3.125 : 1 &nbsp;|&nbsp; Included Apex Angle: 168.6° &nbsp;|&nbsp; Stroke Join: round
+            Aspect Ratio: 2.727 : 1 (600 × 220) &nbsp;|&nbsp; Pill Bar: 259 × 22 &nbsp;|&nbsp; Stroke Join: round
           </div>
         </div>
       </div>
     </section>
 
-    <!-- SECTION 5: RULES & USAGE GUIDELINES -->
-    <section id="rules">
+    <!-- SECTION 5: RESPONSIVE SCALING & MICRO-TEXT THRESHOLDS -->
+    <section id="scaling">
       <div class="section-header">
-        <h2>05 / Usage Rules &amp; Dial Implementation</h2>
-        <span>Placement, clear space requirements, and prohibited modifications</span>
+        <h2>05 / Responsive Scaling &amp; Legibility Rules</h2>
+        <span>Why the little text goes away on small meter dials</span>
       </div>
 
       <div class="spec-two-col">
-        <!-- Placement & Clear Space -->
+        <!-- Rationale & Explanation -->
         <div class="spec-box">
-          <h3>Meter Dial Placement &amp; Clear Space</h3>
-          <ul style="font-size: 0.82rem; color: var(--text-secondary); line-height: 1.8; padding-left: 1.2rem;">
-            <li><strong>Vertical Clearance</strong>: Position centered vertically between the lower 0–100% modulation scale and the bottom pivot well cap.</li>
-            <li><strong>Horizontal Centerline</strong>: The top apex ($x=50$) must align exactly with the meter movement's mechanical pivot axis.</li>
-            <li><strong>Minimum Clear Space</strong>: Maintain a minimum clearance zone equal to $0.5\times$ the badge height on all sides before any scale ticks or legend text.</li>
-            <li><strong>Minimum Legibility Width</strong>: 
-              <br/>• Screen / Digital: $\ge 64\text{ px}$ width
-              <br/>• Physical Faceplate Print: $\ge 14\text{ mm}$ width
-            </li>
+          <h3>The Optical Legibility Problem at Sub-Pixel Scale</h3>
+          <p style="font-size: 0.82rem; color: var(--text-secondary); line-height: 1.7; margin-bottom: 0.8rem;">
+            On a physical 3.5" to 4.5" audio meter faceplate (e.g. McCurdy SA14023), the entire brand cartouche is printed only 18&nbsp;mm to 22&nbsp;mm wide. The sub-line <code>RADIO INDUSTRIES LIMITED</code> is printed at less than 0.5&nbsp;mm height.
+          </p>
+          <p style="font-size: 0.82rem; color: var(--text-secondary); line-height: 1.7; margin-bottom: 0.8rem;">
+            In digital screen rendering, when the badge is scaled below <strong>160&nbsp;px width</strong> (such as on an 88&nbsp;px meter dial badge), the 12.5&nbsp;px font scales down to <strong>under 1.8&nbsp;px</strong>. At this size:
+          </p>
+          <ul style="font-size: 0.82rem; color: var(--text-secondary); line-height: 1.8; padding-left: 1.2rem; margin-bottom: 0.8rem;">
+            <li>Font glyph stems collapse into fractional pixels.</li>
+            <li>Anti-aliasing produces a muddy, illegible grey smear across the pill bar.</li>
+            <li>Visual clutter distracts from the needle and audio scale reading.</li>
           </ul>
+          <div style="padding: 0.85rem; background: rgba(34, 197, 94, 0.1); border-left: 3px solid #22c55e; border-radius: 4px; font-size: 0.8rem; color: #86efac;">
+            <strong>Engineering Rule:</strong> When badge width is &lt;&nbsp;160&nbsp;px (scale &lt;&nbsp;0.35&times;), the text <code>RADIO INDUSTRIES LIMITED</code> must be omitted. The solid pill bar remains underneath 'cCURDY' providing a crisp, sharp grounding baseline.
+          </div>
         </div>
 
-        <!-- Prohibited Modifications -->
-        <div class="spec-box">
-          <h3 style="color: #f87171;">Prohibited Modifications</h3>
-          <ul style="font-size: 0.82rem; color: var(--text-secondary); line-height: 1.8; padding-left: 1.2rem;">
-            <li><strong>No Flat Roofs</strong>: Never flatten the top or bottom ridges into a simple rectangle. The faceted peaks are essential.</li>
-            <li><strong>No Capitalized 'C'</strong>: Do not spell the mark as <code>MCCURDY</code>.</li>
-            <li><strong>No Serif Typography</strong>: Never substitute serif or modern geometric circular typefaces (e.g., Futura, Times).</li>
-            <li><strong>No Drop Shadows on Dial</strong>: Meter dial graphics are printed flat via precision silk-screen or photo-etching; avoid artificial heavy drop shadows on the actual dial face.</li>
-          </ul>
+        <!-- Side-by-side Visual Comparison -->
+        <div class="spec-box" style="display: flex; flex-direction: column; gap: 1.2rem;">
+          <h3>Side-by-Side Scale Comparison</h3>
+          
+          <!-- Variant A: Large Production Badge -->
+          <div style="background: #111418; border: 1px solid var(--border-subtle); border-radius: 6px; padding: 1.2rem;">
+            <div style="font-size: 0.74rem; font-weight: 700; color: #38bdf8; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 0.6rem;">
+              Full Scale (Width &ge; 160 px) &bull; Nameplate &amp; Headers
+            </div>
+            <div style="width: 260px; margin: 0 auto;">
+              <svg viewBox="0 0 600 220" width="100%" height="auto">
+                <path d="M 294,14 Q 300,12.5 306,14 L 556,48 Q 566,49.5 562,60 L 517,156 Q 514,162 506,163 L 306,204 Q 300,205.5 294,204 L 94,163 Q 86,162 83,156 L 38,60 Q 34,49.5 44,48 Z" fill="#f5ede3" stroke="#1a1715" stroke-width="2.5" />
+                <path fill="#1a1715" d="M 101,46 L 139,46 L 139,62 C 149,49 164,43 181,43 C 199,43 213,50 221,63 C 231,49 246,43 263,43 C 289,43 306,59 306,87 L 306,156 L 317,156 L 317,163 L 271,163 L 271,156 L 281,156 L 281,89 C 281,71 271,61 255,61 C 239,61 227,72 227,91 L 227,156 L 238,156 L 238,163 L 192,163 L 192,156 L 202,156 L 202,89 C 202,71 192,61 176,61 C 160,61 148,72 148,91 L 148,156 L 159,156 L 159,163 L 113,163 L 113,156 L 123,156 L 123,54 L 101,54 Z" />
+                <text x="323" y="84" font-family="Georgia, serif" font-weight="bold" font-size="33" fill="#1a1715">C</text>
+                <text x="349" y="109" font-family="Georgia, serif" font-weight="bold" font-size="56" letter-spacing="1.5" fill="#1a1715">CURDY</text>
+                <path fill="#1a1715" d="M 264,118 L 523,118 A 11,11 0 0 1 523,140 L 264,140 A 11,11 0 0 1 264,118 Z" />
+                <text x="396" y="133.5" font-family="Arial, sans-serif" font-weight="bold" font-size="12.5" letter-spacing="1.2" text-anchor="middle" fill="#f5ede3">RADIO INDUSTRIES LIMITED</text>
+              </svg>
+            </div>
+            <div style="font-size: 0.72rem; color: var(--text-muted); text-align: center; margin-top: 0.5rem;">
+              &check; "RADIO INDUSTRIES LIMITED" rendered clearly inside pill.
+            </div>
+          </div>
+
+          <!-- Variant B: Compact Dial Badge -->
+          <div style="background: #111418; border: 1px solid var(--border-subtle); border-radius: 6px; padding: 1.2rem;">
+            <div style="font-size: 0.74rem; font-weight: 700; color: #f59e0b; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 0.6rem;">
+              Compact Scale (Width &lt; 160 px) &bull; Meter Dial Movement (88 px)
+            </div>
+            <div style="width: 88px; margin: 0 auto;">
+              <svg viewBox="0 0 600 220" width="100%" height="auto">
+                <path d="M 294,14 Q 300,12.5 306,14 L 556,48 Q 566,49.5 562,60 L 517,156 Q 514,162 506,163 L 306,204 Q 300,205.5 294,204 L 94,163 Q 86,162 83,156 L 38,60 Q 34,49.5 44,48 Z" fill="#f5ede3" stroke="#1a1715" stroke-width="3.5" />
+                <path fill="#1a1715" d="M 101,46 L 139,46 L 139,62 C 149,49 164,43 181,43 C 199,43 213,50 221,63 C 231,49 246,43 263,43 C 289,43 306,59 306,87 L 306,156 L 317,156 L 317,163 L 271,163 L 271,156 L 281,156 L 281,89 C 281,71 271,61 255,61 C 239,61 227,72 227,91 L 227,156 L 238,156 L 238,163 L 192,163 L 192,156 L 202,156 L 202,89 C 202,71 192,61 176,61 C 160,61 148,72 148,91 L 148,156 L 159,156 L 159,163 L 113,163 L 113,156 L 123,156 L 123,54 L 101,54 Z" />
+                <text x="323" y="84" font-family="Georgia, serif" font-weight="bold" font-size="33" fill="#1a1715">C</text>
+                <text x="349" y="109" font-family="Georgia, serif" font-weight="bold" font-size="56" letter-spacing="1.5" fill="#1a1715">CURDY</text>
+                <path fill="#1a1715" d="M 264,118 L 523,118 A 11,11 0 0 1 523,140 L 264,140 A 11,11 0 0 1 264,118 Z" />
+              </svg>
+            </div>
+            <div style="font-size: 0.72rem; color: var(--text-muted); text-align: center; margin-top: 0.5rem;">
+              &check; Little text omitted: Solid pill bar remains clean, crisp, and high-contrast.
+            </div>
+          </div>
         </div>
       </div>
     </section>
 
-    <!-- SECTION 6: CODE TOKENS -->
+    <!-- SECTION 6: PRODUCTION CODE TOKENS -->
     <section id="tokens">
       <div class="section-header">
         <h2>06 / Production Code Tokens</h2>
         <span>Ready-to-use SVG, CSS and TypeScript components</span>
       </div>
 
-      <!-- SVG Snippet -->
+      <!-- SVG Snippet Full -->
       <div class="code-container" style="margin-bottom: 1.5rem;">
         <div class="code-header">
-          <span>SVG Production Master (viewBox="0 0 100 32")</span>
-          <button onclick="copySnippet('codeSvg')">Copy SVG</button>
+          <span>SVG Production Master &bull; Full Variant (&ge;160px)</span>
+          <button onclick="copySnippet('codeSvgFull')">Copy Full SVG</button>
         </div>
-        <pre><code id="codeSvg">&lt;svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 32" width="100%" height="100%"&gt;
-  &lt;g id="mccurdy-meter-cartouche"&gt;
-    &lt;!-- Faceted 6-Point Hexagonal Bezel --&gt;
-    &lt;path d="M 2.0,6.8 L 50.0,2.0 L 98.0,6.8 L 93.6,25.2 L 50.0,30.0 L 6.4,25.2 Z"
-          fill="#365467" stroke="#D9E2E8" stroke-width="1.8" stroke-linejoin="round" /&gt;
-    &lt;!-- Proprietary Hybrid Logotype --&gt;
-    &lt;text x="50" y="20.5"
-          font-family="'Helvetica Neue', Helvetica, Arial, sans-serif"
-          font-size="13" font-weight="700" fill="#E1E9EF"
-          text-anchor="middle" letter-spacing="0.5"&gt;
-      M&lt;tspan font-size="10.2" dy="-0.4"&gt;c&lt;/tspan&gt;&lt;tspan font-size="13" dy="0.4"&gt;CURDY&lt;/tspan&gt;
-    &lt;/text&gt;
-  &lt;/g&gt;
+        <pre><code id="codeSvgFull">&lt;svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 220" width="100%" height="100%"&gt;
+  &lt;path d="M 294,14 Q 300,12.5 306,14 L 556,48 Q 566,49.5 562,60 L 517,156 Q 514,162 506,163 L 306,204 Q 300,205.5 294,204 L 94,163 Q 86,162 83,156 L 38,60 Q 34,49.5 44,48 Z"
+        fill="#f5ede3" stroke="#1a1715" stroke-width="2.5" /&gt;
+  &lt;path fill="#1a1715" d="M 101,46 L 139,46 L 139,62 C 149,49 164,43 181,43 C 199,43 213,50 221,63 C 231,49 246,43 263,43 C 289,43 306,59 306,87 L 306,156 L 317,156 L 317,163 L 271,163 L 271,156 L 281,156 L 281,89 C 281,71 271,61 255,61 C 239,61 227,72 227,91 L 227,156 L 238,156 L 238,163 L 192,163 L 192,156 L 202,156 L 202,89 C 202,71 192,61 176,61 C 160,61 148,72 148,91 L 148,156 L 159,156 L 159,163 L 113,163 L 113,156 L 123,156 L 123,54 L 101,54 Z" /&gt;
+  &lt;text x="323" y="84" font-family="Georgia, 'Times New Roman', serif" font-weight="bold" font-size="33" fill="#1a1715"&gt;C&lt;/text&gt;
+  &lt;text x="349" y="109" font-family="Georgia, 'Times New Roman', serif" font-weight="bold" font-size="56" letter-spacing="1.5" fill="#1a1715"&gt;CURDY&lt;/text&gt;
+  &lt;path fill="#1a1715" d="M 264,118 L 523,118 A 11,11 0 0 1 523,140 L 264,140 A 11,11 0 0 1 264,118 Z" /&gt;
+  &lt;text x="396" y="133.5" font-family="Arial, Helvetica, sans-serif" font-weight="bold" font-size="12.5" letter-spacing="1.2" text-anchor="middle" fill="#f5ede3"&gt;RADIO INDUSTRIES LIMITED&lt;/text&gt;
 &lt;/svg&gt;</code></pre>
       </div>
 
-      <!-- TypeScript Snippet for mccurdy-vu.ts -->
+      <!-- SVG Snippet Compact -->
+      <div class="code-container" style="margin-bottom: 1.5rem;">
+        <div class="code-header">
+          <span>SVG Production Master &bull; Compact Dial Variant (&lt;160px)</span>
+          <button onclick="copySnippet('codeSvgCompact')">Copy Compact SVG</button>
+        </div>
+        <pre><code id="codeSvgCompact">&lt;svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 220" width="100%" height="100%"&gt;
+  &lt;path d="M 294,14 Q 300,12.5 306,14 L 556,48 Q 566,49.5 562,60 L 517,156 Q 514,162 506,163 L 306,204 Q 300,205.5 294,204 L 94,163 Q 86,162 83,156 L 38,60 Q 34,49.5 44,48 Z"
+        fill="#f5ede3" stroke="#1a1715" stroke-width="3.5" /&gt;
+  &lt;path fill="#1a1715" d="M 101,46 L 139,46 L 139,62 C 149,49 164,43 181,43 C 199,43 213,50 221,63 C 231,49 246,43 263,43 C 289,43 306,59 306,87 L 306,156 L 317,156 L 317,163 L 271,163 L 271,156 L 281,156 L 281,89 C 281,71 271,61 255,61 C 239,61 227,72 227,91 L 227,156 L 238,156 L 238,163 L 192,163 L 192,156 L 202,156 L 202,89 C 202,71 192,61 176,61 C 160,61 148,72 148,91 L 148,156 L 159,156 L 159,163 L 113,163 L 113,156 L 123,156 L 123,54 L 101,54 Z" /&gt;
+  &lt;text x="323" y="84" font-family="Georgia, 'Times New Roman', serif" font-weight="bold" font-size="33" fill="#1a1715"&gt;C&lt;/text&gt;
+  &lt;text x="349" y="109" font-family="Georgia, 'Times New Roman', serif" font-weight="bold" font-size="56" letter-spacing="1.5" fill="#1a1715"&gt;CURDY&lt;/text&gt;
+  &lt;path fill="#1a1715" d="M 264,118 L 523,118 A 11,11 0 0 1 523,140 L 264,140 A 11,11 0 0 1 264,118 Z" /&gt;
+&lt;/svg&gt;</code></pre>
+      </div>
+
+      <!-- TypeScript Snippet for vu-badge.ts -->
       <div class="code-container">
         <div class="code-header">
-          <span>TypeScript Component (mccurdy-vu.ts helper function)</span>
+          <span>TypeScript Component (vu-badge.ts helper function)</span>
           <button onclick="copySnippet('codeTs')">Copy TypeScript</button>
         </div>
         <pre><code id="codeTs">/**
- * Render authentic McCurdy Meter Dial Cartouche Logo
- * @param cx Center X position of the meter face
- * @param cy Center Y position of the cartouche badge
- * @param scale Uniform scale factor (default: 0.92)
- * @param bgColor Cartouche body fill (e.g. '#365467' or 'none')
- * @param strokeColor Bezel outline stroke (e.g. '#D9E2E8' or ink)
- * @param textColor Wordmark text fill (e.g. '#E1E9EF' or ink)
+ * Render authentic McCurdy Radio Industries Limited Dial Badge
+ * @param cx Center X position of meter face
+ * @param cy Center Y position of meter face
+ * @param isPpm Boolean indicating PPM or VU face
  */
-export function renderMcCurdyCartoucheLogo(
-  cx: number,
-  cy: number,
-  scale = 0.92,
-  bgColor = '#365467',
-  strokeColor = '#D9E2E8',
-  textColor = '#E1E9EF'
-): string {
-  const x = cx - 50 * scale;
-  const y = cy - 16 * scale;
-  return `&lt;g id="mccurdy-dial-logo" transform="translate(${x.toFixed(1)}, ${y.toFixed(1)}) scale(${scale.toFixed(3)})"&gt;
-    &lt;path d="M 2.0,6.8 L 50.0,2.0 L 98.0,6.8 L 93.6,25.2 L 50.0,30.0 L 6.4,25.2 Z"
-          fill="${bgColor}" stroke="${strokeColor}" stroke-width="1.8" stroke-linejoin="round" /&gt;
-    &lt;text x="50" y="20.5"
-          font-family="'Helvetica Neue', Helvetica, Arial, sans-serif"
-          font-size="13" font-weight="700" fill="${textColor}"
-          text-anchor="middle" letter-spacing="0.5"&gt;
-      M&lt;tspan font-size="10.2" dy="-0.4"&gt;c&lt;/tspan&gt;&lt;tspan font-size="13" dy="0.4"&gt;CURDY&lt;/tspan&gt;
-    &lt;/text&gt;
+export function renderMcCurdyVuBadge(cx: number, cy: number, ink: string, isPpm = false): string {
+  const bw = 88;
+  const bh = 32.3;
+  const x = cx - (bw / 2);
+  const y = cy + 18;
+  const badgeFill = isPpm ? '#181b20' : '#f5ede3';
+  const badgeStroke = isPpm ? '#cbd5e1' : '#1a1715';
+  const badgeInk = isPpm ? '#f8fafc' : '#1a1715';
+
+  return `&lt;g class="mc-only mc-vu-brand-badge" transform="translate(${x.toFixed(1)}, ${y.toFixed(1)})"&gt;
+    &lt;svg width="${bw}" height="${bh}" viewBox="0 0 600 220" aria-label="McCurdy Radio Industries"&gt;
+      &lt;path d="M 294,14 Q 300,12.5 306,14 L 556,48 Q 566,49.5 562,60 L 517,156 Q 514,162 506,163 L 306,204 Q 300,205.5 294,204 L 94,163 Q 86,162 83,156 L 38,60 Q 34,49.5 44,48 Z"
+            fill="${badgeFill}" stroke="${badgeStroke}" stroke-width="3.5" /&gt;
+      &lt;path fill="${badgeInk}" d="M 101,46 L 139,46 L 139,62 C 149,49 164,43 181,43 C 199,43 213,50 221,63 C 231,49 246,43 263,43 C 289,43 306,59 306,87 L 306,156 L 317,156 L 317,163 L 271,163 L 271,156 L 281,156 L 281,89 C 281,71 271,61 255,61 C 239,61 227,72 227,91 L 227,156 L 238,156 L 238,163 L 192,163 L 192,156 L 202,156 L 202,89 C 202,71 192,61 176,61 C 160,61 148,72 148,91 L 148,156 L 159,156 L 159,163 L 113,163 L 113,156 L 123,156 L 123,54 L 101,54 Z" /&gt;
+      &lt;text x="323" y="84" font-family="Georgia, 'Times New Roman', serif" font-weight="bold" font-size="33" fill="${badgeInk}"&gt;C&lt;/text&gt;
+      &lt;text x="349" y="109" font-family="Georgia, 'Times New Roman', serif" font-weight="bold" font-size="56" letter-spacing="1.5" fill="${badgeInk}"&gt;CURDY&lt;/text&gt;
+      &lt;path fill="${badgeInk}" d="M 264,118 L 523,118 A 11,11 0 0 1 523,140 L 264,140 A 11,11 0 0 1 264,118 Z" /&gt;
+    &lt;/svg&gt;
   &lt;/g&gt;`;
 }</code></pre>
       </div>
@@ -1008,10 +1128,15 @@ export function renderMcCurdyCartoucheLogo(
       const liveSvg = document.getElementById('liveSvg');
       const svgContainer = document.getElementById('svgContainer');
       const cartoucheBezel = document.getElementById('cartoucheBezel');
-      const cartoucheWordmark = document.getElementById('cartoucheWordmark');
+      const cartoucheM = document.getElementById('cartoucheM');
+      const cartoucheC = document.getElementById('cartoucheC');
+      const cartoucheCURDY = document.getElementById('cartoucheCURDY');
+      const cartouchePill = document.getElementById('cartouchePill');
+      const cartoucheRadio = document.getElementById('cartoucheRadio');
       const previewCanvas = document.getElementById('previewCanvas');
       const inputScale = document.getElementById('inputScale');
       const valScale = document.getElementById('valScale');
+      const scaleModeIndicator = document.getElementById('scaleModeIndicator');
       const inputStroke = document.getElementById('inputStroke');
       const valStroke = document.getElementById('valStroke');
       const inputTracking = document.getElementById('inputTracking');
@@ -1020,39 +1145,63 @@ export function renderMcCurdyCartoucheLogo(
 
       // Theme Definitions
       const themes = {
+        cream: {
+          wrapperClass: 'theme-cream',
+          fill: '#f5ede3',
+          stroke: '#1a1715',
+          text: '#1a1715',
+          pill: '#1a1715',
+          radio: '#f5ede3'
+        },
         slate: {
           wrapperClass: '',
           fill: '#365467',
           stroke: '#d9e2e8',
-          text: '#e1e9ef'
-        },
-        cream: {
-          wrapperClass: 'theme-cream',
-          fill: 'none',
-          stroke: '#1e2024',
-          text: '#1e2024'
+          text: '#e1e9ef',
+          pill: '#1a1715',
+          radio: '#f5ede3'
         },
         black: {
           wrapperClass: 'theme-black',
-          fill: 'none',
+          fill: '#141518',
           stroke: '#f1f5f9',
-          text: '#f1f5f9'
+          text: '#f1f5f9',
+          pill: '#f1f5f9',
+          radio: '#141518'
         },
         transparent: {
           wrapperClass: 'theme-transparent',
           fill: 'none',
           stroke: '#d9e2e8',
-          text: '#e1e9ef'
+          text: '#e1e9ef',
+          pill: '#1a1715',
+          radio: '#f5ede3'
         }
       };
 
-      let currentTheme = 'slate';
+      let currentTheme = 'cream';
 
-      // Scale Slider
+      // Scale Slider with Dynamic Micro-Text Threshold
       inputScale.addEventListener('input', (e) => {
-        const val = e.target.value;
+        const val = parseInt(e.target.value, 10);
         svgContainer.style.width = val + 'px';
         valScale.textContent = val + ' px';
+
+        if (val < 160) {
+          // Compact Dial Movement scale: omit micro-text
+          cartoucheRadio.style.display = 'none';
+          scaleModeIndicator.style.background = 'rgba(234, 179, 8, 0.15)';
+          scaleModeIndicator.style.color = '#fde047';
+          scaleModeIndicator.style.borderColor = 'rgba(234, 179, 8, 0.3)';
+          scaleModeIndicator.innerHTML = '<strong>Compact Scale (&lt;160px):</strong> "RADIO INDUSTRIES LIMITED" omitted for clean dial legibility.';
+        } else {
+          // Full scale: display complete typography
+          cartoucheRadio.style.display = '';
+          scaleModeIndicator.style.background = 'rgba(34, 197, 94, 0.15)';
+          scaleModeIndicator.style.color = '#4ade80';
+          scaleModeIndicator.style.borderColor = 'rgba(34, 197, 94, 0.3)';
+          scaleModeIndicator.innerHTML = '<strong>Full Scale (&ge;160px):</strong> Full typography with "RADIO INDUSTRIES LIMITED" displayed.';
+        }
       });
 
       // Stroke Slider
@@ -1065,7 +1214,7 @@ export function renderMcCurdyCartoucheLogo(
       // Tracking Slider
       inputTracking.addEventListener('input', (e) => {
         const val = parseFloat(e.target.value);
-        cartoucheWordmark.setAttribute('letter-spacing', val + 'px');
+        cartoucheCURDY.setAttribute('letter-spacing', val + 'px');
         valTracking.textContent = '+' + val.toFixed(1) + ' px';
       });
 
@@ -1079,10 +1228,58 @@ export function renderMcCurdyCartoucheLogo(
           previewCanvas.className = 'preview-canvas-wrapper ' + t.wrapperClass;
           cartoucheBezel.setAttribute('fill', t.fill);
           cartoucheBezel.setAttribute('stroke', t.stroke);
-          cartoucheWordmark.setAttribute('fill', t.text);
+          cartoucheM.setAttribute('fill', t.text);
+          cartoucheC.setAttribute('fill', t.text);
+          cartoucheCURDY.setAttribute('fill', t.text);
+          cartouchePill.setAttribute('fill', t.pill);
+          cartoucheRadio.setAttribute('fill', t.radio);
           showToast(`Switched to ${themeKey.toUpperCase()} theme`);
         });
       });
+
+      // Copy SVG Button
+      document.getElementById('btnCopySvg').addEventListener('click', () => {
+        const svgCode = liveSvg.outerHTML;
+        navigator.clipboard.writeText(svgCode).then(() => {
+          showToast('Production SVG copied to clipboard!');
+        });
+      });
+
+      // Download SVG Button
+      document.getElementById('btnDownloadSvg').addEventListener('click', () => {
+        const svgCode = liveSvg.outerHTML;
+        const blob = new Blob([svgCode], { type: 'image/svg+xml;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `mccurdy-meter-dial-logo-${currentTheme}.svg`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        showToast('SVG file downloaded!');
+      });
+
+      // Global Helpers
+      window.copyToken = function (token) {
+        navigator.clipboard.writeText(token).then(() => {
+          showToast(`Token ${token} copied!`);
+        });
+      };
+
+      window.copySnippet = function (elemId) {
+        const code = document.getElementById(elemId).textContent;
+        navigator.clipboard.writeText(code).then(() => {
+          showToast('Code snippet copied to clipboard!');
+        });
+      };
+
+      function showToast(msg) {
+        toast.textContent = msg;
+        toast.classList.add('show');
+        setTimeout(() => toast.classList.remove('show'), 2200);
+      }
+    })();
 
       // Copy SVG Button
       document.getElementById('btnCopySvg').addEventListener('click', () => {

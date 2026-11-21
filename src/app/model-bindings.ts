@@ -45,10 +45,45 @@ export function bindModelChange(ctx: AppContext, refs: DrawerControls, sync: Aud
   };
 }
 
+let hasTabChanged = false;
+let hasInputBeenClicked = false;
+
+if (typeof document !== 'undefined') {
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) {
+      hasTabChanged = true;
+    }
+  });
+  window.addEventListener('blur', () => {
+    hasTabChanged = true;
+  });
+}
+
 /** Front panel interactive buttons. */
 export function bindFrontPanel(ctx: AppContext, sync: AudioSync): void {
-  const { model, view } = ctx;
+  const { model, view, audio } = ctx;
   view.onButtonPressed = async (btnName) => {
+    const isInputBtn = btnName.startsWith('INPUT_');
+    const isFirstInputClick = isInputBtn && !hasInputBeenClicked;
+    if (isInputBtn) {
+      hasInputBeenClicked = true;
+    }
+
+    const isTabAudioActive = audio.sourceType === 'system' && audio.stream && audio.stream.active;
+    const shouldPromptTabAudio = hasTabChanged || isFirstInputClick || (btnName === 'INPUT_3' && !isTabAudioActive);
+    hasTabChanged = false;
+
+    // Immediately ask to receive audio from another browser tab if tab changed or on first click of any input
+    if (shouldPromptTabAudio && navigator.mediaDevices && typeof (navigator.mediaDevices as any).getDisplayMedia === 'function') {
+      window.audioReady = true;
+      if (window.audioContext && window.audioContext.state === 'suspended') {
+        window.audioContext.resume().catch(() => {});
+      }
+      model.setInput(3);
+      audio.connectSystemAudio('browser', true).catch(() => {});
+      return;
+    }
+
     if (btnName === 'MODE') {
       model.pressMode();
     } else if (btnName === 'SOURCE') {
@@ -63,10 +98,19 @@ export function bindFrontPanel(ctx: AppContext, sync: AudioSync): void {
         model.setInput(inputNum);
       }
     } else if (btnName === 'CYCLE_STYLE') {
+      // Revert locked expanded meters when user changes meter sets
+      if (model.isLockedExpanded) {
+        model.isLockedExpanded = false;
+      }
       const styles = ['sifam', 'simpson', 'wbs_m405', 'mccurdy_vu', 'standard_vu'];
       const curIdx = styles.indexOf(model.meterStyle);
       model.meterStyle = styles[(curIdx + 1) % styles.length] as any;
+      model.saveEEPROM();
       model.notify();
+    } else if (btnName === 'TOGGLE_LOCKED_EXPANDED') {
+      model.toggleLockedExpanded();
+    } else if (btnName === 'TOGGLE_AUTORANGE') {
+      model.toggleAutoRange();
     } else if (btnName === 'MC_TOGGLE') {
       model.toggleMccurdyRange();
     } else if (btnName === 'MC_RANGE_OUTER') {
@@ -91,7 +135,10 @@ export function bindAudioUnlock(ctx: AppContext, sync: AudioSync): void {
       if (window.audioContext && window.audioContext.state === "suspended") {
         await window.audioContext.resume();
       }
-      await sync.syncAudioWithHardwareMode(model);
+      const isInput = (e.target as Element | null)?.closest('[data-btn^="INPUT_"]');
+      if (!isInput) {
+        await sync.syncAudioWithHardwareMode(model);
+      }
     }
   }, { once: true, passive: true });
 }

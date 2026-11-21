@@ -139,8 +139,8 @@ export function generateShatterInner(cx: number, cy: number, id: number): string
 
 export function renderGlassShatter(cx: number, cy: number, id: number): string {
   return `
-    <!-- VU Meter Shattered Glass Fracture Overlay with Smooth Self-Healing Support -->
-    <g class="vu-glass-shatter" id="vu_shatter_${id}" data-cx="${cx}" data-cy="${cy}" data-id="${id}" style="display: none; opacity: 0; transition: opacity 1.8s ease-out; pointer-events: none;">
+    <!-- VU Meter Shattered Glass Fracture Overlay with Smooth Self-Healing Support (Clipped strictly to glass pane) -->
+    <g class="vu-glass-shatter" id="vu_shatter_${id}" data-cx="${cx}" data-cy="${cy}" data-id="${id}" clip-path="url(#xshatter_clip_${id})" style="display: none; opacity: 0; transition: opacity 1.8s ease-out; pointer-events: none;">
       ${generateShatterInner(cx, cy, id)}
     </g>
   `;

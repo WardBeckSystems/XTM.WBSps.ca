@@ -28,22 +28,27 @@ export function renderMeterShell(id: number, cx: number, cy: number, kind: 'vu' 
 
   const P = makePolar(px, py);
   const arc = makeArc(P);
-  const { fill: fillGrad, ink } = dialPalette(isPpm, isPowered, dialLamp, dialBg);
+  const isWbsCa = typeof document !== 'undefined' && document.body?.classList.contains('theme-wbs-ca');
+  const activeLamp = (isWbsCa && dialLamp === 'amber') ? 'amber_bottom' : dialLamp;
+  const { fill: fillGrad, ink } = dialPalette(isPpm, isPowered, activeLamp, dialBg);
   const ctx: FaceCtx = { P, arc, ink, isSifam, x0, y0 };
 
-  let s = `<clipPath id="xmc${id}"><rect x="${x0}" y="${y0}" width="${MW}" height="${MH}" rx="5"/></clipPath>
+  let s = `<g id="xtm_meter_group_${id}" class="xtm-meter-group xtm-meter-${id}">
+    <clipPath id="xmc${id}"><rect x="${x0}" y="${y0}" width="${MW}" height="${MH}" rx="5"/></clipPath>
+    <!-- Strict glass-only aperture clip ensuring fractures never spill onto metal chassis or bezel -->
+    <clipPath id="xshatter_clip_${id}"><rect x="${x0 + 6}" y="${y0 + 6}" width="${MW - 12}" height="${MH - 12}" rx="18"/></clipPath>
     <g clip-path="url(#xmc${id})">
       <!-- Base Dial Plate Background with Rich Radiance Gradient -->
-      <rect class="xt-face xt-lamp-${kind === 'vu' && !isBlackPpm ? dialLamp : 'ppm'}" x="${x0}" y="${y0}" width="${MW}" height="${MH}" rx="5" fill="${fillGrad}"/>`;
+      <rect class="xt-face xt-lamp-${kind === 'vu' && !isBlackPpm ? activeLamp : 'ppm'}" x="${x0}" y="${y0}" width="${MW}" height="${MH}" rx="5" fill="${fillGrad}"/>`;
 
-  // Warm incandescent filament halo glow behind VU scales
-  if (kind === 'vu' && isPowered && lampHasBloom(dialLamp) && dialBg !== 'dark_night') {
-    const isBottom = lampBloomPos(dialLamp) === 'bottom';
-    const bloomCy = isBottom ? y0 + 285 : y0 + 115;
-    const bloomRx = isBottom ? (MW * 0.46).toFixed(1) : (MW * 0.42).toFixed(1);
-    const bloomRy = isBottom ? 105 : 82;
+  // Warm incandescent filament halo glow behind VU scales (emerging from behind lower bezel in Ward-Beck.ca)
+  if (kind === 'vu' && isPowered && lampHasBloom(activeLamp) && dialBg !== 'dark_night') {
+    const isBottom = lampBloomPos(activeLamp) === 'bottom' || isWbsCa;
+    const bloomCy = isBottom ? y0 + 265 : y0 + 115;
+    const bloomRx = isBottom ? (MW * 0.50).toFixed(1) : (MW * 0.42).toFixed(1);
+    const bloomRy = isBottom ? 120 : 82;
     const bloomGrad = isBottom ? 'xincand_bloom_bottom' : 'xincand_bloom';
-    s += `<ellipse class="xt-bloom xt-lamp-${dialLamp}" cx="${cx}" cy="${bloomCy}" rx="${bloomRx}" ry="${bloomRy}" fill="url(#${bloomGrad})"/>`;
+    s += `<ellipse class="xt-bloom xt-lamp-${activeLamp}" cx="${cx}" cy="${bloomCy}" rx="${bloomRx}" ry="${bloomRy}" fill="url(#${bloomGrad})"/>`;
   }
 
   if (kind === 'vu') {
@@ -76,5 +81,7 @@ export function renderMeterShell(id: number, cx: number, cy: number, kind: 'vu' 
   }
 
   s += bezelRim(x0, y0, cx);
+  s += `</g>`; // close clip-path="url(#xmc${id})"
+  s += `</g>`; // close xtm_meter_group_${id}
   return s;
 }

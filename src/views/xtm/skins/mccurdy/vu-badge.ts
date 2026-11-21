@@ -1,36 +1,96 @@
 /*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.ca). All rights reserved. */
-/** McCurdy vintage skin: authentic cartouche logo on .com VU faces, black/white line shield logo on .ca faces (no blue). */
+/**
+ * McCurdy Radio Industries Limited authentic vintage badge:
+ * Directly derived from gemini-svg (13).svg and physical reference photo.
+ * Features the elongated faceted hexagonal shield, authentic serif lowercase 'm',
+ * serif 'cCURDY', and horizontal pill bar.
+ * At small meter dial size (<160px), the micro-text 'RADIO INDUSTRIES LIMITED'
+ * is omitted for crisp rendering without sub-pixel distortion.
+ */
 
 export function renderMcCurdyVuBadge(cx: number, cy: number, ink: string, isPpm = false): string {
-  const x = cx - 42;
-  const y = cy + 16;
-  const lineInk = isPpm ? '#ffffff' : '#000000';
+  const bw = 88;
+  const bh = 32.3; // 600:220 aspect ratio = 2.727
+  const x = cx - (bw / 2);
+  const y = cy + 18;
+  const badgeFill = isPpm ? '#181b20' : '#f5ede3';
+  const badgeStroke = isPpm ? '#cbd5e1' : '#1a1715';
+  const badgeInk = isPpm ? '#f8fafc' : '#1a1715';
 
   return `
-    <!-- McCurdyRadio.com ATS-100 Cream Console: Authentic Cartouche Box & Wordmark -->
-    <g class="mc-only mc-com-only" transform="translate(${(cx - 42).toFixed(1)}, ${(cy + 22).toFixed(1)})">
-      <rect x="0" y="0" width="84" height="28" rx="2.5"
-            fill="none" stroke="${ink}" stroke-width="1.5" stroke-opacity="0.85" />
-      <text x="42" y="19"
-            font-family="'Arial Black', Helvetica, Arial, sans-serif"
-            font-size="13.5" font-weight="900" letter-spacing="-0.6" text-anchor="middle"
-            fill="none" stroke="${ink}" stroke-width="1.2" stroke-opacity="0.9">McCurdy</text>
-    </g>
+    <!-- McCurdy Radio Industries Authentic Vintage Dial Badge (gemini-svg (13).svg) -->
+    <g class="mc-only mc-vu-brand-badge" transform="translate(${x.toFixed(1)}, ${y.toFixed(1)})">
+      <svg width="${bw}" height="${bh}" viewBox="0 0 600 220" aria-label="McCurdy Radio Industries">
+        <defs>
+          <path id="mc_badge_shape_${cx}" d="
+            M 294,14
+            Q 300,12.5 306,14
+            L 556,48
+            Q 566,49.5 562,60
+            L 517,156
+            Q 514,162 506,163
+            L 306,204
+            Q 300,205.5 294,204
+            L 94,163
+            Q 86,162 83,156
+            L 38,60
+            Q 34,49.5 44,48
+            Z" />
+        </defs>
 
-    <!-- McCurdyRadio.ca Vintage Shield: Black outline in VU, White outline in PPM, strictly NO blue -->
-    <g class="mc-only mc-ca-only">
-      <svg x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="84" height="39" viewBox="100 85 800 370" aria-hidden="true">
-        <!-- Symmetrical Shield Outline (No fill) -->
-        <path d="M 140,185 Q 132,160 165,155 L 475,112 Q 500,108 525,112 L 835,155 Q 868,160 860,185 L 785,375 Q 775,398 748,402 L 525,442 Q 500,446 475,442 L 252,402 Q 225,398 215,375 Z"
-              fill="none" stroke="${lineInk}" stroke-width="24" stroke-linejoin="round"/>
-        <!-- Lowercase 'm' with extended crossbar -->
-        <path d="M 248,175 L 322,175 L 322,200 C 342,178 368,170 394,173 C 418,176 434,188 444,206 C 464,180 494,170 524,173 C 564,177 586,206 586,250 L 586,322 L 782,322 L 770,350 L 586,350 L 586,362 L 608,362 L 608,385 L 498,385 L 498,362 L 520,362 L 520,350 L 452,350 L 452,322 L 520,322 L 520,255 C 520,230 508,218 488,218 C 468,218 454,232 454,258 L 454,305 L 390,305 L 390,255 C 390,230 378,218 358,218 C 338,218 324,232 324,258 L 324,362 L 346,362 L 346,385 L 248,385 L 248,362 L 268,362 L 268,200 L 248,200 Z"
-              fill="${lineInk}"/>
-        <!-- CCURDY Lettering -->
-        <g fill="${lineInk}" font-family="'Helvetica Neue', Helvetica, Arial, sans-serif" font-weight="800" letter-spacing="1.5">
-          <text x="598" y="258" font-size="32">C</text>
-          <text x="622" y="272" font-size="44">CURDY</text>
-        </g>
+        <!-- Elongated Faceted Hexagon Shield Body -->
+        <use href="#mc_badge_shape_${cx}" fill="${badgeFill}" stroke="${badgeStroke}" stroke-width="3.5" />
+
+        <!-- Authentic Lowercase Serif 'm' with Tall Stem -->
+        <path fill="${badgeInk}" d="
+          M 101,46
+          L 139,46
+          L 139,62
+          C 149,49 164,43 181,43
+          C 199,43 213,50 221,63
+          C 231,49 246,43 263,43
+          C 289,43 306,59 306,87
+          L 306,156
+          L 317,156
+          L 317,163
+          L 271,163
+          L 271,156
+          L 281,156
+          L 281,89
+          C 281,71 271,61 255,61
+          C 239,61 227,72 227,91
+          L 227,156
+          L 238,156
+          L 238,163
+          L 192,163
+          L 192,156
+          L 202,156
+          L 202,89
+          C 202,71 192,61 176,61
+          C 160,61 148,72 148,91
+          L 148,156
+          L 159,156
+          L 159,163
+          L 113,163
+          L 113,156
+          L 123,156
+          L 123,54
+          L 101,54
+          Z" />
+
+        <!-- Serif 'cCURDY' Letterforms -->
+        <text x="323" y="84" font-family="Georgia, 'Times New Roman', serif" font-weight="bold" font-size="33" fill="${badgeInk}">C</text>
+        <text x="349" y="109" font-family="Georgia, 'Times New Roman', serif" font-weight="bold" font-size="56" letter-spacing="1.5" fill="${badgeInk}">CURDY</text>
+
+        <!-- Horizontal Capsule / Pill Bar Underline -->
+        <path fill="${badgeInk}" d="
+          M 264,118
+          L 523,118
+          A 11,11 0 0 1 523,140
+          L 264,140
+          A 11,11 0 0 1 264,118
+          Z" />
+        <!-- On meter dial (<160px), sub-pixel micro-text 'RADIO INDUSTRIES LIMITED' is omitted per specification for pristine edge acuity -->
       </svg>
     </g>`;
 }

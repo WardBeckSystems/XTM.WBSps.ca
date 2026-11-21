@@ -42,10 +42,10 @@ export const UNLIT_LAMP: LampVariant = {
 };
 
 /** Bottom-rim incandescent filament bloom gradient */
-export const INCAND_BLOOM_BOTTOM_GRADIENT = `<radialGradient id="xincand_bloom_bottom" cx="50%" cy="98%" r="85%">
-          <stop offset="0%" stop-color="#fff8db" stop-opacity="0.68"/>
-          <stop offset="28%" stop-color="#fed766" stop-opacity="0.42"/>
-          <stop offset="65%" stop-color="#f59e0b" stop-opacity="0.16"/>
+export const INCAND_BLOOM_BOTTOM_GRADIENT = `<radialGradient id="xincand_bloom_bottom" cx="50%" cy="100%" r="90%">
+          <stop offset="0%" stop-color="#fff8db" stop-opacity="0.72"/>
+          <stop offset="25%" stop-color="#fed766" stop-opacity="0.46"/>
+          <stop offset="60%" stop-color="#f59e0b" stop-opacity="0.18"/>
           <stop offset="100%" stop-color="#d97706" stop-opacity="0"/>
         </radialGradient>`;
 

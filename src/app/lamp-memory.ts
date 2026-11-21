@@ -14,10 +14,16 @@ export function initLampMemory(ctx: AppContext, refs: DrawerControls): void {
   const { model, view } = ctx;
   const { selectLampColor, selectDialBg, selectConsoleBg } = refs;
 
-  const lampKey = () => document.body.classList.contains('theme-mccurdy') ? 'xtm.lamp.mccurdy' : 'xtm.lamp.dark';
+  const lampKey = () => {
+    if (document.body.classList.contains('theme-mccurdy')) return 'xtm.lamp.mccurdy';
+    if (document.body.classList.contains('theme-wbs-ca')) return 'xtm.lamp.wbsca';
+    return 'xtm.lamp.dark';
+  };
   const applyModeLamp = () => {
     const mc = document.body.classList.contains('theme-mccurdy');
-    const lamp = lsGet(lampKey()) || (mc ? 'parchment' : (model.dialLamp || 'amber'));
+    const wbsCa = document.body.classList.contains('theme-wbs-ca');
+    const defaultLamp = wbsCa ? 'amber_bottom' : (mc ? 'parchment' : 'amber');
+    const lamp = lsGet(lampKey()) || defaultLamp;
     if (lamp !== model.dialLamp) {
       model.dialLamp = lamp;
       view.isBuilt = false;
@@ -25,6 +31,7 @@ export function initLampMemory(ctx: AppContext, refs: DrawerControls): void {
     if (selectLampColor) selectLampColor.value = model.dialLamp;
   };
   if (!lsGet('xtm.lamp.dark')) lsSet('xtm.lamp.dark', model.dialLamp || 'amber');
+  if (!lsGet('xtm.lamp.wbsca')) lsSet('xtm.lamp.wbsca', 'amber_bottom');
   applyModeLamp();
   new MutationObserver(applyModeLamp).observe(document.body, { attributes: true, attributeFilter: ['class'] });
 

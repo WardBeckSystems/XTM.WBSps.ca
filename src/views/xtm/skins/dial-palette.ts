@@ -15,6 +15,8 @@ export interface DialPalette { fill: string; ink: string }
 export function dialPalette(isPpm: boolean, isPowered: boolean, dialLamp: string, dialBg = 'auto'): DialPalette {
   let fill = '#171512';
   let ink = '#141008';
+  const isWbsCa = typeof document !== 'undefined' && document.body?.classList.contains('theme-wbs-ca');
+  const activeLamp = (isWbsCa && dialLamp === 'amber') ? 'amber_bottom' : dialLamp;
   if (isPpm) {
     fill = isPowered ? 'url(#xblackppm)' : '#0a0b0d';
     ink = isPowered ? '#f8fafc' : '#475569';
@@ -35,12 +37,12 @@ export function dialPalette(isPpm: boolean, isPowered: boolean, dialLamp: string
       } else if (dialBg === 'pure_white') {
         fill = 'url(#xwhite)';
       } else {
-        fill = lampFill(dialLamp);
-        if (dialLamp === 'dark_night') ink = '#f8fafc';
+        fill = lampFill(activeLamp);
+        if (activeLamp === 'dark_night') ink = '#f8fafc';
       }
     } else {
-      fill = lampFill(dialLamp);
-      if (dialLamp === 'dark_night') ink = '#f8fafc';
+      fill = lampFill(activeLamp);
+      if (activeLamp === 'dark_night') ink = '#f8fafc';
     }
   } else {
     ink = '#0c0a06';
