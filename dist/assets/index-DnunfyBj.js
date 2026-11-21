@@ -93,29 +93,29 @@
       <line x1="${e}" y1="${t}" x2="${e}" y2="${r}" stroke="${Qt}" stroke-width="2" stroke-linecap="round"/>
       <circle cx="${e}" cy="${t}" r="7" fill="#141008"/>
       <circle cx="${e}" cy="${t}" r="3" fill="${Qt}"/>
-    `}}var sn={sifam:Bt,simpson:Wt,standard_vu:Gt,mccurdy_vu:Zt,wbs_m405:{isSifam:!1,legend:nn,vuNeedle:an,ppmNeedle:on,renderScale:rn}};function cn(e){return sn[e]??Wt}var ln={id:`amber`,gradientId:`xamber`,bloom:!0,gradient:`<radialGradient id="xamber" cx="50%" cy="96%" r="88%">
-          <stop offset="0%" stop-color="#fff8db"/>
-          <stop offset="15%" stop-color="#fed766"/>
-          <stop offset="38%" stop-color="#fbb024"/>
-          <stop offset="65%" stop-color="#ea7a08"/>
-          <stop offset="88%" stop-color="#b85104"/>
-          <stop offset="100%" stop-color="#541c08"/>
-        </radialGradient>`},un={id:`white`,gradientId:`xwhite`,bloom:!1,gradient:`<radialGradient id="xwhite" cx="50%" cy="96%" r="88%">
+    `}}var sn={sifam:Bt,simpson:Wt,standard_vu:Gt,mccurdy_vu:Zt,wbs_m405:{isSifam:!1,legend:nn,vuNeedle:an,ppmNeedle:on,renderScale:rn}};function cn(e){return sn[e]??Wt}var ln={id:`amber`,gradientId:`xamber`,bloom:!0,gradient:`<radialGradient id="xamber" cx="50%" cy="38%" r="68%">
+          <stop offset="0%" stop-color="#fff6cc"/>
+          <stop offset="18%" stop-color="#ffdf7a"/>
+          <stop offset="42%" stop-color="#fbb024"/>
+          <stop offset="68%" stop-color="#ea7a08"/>
+          <stop offset="90%" stop-color="#b85104"/>
+          <stop offset="100%" stop-color="#692802"/>
+        </radialGradient>`},un={id:`white`,gradientId:`xwhite`,bloom:!1,gradient:`<radialGradient id="xwhite" cx="50%" cy="38%" r="68%">
           <stop offset="0%" stop-color="#ffffff"/>
           <stop offset="25%" stop-color="#f8fafc"/>
           <stop offset="65%" stop-color="#e2e8f0"/>
           <stop offset="90%" stop-color="#cbd5e1"/>
           <stop offset="100%" stop-color="#94a3b8"/>
-        </radialGradient>`},dn={id:`parchment`,gradientId:`xparchment`,bloom:!0,gradient:`<radialGradient id="xparchment" cx="50%" cy="96%" r="88%">
+        </radialGradient>`},dn={id:`parchment`,gradientId:`xparchment`,bloom:!0,gradient:`<radialGradient id="xparchment" cx="50%" cy="38%" r="68%">
           <stop offset="0%" stop-color="#fffdf5"/>
-          <stop offset="20%" stop-color="#fef3d6"/>
-          <stop offset="50%" stop-color="#f5e1ad"/>
-          <stop offset="82%" stop-color="#d6b372"/>
-          <stop offset="100%" stop-color="#73521e"/>
-        </radialGradient>`},fn=`<radialGradient id="xincand_bloom" cx="50%" cy="98%" r="85%">
-          <stop offset="0%" stop-color="#fff8db" stop-opacity="0.68"/>
-          <stop offset="28%" stop-color="#fed766" stop-opacity="0.42"/>
-          <stop offset="65%" stop-color="#f59e0b" stop-opacity="0.16"/>
+          <stop offset="22%" stop-color="#fef3d6"/>
+          <stop offset="55%" stop-color="#f5e1ad"/>
+          <stop offset="85%" stop-color="#d6b372"/>
+          <stop offset="100%" stop-color="#8f692d"/>
+        </radialGradient>`},fn=`<radialGradient id="xincand_bloom" cx="50%" cy="35%" r="60%">
+          <stop offset="0%" stop-color="#fff8db" stop-opacity="0.55"/>
+          <stop offset="35%" stop-color="#fed766" stop-opacity="0.32"/>
+          <stop offset="70%" stop-color="#f59e0b" stop-opacity="0.10"/>
           <stop offset="100%" stop-color="#d97706" stop-opacity="0"/>
         </radialGradient>`;function pn(e){return e===`white`?un:e===`parchment`?dn:ln}function mn(e){return`url(#${pn(e).gradientId})`}function hn(e){return e!==`white`}var gn=`<radialGradient id="xblackppm" cx="50%" cy="38%" r="72%">
           <stop offset="0%" stop-color="#262c36"/>
@@ -336,7 +336,7 @@
   `}function En(e,t,n,r){e.innerHTML=wn(t,n,r)}function Dn(e,t,n,r,i,a,o,s,c){let l=t-290,u=n-145,d=t,f=cn(s),p=s===`sifam`,m=r===`ppm`||o,h=_t(d,410),g=vt(h),{fill:_,ink:v}=_n(m,i,a),y={P:h,arc:g,ink:v,isSifam:p,x0:l,y0:u},b=`<clipPath id="xmc${e}"><rect x="${l}" y="${u}" width="580" height="290" rx="5"/></clipPath>
     <g clip-path="url(#xmc${e})">
       <!-- Base Dial Plate Background with Rich Radiance Gradient -->
-      <rect class="xt-face xt-lamp-${r===`vu`&&!o?a:`ppm`}" x="${l}" y="${u}" width="580" height="290" rx="5" fill="${_}"/>`;r===`vu`&&i&&hn(a)&&(b+=`<ellipse class="xt-bloom xt-lamp-${a}" cx="${t}" cy="${u+285}" rx="${266.8.toFixed(1)}" ry="105" fill="url(#xincand_bloom)"/>`),r===`vu`?(b+=f.renderScale?f.renderScale(y):It(y),b+=f.legend(y)):b+=kt(y,c,o),b+=`<g class="wbs-only xtm-btn dial-logo-interactive" data-btn="CYCLE_STYLE" style="cursor: pointer;">
+      <rect class="xt-face xt-lamp-${r===`vu`&&!o?a:`ppm`}" x="${l}" y="${u}" width="580" height="290" rx="5" fill="${_}"/>`;r===`vu`&&i&&hn(a)&&(b+=`<ellipse class="xt-bloom xt-lamp-${a}" cx="${t}" cy="${u+115}" rx="${243.6.toFixed(1)}" ry="82" fill="url(#xincand_bloom)"/>`),r===`vu`?(b+=f.renderScale?f.renderScale(y):It(y),b+=f.legend(y)):b+=kt(y,c,o),b+=`<g class="wbs-only xtm-btn dial-logo-interactive" data-btn="CYCLE_STYLE" style="cursor: pointer;">
           <title>Click to cycle meter styles (Ward-Beck)</title>
           ${yn(t,n,v)}
         </g>`,b+=`<g class="mc-only xtm-btn dial-logo-interactive" data-btn="CYCLE_STYLE" style="cursor: pointer;">
@@ -1346,4 +1346,4 @@
     `,a.parentElement?.insertBefore(e,a),document.getElementById(`btnReloadNewVersion`)?.addEventListener(`click`,()=>{window.location.reload()})}let o=document.querySelector(`.build-stamp`);o&&(o.innerHTML=`<span style="color:#f97316;cursor:pointer;font-weight:bold" title="Click to reload with new version">Update: ${i||`Available`} ⟳</span>`,o.addEventListener(`click`,()=>window.location.reload()))}function ld(){window.testUpdatePulse=(e=`1.0.99`)=>cd(e);async function e(){try{let e=await fetch(`./version.json?cache=`+Date.now(),{cache:`no-store`});if(!e.ok)return;let{version:t}=await e.json();t&&t!==`1.0.51`&&cd(t)}catch{}}setTimeout(e,3e3),setInterval(e,6e4),document.addEventListener(`visibilitychange`,()=>{document.visibilityState===`visible`&&e()});let t=document.querySelector(`.build-stamp`);if(t){let e=`v1.0.51`;t.textContent=e,t.setAttribute(`title`,`Ward-Beck Systems XTM-4 ${e}`)}}function ud(){`serviceWorker`in navigator&&(navigator.serviceWorker.addEventListener(`message`,e=>{e.data?.type===`xtm-update-ready`&&(console.info(`XTM: new version stored; update ready.`),cd())}),navigator.serviceWorker.register(`sw.js`,{updateViaCache:`none`}).then(e=>{e.waiting&&cd(),e.addEventListener(`updatefound`,()=>{let t=e.installing;t&&t.addEventListener(`statechange`,()=>{t.state===`installed`&&navigator.serviceWorker.controller&&cd()})})}).catch(e=>{console.warn(`Service worker registration failed:`,e)}))}function dd(){let e=document.getElementById(`pwaInstallBanner`),t=document.getElementById(`btnPwaInstall`),n=document.getElementById(`btnPwaDismiss`),r=document.getElementById(`pwaSubText`),i=null,a=/iPad|iPhone|iPod/.test(navigator.userAgent)&&!window.MSStream,o=/Android|iPhone|iPad|iPod|Opera Mini|IEMobile|WPDesktop/i.test(navigator.userAgent)||window.innerWidth<=840,s=window.matchMedia(`(display-mode: standalone)`).matches||window.navigator.standalone===!0;e&&!s&&(window.addEventListener(`beforeinstallprompt`,t=>{t.preventDefault(),i=t,e.style.display=`block`}),o&&a&&(r&&(r.innerHTML=`Tap the Share icon <strong>[⎋]</strong> in Safari and choose <strong>Add to Home Screen</strong>`),t&&(t.textContent=`How to Install`,t.addEventListener(`click`,()=>{alert(`To install this app on iOS:
 1. Tap the Share button in Safari (box with up arrow).
 2. Scroll down and tap "Add to Home Screen".`)})),e.style.display=`block`),window.addEventListener(`appinstalled`,()=>{e.style.display=`none`,i=null}),t&&!a&&t.addEventListener(`click`,async()=>{if(i){i.prompt();let{outcome:t}=await i.userChoice;t===`accepted`&&(e.style.display=`none`),i=null}else e.style.display=`none`}),n&&n.addEventListener(`click`,()=>{e.style.display=`none`}))}function fd(e,t){let{model:n,audio:r,view:i,podView:a,dbfsView:o}=e,s=document.querySelector(`.console-viewport`),c=0,l=performance.now(),u=document.getElementById(`fpsDisplay`);function d(e){let f=r&&r.getLevels?r.getLevels():r?.currentLevels||{vu:[0,0],ppm:[-.12,-.12],vuDb:[-1/0,-1/0],ppmDb:[-1/0,-1/0],phaseCorrelation:1,phaseLed:-1,peak:[!1,!1],hasAudio:!1};if(i.updateNeedles(f,n.power,n.meterStyle===`sifam`),n.isIdle=!f.hasAudio,i.renderSecondary(n,f),a.render(n,f),o&&o.render(n,f),t.recordTelemetry(f,e),t.recordTransientEvent(f),s){let e=f&&f.lufs&&typeof f.lufs.m==`number`?f.lufs.m:-60;isFinite(e)&&e>-24?e>=-12?s.className=`console-viewport lufs-glow-red`:e>=-18?s.className=`console-viewport lufs-glow-orange`:s.className=`console-viewport lufs-glow-green`:s.className=`console-viewport`}if(c++,e-l>=500){let t=c*1e3/(e-l);u&&(u.textContent=t.toFixed(1)+` FPS`),c=0,l=e}requestAnimationFrame(d)}requestAnimationFrame(d)}async function pd(){let t=document.getElementById(`visualizerStage`),n=document.getElementById(`pod22Stage`),r=document.getElementById(`dbfsStage`),i=new Sr(t);i.build(e);let a={model:e,audio:rt,view:i,podView:new Jr(n),dbfsView:r?new ma(r):null};window.xtmModel=e,window.xtmAudio=rt,window.xtmView=i,window.xtmCtx=a,ga(),_a(),va(a),Nu(a);let o=Ru(),s=ha();Bu(a);let c=zu(a,s);Vu(a,s,c),Hu(a,c),Uu(a,c),Wu(a,s),await Gu(a,s),Ku(a,s,c),qu(a,s),Ju(a,s),Yu(a,s),Qu(a,s),$u(a,s),Pu(a,s),ed(a,s),Fu(a,s),td(a),nd(a),rd(a),id(a,c),ad(a,s),od(a,c),ld(),ud(),dd(),fd(a,o)}window.audioReady=!0,pd(),window.audioContext&&window.audioContext.state===`suspended`&&window.audioContext.resume();
-//# sourceMappingURL=index-BDadyZv3.js.map
+//# sourceMappingURL=index-DnunfyBj.js.map

@@ -36,9 +36,9 @@ export function renderMeterShell(id: number, cx: number, cy: number, kind: 'vu' 
       <!-- Base Dial Plate Background with Rich Radiance Gradient -->
       <rect class="xt-face xt-lamp-${kind === 'vu' && !isBlackPpm ? dialLamp : 'ppm'}" x="${x0}" y="${y0}" width="${MW}" height="${MH}" rx="5" fill="${fillGrad}"/>`;
 
-  // Warm incandescent filament lighting rising from below the bezel rim
+  // Warm incandescent filament halo glow behind VU scales
   if (kind === 'vu' && isPowered && lampHasBloom(dialLamp)) {
-    s += `<ellipse class="xt-bloom xt-lamp-${dialLamp}" cx="${cx}" cy="${y0 + 285}" rx="${(MW * 0.46).toFixed(1)}" ry="105" fill="url(#xincand_bloom)"/>`;
+    s += `<ellipse class="xt-bloom xt-lamp-${dialLamp}" cx="${cx}" cy="${y0 + 115}" rx="${(MW * 0.42).toFixed(1)}" ry="82" fill="url(#xincand_bloom)"/>`;
   }
 
   if (kind === 'vu') {
