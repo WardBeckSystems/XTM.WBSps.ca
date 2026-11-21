@@ -16,8 +16,8 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Ward-Beck Systems">
-  <script type="module" crossorigin src="./assets/index-jdqFrKZ6.js"></script>
-  <link rel="stylesheet" crossorigin href="./assets/index-DiGsZS9-.css">
+  <script type="module" crossorigin src="./assets/index-DN3m4_uc.js"></script>
+  <link rel="stylesheet" crossorigin href="./assets/index-CiSpqhWl.css">
 </head>
 <body class="">
   <!-- <div id="audioStartOverlay" style="position:fixed; top:0; left:0; width:100%; height:100%; background:#0a0b0d; z-index:9999; display:flex; align-items:center; justify-content:center;">
@@ -699,7 +699,11 @@
   function updateMcCurdyKnob(angle) {
     mcKnobAngle = Math.max(-168.75, Math.min(168.75, angle));
     var mcRotor = document.getElementById("mccurdy_vintage_knob_rotor");
-    if (mcRotor) mcRotor.setAttribute("transform", "translate(1600, 215) rotate(" + mcKnobAngle.toFixed(1) + ")");
+    if (mcRotor) {
+      var cx = mcRotor.getAttribute("data-cx") || "1545";
+      var cy = mcRotor.getAttribute("data-cy") || "215";
+      mcRotor.setAttribute("transform", "translate(" + cx + ", " + cy + ") rotate(" + mcKnobAngle.toFixed(1) + ")");
+    }
     try {
       localStorage.setItem("xtm.mc_vintage_knob", mcKnobAngle.toFixed(1));
     } catch (e) {}

@@ -189,9 +189,9 @@
           <stop offset="100%" stop-color="#000000" stop-opacity="0.50"/>
         </linearGradient>
         <linearGradient id="meterGlassSheenGrad" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0%" stop-color="#ffffff" stop-opacity="0.28"/>
-          <stop offset="35%" stop-color="#ffffff" stop-opacity="0.10"/>
-          <stop offset="65%" stop-color="#ffffff" stop-opacity="0.02"/>
+          <stop offset="0%" stop-color="#ffffff" stop-opacity="0.14"/>
+          <stop offset="35%" stop-color="#ffffff" stop-opacity="0.05"/>
+          <stop offset="65%" stop-color="#ffffff" stop-opacity="0.01"/>
           <stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
         </linearGradient>
         <!-- Outer Molded Bakelite / ABS Bezel Gradient -->
@@ -349,11 +349,8 @@
         <title>Input 2 (SOURCE)</title>
         <circle cx="1670" cy="346" r="27" fill="url(#mc_jack)" stroke="#1b1c1e" stroke-width="2"/>
       </g>
-    </g>`}function In(){let e=`font-family="'Helvetica Neue', Helvetica, Arial, sans-serif" font-weight="700"`,t=1600,n=``,r=``,i=``;for(let e=0;e<=30;e++){let a=(180+(e-15)*11.25)*Math.PI/180,o=Math.cos(a),s=Math.sin(a),c=-50+e*2,l=(e-15)*2,u=(c>0?`+`:``)+c,d=(l>0?`+`:``)+l,f=(t+84*o).toFixed(1),p=(215+84*s).toFixed(1),m=(t+96*o).toFixed(1),h=(215+96*s).toFixed(1),g=e%5==0;n+=`<line x1="${f}" y1="${p}" x2="${m}" y2="${h}" stroke="#ffffff" stroke-width="${g?`2.2`:`1.3`}" stroke-opacity="${g?`0.95`:`0.75`}"/>`;let _=(t+110*o).toFixed(1),v=(215+110*s+4.2).toFixed(1);r+=`<text x="${_}" y="${v}" font-size="${Math.abs(l)>=10?`10`:`11`}" fill="#94a3b8" text-anchor="middle">${d}</text>`;let y=(t+132*o).toFixed(1),b=(215+132*s+4.2).toFixed(1),x=e===15;i+=`<text x="${y}" y="${b}" font-size="${Math.abs(c)>=10?`11`:`12`}" font-weight="${x?`800`:`700`}" fill="${x?`#fbbf24`:`#ffffff`}" text-anchor="middle">${u}</text>`}let a=Pn(51,2.8,14),o=``;for(let e=0;e<14;e++){let t=(e*360/14+360/28)*Math.PI/180;o+=`<line x1="${(44*Math.cos(t)).toFixed(2)}" y1="${(44*Math.sin(t)).toFixed(2)}" x2="${(51*Math.cos(t)).toFixed(2)}" y2="${(51*Math.sin(t)).toFixed(2)}"/>`}return`<g class="mc-ca-only">
+    </g>`}function In(){let e=`font-family="'Helvetica Neue', Helvetica, Arial, sans-serif" font-weight="700"`,t=1545,n=``,r=``,i=``;for(let e=0;e<=30;e++){let a=(180+(e-15)*11.25)*Math.PI/180,o=Math.cos(a),s=Math.sin(a),c=-50+e*2,l=(e-15)*2,u=(c>0?`+`:``)+c,d=(l>0?`+`:``)+l,f=(t+106*o).toFixed(1),p=(215+106*s).toFixed(1),m=(t+122*o).toFixed(1),h=(215+122*s).toFixed(1),g=e%5==0;n+=`<line x1="${f}" y1="${p}" x2="${m}" y2="${h}" stroke="#ffffff" stroke-width="${g?`2.4`:`1.4`}" stroke-opacity="${g?`0.95`:`0.75`}"/>`;let _=(t+140*o).toFixed(1),v=(215+140*s+4.5).toFixed(1);r+=`<text x="${_}" y="${v}" font-size="${Math.abs(l)>=10?`11.5`:`12.5`}" fill="#94a3b8" text-anchor="middle">${d}</text>`;let y=(t+168*o).toFixed(1),b=(215+168*s+5).toFixed(1),x=e===15;i+=`<text x="${y}" y="${b}" font-size="${Math.abs(c)>=10?`13`:`14`}" font-weight="${x?`800`:`700`}" fill="${x?`#fbbf24`:`#ffffff`}" text-anchor="middle">${u}</text>`}let a=Pn(64,3.4,14),o=``;for(let e=0;e<14;e++){let t=(e*360/14+360/28)*Math.PI/180;o+=`<line x1="${(55*Math.cos(t)).toFixed(2)}" y1="${(55*Math.sin(t)).toFixed(2)}" x2="${(64*Math.cos(t)).toFixed(2)}" y2="${(64*Math.sin(t)).toFixed(2)}"/>`}return`<g class="mc-ca-only">
       <defs>
-        <linearGradient id="mc_dial_slate" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stop-color="#3d5366"/><stop offset="50%" stop-color="#314353"/><stop offset="100%" stop-color="#24333f"/>
-        </linearGradient>
         <linearGradient id="mc_skirt_silver" x1="0" y1="0" x2="1" y2="1">
           <stop offset="0%" stop-color="#d4d8df"/><stop offset="50%" stop-color="#b6bbc4"/><stop offset="100%" stop-color="#9399a3"/>
         </linearGradient>
@@ -372,68 +369,70 @@
         <linearGradient id="mc_toggle_stick" x1="0" y1="0" x2="1" y2="0">
           <stop offset="0%" stop-color="#e2e8f0"/><stop offset="50%" stop-color="#94a3b8"/><stop offset="100%" stop-color="#475569"/>
         </linearGradient>
-        <filter id="mc_knob_shadow" x="-20%" y="-20%" width="140%" height="140%">
-          <feDropShadow dx="0" dy="6" stdDeviation="6" flood-color="#000000" flood-opacity="0.6"/>
+        <filter id="mc_knob_shadow" x="-30%" y="-30%" width="160%" height="160%">
+          <feDropShadow dx="0" dy="7" stdDeviation="7" flood-color="#000000" flood-opacity="0.65"/>
         </filter>
       </defs>
 
-      <!-- Center Console Bay Outline / Bezel in McCurdy Slate Finish (500x398) -->
-      <rect x="1350" y="16" width="500" height="398" rx="8" fill="url(#mc_panel_blue)" stroke="#4d687f" stroke-width="2.5"/>
+      <!-- ================================================================= -->
+      <!-- SILKSCREEN SCALES: PRINTED FLAT DIRECTLY ON PANEL FACEPLATE       -->
+      <!-- No floating disk, no shadow, no borders - authentic silkscreen    -->
+      <!-- ================================================================= -->
+      <g id="mc-knob-scales" ${e}>
+        ${n}
+        ${r}
+        ${i}
+      </g>
 
       <!-- ================================================================= -->
-      <!-- CENTERPIECE: CENTERED & LARGER MCCURDY 31-STEP DUAL-CONCENTRIC    -->
-      <!-- ATTENUATOR KNOB (Diameter 310px, Centered at x=1600, y=215)       -->
+      <!-- CENTERPIECE: MCCURDY 31-STEP DUAL-CONCENTRIC ATTENUATOR KNOB      -->
+      <!-- (Diameter 360px scale, Skirt r=92, Centered at x=1545, y=215)     -->
       <!-- ================================================================= -->
-      <g id="mccurdy-vintage-knob-assembly" class="xtm-btn mccurdy-knob" filter="url(#mc_knob_shadow)" style="cursor:grab; touch-action:none; user-select:none;">
+      <g id="mccurdy-vintage-knob-assembly" class="xtm-btn mccurdy-knob" style="cursor:grab; touch-action:none; user-select:none;">
         <title>McCurdy SA14023 Dual-Concentric Attenuator (-50 to +10 dB / -30 to +30 dB)</title>
 
-        <!-- Circular Slate Blue Background Plate (r=154) -->
-        <circle cx="${t}" cy="215" r="154" fill="url(#mc_dial_slate)" stroke="#1a2530" stroke-width="2.5"/>
-        <circle cx="${t}" cy="215" r="151" fill="none" stroke="#5a7690" stroke-width="1" stroke-opacity="0.5"/>
+        <!-- Transparent hit area covering the dial face -->
+        <circle cx="${t}" cy="215" r="176" fill="#000000" opacity="0.001" pointer-events="all"/>
 
-        <!-- Silkscreen Scales Group -->
-        <g id="mc-knob-scales" ${e}>
-          ${n}
-          ${r}
-          ${i}
-        </g>
+        <!-- Physical 3D Tactile Knob Assembly with Drop Shadow onto Panel -->
+        <g filter="url(#mc_knob_shadow)">
+          <!-- Silver Skirt Base Disc (r=92) -->
+          <circle cx="${t}" cy="215" r="92" fill="url(#mc_skirt_silver)" stroke="#686e7a" stroke-width="1.5"/>
+          <circle cx="${t}" cy="215" r="72" fill="none" stroke="#8a909c" stroke-width="1.1"/>
 
-        <!-- Silver Skirt Base Disc (r=74) -->
-        <circle cx="${t}" cy="215" r="74" fill="url(#mc_skirt_silver)" stroke="#686e7a" stroke-width="1.4"/>
-        <circle cx="${t}" cy="215" r="57" fill="none" stroke="#8a909c" stroke-width="1.0"/>
+          <!-- Rotating 14-Flute Barrel Body with Skirt Pointer (Rotates with drag & wheel) -->
+          <g id="mccurdy_vintage_knob_rotor" data-cx="${t}" data-cy="215" transform="translate(${t}, 215)">
+            <!-- Solid Black Pointer Arrow at 9 o'clock (-91px from center) on rotating flange -->
+            <polygon points="-91,0 -72,-11.5 -72,11.5" fill="#141517"/>
 
-        <!-- Rotating 14-Flute Barrel Body with Skirt Pointer (Rotates with drag & wheel) -->
-        <g id="mccurdy_vintage_knob_rotor" transform="translate(${t}, 215)">
-          <!-- Solid Black Pointer Arrow at 9 o'clock (-73px from center) on rotating flange -->
-          <polygon points="-73,0 -57,-9.5 -57,9.5" fill="#141517"/>
+            <path d="${a}" fill="url(#mc_barrel_grad)" stroke="#555a64" stroke-width="1.2"/>
+            <g stroke="#666c77" stroke-width="1.2" stroke-linecap="round">
+              ${o}
+            </g>
 
-          <path d="${a}" fill="url(#mc_barrel_grad)" stroke="#555a64" stroke-width="1.2"/>
-          <g stroke="#666c77" stroke-width="1.1" stroke-linecap="round">
-            ${o}
+            <!-- Outer Raised Gold Bezel Ring (r=52) & Highlight -->
+            <circle cx="0" cy="0" r="52" fill="none" stroke="url(#mc_gold_rim)" stroke-width="2.4"/>
+            <path d="M -37,-35 A 50,50 0 0 1 37,-35" fill="none" stroke="#fde68a" stroke-width="1.6" stroke-opacity="0.85"/>
+
+            <!-- Inner Gold Bezel Ring (r=45) -->
+            <circle cx="0" cy="0" r="45" fill="none" stroke="#d4af37" stroke-width="1.5" stroke-opacity="0.9"/>
+
+            <!-- Textured Warm Cream / Off-White Cap Face (r=44) -->
+            <circle cx="0" cy="0" r="44" fill="url(#mc_ivory_face)" stroke="#854d0e" stroke-width="0.9"/>
+
+            <!-- Hollow Black Pointer Triangle pointing at 9 o'clock (Matching McCurdy pointer style) -->
+            <polygon points="-42,0 16,-11.5 16,11.5" fill="none" stroke="#141517" stroke-width="2.8" stroke-linejoin="round"/>
+            <line x1="-38" y1="0" x2="8" y2="0" stroke="#141517" stroke-width="1.4"/>
           </g>
-
-          <!-- Outer Raised Gold Bezel Ring (r=42) & Highlight -->
-          <circle cx="0" cy="0" r="42" fill="none" stroke="url(#mc_gold_rim)" stroke-width="2.2"/>
-          <path d="M -30,-28 A 40,40 0 0 1 30,-28" fill="none" stroke="#fde68a" stroke-width="1.4" stroke-opacity="0.85"/>
-
-          <!-- Inner Gold Bezel Ring (r=36) -->
-          <circle cx="0" cy="0" r="36" fill="none" stroke="#d4af37" stroke-width="1.4" stroke-opacity="0.9"/>
-
-          <!-- Textured Warm Cream / Off-White Cap Face (r=35) -->
-          <circle cx="0" cy="0" r="35" fill="url(#mc_ivory_face)" stroke="#854d0e" stroke-width="0.8"/>
-
-          <!-- Hollow Black Pointer Triangle pointing at 9 o'clock (Matching McCurdy pointer style) -->
-          <polygon points="-34,0 12,-9.5 12,9.5" fill="none" stroke="#141517" stroke-width="2.6" stroke-linejoin="round"/>
-          <line x1="-30" y1="0" x2="6" y2="0" stroke="#141517" stroke-width="1.3"/>
         </g>
       </g>
 
       <!-- ================================================================= -->
       <!-- RIGHT SECTION: TOGGLE SWITCH (UPPER) & DUAL PHONE JACKS (LOWER)   -->
       <!-- ================================================================= -->
-      <!-- Chrome Bat-Handle Toggle Switch Assembly (Upper Right, cx=1802, cy=110) -->
-      <g id="mc-toggle-assembly" transform="translate(1802, 110)">
-        <text x="0" y="-36" ${e} font-size="10" font-weight="700" fill="#cbd5e1" text-anchor="middle">MTR</text>
+      <!-- Chrome Bat-Handle Toggle Switch Assembly (Upper Right, cx=1815, cy=105) -->
+      <g id="mc-toggle-assembly" transform="translate(1815, 105)">
+        <text x="0" y="-35" ${e} font-size="10" font-weight="700" fill="#cbd5e1" text-anchor="middle">MTR</text>
         <text x="24" y="4" ${e} font-size="9" font-weight="700" fill="#94a3b8" text-anchor="start">CAL</text>
         <text x="0" y="44" ${e} font-size="10" font-weight="700" fill="#cbd5e1" text-anchor="middle">MON</text>
 
@@ -448,9 +447,9 @@
         </g>
       </g>
 
-      <!-- Dual Phone Jacks (Lower Right, cx=1802) -->
+      <!-- Dual Phone Jacks (Lower Right, cx=1815) -->
       <!-- Jack 1 (MODE) -->
-      <g class="xtm-btn mc-jack" data-btn="MODE" style="cursor:pointer" transform="translate(1802, 250)">
+      <g class="xtm-btn mc-jack" data-btn="MODE" style="cursor:pointer" transform="translate(1815, 238)">
         <title>Input 1 (MODE)</title>
         <text x="0" y="-22" ${e} font-size="10" fill="#cbd5e1" text-anchor="middle" letter-spacing="0.5">INPUT 1</text>
         <circle cx="0" cy="0" r="20" fill="url(#mc_jack)" stroke="#152636" stroke-width="1.4"/>
@@ -459,7 +458,7 @@
       </g>
 
       <!-- Jack 2 (SOURCE) -->
-      <g class="xtm-btn mc-jack" data-btn="SOURCE" style="cursor:pointer" transform="translate(1802, 336)">
+      <g class="xtm-btn mc-jack" data-btn="SOURCE" style="cursor:pointer" transform="translate(1815, 336)">
         <title>Input 2 (SOURCE)</title>
         <text x="0" y="-22" ${e} font-size="10" fill="#cbd5e1" text-anchor="middle" letter-spacing="0.5">INPUT 2</text>
         <circle cx="0" cy="0" r="20" fill="url(#mc_jack)" stroke="#152636" stroke-width="1.4"/>
@@ -706,6 +705,13 @@
   <filter id="winkButtonShadow" x="-20%" y="-20%" width="140%" height="140%">
     <feDropShadow dx="0" dy="3" stdDeviation="2.5" flood-color="#000000" flood-opacity="0.45" />
   </filter>
+
+  <!-- Top Inset Shadow when Button is Depressed / Pushed Down -->
+  <linearGradient id="depressedShadowGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+    <stop offset="0%" stop-color="#000000" stop-opacity="0.85" />
+    <stop offset="60%" stop-color="#000000" stop-opacity="0.30" />
+    <stop offset="100%" stop-color="#000000" stop-opacity="0.0" />
+  </linearGradient>
 
 
         <filter id="xglow" x="-50%" y="-50%" width="200%" height="200%">
@@ -1233,4 +1239,4 @@
     `,a.parentElement?.insertBefore(e,a),document.getElementById(`btnReloadNewVersion`)?.addEventListener(`click`,()=>{window.location.reload()})}let o=document.querySelector(`.build-stamp`);o&&(o.innerHTML=`<span style="color:#f97316;cursor:pointer;font-weight:bold" title="Click to reload with new version">Update: ${i||`Available`} ⟳</span>`,o.addEventListener(`click`,()=>window.location.reload()))}function sd(){window.testUpdatePulse=(e=`1.0.99`)=>od(e);async function e(){try{let e=await fetch(`./version.json?cache=`+Date.now(),{cache:`no-store`});if(!e.ok)return;let{version:t}=await e.json();t&&t!==`1.0.36`&&od(t)}catch{}}setTimeout(e,3e3),setInterval(e,6e4),document.addEventListener(`visibilitychange`,()=>{document.visibilityState===`visible`&&e()});let t=document.querySelector(`.build-stamp`);if(t){let e=`v1.0.36`;t.textContent=e,t.setAttribute(`title`,`Ward-Beck Systems XTM-4 ${e}`)}}function cd(){`serviceWorker`in navigator&&(navigator.serviceWorker.addEventListener(`message`,e=>{e.data?.type===`xtm-update-ready`&&(console.info(`XTM: new version stored; update ready.`),od())}),navigator.serviceWorker.register(`sw.js`,{updateViaCache:`none`}).then(e=>{e.waiting&&od(),e.addEventListener(`updatefound`,()=>{let t=e.installing;t&&t.addEventListener(`statechange`,()=>{t.state===`installed`&&navigator.serviceWorker.controller&&od()})})}).catch(e=>{console.warn(`Service worker registration failed:`,e)}))}function ld(){let e=document.getElementById(`pwaInstallBanner`),t=document.getElementById(`btnPwaInstall`),n=document.getElementById(`btnPwaDismiss`),r=document.getElementById(`pwaSubText`),i=null,a=/iPad|iPhone|iPod/.test(navigator.userAgent)&&!window.MSStream,o=/Android|iPhone|iPad|iPod|Opera Mini|IEMobile|WPDesktop/i.test(navigator.userAgent)||window.innerWidth<=840,s=window.matchMedia(`(display-mode: standalone)`).matches||window.navigator.standalone===!0;e&&!s&&(window.addEventListener(`beforeinstallprompt`,t=>{t.preventDefault(),i=t,e.style.display=`block`}),o&&a&&(r&&(r.innerHTML=`Tap the Share icon <strong>[⎋]</strong> in Safari and choose <strong>Add to Home Screen</strong>`),t&&(t.textContent=`How to Install`,t.addEventListener(`click`,()=>{alert(`To install this app on iOS:
 1. Tap the Share button in Safari (box with up arrow).
 2. Scroll down and tap "Add to Home Screen".`)})),e.style.display=`block`),window.addEventListener(`appinstalled`,()=>{e.style.display=`none`,i=null}),t&&!a&&t.addEventListener(`click`,async()=>{if(i){i.prompt();let{outcome:t}=await i.userChoice;t===`accepted`&&(e.style.display=`none`),i=null}else e.style.display=`none`}),n&&n.addEventListener(`click`,()=>{e.style.display=`none`}))}function ud(e,t){let{model:n,audio:r,view:i,podView:a,dbfsView:o}=e,s=document.querySelector(`.console-viewport`),c=0,l=performance.now(),u=document.getElementById(`fpsDisplay`);function d(e){let f=r&&r.getLevels?r.getLevels():r?.currentLevels||{vu:[0,0],ppm:[-.12,-.12],vuDb:[-1/0,-1/0],ppmDb:[-1/0,-1/0],phaseCorrelation:1,phaseLed:-1,peak:[!1,!1],hasAudio:!1};if(i.updateNeedles(f,n.power,n.meterStyle===`sifam`),n.isIdle=!f.hasAudio,i.renderSecondary(n,f),a.render(n,f),o&&o.render(n,f),t.recordTelemetry(f,e),t.recordTransientEvent(f),s){let e=f&&f.lufs&&typeof f.lufs.m==`number`?f.lufs.m:-60;f.hasAudio&&isFinite(e)?e>=-12?s.className=`console-viewport lufs-glow-red`:e>=-18?s.className=`console-viewport lufs-glow-orange`:e>-24?s.className=`console-viewport lufs-glow-green`:s.className=`console-viewport`:s.className=`console-viewport`}if(c++,e-l>=500){let t=c*1e3/(e-l);u&&(u.textContent=t.toFixed(1)+` FPS`),c=0,l=e}requestAnimationFrame(d)}requestAnimationFrame(d)}async function dd(){let t=document.getElementById(`visualizerStage`),n=document.getElementById(`pod22Stage`),r=document.getElementById(`dbfsStage`),i=new xr(t);i.build(e);let a={model:e,audio:it,view:i,podView:new qr(n),dbfsView:r?new fa(r):null};ma(),ha(),ga(a),ju(a);let o=Iu(),s=pa();Ru(a);let c=Lu(a,s);zu(a,s,c),Bu(a,c),Vu(a,c),Hu(a,s),await Uu(a,s),Wu(a,s,c),Gu(a,s),Ku(a,s),qu(a,s),Xu(a,s),Zu(a,s),Mu(a,s),Qu(a,s),Nu(a,s),$u(a),ed(a),td(a),nd(a,c),rd(a,s),id(a,c),sd(),cd(),ld(),ud(a,o)}window.audioReady=!0,dd(),window.audioContext&&window.audioContext.state===`suspended`&&window.audioContext.resume();
-//# sourceMappingURL=index-jdqFrKZ6.js.map
+//# sourceMappingURL=index-DN3m4_uc.js.map

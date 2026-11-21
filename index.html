@@ -706,7 +706,11 @@
   function updateMcCurdyKnob(angle) {
     mcKnobAngle = Math.max(-168.75, Math.min(168.75, angle));
     var mcRotor = document.getElementById("mccurdy_vintage_knob_rotor");
-    if (mcRotor) mcRotor.setAttribute("transform", "translate(1600, 215) rotate(" + mcKnobAngle.toFixed(1) + ")");
+    if (mcRotor) {
+      var cx = mcRotor.getAttribute("data-cx") || "1545";
+      var cy = mcRotor.getAttribute("data-cy") || "215";
+      mcRotor.setAttribute("transform", "translate(" + cx + ", " + cy + ") rotate(" + mcKnobAngle.toFixed(1) + ")");
+    }
     try {
       localStorage.setItem("xtm.mc_vintage_knob", mcKnobAngle.toFixed(1));
     } catch (e) {}
