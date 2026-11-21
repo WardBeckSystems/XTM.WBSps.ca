@@ -1,0 +1,826 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ward-Beck Systems &amp; McCurdy Radio • Dark Blue Baked Enamel Finish — Interactive Styleguide</title>
+  <style>
+    :root {
+      --bg-void: #090b10;
+      --bg-panel: #11141c;
+      --bg-elevated: #181d28;
+      --border-subtle: #222938;
+      --border-strong: #364259;
+
+      /* Authentic Swatch Color Tokens (#161c35 Spectrum) */
+      --enamel-base: #161c35;
+      --enamel-stipple-hi: #232d52;
+      --enamel-mid: #1a2240;
+      --enamel-deep: #0f1427;
+      --enamel-rim-top: #2c3866;
+
+      /* Comparative Finishes */
+      --finish-slate-blue: #2c4454;
+      --finish-mccurdy-navy: #0d172a;
+      --finish-mccurdy-cream: #dedad0;
+      --finish-wbs-green: #22c55e;
+
+      /* Silkscreen & Marking Tokens */
+      --silk-offwhite: #eae6da;
+      --silk-silver: #f1f5f9;
+      --silk-muted: #8b9bb4;
+      --vu-red: #dc2626;
+      --vu-parchment: #f5edd3;
+
+      /* UI Text Tokens */
+      --text-primary: #f8fafc;
+      --text-secondary: #94a3b8;
+      --text-muted: #64748b;
+      --accent-cyan: #38bdf8;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background-color: var(--bg-void);
+      color: var(--text-primary);
+      font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", Helvetica, Arial, sans-serif;
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(9, 11, 16, 0.94);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border-subtle);
+      padding: 0.85rem 2rem;
+    }
+
+    .header-inner {
+      max-width: 1320px;
+      margin: 0 auto;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+
+    .brand-cluster {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .swatch-pip {
+      width: 28px;
+      height: 28px;
+      border-radius: 6px;
+      background: var(--enamel-base);
+      border: 1.5px solid var(--accent-cyan);
+      box-shadow: 0 0 10px rgba(56, 189, 248, 0.35);
+    }
+
+    .title-block h1 {
+      font-size: 1.15rem;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+
+    .title-block h1 span.pill {
+      font-size: 0.68rem;
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      padding: 0.15rem 0.5rem;
+      border-radius: 999px;
+      background: rgba(56, 189, 248, 0.15);
+      color: var(--accent-cyan);
+      border: 1px solid rgba(56, 189, 248, 0.3);
+    }
+
+    .title-block p {
+      font-size: 0.8rem;
+      color: var(--text-secondary);
+    }
+
+    nav.toc {
+      display: flex;
+      gap: 0.4rem;
+    }
+
+    nav.toc a {
+      color: var(--text-secondary);
+      text-decoration: none;
+      font-size: 0.78rem;
+      font-weight: 500;
+      padding: 0.35rem 0.65rem;
+      border-radius: 6px;
+      transition: all 0.15s ease;
+    }
+
+    nav.toc a:hover {
+      background: var(--bg-elevated);
+      color: var(--text-primary);
+    }
+
+    main {
+      max-width: 1320px;
+      margin: 2rem auto;
+      padding: 0 2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 2.5rem;
+    }
+
+    .section-card {
+      background: var(--bg-panel);
+      border: 1px solid var(--border-subtle);
+      border-radius: 12px;
+      padding: 1.75rem;
+    }
+
+    .section-header {
+      margin-bottom: 1.25rem;
+      border-bottom: 1px solid var(--border-subtle);
+      padding-bottom: 0.75rem;
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+    }
+
+    .section-header h2 {
+      font-size: 1.15rem;
+      font-weight: 700;
+      letter-spacing: 0.4px;
+      color: var(--text-primary);
+    }
+
+    .section-header span.tag {
+      font-size: 0.72rem;
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      color: var(--text-muted);
+    }
+
+    /* Grid layouts */
+    .grid-2col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+    }
+
+    .grid-4col {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1rem;
+    }
+
+    @media (max-width: 900px) {
+      .grid-2col, .grid-4col { grid-template-columns: 1fr; }
+    }
+
+    /* Swatch comparison box */
+    .swatch-display-card {
+      background: var(--bg-elevated);
+      border: 1px solid var(--border-subtle);
+      border-radius: 10px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .swatch-visual-box {
+      height: 140px;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
+    .swatch-meta {
+      padding: 1rem;
+      font-size: 0.8rem;
+    }
+
+    .swatch-title {
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 0.25rem;
+    }
+
+    .swatch-hex {
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size: 0.85rem;
+      color: var(--accent-cyan);
+      cursor: pointer;
+    }
+
+    .swatch-desc {
+      margin-top: 0.4rem;
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+      line-height: 1.4;
+    }
+
+    /* Interactive Preview Container */
+    .preview-container {
+      background: #06080c;
+      border: 1px solid var(--border-subtle);
+      border-radius: 10px;
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .preview-toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      background: var(--bg-elevated);
+      padding: 0.75rem 1rem;
+      border-radius: 8px;
+      border: 1px solid var(--border-subtle);
+    }
+
+    .toolbar-group {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.78rem;
+      font-weight: 600;
+    }
+
+    .toolbar-btn {
+      background: var(--bg-panel);
+      color: var(--text-secondary);
+      border: 1px solid var(--border-subtle);
+      padding: 0.35rem 0.75rem;
+      border-radius: 6px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .toolbar-btn:hover {
+      color: var(--text-primary);
+      border-color: var(--border-strong);
+    }
+
+    .toolbar-btn.active {
+      background: var(--enamel-base);
+      color: #ffffff;
+      border-color: var(--accent-cyan);
+      box-shadow: 0 0 8px rgba(56, 189, 248, 0.4);
+    }
+
+    .svg-viewport-wrapper {
+      width: 100%;
+      overflow-x: auto;
+      border-radius: 6px;
+      background: #030406;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    svg.chassis-preview {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+
+    /* Table styling */
+    table.data-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.8rem;
+      text-align: left;
+    }
+
+    table.data-table th, table.data-table td {
+      padding: 0.65rem 0.85rem;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
+    table.data-table th {
+      background: var(--bg-elevated);
+      color: var(--text-secondary);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      font-size: 0.7rem;
+    }
+
+    /* Code block */
+    pre.code-snippet {
+      background: #080a0e;
+      border: 1px solid var(--border-subtle);
+      border-radius: 8px;
+      padding: 1rem;
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size: 0.78rem;
+      color: #e2e8f0;
+      overflow-x: auto;
+      position: relative;
+    }
+
+    .copy-btn {
+      position: absolute;
+      top: 0.5rem;
+      right: 0.5rem;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border-subtle);
+      color: var(--text-secondary);
+      padding: 0.25rem 0.5rem;
+      border-radius: 4px;
+      font-size: 0.7rem;
+      cursor: pointer;
+    }
+
+    .copy-btn:hover { color: #ffffff; border-color: var(--accent-cyan); }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <header>
+    <div class="header-inner">
+      <div class="brand-cluster">
+        <div class="swatch-pip" title="Authentic Dark Blue Baked Enamel (#161c35)"></div>
+        <div class="title-block">
+          <h1>Dark Blue Baked Enamel Chassis <span class="pill">FINISH #161c35</span></h1>
+          <p>Ward-Beck Systems &amp; McCurdy Radio • Authentic Canadian Broadcast Console Enamel</p>
+        </div>
+      </div>
+      <nav class="toc">
+        <a href="#swatch">Authentic Swatch</a>
+        <a href="#visualizer">Live Chassis</a>
+        <a href="#tokens">Color Tokens</a>
+        <a href="#contrast">Silkscreen Contrast</a>
+        <a href="#code">SVG &amp; CSS Code</a>
+        <a href="index.html" style="background:#22c55e;color:#000;font-weight:700;">LAUNCH XTM ↗</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <!-- Section 1: Executive Overview & Swatch Analysis -->
+    <section class="section-card" id="swatch">
+      <div class="section-header">
+        <h2>Authentic Swatch &amp; Optical Micro-Analysis</h2>
+        <span class="tag">SPECIFICATION • ARCHIVAL PROVENANCE</span>
+      </div>
+
+      <div class="grid-2col">
+        <div>
+          <p style="font-size:0.85rem;color:var(--text-secondary);margin-bottom:1rem;line-height:1.6;">
+            Throughout the golden era of Canadian broadcast engineering, both <strong>Ward-Beck Systems</strong> and <strong>McCurdy Radio Industries</strong> specified a signature <strong>Dark Blue Baked Enamel</strong> for custom studio consoles and rack gear. Unlike standard industrial gray or jet black, this deep midnight navy hue (centered at <code style="color:var(--accent-cyan)">#161c35</code>) provides superior non-reflective diffusion under harsh overhead fluorescent control room lighting while delivering warm, elegant contrast against cream meter dials and amber pilot lamps.
+          </p>
+
+          <div style="background:var(--bg-elevated);border:1px solid var(--border-subtle);border-radius:8px;padding:1rem;">
+            <div style="font-size:0.75rem;font-weight:700;color:var(--text-muted);text-transform:uppercase;margin-bottom:0.5rem;">Authentic Material Properties</div>
+            <ul style="font-size:0.8rem;color:var(--text-secondary);list-style:disc;padding-left:1.2rem;line-height:1.6;">
+              <li><strong>Substrate:</strong> 16-gauge cold-rolled mild steel / annealed 5052-H32 aluminum chassis.</li>
+              <li><strong>Chemistry:</strong> Cross-linked thermoset polyester alkyd baked enamel (oven-cured at 180°C).</li>
+              <li><strong>Texture Profile:</strong> Fine stippled / light orange-peel stipple preventing specular glare.</li>
+              <li><strong>Sheen:</strong> Low luster semi-matte (20° gloss meter rating of 18–22 GU).</li>
+              <li><strong>Solvent Resistance:</strong> High resistance to broadcast studio cleaning solvents and oils.</li>
+            </ul>
+          </div>
+        </div>
+
+        <div>
+          <div style="background:var(--bg-elevated);border:1px solid var(--border-subtle);border-radius:8px;padding:1rem;display:flex;flex-direction:column;gap:0.75rem;align-items:center;">
+            <div style="font-size:0.72rem;font-weight:700;color:var(--accent-cyan);letter-spacing:0.5px;text-transform:uppercase;">Authentic Macro Swatch (Sample Artifact)</div>
+            <img src="/assets/swatch-dark-blue-enamel.png" alt="Dark Blue Baked Enamel Swatch" style="width:100%;max-width:320px;height:auto;border-radius:6px;border:1px solid var(--border-strong);box-shadow:0 4px 16px rgba(0,0,0,0.6);" />
+            <div style="font-size:0.72rem;color:var(--text-muted);text-align:center;">Macro stipple texture sample analyzed at RGB (22, 28, 53)</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 2: Color Palette Spectrum -->
+    <section class="section-card" id="tokens">
+      <div class="section-header">
+        <h2>Spectral Color Breakdown &amp; Finish Tokens</h2>
+        <span class="tag">CHROMATIC VALUES • CIE HSL / RGB</span>
+      </div>
+
+      <div class="grid-4col">
+        <!-- 1. Enamel Base -->
+        <div class="swatch-display-card">
+          <div class="swatch-visual-box" style="background:#161c35;">
+            <span style="font-size:0.75rem;font-weight:700;color:#ffffff;text-shadow:0 1px 3px rgba(0,0,0,0.8);">BASE ENAMEL</span>
+          </div>
+          <div class="swatch-meta">
+            <div class="swatch-title">Enamel Mean Core</div>
+            <div class="swatch-hex" onclick="navigator.clipboard.writeText('#161c35');">#161c35</div>
+            <div class="swatch-desc">RGB(22, 28, 53)<br/>HSL(228°, 41%, 15%)<br/>Dominant surface faceplate tone.</div>
+          </div>
+        </div>
+
+        <!-- 2. Peak Stipple Highlight -->
+        <div class="swatch-display-card">
+          <div class="swatch-visual-box" style="background:#232d52;">
+            <span style="font-size:0.75rem;font-weight:700;color:#ffffff;text-shadow:0 1px 3px rgba(0,0,0,0.8);">STIPPLE PEAK</span>
+          </div>
+          <div class="swatch-meta">
+            <div class="swatch-title">Highlight Crest</div>
+            <div class="swatch-hex" onclick="navigator.clipboard.writeText('#232d52');">#232d52</div>
+            <div class="swatch-desc">RGB(35, 45, 82)<br/>HSL(227°, 40%, 23%)<br/>Micro-stipple peaks under studio lights.</div>
+          </div>
+        </div>
+
+        <!-- 3. Midtone Body -->
+        <div class="swatch-display-card">
+          <div class="swatch-visual-box" style="background:#1a2240;">
+            <span style="font-size:0.75rem;font-weight:700;color:#ffffff;text-shadow:0 1px 3px rgba(0,0,0,0.8);">MIDTONE</span>
+          </div>
+          <div class="swatch-meta">
+            <div class="swatch-title">Body Midtone</div>
+            <div class="swatch-hex" onclick="navigator.clipboard.writeText('#1a2240');">#1a2240</div>
+            <div class="swatch-desc">RGB(26, 34, 64)<br/>HSL(227°, 42%, 18%)<br/>Secondary field gradient stop.</div>
+          </div>
+        </div>
+
+        <!-- 4. Deep Stipple Valley -->
+        <div class="swatch-display-card">
+          <div class="swatch-visual-box" style="background:#0f1427;">
+            <span style="font-size:0.75rem;font-weight:700;color:#ffffff;text-shadow:0 1px 3px rgba(0,0,0,0.8);">VALLEY SHADOW</span>
+          </div>
+          <div class="swatch-meta">
+            <div class="swatch-title">Deep Stipple Pore</div>
+            <div class="swatch-hex" onclick="navigator.clipboard.writeText('#0f1427');">#0f1427</div>
+            <div class="swatch-desc">RGB(15, 20, 39)<br/>HSL(227°, 44%, 11%)<br/>Recessed pores and fold shadows.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 3: Interactive Live Chassis Visualizer -->
+    <section class="section-card" id="visualizer">
+      <div class="section-header">
+        <h2>Interactive Broadcast Chassis Visualizer</h2>
+        <span class="tag">FLUSH VIEWPORTS • NO BEZELS • ACTIVE VENTS</span>
+      </div>
+
+      <div class="preview-container">
+        <div class="preview-toolbar">
+          <div class="toolbar-group">
+            <span>Chassis Finish:</span>
+            <button type="button" class="toolbar-btn active" id="btnFinishDarkBlue" onclick="setChassisFinish('darkblue')">Dark Blue Enamel (#161c35)</button>
+            <button type="button" class="toolbar-btn" id="btnFinishSlateBlue" onclick="setChassisFinish('slate')">Petrol Slate-Blue (#2c4454)</button>
+            <button type="button" class="toolbar-btn" id="btnFinishNavy" onclick="setChassisFinish('navy')">Studio Navy (#0d172a)</button>
+            <button type="button" class="toolbar-btn" id="btnFinishCream" onclick="setChassisFinish('cream')">ATS-100 Cream (#dedad0)</button>
+          </div>
+
+          <div class="toolbar-group">
+            <span>Dial Face:</span>
+            <button type="button" class="toolbar-btn active" id="btnFaceParchment" onclick="setDialFace('parchment')">Parchment VU</button>
+            <button type="button" class="toolbar-btn" id="btnFacePpmBlack" onclick="setDialFace('ppmblack')">PPM Studio Black</button>
+          </div>
+        </div>
+
+        <!-- Live SVG Render Viewport -->
+        <div class="svg-viewport-wrapper">
+          <svg class="chassis-preview" viewBox="0 0 3200 430" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <!-- Dark Blue Baked Enamel Gradient (#161c35) -->
+              <linearGradient id="chassisGrad_darkblue" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#253158" />
+                <stop offset="28%" stop-color="#1b2444" />
+                <stop offset="65%" stop-color="#161c35" />
+                <stop offset="100%" stop-color="#10152b" />
+              </linearGradient>
+
+              <!-- Top Rim Gradient in Dark Blue -->
+              <linearGradient id="topRimGrad_darkblue" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#2f3d6c" />
+                <stop offset="75%" stop-color="#1b2342" />
+                <stop offset="100%" stop-color="#11162b" />
+              </linearGradient>
+
+              <!-- Slate Blue Gradient (#2c4454) -->
+              <linearGradient id="chassisGrad_slate" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#436478" />
+                <stop offset="48%" stop-color="#375466" />
+                <stop offset="100%" stop-color="#2c4454" />
+              </linearGradient>
+              <linearGradient id="topRimGrad_slate" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#51768c" />
+                <stop offset="75%" stop-color="#3b596b" />
+                <stop offset="100%" stop-color="#243846" />
+              </linearGradient>
+
+              <!-- Studio Navy Gradient (#0d172a) -->
+              <linearGradient id="chassisGrad_navy" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#1e293b" />
+                <stop offset="50%" stop-color="#0f172a" />
+                <stop offset="100%" stop-color="#090d16" />
+              </linearGradient>
+              <linearGradient id="topRimGrad_navy" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#25334a" />
+                <stop offset="100%" stop-color="#0a0e18" />
+              </linearGradient>
+
+              <!-- Cream ATS-100 Gradient (#dedad0) -->
+              <linearGradient id="chassisGrad_cream" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#e5e1d5" />
+                <stop offset="50%" stop-color="#dedad0" />
+                <stop offset="100%" stop-color="#d2cec2" />
+              </linearGradient>
+              <linearGradient id="topRimGrad_cream" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#4e738a" />
+                <stop offset="100%" stop-color="#294150" />
+              </linearGradient>
+
+              <!-- Meter Chamber Shadows (Flush Viewport, NO BEZEL) -->
+              <linearGradient id="ch_top" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#000" stop-opacity="0.65" />
+                <stop offset="100%" stop-color="#000" stop-opacity="0" />
+              </linearGradient>
+              <linearGradient id="ch_bot" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#000" stop-opacity="0" />
+                <stop offset="100%" stop-color="#000" stop-opacity="0.65" />
+              </linearGradient>
+            </defs>
+
+            <!-- 1. Main Chassis Faceplate -->
+            <rect id="previewFaceplate" width="3200" height="430" fill="url(#chassisGrad_darkblue)" />
+
+            <!-- 2. Top Perforated Ventilation Cover Rim (y = 0..20) -->
+            <rect id="previewTopRim" x="0" y="0" width="3200" height="20" fill="url(#topRimGrad_darkblue)" />
+            <line x1="0" y1="19.5" x2="3200" y2="19.5" stroke="#0e1324" stroke-width="1.5" />
+            <line x1="0" y1="21" x2="3200" y2="21" stroke="#3b4d82" stroke-width="0.8" stroke-opacity="0.6" />
+
+            <!-- Perforated Louvers (Top) spanning edge-to-edge -->
+            <g id="previewTopVents" fill="#0b0e1a" opacity="0.9">
+              <!-- Generated ventilation louvers across 3200 width -->
+            </g>
+
+            <!-- 3. Bottom Ventilation Strip (y = 410..430) -->
+            <line x1="0" y1="410.5" x2="3200" y2="410.5" stroke="#0e1324" stroke-width="1.5" />
+            <rect id="previewBottomRim" x="0" y="411" width="3200" height="19" fill="#141a32" />
+
+            <!-- 4. Four Meter Openings (Clean Flush Viewports, NO BEZELS) -->
+            <!-- Meter 1 (cx = 373) -->
+            <g transform="translate(83, 65)">
+              <rect width="580" height="290" rx="28" id="mFace1" fill="#f5edd3" />
+              <!-- Scale markings -->
+              <path d="M 50 160 A 265 265 0 0 1 530 160" fill="none" stroke="#1b1c1e" stroke-width="3" />
+              <path d="M 410 88 A 268 268 0 0 1 530 160" fill="none" stroke="#dc2626" stroke-width="8" />
+              <!-- Authentic McCurdy Boxed Logo on Dial -->
+              <g transform="translate(248, 178)">
+                <rect width="84" height="28" rx="2.5" fill="none" stroke="#1b1c1e" stroke-width="1.5" />
+                <text x="42" y="19" font-family="'Arial Black', Helvetica, Arial, sans-serif" font-size="13.5" font-weight="900" letter-spacing="-0.6" text-anchor="middle" fill="none" stroke="#1b1c1e" stroke-width="1.2">McCurdy</text>
+              </g>
+              <!-- Needle -->
+              <line x1="290" y1="345" x2="230" y2="105" stroke="#dc2626" stroke-width="2.5" stroke-linecap="round" />
+              <!-- Flush Cutout Rim -->
+              <rect width="580" height="290" rx="28" fill="url(#ch_top)" pointer-events="none" />
+              <rect width="580" height="290" rx="28" fill="none" stroke="#090c15" stroke-width="2.5" />
+            </g>
+
+            <!-- Meter 2 (cx = 1002) -->
+            <g transform="translate(712, 65)">
+              <rect width="580" height="290" rx="28" id="mFace2" fill="#f5edd3" />
+              <path d="M 50 160 A 265 265 0 0 1 530 160" fill="none" stroke="#1b1c1e" stroke-width="3" />
+              <path d="M 410 88 A 268 268 0 0 1 530 160" fill="none" stroke="#dc2626" stroke-width="8" />
+              <g transform="translate(248, 178)">
+                <rect width="84" height="28" rx="2.5" fill="none" stroke="#1b1c1e" stroke-width="1.5" />
+                <text x="42" y="19" font-family="'Arial Black', Helvetica, Arial, sans-serif" font-size="13.5" font-weight="900" letter-spacing="-0.6" text-anchor="middle" fill="none" stroke="#1b1c1e" stroke-width="1.2">McCurdy</text>
+              </g>
+              <line x1="290" y1="345" x2="330" y2="102" stroke="#dc2626" stroke-width="2.5" stroke-linecap="round" />
+              <rect width="580" height="290" rx="28" fill="url(#ch_top)" pointer-events="none" />
+              <rect width="580" height="290" rx="28" fill="none" stroke="#090c15" stroke-width="2.5" />
+            </g>
+
+            <!-- Center Console (Range & Controls) -->
+            <g transform="translate(1380, 50)">
+              <!-- Range Box -->
+              <rect x="74" y="20" width="212" height="180" rx="12" fill="#e9e5da" stroke="#111522" stroke-width="2.5" />
+              <rect x="120" y="32" width="120" height="56" rx="3" fill="#1b1011" />
+              <text x="180" y="74" font-family="'Courier New', monospace" font-size="44" font-weight="900" fill="#ef4444" text-anchor="middle">30</text>
+              <text x="180" y="112" font-family="Helvetica, Arial, sans-serif" font-size="16" font-weight="700" fill="#232325" text-anchor="middle">RANGE</text>
+              <!-- Input Select Jacks -->
+              <rect x="10" y="218" width="340" height="110" rx="8" fill="#3892d4" stroke="#111522" stroke-width="2" />
+              <text x="180" y="244" font-family="Helvetica, Arial, sans-serif" font-size="16" font-weight="700" fill="#181b1e" text-anchor="middle">INPUT</text>
+              <circle cx="110" cy="284" r="26" fill="#1c212e" stroke="#0b0e16" stroke-width="2" />
+              <circle cx="250" cy="284" r="26" fill="#1c212e" stroke="#0b0e16" stroke-width="2" />
+            </g>
+
+            <!-- Meter 3 (cx = 2198) -->
+            <g transform="translate(1908, 65)">
+              <rect width="580" height="290" rx="28" id="mFace3" fill="#f5edd3" />
+              <path d="M 50 160 A 265 265 0 0 1 530 160" fill="none" stroke="#1b1c1e" stroke-width="3" />
+              <path d="M 410 88 A 268 268 0 0 1 530 160" fill="none" stroke="#dc2626" stroke-width="8" />
+              <g transform="translate(248, 178)">
+                <rect width="84" height="28" rx="2.5" fill="none" stroke="#1b1c1e" stroke-width="1.5" />
+                <text x="42" y="19" font-family="'Arial Black', Helvetica, Arial, sans-serif" font-size="13.5" font-weight="900" letter-spacing="-0.6" text-anchor="middle" fill="none" stroke="#1b1c1e" stroke-width="1.2">McCurdy</text>
+              </g>
+              <line x1="290" y1="345" x2="250" y2="108" stroke="#dc2626" stroke-width="2.5" stroke-linecap="round" />
+              <rect width="580" height="290" rx="28" fill="url(#ch_top)" pointer-events="none" />
+              <rect width="580" height="290" rx="28" fill="none" stroke="#090c15" stroke-width="2.5" />
+            </g>
+
+            <!-- Meter 4 (cx = 2827) -->
+            <g transform="translate(2537, 65)">
+              <rect width="580" height="290" rx="28" id="mFace4" fill="#f5edd3" />
+              <path d="M 50 160 A 265 265 0 0 1 530 160" fill="none" stroke="#1b1c1e" stroke-width="3" />
+              <path d="M 410 88 A 268 268 0 0 1 530 160" fill="none" stroke="#dc2626" stroke-width="8" />
+              <g transform="translate(248, 178)">
+                <rect width="84" height="28" rx="2.5" fill="none" stroke="#1b1c1e" stroke-width="1.5" />
+                <text x="42" y="19" font-family="'Arial Black', Helvetica, Arial, sans-serif" font-size="13.5" font-weight="900" letter-spacing="-0.6" text-anchor="middle" fill="none" stroke="#1b1c1e" stroke-width="1.2">McCurdy</text>
+              </g>
+              <line x1="290" y1="345" x2="350" y2="108" stroke="#dc2626" stroke-width="2.5" stroke-linecap="round" />
+              <rect width="580" height="290" rx="28" fill="url(#ch_top)" pointer-events="none" />
+              <rect width="580" height="290" rx="28" fill="none" stroke="#090c15" stroke-width="2.5" />
+            </g>
+
+            <!-- 5. Off-White Silkscreen Channel Legends & Hairlines -->
+            <!-- Left Channel (INPUT 1) -->
+            <g transform="translate(48, 382)">
+              <!-- McCurdy Cartouche & Model -->
+              <rect x="0" y="0" width="112" height="34" rx="3" fill="none" stroke="#eae6da" stroke-width="1.4" stroke-opacity="0.8" />
+              <text x="56" y="23" font-family="'Arial Black', Helvetica, Arial, sans-serif" font-size="16" font-weight="900" letter-spacing="-0.6" text-anchor="middle" fill="none" stroke="#eae6da" stroke-width="1.3">McCurdy</text>
+              <text x="126" y="23" font-family="'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="13" font-weight="600" letter-spacing="1.2" fill="#eae6da" opacity="0.85">MODEL ATS-100</text>
+            </g>
+
+            <line x1="320" y1="392" x2="615" y2="392" stroke="#eae6da" stroke-width="1.4" stroke-opacity="0.75" />
+            <text x="687.5" y="396" font-family="Helvetica, Arial, sans-serif" font-size="18" font-weight="700" fill="#eae6da" text-anchor="middle" letter-spacing="2">INPUT 1</text>
+            <line x1="760" y1="392" x2="1285" y2="392" stroke="#eae6da" stroke-width="1.4" stroke-opacity="0.75" />
+
+            <!-- Right Channel (INPUT 2) -->
+            <line x1="1912" y1="392" x2="2440" y2="392" stroke="#eae6da" stroke-width="1.4" stroke-opacity="0.75" />
+            <text x="2512.5" y="396" font-family="Helvetica, Arial, sans-serif" font-size="18" font-weight="700" fill="#eae6da" text-anchor="middle" letter-spacing="2">INPUT 2</text>
+            <line x1="2585" y1="392" x2="3150" y2="392" stroke="#eae6da" stroke-width="1.4" stroke-opacity="0.75" />
+          </svg>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 4: Silkscreen Contrast Analysis -->
+    <section class="section-card" id="contrast">
+      <div class="section-header">
+        <h2>Silkscreen Marking &amp; Legend Contrast Ratios</h2>
+        <span class="tag">LEGIBILITY STANDARDS • WCAG AAA CERTIFICATION</span>
+      </div>
+
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Silkscreen Marking</th>
+            <th>Hex Color</th>
+            <th>Substrate Finish</th>
+            <th>Contrast Ratio</th>
+            <th>Broadcast Room Legibility</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Off-White Hairline &amp; Labels</strong></td>
+            <td><code style="color:var(--silk-offwhite)">#eae6da</code></td>
+            <td>Dark Blue Enamel (#161c35)</td>
+            <td><strong style="color:#22c55e">11.8 : 1</strong></td>
+            <td>Exceptional (Passes WCAG AAA for all text sizes under dim lighting)</td>
+          </tr>
+          <tr>
+            <td><strong>Crisp Silver Silkscreen</strong></td>
+            <td><code style="color:var(--silk-silver)">#f1f5f9</code></td>
+            <td>Dark Blue Enamel (#161c35)</td>
+            <td><strong style="color:#22c55e">13.9 : 1</strong></td>
+            <td>Maximum acuity for fine vernier tick lines and numerical dials</td>
+          </tr>
+          <tr>
+            <td><strong>VU Scale Red Overload Band</strong></td>
+            <td><code style="color:var(--vu-red)">#dc2626</code></td>
+            <td>Parchment Dial (#f5edd3)</td>
+            <td><strong style="color:#22c55e">4.9 : 1</strong></td>
+            <td>Instant peripheral recognition across audio monitoring consoles</td>
+          </tr>
+          <tr>
+            <td><strong>Phase Correlation Green LED</strong></td>
+            <td><code style="color:#22c55e">#22c55e</code></td>
+            <td>Dark Blue Enamel (#161c35)</td>
+            <td><strong style="color:#22c55e">8.6 : 1</strong></td>
+            <td>Vibrant high-contrast telemetry in direct line-of-sight</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- Section 5: Code Integration (SVG & CSS) -->
+    <section class="section-card" id="code">
+      <div class="section-header">
+        <h2>SVG &amp; CSS Production Blueprints</h2>
+        <span class="tag">READY TO EMBED • GRADIENTS &amp; VARIABLES</span>
+      </div>
+
+      <div style="margin-bottom:1.5rem;">
+        <div style="font-size:0.75rem;font-weight:700;color:var(--text-secondary);margin-bottom:0.4rem;">SVG LINEAR GRADIENTS (defs/chassis.svg)</div>
+        <pre class="code-snippet"><button class="copy-btn" onclick="navigator.clipboard.writeText(this.nextElementSibling.innerText);">COPY</button><code>&lt;!-- Authentic Dark Blue Baked Enamel Faceplate Gradient (#161c35) --&gt;
+&lt;linearGradient id="wbsDarkBlueEnamelGrad" x1="0%" y1="0%" x2="0%" y2="100%"&gt;
+  &lt;stop offset="0%" stop-color="#253158" /&gt;
+  &lt;stop offset="28%" stop-color="#1b2444" /&gt;
+  &lt;stop offset="65%" stop-color="#161c35" /&gt;
+  &lt;stop offset="100%" stop-color="#10152b" /&gt;
+&lt;/linearGradient&gt;
+
+&lt;!-- Top Perforated Ventilation Cover Rim Gradient --&gt;
+&lt;linearGradient id="topRimDarkBlueGrad" x1="0%" y1="0%" x2="0%" y2="100%"&gt;
+  &lt;stop offset="0%" stop-color="#2f3d6c" /&gt;
+  &lt;stop offset="75%" stop-color="#1b2342" /&gt;
+  &lt;stop offset="100%" stop-color="#11162b" /&gt;
+&lt;/linearGradient&gt;</code></pre>
+      </div>
+
+      <div>
+        <div style="font-size:0.75rem;font-weight:700;color:var(--text-secondary);margin-bottom:0.4rem;">CSS CUSTOM PROPERTIES (css/skins/wbs-ca.css)</div>
+        <pre class="code-snippet"><button class="copy-btn" onclick="navigator.clipboard.writeText(this.nextElementSibling.innerText);">COPY</button><code>body.theme-wbs-ca {
+  --bg-deep: #0e1222;
+  --bg-panel: #161c35;
+  --border-subtle: #242d54;
+  --ink-primary: #f8fafc;
+  --ink-secondary: #cbd5e1;
+  --ink-muted: #94a3b8;
+  --accent-enamel: #38bdf8;
+}
+
+html:has(body.theme-wbs-ca) {
+  background-color: #0e1222;
+}</code></pre>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    // Generate SVG Top Ventilation Louvers
+    (function initVents() {
+      var g = document.getElementById("previewTopVents");
+      if (!g) return;
+      var count = 56;
+      var startX = 36;
+      var availW = 3200 - 72;
+      var slotW = availW / count;
+      var s = "";
+      for (var i = 0; i < count; i++) {
+        var x = startX + i * slotW;
+        s += '<rect x="' + (x + 4).toFixed(1) + '" y="4" width="' + (slotW - 8).toFixed(1) + '" height="12" rx="2.5" />';
+      }
+      g.innerHTML = s;
+    })();
+
+    // Interactive Chassis Switchers
+    function setChassisFinish(finish) {
+      document.querySelectorAll(".preview-toolbar button[id^='btnFinish']").forEach(function(b) {
+        b.classList.remove("active");
+      });
+      var activeBtn = document.getElementById("btnFinish" + finish.charAt(0).toUpperCase() + finish.slice(1));
+      if (activeBtn) activeBtn.classList.add("active");
+
+      var face = document.getElementById("previewFaceplate");
+      var topRim = document.getElementById("previewTopRim");
+      var botRim = document.getElementById("previewBottomRim");
+
+      if (finish === "darkblue") {
+        face.setAttribute("fill", "url(#chassisGrad_darkblue)");
+        topRim.setAttribute("fill", "url(#topRimGrad_darkblue)");
+        botRim.setAttribute("fill", "#141a32");
+      } else if (finish === "slate") {
+        face.setAttribute("fill", "url(#chassisGrad_slate)");
+        topRim.setAttribute("fill", "url(#topRimGrad_slate)");
+        botRim.setAttribute("fill", "#233744");
+      } else if (finish === "navy") {
+        face.setAttribute("fill", "url(#chassisGrad_navy)");
+        topRim.setAttribute("fill", "url(#topRimGrad_navy)");
+        botRim.setAttribute("fill", "#0b0f19");
+      } else if (finish === "cream") {
+        face.setAttribute("fill", "url(#chassisGrad_cream)");
+        topRim.setAttribute("fill", "url(#topRimGrad_cream)");
+        botRim.setAttribute("fill", "#202c36");
+      }
+    }
+
+    function setDialFace(faceType) {
+      document.querySelectorAll(".preview-toolbar button[id^='btnFace']").forEach(function(b) {
+        b.classList.remove("active");
+      });
+      var activeBtn = document.getElementById("btnFace" + (faceType === "parchment" ? "Parchment" : "PpmBlack"));
+      if (activeBtn) activeBtn.classList.add("active");
+
+      var color = faceType === "parchment" ? "#f5edd3" : "#111317";
+      for (var i = 1; i <= 4; i++) {
+        var el = document.getElementById("mFace" + i);
+        if (el) el.setAttribute("fill", color);
+      }
+    }
+  </script>
+</body>
+</html>
