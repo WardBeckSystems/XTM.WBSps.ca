@@ -19,33 +19,33 @@ export function renderWbsCanvas(): string {
     <!-- Modern Dark Canvas (Ward-Beck.com) -->
     <rect class="wbs-only wbs-dark-canvas" width="${VW}" height="${VH}" fill="#0f1114"/>
 
-    <!-- Vintage Broadcast Petrol / Slate-Blue Baked Enamel Chassis (Ward-Beck.ca) -->
+    <!-- Vintage Ward-Beck M600 Anodized Brushed Aluminum Chassis (Ward-Beck.ca) -->
     <g class="wbs-ca-only" id="wbs-ca-broadcast-chassis">
-      <!-- Baked Enamel Faceplate -->
-      <rect width="${VW}" height="${VH}" fill="url(#wbsSlateBlueGrad)"/>
+      <!-- Warm Anodized Aluminum Faceplate Base (MF-6B standard #C6C3B3) -->
+      <rect width="${VW}" height="${VH}" fill="url(#aluPlate)"/>
 
       <!-- M600 Anodized Extruded Aluminum Top Rail Lip (MF-6B Standard) -->
       <rect x="0" y="0" width="${VW}" height="18" fill="url(#extrusionBevel)" stroke="#5C5A50" stroke-width="1"/>
-      <line x1="0" y1="18" x2="${VW}" y2="18" stroke="#9C998B" stroke-width="1.2"/>
-      <line x1="0" y1="19.5" x2="${VW}" y2="19.5" stroke="#FFFFFF" stroke-opacity="0.6" stroke-width="0.8"/>
+      <line x1="0" y1="18" x2="${VW}" y2="18" stroke="#8C897B" stroke-width="1.2"/>
+      <line x1="0" y1="19.5" x2="${VW}" y2="19.5" stroke="#FFFFFF" stroke-opacity="0.4" stroke-width="0.8"/>
 
       <!-- M600 Anodized Extruded Aluminum Bottom Rail Lip -->
-      <line x1="0" y1="410.5" x2="${VW}" y2="410.5" stroke="#1b2b36" stroke-width="1.2"/>
+      <line x1="0" y1="410.5" x2="${VW}" y2="410.5" stroke="#8C897B" stroke-width="1.2"/>
       <rect x="0" y="412" width="${VW}" height="18" fill="url(#extrusionBevel)" stroke="#5C5A50" stroke-width="1"/>
-      <line x1="0" y1="412" x2="${VW}" y2="412" stroke="#E8E6DC" stroke-width="1.2"/>
+      <line x1="0" y1="412" x2="${VW}" y2="412" stroke="#D4D2C5" stroke-width="1.2"/>
 
-      <!-- Off-White Silkscreened "INPUT 1" Channel Label with Hairline Rules -->
+      <!-- Dark Engraved Ink "INPUT 1" Channel Label with Hairline Rules (#2A2B2A) -->
       <g font-family="'Helvetica Neue', Helvetica, Arial, sans-serif">
-        <line x1="100" y1="418" x2="620" y2="418" stroke="#eae6da" stroke-width="1.2" stroke-opacity="0.7"/>
-        <text x="687.5" y="422" font-size="15" font-weight="700" fill="#eae6da" text-anchor="middle" letter-spacing="2">INPUT 1</text>
-        <line x1="755" y1="418" x2="1275" y2="418" stroke="#eae6da" stroke-width="1.2" stroke-opacity="0.7"/>
+        <line x1="100" y1="418" x2="620" y2="418" stroke="#2A2B2A" stroke-width="1.2" stroke-opacity="0.85"/>
+        <text x="687.5" y="422" font-size="15" font-weight="700" fill="#2A2B2A" text-anchor="middle" letter-spacing="2">INPUT 1</text>
+        <line x1="755" y1="418" x2="1275" y2="418" stroke="#2A2B2A" stroke-width="1.2" stroke-opacity="0.85"/>
       </g>
 
-      <!-- Off-White Silkscreened "INPUT 2" Channel Label with Hairline Rules -->
+      <!-- Dark Engraved Ink "INPUT 2" Channel Label with Hairline Rules (#2A2B2A) -->
       <g font-family="'Helvetica Neue', Helvetica, Arial, sans-serif">
-        <line x1="1925" y1="418" x2="2445" y2="418" stroke="#eae6da" stroke-width="1.2" stroke-opacity="0.7"/>
-        <text x="2512.5" y="422" font-size="15" font-weight="700" fill="#eae6da" text-anchor="middle" letter-spacing="2">INPUT 2</text>
-        <line x1="2580" y1="418" x2="3100" y2="418" stroke="#eae6da" stroke-width="1.2" stroke-opacity="0.7"/>
+        <line x1="1925" y1="418" x2="2445" y2="418" stroke="#2A2B2A" stroke-width="1.2" stroke-opacity="0.85"/>
+        <text x="2512.5" y="422" font-size="15" font-weight="700" fill="#2A2B2A" text-anchor="middle" letter-spacing="2">INPUT 2</text>
+        <line x1="2580" y1="418" x2="3100" y2="418" stroke="#2A2B2A" stroke-width="1.2" stroke-opacity="0.85"/>
       </g>
     </g>`;
 }

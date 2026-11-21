@@ -12,34 +12,39 @@
  */
 
 export const WBS_VINTAGE_DEFS = `
-  <!-- Ward-Beck.ca Dark Blue Broadcast Baked Enamel Faceplate (#161c35 from authentic swatch) -->
-  <linearGradient id="wbsSlateBlueGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-    <stop offset="0%" stop-color="#253158" />
-    <stop offset="28%" stop-color="#1b2444" />
-    <stop offset="65%" stop-color="#161c35" />
-    <stop offset="100%" stop-color="#10152b" />
-  </linearGradient>
-
-  <!-- Top Perforated Ventilation Rim in Dark Blue Baked Enamel -->
-  <linearGradient id="topRimSlateBlue" x1="0%" y1="0%" x2="0%" y2="100%">
-    <stop offset="0%" stop-color="#2f3d6c" />
-    <stop offset="75%" stop-color="#1b2342" />
-    <stop offset="100%" stop-color="#11162b" />
-  </linearGradient>
-
-  <!-- Anodized Brushed Aluminum Extrusion Bevels (WBS M600 Series MF-6B Standard) -->
-  <linearGradient id="extrusionBevel" x1="0%" y1="0%" x2="0%" y2="100%">
-    <stop offset="0%" stop-color="#E8E6DC" />
-    <stop offset="25%" stop-color="#D4D2C5" />
-    <stop offset="70%" stop-color="#B8B5A6" />
-    <stop offset="100%" stop-color="#8C897B" />
-  </linearGradient>
-
-  <!-- M600 Series Aluminum Plate Base -->
+  <!-- Ward-Beck M600 Anodized Brushed Aluminum Plate Base (Warm Alloy #D4D2C5 -> #C6C3B3 -> #B3B09F) -->
   <linearGradient id="aluPlate" x1="0%" y1="0%" x2="100%" y2="100%">
     <stop offset="0%" stop-color="#D4D2C5" />
     <stop offset="50%" stop-color="#C6C3B3" />
     <stop offset="100%" stop-color="#B3B09F" />
+  </linearGradient>
+
+  <!-- Legacy Alias: mapped to Brushed Aluminum to strictly eliminate blue on Ward-Beck.ca -->
+  <linearGradient id="wbsSlateBlueGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+    <stop offset="0%" stop-color="#D4D2C5" />
+    <stop offset="50%" stop-color="#C6C3B3" />
+    <stop offset="100%" stop-color="#B3B09F" />
+  </linearGradient>
+
+  <!-- Top Cassette Brushed Aluminum Lip -->
+  <linearGradient id="topRimSlateBlue" x1="0%" y1="0%" x2="0%" y2="100%">
+    <stop offset="0%" stop-color="#E5E3D8" />
+    <stop offset="40%" stop-color="#C6C3B3" />
+    <stop offset="100%" stop-color="#8C897B" />
+  </linearGradient>
+
+  <!-- Anodized Brushed Aluminum Extrusion Bevels (WBS M600 Series MF-6B Standard) -->
+  <linearGradient id="extrusionBevel" x1="0%" y1="0%" x2="0%" y2="100%">
+    <stop offset="0%" stop-color="#E5E3D8" />
+    <stop offset="40%" stop-color="#C6C3B3" />
+    <stop offset="100%" stop-color="#8C897B" />
+  </linearGradient>
+
+  <!-- Top Cassette Brushed Aluminum Lip -->
+  <linearGradient id="topChassisGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+    <stop offset="0%" stop-color="#E5E3D8" />
+    <stop offset="40%" stop-color="#C6C3B3" />
+    <stop offset="100%" stop-color="#8C897B" />
   </linearGradient>
 
   <!-- Extruded Lip Milled Edge -->

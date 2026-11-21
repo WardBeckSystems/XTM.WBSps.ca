@@ -1,26 +1,27 @@
 /*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.ca). All rights reserved. */
 /* ---------------------------------------------------------------
-   Vintage Ward-Beck Mode (Ward-Beck.ca - Petrol / Slate Blue Baked Enamel)
-   - Slate-blue broadcast chassis (#436478 to #2c4454).
-   - High-fidelity 3D molded bezels with mechanical trimmer screws and 4-corner chassis screws.
-   - DR Vernier dial scale with crisp silver-white silkscreening, Bakelite fluted knob, and jeweled AC lamp.
-   - Replaces the modern green plate, VFD screen, pushbuttons, and neon green channel outlines.
+   Vintage Ward-Beck Mode (Ward-Beck.ca - M500/M600 Warm Anodized Brushed Aluminum)
+   - Warm brushed anodized aluminum faceplate (#d4d2c5 to #b3b09f).
+   - Extruded top/bottom aluminum chassis lip with milled edges (#8c897b).
+   - Engraved panel markings in dark anodized ink (#2a2b2a).
+   - DR Vernier dial scale with Bakelite fluted knob and jeweled AC lamp.
+   - Open viewport apertures with clean hairline bezel rim (NO METER COVERS).
    --------------------------------------------------------------- */
 .wbs-ca-only {
   display: none;
 }
 
 body.theme-wbs-ca {
-  --bg-deep: #0e1222;
-  --bg-panel: #161c35;
-  --border-subtle: #242d54;
-  --ink-primary: #f8fafc;
-  --ink-secondary: #cbd5e1;
-  --ink-muted: #94a3b8;
+  --bg-deep: #111316;
+  --bg-panel: #c6c3b3;
+  --border-subtle: #8c897b;
+  --ink-primary: #2a2b2a;
+  --ink-secondary: #454c59;
+  --ink-muted: #6c7077;
 }
 
 html:has(body.theme-wbs-ca) {
-  background-color: #0e1222;
+  background-color: #111316;
 }
 
 body.theme-wbs-ca .wbs-ca-only {
@@ -44,25 +45,25 @@ body.theme-wbs-ca .mc-only {
 }
 
 body.theme-wbs-ca .meter-stack {
-  background-color: #121922;
+  background-color: #191c21;
 }
 
 body.theme-wbs-ca .scope-toolbar {
-  background: #141f2c;
-  border-color: #243547;
-  color: #f1f5f9;
+  background: #191c21;
+  border-color: #2e333d;
+  color: #f2efe9;
 }
 
 body.theme-wbs-ca .scope-tab-btn {
-  background: #1c2b3d;
-  color: #cbd5e1;
-  border-color: #2e445f;
+  background: #22262d;
+  color: #a0a4ab;
+  border-color: #2e333d;
 }
 
 body.theme-wbs-ca .scope-tab-btn.active {
-  background: #f97316;
-  color: #ffffff;
-  border-color: #fb923c;
+  background: #c6c3b3;
+  color: #2a2b2a;
+  border-color: #d4d2c5;
 }
 
 /* In non-wbs-ca modes, hide wbs-ca elements */

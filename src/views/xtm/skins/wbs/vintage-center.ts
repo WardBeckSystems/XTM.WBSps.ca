@@ -13,12 +13,12 @@ export function renderVintageWbsCenter(isPowered = true): string {
   // Translation for hardware (knob at x=1530, y=215; AC lamp at x=1724, y=213)
   // From gemini-svg (8).svg origin (262, 184): dx = 1268, dy = 31
   return `<g class="wbs-ca-only" id="vintage-wbs-center">
-    <!-- Main Cassette Panel Housing in McCurdy / WBS Slate-Blue Baked Enamel -->
-    <rect x="1350" y="16" width="500" height="398" rx="8" fill="url(#wbsSlateBlueGrad)" stroke="#1a2632" stroke-width="2.5" />
+    <!-- Main Cassette Panel Housing in Ward-Beck M600 Anodized Brushed Aluminum -->
+    <rect x="1350" y="16" width="500" height="398" rx="8" fill="url(#aluPlate)" stroke="#8C897B" stroke-width="2.5" />
     
     <!-- Top Brushed / Anodized Chassis Lip -->
-    <path d="M 1350 24 A 8 8 0 0 1 1358 16 H 1842 A 8 8 0 0 1 1850 24 V 48 H 1350 Z" fill="url(#topChassisGrad)" />
-    <line x1="1350" y1="48" x2="1850" y2="48" stroke="#b8b6ae" stroke-width="1.2" />
+    <path d="M 1350 24 A 8 8 0 0 1 1358 16 H 1842 A 8 8 0 0 1 1850 24 V 48 H 1350 Z" fill="url(#extrusionBevel)" stroke="#5C5A50" stroke-width="1" />
+    <line x1="1350" y1="48" x2="1850" y2="48" stroke="#8C897B" stroke-width="1.2" />
 
     <!-- Corner Slotted Screws (Top Chassis Lip) -->
     <g transform="translate(1372, 32)">
@@ -31,8 +31,8 @@ export function renderVintageWbsCenter(isPowered = true): string {
     </g>
 
     <!-- Lower Panel Edge Highlight & Rim -->
-    <line x1="1350" y1="382" x2="1850" y2="382" stroke="#1b2b36" stroke-width="1.2" />
-    <path d="M 1350 382 H 1850 V 406 A 8 8 0 0 1 1842 414 H 1358 A 8 8 0 0 1 1350 406 Z" fill="#233744" />
+    <line x1="1350" y1="382" x2="1850" y2="382" stroke="#8C897B" stroke-width="1.2" />
+    <path d="M 1350 382 H 1850 V 406 A 8 8 0 0 1 1842 414 H 1358 A 8 8 0 0 1 1350 406 Z" fill="url(#extrusionBevel)" stroke="#5C5A50" stroke-width="1" />
 
     <!-- Corner Slotted Screws (Bottom Lip) -->
     <g transform="translate(1372, 398)">
@@ -47,7 +47,7 @@ export function renderVintageWbsCenter(isPowered = true): string {
     <!-- Hardware Group: DR Dial Scale + Fluted Instrument Knob + AC Pilot Lamp -->
     <g transform="translate(1268, 31)">
       <!-- DR Differential Decade / Vernier Dial Scale & Markings (Center: x=262, y=184) -->
-      <g id="dr-dial-scale" font-family="'Helvetica Neue', Helvetica, Arial, sans-serif" fill="#f1f5f9" stroke="#f1f5f9">
+      <g id="dr-dial-scale" font-family="'Helvetica Neue', Helvetica, Arial, sans-serif" fill="#2A2B2A" stroke="#2A2B2A">
         <!-- Top Header "DR" and "- 0 +" -->
         <text x="262" y="72" font-size="13.5" font-weight="700" text-anchor="middle" stroke="none" letter-spacing="1">DR</text>
         <text x="249" y="88" font-size="12" font-weight="700" text-anchor="middle" stroke="none">–</text>
@@ -83,7 +83,7 @@ export function renderVintageWbsCenter(isPowered = true): string {
         </g>
 
         <!-- Left Sub-Numerals (2, 4, 6, 8 between each major division) -->
-        <g font-size="7.5" font-weight="700" text-anchor="middle" stroke="none" fill="#cbd5e1">
+        <g font-size="7.5" font-weight="700" text-anchor="middle" stroke="none" fill="#454C59">
           <!-- 0 to -10 -->
           <text x="251" y="99">2</text>
           <text x="240" y="101">4</text>
@@ -127,7 +127,7 @@ export function renderVintageWbsCenter(isPowered = true): string {
         </g>
 
         <!-- Right Sub-Numerals (2, 4, 6, 8 between major divisions) -->
-        <g font-size="7.5" font-weight="700" text-anchor="middle" stroke="none" fill="#cbd5e1">
+        <g font-size="7.5" font-weight="700" text-anchor="middle" stroke="none" fill="#454C59">
           <!-- 0 to +10 -->
           <text x="273" y="99">2</text>
           <text x="284" y="101">4</text>
@@ -203,7 +203,7 @@ export function renderVintageWbsCenter(isPowered = true): string {
         <circle cx="461" cy="184" r="2.8" fill="#ffffff" fill-opacity="0.9" />
 
         <!-- "AC" Panel Silkscreen Label -->
-        <text x="456" y="220" font-family="'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="12.5" font-weight="700" fill="#f1f5f9" text-anchor="middle" letter-spacing="0.8">AC</text>
+        <text x="456" y="220" font-family="'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="12.5" font-weight="700" fill="#2A2B2A" text-anchor="middle" letter-spacing="0.8">AC</text>
       </g>
     </g>
   </g>`;

@@ -97,17 +97,17 @@
             <span class="footer-btn-text wbs-com-text">Ward-Beck.com</span>
           </button>
 
-          <!-- 3. McCurdyRadio.ca (Baby Blue) - Style toggle -->
-          <button type="button" class="footer-style-btn mc-btn-ca" id="btnMcCurdyCa" title="McCurdy Radio Industries (McCurdyRadio.ca) - Switch to McCurdy Cream / Light style" onclick="event.stopPropagation(); setMode('mccurdy-light');">
+          <!-- 3. McCurdyRadio.ca (Studio Dark Broadcast) - Style toggle -->
+          <button type="button" class="footer-style-btn mc-btn-ca" id="btnMcCurdyCa" title="McCurdy Radio Industries (McCurdyRadio.ca) - Switch to McCurdy Studio Dark Neutral style" onclick="event.stopPropagation(); setMode('mccurdy-dark');">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 154 54" width="56" height="20" aria-hidden="true">
-              <rect x="2" y="2" width="150" height="50" rx="8" fill="none" stroke="#3892d4" stroke-width="4" />
-              <text x="77" y="37" font-family="'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="28" font-weight="800" text-anchor="middle" fill="#3892d4">McCurdy</text>
+              <rect x="2" y="2" width="150" height="50" rx="8" fill="#181b20" stroke="#454c59" stroke-width="4" />
+              <text x="77" y="37" font-family="'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="28" font-weight="800" text-anchor="middle" fill="#f2efe9">McCurdy</text>
             </svg>
             <span class="footer-btn-text mc-ca-text">McCurdyRadio.ca</span>
           </button>
 
-          <!-- 4. McCurdyRadio.com - Style toggle -->
-          <button type="button" class="footer-style-btn mc-btn-com" id="btnMcCurdyCom" title="McCurdy Radio Industries (McCurdyRadio.com) - Switch to McCurdy ATS-100 style" onclick="event.stopPropagation(); setMode('mccurdy-light');">
+          <!-- 4. McCurdyRadio.com (ATS-100 Cream Console) - Style toggle -->
+          <button type="button" class="footer-style-btn mc-btn-com" id="btnMcCurdyCom" title="McCurdy Radio Industries (McCurdyRadio.com) - Switch to McCurdy ATS-100 Cream Console style" onclick="event.stopPropagation(); setMode('mccurdy-light');">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 154 54" width="56" height="20" aria-hidden="true" style="border-radius:4px;">
               <rect x="2" y="2" width="150" height="50" rx="8" fill="#dedad0" stroke="#3892d4" stroke-width="4" />
               <text x="77" y="37" font-family="'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="28" font-weight="800" text-anchor="middle" fill="#0d172a">McCurdy</text>
@@ -588,12 +588,12 @@
 
     if (btnWbsCa) btnWbsCa.setAttribute("aria-pressed", isWbsCa ? "true" : "false");
     if (btnWbsCom) btnWbsCom.setAttribute("aria-pressed", isWbsDark ? "true" : "false");
-    if (btnMcCa) btnMcCa.setAttribute("aria-pressed", isMcLight ? "true" : "false");
-    if (btnMcCom) btnMcCom.setAttribute("aria-pressed", isMcDark ? "true" : "false");
+    if (btnMcCa) btnMcCa.setAttribute("aria-pressed", isMcDark ? "true" : "false");
+    if (btnMcCom) btnMcCom.setAttribute("aria-pressed", isMcLight ? "true" : "false");
 
     var meta = document.querySelector('meta[name="theme-color"]');
     if (meta) {
-      var themeColor = isMcLight ? "#dedad0" : (isMcDark ? "#0d172a" : (isWbsCa ? "#161c35" : "#07080a"));
+      var themeColor = isMcLight ? "#dedad0" : (isMcDark ? "#111316" : (isWbsCa ? "#c6c3b3" : "#07080a"));
       meta.setAttribute("content", themeColor);
     }
   }
@@ -726,19 +726,23 @@
 <div id="mccurdyLogo" style="display:none;"></div>
 <script>
   // Domain self-awareness:
-  // mccurdyradio.ca / mccurdyradio.com -> McCurdy light mode (ATS-100 cream faceplate)
-  // ward-beck.ca -> Ward-Beck vintage slate-blue mode
-  // ward-beck.* / wbsps.ca -> Ward-Beck dark mode
+  // mccurdyradio.com -> McCurdy light mode (ATS-100 cream faceplate)
+  // mccurdyradio.ca -> McCurdy dark studio mode (Neutral dark broadcast charcoal, no blue)
+  // ward-beck.ca -> Ward-Beck M600 brushed aluminum mode
+  // ward-beck.com / wbsps.ca -> Ward-Beck modern dark mode
   // anywhere else (e.g. localhost) -> viewer's remembered preference
   var host = location.hostname;
-  var onMcCurdy = /(^|\.)mccurdyradio\.(ca|com)$/i.test(host);
+  var onMcCurdyCom = /(^|\.)mccurdyradio\.com$/i.test(host);
+  var onMcCurdyCa = /(^|\.)mccurdyradio\.ca$/i.test(host);
   var onWardBeckCa = /(^|\.)ward-beck\.ca$/i.test(host);
   var onWardBeckHost = /(^|\.)(ward-beck\.[a-z]+|wbsps\.ca)$/i.test(host);
 
   if (onWardBeckCa) {
     applyMode('wbs-ca');
-  } else if (onMcCurdy) {
+  } else if (onMcCurdyCom) {
     applyMode('mccurdy-light');
+  } else if (onMcCurdyCa) {
+    applyMode('mccurdy-dark');
   } else if (onWardBeckHost) {
     applyMode('wbs-dark');
   } else {
