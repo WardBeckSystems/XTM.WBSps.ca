@@ -121,7 +121,7 @@
             </svg>
             <span class="footer-btn-text mc-com-text">McCurdyRadio.com</span>
           </button>
-          <span class="build-stamp" style="font-size: 0.7em; opacity: 0.6; margin-left: 12px;">v1.0.15</span>
+          <span class="build-stamp" style="font-size: 0.7em; opacity: 0.6; margin-left: 12px;">v1.0.18</span>
         </div>
       </summary>
 
@@ -635,12 +635,17 @@
     }
   }
 
-  // Interactive vintage Ward-Beck DR Vernier knob rotation (drag & wheel)
+  // Interactive vintage Ward-Beck DR Vernier knob & McCurdy SA14023 Attenuator knob rotation (drag & wheel)
   var vintageKnobAngle = 15; // default 15 deg (+4.2 index position in SVG)
+  var mcKnobAngle = 0; // default 0 deg (-20 dB index position at 9 o'clock)
   try {
     var savedKnob = localStorage.getItem("xtm.wbs_vintage_knob");
     if (savedKnob !== null && !isNaN(parseFloat(savedKnob))) {
       vintageKnobAngle = parseFloat(savedKnob);
+    }
+    var savedMcKnob = localStorage.getItem("xtm.mc_vintage_knob");
+    if (savedMcKnob !== null && !isNaN(parseFloat(savedMcKnob))) {
+      mcKnobAngle = parseFloat(savedMcKnob);
     }
   } catch (e) {}
 
@@ -648,78 +653,119 @@
     vintageKnobAngle = Math.max(-180, Math.min(108, angle));
     var ptr = document.getElementById("wbs_vintage_knob_pointer");
     var rotor = document.getElementById("wbs_vintage_knob_rotor");
-    if (ptr) ptr.setAttribute("transform", "translate(262, 184) rotate(" + vintageKnobAngle.toFixed(1) + ")");
-    if (rotor) rotor.setAttribute("transform", "translate(269, 193) rotate(" + vintageKnobAngle.toFixed(1) + ")");
+    if (ptr) ptr.setAttribute("transform", "rotate(" + vintageKnobAngle.toFixed(1) + ")");
+    if (rotor) rotor.setAttribute("transform", "translate(7, 9) rotate(" + vintageKnobAngle.toFixed(1) + ")");
     try {
       localStorage.setItem("xtm.wbs_vintage_knob", vintageKnobAngle.toFixed(1));
+    } catch (e) {}
+  }
+
+  function updateMcCurdyKnob(angle) {
+    mcKnobAngle = Math.max(-168.75, Math.min(168.75, angle));
+    var mcRotor = document.getElementById("mccurdy_vintage_knob_rotor");
+    if (mcRotor) mcRotor.setAttribute("transform", "translate(1600, 215) rotate(" + mcKnobAngle.toFixed(1) + ")");
+    try {
+      localStorage.setItem("xtm.mc_vintage_knob", mcKnobAngle.toFixed(1));
     } catch (e) {}
   }
 
   // Ensure initial rotation is set once DOM is loaded or re-rendered
   setTimeout(function() {
     updateVintageKnob(vintageKnobAngle);
+    updateMcCurdyKnob(mcKnobAngle);
   }, 120);
 
   // Mouse grabbing / dragging slowly
   var isKnobDragging = false;
+  var isMcDragging = false;
   var dragStartY = 0;
   var dragStartAngle = 0;
   var hasDraggedMoved = false;
 
   document.addEventListener("pointerdown", function(e) {
     var knob = e.target.closest("#instrument-knob");
-    if (!knob) return;
+    var mcKnob = e.target.closest("#mccurdy-vintage-knob-assembly");
+    if (!knob && !mcKnob) return;
     e.preventDefault();
-    isKnobDragging = true;
     hasDraggedMoved = false;
     dragStartY = e.clientY;
-    dragStartAngle = vintageKnobAngle;
-    knob.style.cursor = "grabbing";
-    try { knob.setPointerCapture(e.pointerId); } catch (_) {}
+    if (knob) {
+      isKnobDragging = true;
+      dragStartAngle = vintageKnobAngle;
+      knob.style.cursor = "grabbing";
+      try { knob.setPointerCapture(e.pointerId); } catch (_) {}
+    } else if (mcKnob) {
+      isMcDragging = true;
+      dragStartAngle = mcKnobAngle;
+      mcKnob.style.cursor = "grabbing";
+      try { mcKnob.setPointerCapture(e.pointerId); } catch (_) {}
+    }
     resumeAudio();
   });
 
   document.addEventListener("pointermove", function(e) {
-    if (!isKnobDragging) return;
+    if (!isKnobDragging && !isMcDragging) return;
     var dy = dragStartY - e.clientY; // moving upward turns clockwise (+dB)
     if (Math.abs(dy) > 2) hasDraggedMoved = true;
-    // Adjust slowly: 0.40 deg per pixel for weighted precision feel
-    var newAngle = dragStartAngle + (dy * 0.40);
-    updateVintageKnob(newAngle);
+    if (isKnobDragging) {
+      var newAngle = dragStartAngle + (dy * 0.40);
+      updateVintageKnob(newAngle);
+    } else if (isMcDragging) {
+      var newMcAngle = dragStartAngle + (dy * 0.45);
+      updateMcCurdyKnob(newMcAngle);
+    }
   });
 
   function endKnobDrag(e) {
-    if (!isKnobDragging) return;
-    isKnobDragging = false;
-    var knob = document.getElementById("instrument-knob");
-    if (knob) knob.style.cursor = "grab";
-    try {
-      if (e && e.pointerId && knob) knob.releasePointerCapture(e.pointerId);
-    } catch (_) {}
+    if (isKnobDragging) {
+      isKnobDragging = false;
+      var knob = document.getElementById("instrument-knob");
+      if (knob) knob.style.cursor = "grab";
+      try { if (e && e.pointerId && knob) knob.releasePointerCapture(e.pointerId); } catch (_) {}
+    }
+    if (isMcDragging) {
+      isMcDragging = false;
+      var mcKnob = document.getElementById("mccurdy-vintage-knob-assembly");
+      if (mcKnob) mcKnob.style.cursor = "grab";
+      try { if (e && e.pointerId && mcKnob) mcKnob.releasePointerCapture(e.pointerId); } catch (_) {}
+    }
   }
 
   document.addEventListener("pointerup", endKnobDrag);
   document.addEventListener("pointercancel", endKnobDrag);
 
-  // Mouse wheel: 5 to 1 clicks nice and slow
+  // Mouse wheel: detent clicks nice and slow
   document.addEventListener("wheel", function(e) {
     var knob = e.target.closest("#instrument-knob");
-    if (!knob) return;
+    var mcKnob = e.target.closest("#mccurdy-vintage-knob-assembly");
+    if (!knob && !mcKnob) return;
     e.preventDefault();
-    // 5 to 1 clicks: 1.5 to 2.5 degrees per detent notch, nice and slow
     var step = (e.shiftKey) ? 0.5 : 2.0;
     var delta = (e.deltaY < 0) ? step : -step;
-    updateVintageKnob(vintageKnobAngle + delta);
+    if (knob) {
+      updateVintageKnob(vintageKnobAngle + delta);
+    } else if (mcKnob) {
+      var mcStep = (e.shiftKey) ? 2.5 : 11.25; // 11.25 deg per attenuator notch (31 steps)
+      var mcDelta = (e.deltaY < 0) ? mcStep : -mcStep;
+      updateMcCurdyKnob(mcKnobAngle + mcDelta);
+    }
     resumeAudio();
   }, { passive: false });
 
-  // Optional tap/click without drag advances by 5 degrees
+  // Optional tap/click without drag advances by 1 step
   document.addEventListener("click", function(e) {
     var knob = e.target.closest("#instrument-knob");
-    if (!knob || hasDraggedMoved) return;
-    var nextAngle = vintageKnobAngle + 5;
-    if (nextAngle > 108) nextAngle = -180;
-    updateVintageKnob(nextAngle);
+    var mcKnob = e.target.closest("#mccurdy-vintage-knob-assembly");
+    if ((!knob && !mcKnob) || hasDraggedMoved) return;
+    if (knob) {
+      var nextAngle = vintageKnobAngle + 5;
+      if (nextAngle > 108) nextAngle = -180;
+      updateVintageKnob(nextAngle);
+    } else if (mcKnob) {
+      var nextMcAngle = mcKnobAngle + 11.25;
+      if (nextMcAngle > 168.75) nextMcAngle = -168.75;
+      updateMcCurdyKnob(nextMcAngle);
+    }
   });
 </script>
 

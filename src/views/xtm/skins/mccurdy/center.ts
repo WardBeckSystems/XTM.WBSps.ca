@@ -69,12 +69,12 @@ export function renderMcCurdyComCenter(): string {
     </g>`;
 }
 
-/** 2. McCurdyRadio.ca (Studio Broadcast All-Blue Panel with Dual-Concentric Attenuator Knob) */
+/** 2. McCurdyRadio.ca (Studio Broadcast All-Blue Panel with Centered & Larger Attenuator Knob) */
 export function renderMcCurdyCaCenter(): string {
   const font = `font-family="'Helvetica Neue', Helvetica, Arial, sans-serif" font-weight="700"`;
 
-  // Knob center at x=1530, y=215
-  const kx = 1530, ky = 215;
+  // Centered at cassette center: kx = 1600, ky = 215 (Larger Control)
+  const kx = 1600, ky = 215;
 
   let scaleTicks = '';
   let scaleInnerNums = '';
@@ -92,33 +92,33 @@ export function renderMcCurdyCaCenter(): string {
     const outStr = (outVal > 0 ? '+' : '') + outVal;
     const inStr = (inVal > 0 ? '+' : '') + inVal;
 
-    // Tick lines (r=66 to r=75)
-    const x1 = (kx + 66 * cos).toFixed(1);
-    const y1 = (ky + 66 * sin).toFixed(1);
-    const x2 = (kx + 75 * cos).toFixed(1);
-    const y2 = (ky + 75 * sin).toFixed(1);
+    // Tick lines (r=84 to r=96)
+    const x1 = (kx + 84 * cos).toFixed(1);
+    const y1 = (ky + 84 * sin).toFixed(1);
+    const x2 = (kx + 96 * cos).toFixed(1);
+    const y2 = (ky + 96 * sin).toFixed(1);
     const isMajor = (i % 5 === 0);
-    scaleTicks += `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="#ffffff" stroke-width="${isMajor ? '1.8' : '1.1'}" stroke-opacity="${isMajor ? '0.95' : '0.75'}"/>`;
+    scaleTicks += `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="#ffffff" stroke-width="${isMajor ? '2.2' : '1.3'}" stroke-opacity="${isMajor ? '0.95' : '0.75'}"/>`;
 
-    // Inner Scale Numbers (r=86)
-    const inX = (kx + 86 * cos).toFixed(1);
-    const inY = (ky + 86 * sin + 3.5).toFixed(1);
-    scaleInnerNums += `<text x="${inX}" y="${inY}" font-size="${Math.abs(inVal) >= 10 ? '8.5' : '9.5'}" fill="#94a3b8" text-anchor="middle">${inStr}</text>`;
+    // Inner Scale Numbers (r=110)
+    const inX = (kx + 110 * cos).toFixed(1);
+    const inY = (ky + 110 * sin + 4.2).toFixed(1);
+    scaleInnerNums += `<text x="${inX}" y="${inY}" font-size="${Math.abs(inVal) >= 10 ? '10' : '11'}" fill="#94a3b8" text-anchor="middle">${inStr}</text>`;
 
-    // Outer Scale Numbers (r=104)
-    const outX = (kx + 104 * cos).toFixed(1);
-    const outY = (ky + 104 * sin + 3.5).toFixed(1);
+    // Outer Scale Numbers (r=132)
+    const outX = (kx + 132 * cos).toFixed(1);
+    const outY = (ky + 132 * sin + 4.2).toFixed(1);
     const isYellow20 = (i === 15);
     const outColor = isYellow20 ? '#fbbf24' : '#ffffff';
-    scaleOuterNums += `<text x="${outX}" y="${outY}" font-size="${Math.abs(outVal) >= 10 ? '9' : '10'}" font-weight="${isYellow20 ? '800' : '700'}" fill="${outColor}" text-anchor="middle">${outStr}</text>`;
+    scaleOuterNums += `<text x="${outX}" y="${outY}" font-size="${Math.abs(outVal) >= 10 ? '11' : '12'}" font-weight="${isYellow20 ? '800' : '700'}" fill="${outColor}" text-anchor="middle">${outStr}</text>`;
   }
 
-  const fluteD = buildFlutedPath(40, 2.2, 14);
+  const fluteD = buildFlutedPath(51, 2.8, 14);
   let grooves = '';
   for (let g = 0; g < 14; g++) {
     const angle = (g * 360) / 14 + 360 / 28;
     const rad = (angle * Math.PI) / 180;
-    grooves += `<line x1="${(35 * Math.cos(rad)).toFixed(2)}" y1="${(35 * Math.sin(rad)).toFixed(2)}" x2="${(40 * Math.cos(rad)).toFixed(2)}" y2="${(40 * Math.sin(rad)).toFixed(2)}"/>`;
+    grooves += `<line x1="${(44 * Math.cos(rad)).toFixed(2)}" y1="${(44 * Math.sin(rad)).toFixed(2)}" x2="${(51 * Math.cos(rad)).toFixed(2)}" y2="${(51 * Math.sin(rad)).toFixed(2)}"/>`;
   }
 
   return `<g class="mc-ca-only">
@@ -146,18 +146,34 @@ export function renderMcCurdyCaCenter(): string {
         </filter>
       </defs>
 
-      <!-- Center Console Bay Outline / Bezel in McCurdy Slate Finish -->
-      <rect x="1350" y="16" width="500" height="428" rx="8" fill="url(#mc_panel_blue)" stroke="#4d687f" stroke-width="2.5"/>
+      <!-- Center Console Bay Outline / Bezel in McCurdy Slate Finish (500x398) -->
+      <rect x="1350" y="16" width="500" height="398" rx="8" fill="url(#mc_panel_blue)" stroke="#4d687f" stroke-width="2.5"/>
 
       <!-- ================================================================= -->
-      <!-- LEFT SECTION: MCCURDY 31-STEP DUAL-CONCENTRIC ATTENUATOR KNOB     -->
+      <!-- LEFT SECTION: MCCURDY BRAND & MODEL SILKSCREEN DESIGNATION        -->
+      <!-- ================================================================= -->
+      <g id="mc-ca-model-brand" font-family="'Helvetica Neue', Helvetica, Arial, sans-serif" text-anchor="middle">
+        <text x="1398" y="152" font-size="13" font-weight="800" fill="#cbd5e1" letter-spacing="1.8">McCURDY</text>
+        <text x="1398" y="168" font-size="8.5" font-weight="700" fill="#94a3b8" letter-spacing="1">RADIO IND.</text>
+        <line x1="1368" y1="180" x2="1428" y2="180" stroke="#384e61" stroke-width="1.2"/>
+        <text x="1398" y="198" font-size="12" font-weight="800" fill="#f8fafc" letter-spacing="1.5">SA14023</text>
+        <text x="1398" y="214" font-size="8.5" font-weight="700" fill="#cbd5e1" letter-spacing="0.8">EXTENDED</text>
+        <text x="1398" y="226" font-size="8.5" font-weight="700" fill="#cbd5e1" letter-spacing="0.8">RANGE dB</text>
+        <line x1="1368" y1="238" x2="1428" y2="238" stroke="#384e61" stroke-width="1.2"/>
+        <text x="1398" y="254" font-size="8" font-weight="700" fill="#64748b" letter-spacing="0.6">TORONTO</text>
+        <text x="1398" y="266" font-size="7.5" font-weight="700" fill="#64748b" letter-spacing="0.6">CANADA</text>
+      </g>
+
+      <!-- ================================================================= -->
+      <!-- CENTERPIECE: CENTERED & LARGER MCCURDY 31-STEP DUAL-CONCENTRIC    -->
+      <!-- ATTENUATOR KNOB (Diameter 310px, Centered at x=1600, y=215)       -->
       <!-- ================================================================= -->
       <g id="mccurdy-vintage-knob-assembly" class="xtm-btn mccurdy-knob" filter="url(#mc_knob_shadow)" style="cursor:grab; touch-action:none; user-select:none;">
         <title>McCurdy SA14023 Dual-Concentric Attenuator (-50 to +10 dB / -30 to +30 dB)</title>
 
-        <!-- Circular Slate Blue Background Plate (r=122) -->
-        <circle cx="${kx}" cy="${ky}" r="122" fill="url(#mc_dial_slate)" stroke="#1a2530" stroke-width="2"/>
-        <circle cx="${kx}" cy="${ky}" r="120" fill="none" stroke="#5a7690" stroke-width="0.8" stroke-opacity="0.5"/>
+        <!-- Circular Slate Blue Background Plate (r=154) -->
+        <circle cx="${kx}" cy="${ky}" r="154" fill="url(#mc_dial_slate)" stroke="#1a2530" stroke-width="2.5"/>
+        <circle cx="${kx}" cy="${ky}" r="151" fill="none" stroke="#5a7690" stroke-width="1" stroke-opacity="0.5"/>
 
         <!-- Silkscreen Scales Group -->
         <g id="mc-knob-scales" ${font}>
@@ -166,77 +182,68 @@ export function renderMcCurdyCaCenter(): string {
           ${scaleOuterNums}
         </g>
 
-        <!-- Silver Skirt Base Disc (r=58) with Black Pointer Arrow pointing at 9 o'clock -->
-        <circle cx="${kx}" cy="${ky}" r="58" fill="url(#mc_skirt_silver)" stroke="#686e7a" stroke-width="1.2"/>
-        <circle cx="${kx}" cy="${ky}" r="45" fill="none" stroke="#8a909c" stroke-width="0.9"/>
-        <!-- Solid Black Pointer Arrow at 9 o'clock (-58px from center) -->
-        <polygon points="${kx - 57},${ky} ${kx - 44},${ky - 7.5} ${kx - 44},${ky + 7.5}" fill="#141517"/>
+        <!-- Silver Skirt Base Disc (r=74) with Black Pointer Arrow pointing at 9 o'clock -->
+        <circle cx="${kx}" cy="${ky}" r="74" fill="url(#mc_skirt_silver)" stroke="#686e7a" stroke-width="1.4"/>
+        <circle cx="${kx}" cy="${ky}" r="57" fill="none" stroke="#8a909c" stroke-width="1.0"/>
+        <!-- Solid Black Pointer Arrow at 9 o'clock (-73px from center) -->
+        <polygon points="${kx - 73},${ky} ${kx - 57},${ky - 9.5} ${kx - 57},${ky + 9.5}" fill="#141517"/>
 
-        <!-- 14-Flute Barrel Body (r=40) -->
-        <g transform="translate(${kx}, ${ky})">
-          <path d="${fluteD}" fill="url(#mc_barrel_grad)" stroke="#555a64" stroke-width="1.1"/>
-          <g stroke="#666c77" stroke-width="0.9" stroke-linecap="round">
+        <!-- 14-Flute Barrel Body (r=51) -->
+        <g id="mccurdy_vintage_knob_rotor" transform="translate(${kx}, ${ky})">
+          <path d="${fluteD}" fill="url(#mc_barrel_grad)" stroke="#555a64" stroke-width="1.2"/>
+          <g stroke="#666c77" stroke-width="1.1" stroke-linecap="round">
             ${grooves}
           </g>
 
-          <!-- Raised Gold Bezel Ring (r=33) & Highlight -->
-          <circle cx="0" cy="0" r="33" fill="url(#mc_gold_rim)" stroke="#78350f" stroke-width="1"/>
-          <path d="M -24,-22 A 32,32 0 0 1 24,-22" fill="none" stroke="#fde68a" stroke-width="1.2" stroke-opacity="0.85"/>
+          <!-- Raised Gold Bezel Ring (r=42) & Highlight -->
+          <circle cx="0" cy="0" r="42" fill="url(#mc_gold_rim)" stroke="#78350f" stroke-width="1.2"/>
+          <path d="M -30,-28 A 40,40 0 0 1 30,-28" fill="none" stroke="#fde68a" stroke-width="1.4" stroke-opacity="0.85"/>
 
-          <!-- Textured Gold Cap Face (r=29) -->
-          <circle cx="0" cy="0" r="29" fill="url(#mc_gold_face)" stroke="#92400e" stroke-width="0.9"/>
+          <!-- Textured Gold Cap Face (r=37) -->
+          <circle cx="0" cy="0" r="37" fill="url(#mc_gold_face)" stroke="#92400e" stroke-width="1"/>
 
           <!-- Solid Black Radial Pointer Line to 9 o'clock -->
-          <line x1="0" y1="0" x2="-28" y2="0" stroke="#161719" stroke-width="3.2" stroke-linecap="round"/>
+          <line x1="0" y1="0" x2="-36" y2="0" stroke="#161719" stroke-width="3.8" stroke-linecap="round"/>
         </g>
       </g>
 
       <!-- ================================================================= -->
-      <!-- RIGHT SECTION: TOGGLE SWITCH (UPPER) & PHONE JACKS (LOWER)        -->
-      <!-- NO RED DIGITAL RANGE DIGITS - EXCLUSIVE TO .COM ATS-100           -->
+      <!-- RIGHT SECTION: TOGGLE SWITCH (UPPER) & DUAL PHONE JACKS (LOWER)   -->
       <!-- ================================================================= -->
-      <!-- Chrome Bat-Handle Toggle Switch Assembly (Upper Right, cx=1730, cy=140) -->
-      <g id="mc-toggle-assembly" transform="translate(1730, 140)">
-        <text x="0" y="-46" ${font} font-size="11" fill="#cbd5e1" text-anchor="middle">MTR</text>
-        <text x="0" y="-34" ${font} font-size="10" fill="#94a3b8" text-anchor="middle">CAL</text>
-        <text x="0" y="52" ${font} font-size="11" fill="#cbd5e1" text-anchor="middle">MON</text>
+      <!-- Chrome Bat-Handle Toggle Switch Assembly (Upper Right, cx=1802, cy=110) -->
+      <g id="mc-toggle-assembly" transform="translate(1802, 110)">
+        <text x="0" y="-36" ${font} font-size="10" fill="#cbd5e1" text-anchor="middle">MTR</text>
+        <text x="0" y="-24" ${font} font-size="9" fill="#94a3b8" text-anchor="middle">CAL</text>
+        <text x="0" y="44" ${font} font-size="10" fill="#cbd5e1" text-anchor="middle">MON</text>
 
         <!-- Chrome Bezel Nut -->
-        <circle cx="0" cy="0" r="24" fill="url(#chromeMetalGrad)" stroke="#1a2530" stroke-width="1.4"/>
-        <circle cx="0" cy="0" r="17" fill="#141c24" stroke="#0a121a" stroke-width="1"/>
+        <circle cx="0" cy="0" r="20" fill="url(#chromeMetalGrad)" stroke="#1a2530" stroke-width="1.4"/>
+        <circle cx="0" cy="0" r="14" fill="#141c24" stroke="#0a121a" stroke-width="1"/>
 
         <!-- Bat Handle Stick (Angled Upwards to MTR) -->
         <g transform="rotate(-24)">
-          <path d="M -4,0 L -5,-36 C -5,-42 5,-42 5,-36 L 4,0 Z" fill="url(#mc_toggle_stick)" stroke="#334155" stroke-width="0.8"/>
-          <circle cx="0" cy="-38" r="6" fill="#f1f5f9"/>
+          <path d="M -3.5,0 L -4,-30 C -4,-35 4,-35 4,-30 L 3.5,0 Z" fill="url(#mc_toggle_stick)" stroke="#334155" stroke-width="0.8"/>
+          <circle cx="0" cy="-32" r="5" fill="#f1f5f9"/>
         </g>
       </g>
 
-      <!-- Blue 1 INPUT 2 Phone Jack Block (Lower Right, x=1665, y=274) -->
-      <g id="mc-ca-jack-block" transform="translate(1665, 274)">
-        <rect x="0" y="0" width="140" height="110" rx="8" fill="url(#mc_blue)" stroke="#163b59" stroke-width="2"/>
-        <line x1="2" y1="2" x2="138" y2="2" stroke="#7ac0f5" stroke-width="1" stroke-opacity="0.8"/>
+      <!-- Dual Phone Jacks (Lower Right, cx=1802) -->
+      <!-- Jack 1 (MODE) -->
+      <g class="xtm-btn mc-jack" data-btn="MODE" style="cursor:pointer" transform="translate(1802, 250)">
+        <title>Input 1 (MODE)</title>
+        <text x="0" y="-22" ${font} font-size="10" fill="#cbd5e1" text-anchor="middle" letter-spacing="0.5">INPUT 1</text>
+        <circle cx="0" cy="0" r="20" fill="url(#mc_jack)" stroke="#152636" stroke-width="1.4"/>
+        <circle cx="0" cy="0" r="13" fill="#1b242e" stroke="#0a121a" stroke-width="1"/>
+        <circle cx="0" cy="0" r="6.5" fill="#06090c"/>
+      </g>
 
-        <!-- Header Labels: 1   INPUT   2 -->
-        <text x="35" y="24" ${font} font-size="13" fill="#091624" text-anchor="middle">1</text>
-        <text x="70" y="24" ${font} font-size="12" fill="#091624" text-anchor="middle" letter-spacing="0.5">INPUT</text>
-        <text x="105" y="24" ${font} font-size="13" fill="#091624" text-anchor="middle">2</text>
-
-        <!-- Jack 1 (MODE) -->
-        <g class="xtm-btn mc-jack" data-btn="MODE" style="cursor:pointer" transform="translate(35, 62)">
-          <title>Input 1 (MODE)</title>
-          <circle cx="0" cy="0" r="22" fill="url(#mc_jack)" stroke="#152636" stroke-width="1.4"/>
-          <circle cx="0" cy="0" r="14" fill="#1b242e" stroke="#0a121a" stroke-width="1"/>
-          <circle cx="0" cy="0" r="7" fill="#06090c"/>
-        </g>
-
-        <!-- Jack 2 (SOURCE) -->
-        <g class="xtm-btn mc-jack" data-btn="SOURCE" style="cursor:pointer" transform="translate(105, 62)">
-          <title>Input 2 (SOURCE)</title>
-          <circle cx="0" cy="0" r="22" fill="url(#mc_jack)" stroke="#152636" stroke-width="1.4"/>
-          <circle cx="0" cy="0" r="14" fill="#1b242e" stroke="#0a121a" stroke-width="1"/>
-          <circle cx="0" cy="0" r="7" fill="#06090c"/>
-        </g>
+      <!-- Jack 2 (SOURCE) -->
+      <g class="xtm-btn mc-jack" data-btn="SOURCE" style="cursor:pointer" transform="translate(1802, 336)">
+        <title>Input 2 (SOURCE)</title>
+        <text x="0" y="-22" ${font} font-size="10" fill="#cbd5e1" text-anchor="middle" letter-spacing="0.5">INPUT 2</text>
+        <circle cx="0" cy="0" r="20" fill="url(#mc_jack)" stroke="#152636" stroke-width="1.4"/>
+        <circle cx="0" cy="0" r="13" fill="#1b242e" stroke="#0a121a" stroke-width="1"/>
+        <circle cx="0" cy="0" r="6.5" fill="#06090c"/>
       </g>
     </g>`;
 }

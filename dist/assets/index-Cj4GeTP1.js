@@ -274,7 +274,7 @@
         <title>Input 2 (SOURCE)</title>
         <circle cx="1670" cy="346" r="27" fill="url(#mc_jack)" stroke="#1b1c1e" stroke-width="2"/>
       </g>
-    </g>`}function In(){let e=`font-family="'Helvetica Neue', Helvetica, Arial, sans-serif" font-weight="700"`,t=1530,n=``,r=``,i=``;for(let e=0;e<=30;e++){let a=(180+(e-15)*11.25)*Math.PI/180,o=Math.cos(a),s=Math.sin(a),c=-50+e*2,l=(e-15)*2,u=(c>0?`+`:``)+c,d=(l>0?`+`:``)+l,f=(t+66*o).toFixed(1),p=(215+66*s).toFixed(1),m=(t+75*o).toFixed(1),h=(215+75*s).toFixed(1),g=e%5==0;n+=`<line x1="${f}" y1="${p}" x2="${m}" y2="${h}" stroke="#ffffff" stroke-width="${g?`1.8`:`1.1`}" stroke-opacity="${g?`0.95`:`0.75`}"/>`;let _=(t+86*o).toFixed(1),v=(215+86*s+3.5).toFixed(1);r+=`<text x="${_}" y="${v}" font-size="${Math.abs(l)>=10?`8.5`:`9.5`}" fill="#94a3b8" text-anchor="middle">${d}</text>`;let y=(t+104*o).toFixed(1),b=(215+104*s+3.5).toFixed(1),x=e===15;i+=`<text x="${y}" y="${b}" font-size="${Math.abs(c)>=10?`9`:`10`}" font-weight="${x?`800`:`700`}" fill="${x?`#fbbf24`:`#ffffff`}" text-anchor="middle">${u}</text>`}let a=Pn(40,2.2,14),o=``;for(let e=0;e<14;e++){let t=(e*360/14+360/28)*Math.PI/180;o+=`<line x1="${(35*Math.cos(t)).toFixed(2)}" y1="${(35*Math.sin(t)).toFixed(2)}" x2="${(40*Math.cos(t)).toFixed(2)}" y2="${(40*Math.sin(t)).toFixed(2)}"/>`}return`<g class="mc-ca-only">
+    </g>`}function In(){let e=`font-family="'Helvetica Neue', Helvetica, Arial, sans-serif" font-weight="700"`,t=1600,n=``,r=``,i=``;for(let e=0;e<=30;e++){let a=(180+(e-15)*11.25)*Math.PI/180,o=Math.cos(a),s=Math.sin(a),c=-50+e*2,l=(e-15)*2,u=(c>0?`+`:``)+c,d=(l>0?`+`:``)+l,f=(t+84*o).toFixed(1),p=(215+84*s).toFixed(1),m=(t+96*o).toFixed(1),h=(215+96*s).toFixed(1),g=e%5==0;n+=`<line x1="${f}" y1="${p}" x2="${m}" y2="${h}" stroke="#ffffff" stroke-width="${g?`2.2`:`1.3`}" stroke-opacity="${g?`0.95`:`0.75`}"/>`;let _=(t+110*o).toFixed(1),v=(215+110*s+4.2).toFixed(1);r+=`<text x="${_}" y="${v}" font-size="${Math.abs(l)>=10?`10`:`11`}" fill="#94a3b8" text-anchor="middle">${d}</text>`;let y=(t+132*o).toFixed(1),b=(215+132*s+4.2).toFixed(1),x=e===15;i+=`<text x="${y}" y="${b}" font-size="${Math.abs(c)>=10?`11`:`12`}" font-weight="${x?`800`:`700`}" fill="${x?`#fbbf24`:`#ffffff`}" text-anchor="middle">${u}</text>`}let a=Pn(51,2.8,14),o=``;for(let e=0;e<14;e++){let t=(e*360/14+360/28)*Math.PI/180;o+=`<line x1="${(44*Math.cos(t)).toFixed(2)}" y1="${(44*Math.sin(t)).toFixed(2)}" x2="${(51*Math.cos(t)).toFixed(2)}" y2="${(51*Math.sin(t)).toFixed(2)}"/>`}return`<g class="mc-ca-only">
       <defs>
         <linearGradient id="mc_dial_slate" x1="0" y1="0" x2="0" y2="1">
           <stop offset="0%" stop-color="#3d5366"/><stop offset="50%" stop-color="#314353"/><stop offset="100%" stop-color="#24333f"/>
@@ -299,18 +299,34 @@
         </filter>
       </defs>
 
-      <!-- Center Console Bay Outline / Bezel in McCurdy Slate Finish -->
-      <rect x="1350" y="16" width="500" height="428" rx="8" fill="url(#mc_panel_blue)" stroke="#4d687f" stroke-width="2.5"/>
+      <!-- Center Console Bay Outline / Bezel in McCurdy Slate Finish (500x398) -->
+      <rect x="1350" y="16" width="500" height="398" rx="8" fill="url(#mc_panel_blue)" stroke="#4d687f" stroke-width="2.5"/>
 
       <!-- ================================================================= -->
-      <!-- LEFT SECTION: MCCURDY 31-STEP DUAL-CONCENTRIC ATTENUATOR KNOB     -->
+      <!-- LEFT SECTION: MCCURDY BRAND & MODEL SILKSCREEN DESIGNATION        -->
+      <!-- ================================================================= -->
+      <g id="mc-ca-model-brand" font-family="'Helvetica Neue', Helvetica, Arial, sans-serif" text-anchor="middle">
+        <text x="1398" y="152" font-size="13" font-weight="800" fill="#cbd5e1" letter-spacing="1.8">McCURDY</text>
+        <text x="1398" y="168" font-size="8.5" font-weight="700" fill="#94a3b8" letter-spacing="1">RADIO IND.</text>
+        <line x1="1368" y1="180" x2="1428" y2="180" stroke="#384e61" stroke-width="1.2"/>
+        <text x="1398" y="198" font-size="12" font-weight="800" fill="#f8fafc" letter-spacing="1.5">SA14023</text>
+        <text x="1398" y="214" font-size="8.5" font-weight="700" fill="#cbd5e1" letter-spacing="0.8">EXTENDED</text>
+        <text x="1398" y="226" font-size="8.5" font-weight="700" fill="#cbd5e1" letter-spacing="0.8">RANGE dB</text>
+        <line x1="1368" y1="238" x2="1428" y2="238" stroke="#384e61" stroke-width="1.2"/>
+        <text x="1398" y="254" font-size="8" font-weight="700" fill="#64748b" letter-spacing="0.6">TORONTO</text>
+        <text x="1398" y="266" font-size="7.5" font-weight="700" fill="#64748b" letter-spacing="0.6">CANADA</text>
+      </g>
+
+      <!-- ================================================================= -->
+      <!-- CENTERPIECE: CENTERED & LARGER MCCURDY 31-STEP DUAL-CONCENTRIC    -->
+      <!-- ATTENUATOR KNOB (Diameter 310px, Centered at x=1600, y=215)       -->
       <!-- ================================================================= -->
       <g id="mccurdy-vintage-knob-assembly" class="xtm-btn mccurdy-knob" filter="url(#mc_knob_shadow)" style="cursor:grab; touch-action:none; user-select:none;">
         <title>McCurdy SA14023 Dual-Concentric Attenuator (-50 to +10 dB / -30 to +30 dB)</title>
 
-        <!-- Circular Slate Blue Background Plate (r=122) -->
-        <circle cx="${t}" cy="215" r="122" fill="url(#mc_dial_slate)" stroke="#1a2530" stroke-width="2"/>
-        <circle cx="${t}" cy="215" r="120" fill="none" stroke="#5a7690" stroke-width="0.8" stroke-opacity="0.5"/>
+        <!-- Circular Slate Blue Background Plate (r=154) -->
+        <circle cx="${t}" cy="215" r="154" fill="url(#mc_dial_slate)" stroke="#1a2530" stroke-width="2.5"/>
+        <circle cx="${t}" cy="215" r="151" fill="none" stroke="#5a7690" stroke-width="1" stroke-opacity="0.5"/>
 
         <!-- Silkscreen Scales Group -->
         <g id="mc-knob-scales" ${e}>
@@ -319,77 +335,68 @@
           ${i}
         </g>
 
-        <!-- Silver Skirt Base Disc (r=58) with Black Pointer Arrow pointing at 9 o'clock -->
-        <circle cx="${t}" cy="215" r="58" fill="url(#mc_skirt_silver)" stroke="#686e7a" stroke-width="1.2"/>
-        <circle cx="${t}" cy="215" r="45" fill="none" stroke="#8a909c" stroke-width="0.9"/>
-        <!-- Solid Black Pointer Arrow at 9 o'clock (-58px from center) -->
-        <polygon points="1473,215 1486,207.5 1486,222.5" fill="#141517"/>
+        <!-- Silver Skirt Base Disc (r=74) with Black Pointer Arrow pointing at 9 o'clock -->
+        <circle cx="${t}" cy="215" r="74" fill="url(#mc_skirt_silver)" stroke="#686e7a" stroke-width="1.4"/>
+        <circle cx="${t}" cy="215" r="57" fill="none" stroke="#8a909c" stroke-width="1.0"/>
+        <!-- Solid Black Pointer Arrow at 9 o'clock (-73px from center) -->
+        <polygon points="1527,215 1543,205.5 1543,224.5" fill="#141517"/>
 
-        <!-- 14-Flute Barrel Body (r=40) -->
-        <g transform="translate(${t}, 215)">
-          <path d="${a}" fill="url(#mc_barrel_grad)" stroke="#555a64" stroke-width="1.1"/>
-          <g stroke="#666c77" stroke-width="0.9" stroke-linecap="round">
+        <!-- 14-Flute Barrel Body (r=51) -->
+        <g id="mccurdy_vintage_knob_rotor" transform="translate(${t}, 215)">
+          <path d="${a}" fill="url(#mc_barrel_grad)" stroke="#555a64" stroke-width="1.2"/>
+          <g stroke="#666c77" stroke-width="1.1" stroke-linecap="round">
             ${o}
           </g>
 
-          <!-- Raised Gold Bezel Ring (r=33) & Highlight -->
-          <circle cx="0" cy="0" r="33" fill="url(#mc_gold_rim)" stroke="#78350f" stroke-width="1"/>
-          <path d="M -24,-22 A 32,32 0 0 1 24,-22" fill="none" stroke="#fde68a" stroke-width="1.2" stroke-opacity="0.85"/>
+          <!-- Raised Gold Bezel Ring (r=42) & Highlight -->
+          <circle cx="0" cy="0" r="42" fill="url(#mc_gold_rim)" stroke="#78350f" stroke-width="1.2"/>
+          <path d="M -30,-28 A 40,40 0 0 1 30,-28" fill="none" stroke="#fde68a" stroke-width="1.4" stroke-opacity="0.85"/>
 
-          <!-- Textured Gold Cap Face (r=29) -->
-          <circle cx="0" cy="0" r="29" fill="url(#mc_gold_face)" stroke="#92400e" stroke-width="0.9"/>
+          <!-- Textured Gold Cap Face (r=37) -->
+          <circle cx="0" cy="0" r="37" fill="url(#mc_gold_face)" stroke="#92400e" stroke-width="1"/>
 
           <!-- Solid Black Radial Pointer Line to 9 o'clock -->
-          <line x1="0" y1="0" x2="-28" y2="0" stroke="#161719" stroke-width="3.2" stroke-linecap="round"/>
+          <line x1="0" y1="0" x2="-36" y2="0" stroke="#161719" stroke-width="3.8" stroke-linecap="round"/>
         </g>
       </g>
 
       <!-- ================================================================= -->
-      <!-- RIGHT SECTION: TOGGLE SWITCH (UPPER) & PHONE JACKS (LOWER)        -->
-      <!-- NO RED DIGITAL RANGE DIGITS - EXCLUSIVE TO .COM ATS-100           -->
+      <!-- RIGHT SECTION: TOGGLE SWITCH (UPPER) & DUAL PHONE JACKS (LOWER)   -->
       <!-- ================================================================= -->
-      <!-- Chrome Bat-Handle Toggle Switch Assembly (Upper Right, cx=1730, cy=140) -->
-      <g id="mc-toggle-assembly" transform="translate(1730, 140)">
-        <text x="0" y="-46" ${e} font-size="11" fill="#cbd5e1" text-anchor="middle">MTR</text>
-        <text x="0" y="-34" ${e} font-size="10" fill="#94a3b8" text-anchor="middle">CAL</text>
-        <text x="0" y="52" ${e} font-size="11" fill="#cbd5e1" text-anchor="middle">MON</text>
+      <!-- Chrome Bat-Handle Toggle Switch Assembly (Upper Right, cx=1802, cy=110) -->
+      <g id="mc-toggle-assembly" transform="translate(1802, 110)">
+        <text x="0" y="-36" ${e} font-size="10" fill="#cbd5e1" text-anchor="middle">MTR</text>
+        <text x="0" y="-24" ${e} font-size="9" fill="#94a3b8" text-anchor="middle">CAL</text>
+        <text x="0" y="44" ${e} font-size="10" fill="#cbd5e1" text-anchor="middle">MON</text>
 
         <!-- Chrome Bezel Nut -->
-        <circle cx="0" cy="0" r="24" fill="url(#chromeMetalGrad)" stroke="#1a2530" stroke-width="1.4"/>
-        <circle cx="0" cy="0" r="17" fill="#141c24" stroke="#0a121a" stroke-width="1"/>
+        <circle cx="0" cy="0" r="20" fill="url(#chromeMetalGrad)" stroke="#1a2530" stroke-width="1.4"/>
+        <circle cx="0" cy="0" r="14" fill="#141c24" stroke="#0a121a" stroke-width="1"/>
 
         <!-- Bat Handle Stick (Angled Upwards to MTR) -->
         <g transform="rotate(-24)">
-          <path d="M -4,0 L -5,-36 C -5,-42 5,-42 5,-36 L 4,0 Z" fill="url(#mc_toggle_stick)" stroke="#334155" stroke-width="0.8"/>
-          <circle cx="0" cy="-38" r="6" fill="#f1f5f9"/>
+          <path d="M -3.5,0 L -4,-30 C -4,-35 4,-35 4,-30 L 3.5,0 Z" fill="url(#mc_toggle_stick)" stroke="#334155" stroke-width="0.8"/>
+          <circle cx="0" cy="-32" r="5" fill="#f1f5f9"/>
         </g>
       </g>
 
-      <!-- Blue 1 INPUT 2 Phone Jack Block (Lower Right, x=1665, y=274) -->
-      <g id="mc-ca-jack-block" transform="translate(1665, 274)">
-        <rect x="0" y="0" width="140" height="110" rx="8" fill="url(#mc_blue)" stroke="#163b59" stroke-width="2"/>
-        <line x1="2" y1="2" x2="138" y2="2" stroke="#7ac0f5" stroke-width="1" stroke-opacity="0.8"/>
+      <!-- Dual Phone Jacks (Lower Right, cx=1802) -->
+      <!-- Jack 1 (MODE) -->
+      <g class="xtm-btn mc-jack" data-btn="MODE" style="cursor:pointer" transform="translate(1802, 250)">
+        <title>Input 1 (MODE)</title>
+        <text x="0" y="-22" ${e} font-size="10" fill="#cbd5e1" text-anchor="middle" letter-spacing="0.5">INPUT 1</text>
+        <circle cx="0" cy="0" r="20" fill="url(#mc_jack)" stroke="#152636" stroke-width="1.4"/>
+        <circle cx="0" cy="0" r="13" fill="#1b242e" stroke="#0a121a" stroke-width="1"/>
+        <circle cx="0" cy="0" r="6.5" fill="#06090c"/>
+      </g>
 
-        <!-- Header Labels: 1   INPUT   2 -->
-        <text x="35" y="24" ${e} font-size="13" fill="#091624" text-anchor="middle">1</text>
-        <text x="70" y="24" ${e} font-size="12" fill="#091624" text-anchor="middle" letter-spacing="0.5">INPUT</text>
-        <text x="105" y="24" ${e} font-size="13" fill="#091624" text-anchor="middle">2</text>
-
-        <!-- Jack 1 (MODE) -->
-        <g class="xtm-btn mc-jack" data-btn="MODE" style="cursor:pointer" transform="translate(35, 62)">
-          <title>Input 1 (MODE)</title>
-          <circle cx="0" cy="0" r="22" fill="url(#mc_jack)" stroke="#152636" stroke-width="1.4"/>
-          <circle cx="0" cy="0" r="14" fill="#1b242e" stroke="#0a121a" stroke-width="1"/>
-          <circle cx="0" cy="0" r="7" fill="#06090c"/>
-        </g>
-
-        <!-- Jack 2 (SOURCE) -->
-        <g class="xtm-btn mc-jack" data-btn="SOURCE" style="cursor:pointer" transform="translate(105, 62)">
-          <title>Input 2 (SOURCE)</title>
-          <circle cx="0" cy="0" r="22" fill="url(#mc_jack)" stroke="#152636" stroke-width="1.4"/>
-          <circle cx="0" cy="0" r="14" fill="#1b242e" stroke="#0a121a" stroke-width="1"/>
-          <circle cx="0" cy="0" r="7" fill="#06090c"/>
-        </g>
+      <!-- Jack 2 (SOURCE) -->
+      <g class="xtm-btn mc-jack" data-btn="SOURCE" style="cursor:pointer" transform="translate(1802, 336)">
+        <title>Input 2 (SOURCE)</title>
+        <text x="0" y="-22" ${e} font-size="10" fill="#cbd5e1" text-anchor="middle" letter-spacing="0.5">INPUT 2</text>
+        <circle cx="0" cy="0" r="20" fill="url(#mc_jack)" stroke="#152636" stroke-width="1.4"/>
+        <circle cx="0" cy="0" r="13" fill="#1b242e" stroke="#0a121a" stroke-width="1"/>
+        <circle cx="0" cy="0" r="6.5" fill="#06090c"/>
       </g>
     </g>`}function Ln(){return Fn()+In()}function Rn(e){if(!e.power)return`  `;let t=null;if(e.mode===`A`?t=e.lvlDb(e.a.lvl):e.mode===`D`?t=e.lvlDb(e.d.lvl):e.mode===`S`&&(t=e.toneCalLevels[e.toneCalIdx]??0),t===null)return`--`;let n=Math.min(99,Math.abs(Math.round(t)));return t<0&&n<10?`-`+n:String(n).padStart(2,`0`)}function zn(e){return _t(e,lt)}var Bn=`<linearGradient id="mc_vuface" x1="0" y1="0" x2="0" y2="1">
           <stop offset="0%" stop-color="#dfc784"/><stop offset="25%" stop-color="#eedba1"/>
@@ -667,40 +674,40 @@
       <line x1="-1.5" y1="-2.5" x2="1.5" y2="2.5" stroke="#222426" stroke-width="0.8" />
     </g>
 
-    <!-- Hardware Group: DR Dial Scale + Fluted Instrument Knob + AC Pilot Lamp -->
-    <g transform="translate(1268, 31)">
-      <!-- DR Differential Decade / Vernier Dial Scale & Markings (Center: x=262, y=184) -->
+    <!-- Centered & Enlarged DR Vernier Dial Scale + Fluted Instrument Knob (Centered at x=1600, y=215, Scale=1.30) -->
+    <g transform="translate(1600, 215) scale(1.30)">
+      <!-- DR Differential Decade / Vernier Dial Scale & Markings (Origin at 0, 0) -->
       <g id="dr-dial-scale" font-family="'Helvetica Neue', Helvetica, Arial, sans-serif" fill="#2A2B2A" stroke="#2A2B2A">
         <!-- Top Header "DR" and "- 0 +" -->
-        <text x="262" y="72" font-size="13.5" font-weight="700" text-anchor="middle" stroke="none" letter-spacing="1">DR</text>
-        <text x="249" y="88" font-size="12" font-weight="700" text-anchor="middle" stroke="none">–</text>
-        <text x="262" y="89" font-size="12.5" font-weight="700" text-anchor="middle" stroke="none">0</text>
-        <text x="275" y="88" font-size="12" font-weight="700" text-anchor="middle" stroke="none">+</text>
+        <text x="0" y="-112" font-size="14" font-weight="700" text-anchor="middle" stroke="none" letter-spacing="1.2">DR</text>
+        <text x="-13" y="-96" font-size="12" font-weight="700" text-anchor="middle" stroke="none">–</text>
+        <text x="0" y="-95" font-size="12.5" font-weight="700" text-anchor="middle" stroke="none">0</text>
+        <text x="13" y="-96" font-size="12" font-weight="700" text-anchor="middle" stroke="none">+</text>
 
         <!-- Center Zero Index Line (0 deg) -->
-        <g transform="translate(262, 184)">
+        <g>
           <line x1="0" y1="-72" x2="0" y2="-91" stroke-width="1.8" />
         </g>
 
         <!-- LEFT SIDE SCALE (-10 to -50, every 36 deg per 10 units = 7.2 deg per 2 units) -->
         <!-- Major Ticks & Labels (-10, -20, -30, -40, -50) -->
-        <g transform="translate(262, 184) rotate(-36)">
+        <g transform="rotate(-36)">
           <line x1="0" y1="-72" x2="0" y2="-91" stroke-width="1.8" />
           <text x="0" y="-96" font-size="12" font-weight="700" text-anchor="middle" stroke="none" transform="rotate(36, 0, -100)">10</text>
         </g>
-        <g transform="translate(262, 184) rotate(-72)">
+        <g transform="rotate(-72)">
           <line x1="0" y1="-72" x2="0" y2="-91" stroke-width="1.8" />
           <text x="0" y="-96" font-size="12" font-weight="700" text-anchor="middle" stroke="none" transform="rotate(72, 0, -100)">20</text>
         </g>
-        <g transform="translate(262, 184) rotate(-108)">
+        <g transform="rotate(-108)">
           <line x1="0" y1="-72" x2="0" y2="-91" stroke-width="1.8" />
           <text x="0" y="-96" font-size="12" font-weight="700" text-anchor="middle" stroke="none" transform="rotate(108, 0, -100)">30</text>
         </g>
-        <g transform="translate(262, 184) rotate(-144)">
+        <g transform="rotate(-144)">
           <line x1="0" y1="-72" x2="0" y2="-91" stroke-width="1.8" />
           <text x="0" y="-96" font-size="12" font-weight="700" text-anchor="middle" stroke="none" transform="rotate(144, 0, -100)">40</text>
         </g>
-        <g transform="translate(262, 184) rotate(-180)">
+        <g transform="rotate(-180)">
           <line x1="0" y1="-72" x2="0" y2="-91" stroke-width="1.8" />
           <text x="0" y="-96" font-size="12" font-weight="700" text-anchor="middle" stroke="none" transform="rotate(180, 0, -100)">50</text>
         </g>
@@ -708,43 +715,43 @@
         <!-- Left Sub-Numerals (2, 4, 6, 8 between each major division) -->
         <g font-size="7.5" font-weight="700" text-anchor="middle" stroke="none" fill="#454C59">
           <!-- 0 to -10 -->
-          <text x="251" y="99">2</text>
-          <text x="240" y="101">4</text>
-          <text x="229" y="104">6</text>
-          <text x="219" y="109">8</text>
+          <text x="-11" y="-85">2</text>
+          <text x="-22" y="-83">4</text>
+          <text x="-33" y="-80">6</text>
+          <text x="-43" y="-75">8</text>
           <!-- -10 to -20 -->
-          <text x="200" y="121">2</text>
-          <text x="192" y="129">4</text>
-          <text x="186" y="138">6</text>
-          <text x="180" y="148">8</text>
+          <text x="-62" y="-63">2</text>
+          <text x="-70" y="-55">4</text>
+          <text x="-76" y="-46">6</text>
+          <text x="-82" y="-36">8</text>
           <!-- -20 to -30 -->
-          <text x="174" y="170">2</text>
-          <text x="173" y="181">4</text>
-          <text x="173" y="192">6</text>
-          <text x="175" y="203">8</text>
+          <text x="-88" y="-14">2</text>
+          <text x="-89" y="-3">4</text>
+          <text x="-89" y="8">6</text>
+          <text x="-87" y="19">8</text>
           <!-- -30 to -40 -->
-          <text x="182" y="224">2</text>
-          <text x="188" y="234">4</text>
-          <text x="195" y="243">6</text>
-          <text x="203" y="251">8</text>
+          <text x="-80" y="40">2</text>
+          <text x="-74" y="50">4</text>
+          <text x="-67" y="59">6</text>
+          <text x="-59" y="67">8</text>
           <!-- -40 to -50 -->
-          <text x="222" y="263">2</text>
-          <text x="232" y="268">4</text>
-          <text x="242" y="271">6</text>
-          <text x="252" y="273">8</text>
+          <text x="-40" y="79">2</text>
+          <text x="-30" y="84">4</text>
+          <text x="-20" y="87">6</text>
+          <text x="-10" y="89">8</text>
         </g>
 
         <!-- RIGHT SIDE SCALE (+10 to +30, every 36 deg per 10 units) -->
         <!-- Major Ticks & Labels (+10, +20, +30) -->
-        <g transform="translate(262, 184) rotate(36)">
+        <g transform="rotate(36)">
           <line x1="0" y1="-72" x2="0" y2="-91" stroke-width="1.8" />
           <text x="0" y="-96" font-size="12" font-weight="700" text-anchor="middle" stroke="none" transform="rotate(-36, 0, -100)">10</text>
         </g>
-        <g transform="translate(262, 184) rotate(72)">
+        <g transform="rotate(72)">
           <line x1="0" y1="-72" x2="0" y2="-91" stroke-width="1.8" />
           <text x="0" y="-96" font-size="12" font-weight="700" text-anchor="middle" stroke="none" transform="rotate(-72, 0, -100)">20</text>
         </g>
-        <g transform="translate(262, 184) rotate(108)">
+        <g transform="rotate(108)">
           <line x1="0" y1="-72" x2="0" y2="-91" stroke-width="1.8" />
           <text x="0" y="-96" font-size="12" font-weight="700" text-anchor="middle" stroke="none" transform="rotate(-108, 0, -100)">30</text>
         </g>
@@ -752,38 +759,38 @@
         <!-- Right Sub-Numerals (2, 4, 6, 8 between major divisions) -->
         <g font-size="7.5" font-weight="700" text-anchor="middle" stroke="none" fill="#454C59">
           <!-- 0 to +10 -->
-          <text x="273" y="99">2</text>
-          <text x="284" y="101">4</text>
-          <text x="295" y="104">6</text>
-          <text x="305" y="109">8</text>
+          <text x="11" y="-85">2</text>
+          <text x="22" y="-83">4</text>
+          <text x="33" y="-80">6</text>
+          <text x="43" y="-75">8</text>
           <!-- +10 to +20 -->
-          <text x="324" y="121">2</text>
-          <text x="332" y="129">4</text>
-          <text x="338" y="138">6</text>
-          <text x="344" y="148">8</text>
+          <text x="62" y="-63">2</text>
+          <text x="70" y="-55">4</text>
+          <text x="76" y="-46">6</text>
+          <text x="82" y="-36">8</text>
           <!-- +20 to +30 -->
-          <text x="350" y="170">2</text>
-          <text x="351" y="181">4</text>
-          <text x="351" y="192">6</text>
-          <text x="349" y="203">8</text>
+          <text x="88" y="-14">2</text>
+          <text x="89" y="-3">4</text>
+          <text x="89" y="8">6</text>
+          <text x="87" y="19">8</text>
         </g>
       </g>
 
-      <!-- Skirted Fluted Instrument Knob (Centered at x=262, y=184) -->
+      <!-- Skirted Fluted Instrument Knob (Centered at 0, 0) -->
       <g id="instrument-knob" class="xtm-btn wbs-vintage-knob" style="cursor:grab; touch-action:none; user-select:none;" filter="url(#knobDropShadow)">
         <title>Ward-Beck DR Vernier Attenuator (Drag slowly or scroll mouse-wheel to adjust)</title>
         <!-- Outer Skirt Base Disc -->
-        <circle cx="262" cy="184" r="76" fill="url(#skirtGrad)" stroke="#090a0b" stroke-width="1.2" />
+        <circle cx="0" cy="0" r="76" fill="url(#skirtGrad)" stroke="#090a0b" stroke-width="1.2" />
         <!-- Subtle Specular Rim Highlight on Skirt -->
-        <path d="M 192,154 A 76,76 0 0 1 324,140" fill="none" stroke="#52565c" stroke-width="1.1" stroke-opacity="0.65" />
+        <path d="M -70,-30 A 76,76 0 0 1 62,-44" fill="none" stroke="#52565c" stroke-width="1.1" stroke-opacity="0.65" />
 
         <!-- White Triangular Pointer on Skirt (Pointing to ~ +4.2 on right scale = +15 deg) -->
-        <g id="wbs_vintage_knob_pointer" transform="translate(262, 184) rotate(15)">
+        <g id="wbs_vintage_knob_pointer" transform="rotate(15)">
           <polygon points="0,-74 -8.5,-54 8.5,-54" fill="#eceae2" stroke="#18191b" stroke-width="0.6" />
         </g>
 
         <!-- 3D Extruded Fluted Barrel (Shifted slightly down-right to show perspective depth) -->
-        <g id="wbs_vintage_knob_rotor" transform="translate(269, 193) rotate(15)">
+        <g id="wbs_vintage_knob_rotor" transform="translate(7, 9) rotate(15)">
           <!-- Fluted Ribs / Scallops around Barrel -->
           <g fill="url(#knobBodyGrad)" stroke="#0b0c0d" stroke-width="0.8">
             <circle cx="0" cy="0" r="47" />
@@ -810,24 +817,24 @@
           <line x1="0" y1="-41" x2="-3" y2="-52" stroke="#dcdad2" stroke-width="2.6" stroke-linecap="round" />
         </g>
       </g>
+    </g>
 
-      <!-- AC Pilot Indicator Lamp Assembly (Centered at x=456, y=182) -->
-      <g id="ac-pilot-lamp" class="wbs-ac-pilot-lamp" filter="url(#lampDropShadow)">
-        <title>AC Mains Pilot Lamp ${e?`(Energized)`:`(Off)`}</title>
-        <!-- Outer Chrome Mounting Collar / Nut -->
-        <ellipse cx="452" cy="181" rx="17.5" ry="18.5" fill="url(#chromeBezelGrad)" stroke="#383c42" stroke-width="0.9" />
-        <!-- Inner Bezel Step -->
-        <ellipse cx="455" cy="182" rx="13.5" ry="14.5" fill="#70767e" stroke="#2c3036" stroke-width="0.8" />
-        <!-- Protruding Clear/Frosted Cylindrical Glass Jewel Lens -->
-        <ellipse cx="461" cy="185" rx="11.5" ry="12.2" fill="${e?`url(#lensOnGrad)`:`url(#lensGrad)`}" stroke="#88909a" stroke-width="0.9" />
-        ${e?`<circle cx="461" cy="185" r="16" fill="#f59e0b" opacity="0.32" filter="url(#xglow)" pointer-events="none" />`:``}
-        <!-- Internal Bulb Filament / Refractor Ring -->
-        <ellipse cx="462" cy="185" rx="6.2" ry="6.8" fill="none" stroke="#ffffff" stroke-width="1.4" stroke-opacity="0.85" />
-        <circle cx="461" cy="184" r="2.8" fill="#ffffff" fill-opacity="0.9" />
+    <!-- AC Pilot Indicator Lamp Assembly (Placed in Right Margin at cx=1785, cy=215) -->
+    <g id="ac-pilot-lamp" class="wbs-ac-pilot-lamp" transform="translate(1785, 215)" filter="url(#lampDropShadow)">
+      <title>AC Mains Pilot Lamp ${e?`(Energized)`:`(Off)`}</title>
+      <!-- Outer Chrome Mounting Collar / Nut -->
+      <ellipse cx="-4" cy="-1" rx="17.5" ry="18.5" fill="url(#chromeBezelGrad)" stroke="#383c42" stroke-width="0.9" />
+      <!-- Inner Bezel Step -->
+      <ellipse cx="-1" cy="0" rx="13.5" ry="14.5" fill="#70767e" stroke="#2c3036" stroke-width="0.8" />
+      <!-- Protruding Clear/Frosted Cylindrical Glass Jewel Lens -->
+      <ellipse cx="5" cy="3" rx="11.5" ry="12.2" fill="${e?`url(#lensOnGrad)`:`url(#lensGrad)`}" stroke="#88909a" stroke-width="0.9" />
+      ${e?`<circle cx="5" cy="3" r="16" fill="#f59e0b" opacity="0.32" filter="url(#xglow)" pointer-events="none" />`:``}
+      <!-- Internal Bulb Filament / Refractor Ring -->
+      <ellipse cx="6" cy="3" rx="6.2" ry="6.8" fill="none" stroke="#ffffff" stroke-width="1.4" stroke-opacity="0.85" />
+      <circle cx="5" cy="2" r="2.8" fill="#ffffff" fill-opacity="0.9" />
 
-        <!-- "AC" Panel Silkscreen Label -->
-        <text x="456" y="220" font-family="'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="12.5" font-weight="700" fill="#2A2B2A" text-anchor="middle" letter-spacing="0.8">AC</text>
-      </g>
+      <!-- "AC" Panel Silkscreen Label -->
+      <text x="0" y="38" font-family="'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="12.5" font-weight="700" fill="#2A2B2A" text-anchor="middle" letter-spacing="0.8">AC</text>
     </g>
   </g>`}function er(e){return`<g>
         ${Kn}
@@ -1098,7 +1105,7 @@
 `;for(let t of i)e+=`${t.time},${t.chA},${t.chB},${t.sum},${t.diff},${t.deltaA},${t.deltaB},${t.lufsM}\n`;Mu(e,`WBS-Super-Transient-Log`)}let s=document.getElementById(`btnExportTransientLog`);return s&&s.addEventListener(`click`,o),t&&setInterval(()=>{t.checked&&r.length>0&&a()},36e5),n}function Pu(e,t){let{audio:n}=e,{selectDevice:r,drawerSourceBadge:i}=t,a={isAudioStarted:!1,lastModeKey:null,nudgeSens:s,syncAudioWithHardwareMode:c},o=!1;function s(e){if(o||!e.power||e.mode!==`A`&&e.mode!==`D`)return;let t=(e.mode===`A`?e.a:e.d).lvl>=90;o=!0,setTimeout(()=>{t?e.pressDown():e.pressUp(),setTimeout(()=>{t?e.pressUp():e.pressDown(),o=!1},180)},120)}async function c(e){let t=a.lastModeKey;await l(e),a.lastModeKey!==t&&(n.setReferenceLevel(e.getActiveReferenceLevel(),e.mode===`D`),s(e))}async function l(e){if(!window.audioReady||e.mode===`SET`)return;let t=e.mode+`:`+(e.mode===`A`?e.a.src:e.mode===`D`?e.d.src:e.s.pair[0]);if(!(t===a.lastModeKey&&a.isAudioStarted)){if(a.lastModeKey=t,a.isAudioStarted=!0,e.mode===`A`){let t=[];try{t=await n.getAudioInputDevices()}catch{t=[]}if(!t||t.length===0){i&&(i.textContent=`Source: Calibrated Internal Tone (No Audio Input Devices Detected)`,i.style.color=`#38bdf8`),n.setToneCalibration(-18),n.startTestGenerator(`sine1k`);return}let a=r?r.value:null,o=t.filter(e=>e.label.toLowerCase().includes(`mic`)),s=t.filter(e=>e.label.toLowerCase().includes(`line`));a||(a=e.a.src===1?s.length>0?s[0].deviceId:t.length>1?t[1].deviceId:t[0].deviceId:o.length>0?o[0].deviceId:t[0].deviceId,r&&(r.value=a||``));let c=r?.options[r.selectedIndex]?.text||t.find(e=>e.deviceId===a)?.label||`Soundcard Input`;i&&(i.textContent=`Source: `+c,i.style.color=`#7df9ff`);try{await n.connectSoundCard(a),n.setInputTrim(e.a.lvl-64)}catch(e){let t=e?.name===`NotFoundError`||e?.message?.includes(`not found`)||e?.message?.includes(`detected`);t||console.warn(`Could not connect soundcard:`,e),i&&(i.textContent=t?`Source: Calibrated Internal Tone (No Audio Input Devices)`:`Source Error: `+(e?.message||`Failed to open soundcard`),i.style.color=t?`#38bdf8`:`#ff4d4f`),n.setToneCalibration(-18),n.startTestGenerator(`sine1k`)}}else if(e.mode===`D`){if(e.d.src===1){if(i&&(i.textContent=`Source: Computer Audio Output`),!await n.connectSystemAudio()){if(e.d.src=0,i){let t=e.toneCalLevels[e.toneCalIdx];i.textContent=`Source: 1 kHz Digital Reference Tone (${t>=0?`+`:``}${t} dBFS)`}n.setToneCalibration(e.toneCalLevels[e.toneCalIdx]),n.startTestGenerator(`sine1k`),e.flash(`1k TONE `)}}else{if(i){let t=e.toneCalLevels[e.toneCalIdx];i.textContent=`Source: 1 kHz Digital Reference Tone (${t>=0?`+`:``}${t} dBFS)`}n.setToneCalibration(e.toneCalLevels[e.toneCalIdx]),n.startTestGenerator(`sine1k`)}}else if(e.mode===`S`){let t=[``,`sine1k`,`pink`,`sine400`,`sweep`],r=[``,`1 kHz Sine Tone`,`Pink Noise`,`400 Hz Lineup Tone`,`20Hz-20kHz Sweep`],a=t[e.s.pair[0]]||`sine1k`,o=r[e.s.pair[0]]||`1 kHz Sine Tone`;i&&(i.textContent=`Source: `+o),n.setToneCalibration(e.toneCalLevels[e.toneCalIdx]),n.startTestGenerator(a)}}}return a}function Fu(e){let{model:t,audio:n}=e;n.setReferenceLevel(t.getActiveReferenceLevel(),t.mode===`D`),n.setHighPass(t.hp===1),n.setVuStyle(t.meterStyle)}function Iu(e,t,n){let{model:r,audio:i}=e,{selectToneCal:a,chkHpf:o,chkTerm:s,selectLampColor:c,selectMeterStyle:l,drawerSourceBadge:u}=t;r.onChange=t=>{let r=t.mode===`D`;i.setReferenceLevel(t.getActiveReferenceLevel(),r),i.setHighPass(t.hp===1),i.setVuStyle(t.meterStyle);let d=t.toneCalLevels[t.toneCalIdx];if(i.setToneCalibration(d),a&&(a.value=String(d)),o&&(o.checked=t.hp===1),s&&(s.checked=t.term===1),c&&(c.value=t.dialLamp),l&&(l.value=t.meterStyle),u&&t.mode===`S`){let e=t.s.pair[0]??1;(e===1||e===3)&&(u.textContent=`Source: ${e===3?`400 Hz`:`1 kHz`} Digital Lineup Tone (${d>=0?`+`:``}${d} dBFS)`)}n.syncAudioWithHardwareMode(t),Du(e,t)}}function Lu(e,t){let{model:n,view:r}=e;r.onButtonPressed=async e=>{e===`MODE`?n.pressMode():e===`SOURCE`?n.pressSource():e===`DOWN`?n.pressDown():e===`UP`&&n.pressUp(),t.syncAudioWithHardwareMode(n)},r.onButtonReleased=()=>{}}function Ru(e,t){let{model:n}=e;document.addEventListener(`pointerdown`,async e=>{!t.isAudioStarted&&!e.target.closest(`.aux-drawer`)&&(window.audioReady=!0,window.audioContext&&window.audioContext.state===`suspended`&&await window.audioContext.resume(),await t.syncAudioWithHardwareMode(n))},{once:!0,passive:!0})}function zu(e,t){let{audio:n}=e,{drawerSourceBadge:r,selectDevice:i}=t;n.onStatusChange=e=>{r&&(e.type===`soundcard`?(r.textContent=`Source: `+(e.label||`Soundcard Input`),r.style.color=`#7df9ff`):e.type===`system`?(r.textContent=`Source: `+(e.label||`Computer System Audio`),r.style.color=`#7df9ff`):e.type===`test`?(r.textContent=`Source: `+e.label,r.style.color=`#ffd152`):e.type===`error`?(r.textContent=`Source Error: `+(e.error||`Connection Failed`),r.style.color=`#ff4d4f`):e.type===`disconnected`&&(r.textContent=`Source: Audio Stopped`,r.style.color=`#888`))},n.onDevicesChange=(e,t)=>{if(!i)return;let n=t||i.value;i.innerHTML=`<option value="">Default Soundcard Input</option>`,e.forEach((e,t)=>{let r=document.createElement(`option`);r.value=e.deviceId,r.textContent=e.label||`Audio Interface ${t+1}`,e.deviceId===n&&(r.selected=!0),i.appendChild(r)})}}async function Bu(e,t){let{audio:n}=e,{selectDevice:r}=t;async function i(){if(!r)return;let e=r.value||n.activeDeviceId,t=await n.getAudioInputDevices();r.innerHTML=`<option value="">Default Soundcard Input</option>`,t.forEach((t,n)=>{let i=document.createElement(`option`);i.value=t.deviceId,i.textContent=t.label||`Audio Interface ${n+1}`,t.deviceId===e&&(i.selected=!0),r.appendChild(i)})}try{await i()}catch{}navigator.mediaDevices&&navigator.mediaDevices.ondevicechange!==void 0&&(navigator.mediaDevices.ondevicechange=i)}function Vu(e,t,n){let{model:r,audio:i}=e,{selectDevice:a,drawerSourceBadge:o}=t;a&&a.addEventListener(`change`,async()=>{let e=a.value||null;n.isAudioStarted=!0;let t=a.options[a.selectedIndex]?.text||`Soundcard Input`;o&&(o.textContent=`Connecting: `+t+`...`,o.style.color=`#ffd152`),r.mode!==`A`&&(r.mode=`A`,r.a.src=0,r.saveEEPROM()),n.lastModeKey=`A:`+e;try{await i.connectSoundCard(e),o&&(o.textContent=`Source: `+t,o.style.color=`#7df9ff`),r.flash(`CARD IN`),i.setReferenceLevel(r.getActiveReferenceLevel(),r.mode===`D`),n.nudgeSens(r)}catch(e){let t=e?.name===`NotFoundError`||e?.message?.includes(`not found`)||e?.message?.includes(`detected`);t||console.error(`Failed to connect selected device:`,e),o&&(o.textContent=t?`Source: Calibrated Internal Tone (No Audio Input Devices)`:`Device Error: `+(e?.message||`Cannot access device`),o.style.color=t?`#38bdf8`:`#ff4d4f`),i.setToneCalibration(-18),i.startTestGenerator(`sine1k`)}})}function Hu(e,t){let{audio:n}=e,{inputGainSlider:r,inputGainVal:i,chkMonitor:a,monitorVolSlider:o,monitorVolVal:s}=t;r&&r.addEventListener(`input`,e=>{let t=parseFloat(e.target.value);n.setInputTrim(t),i&&(i.textContent=(t>0?`+`:``)+t.toFixed(1)+` dB`)}),a&&a.addEventListener(`change`,e=>{n.setMonitor(e.target.checked)}),o&&o.addEventListener(`input`,e=>{let t=parseFloat(e.target.value);n.setMonitorVolume(t),s&&(s.textContent=Math.round(t*100)+`%`)})}function Uu(e,t){let{model:n,audio:r,view:i}=e,{selectMeterStyle:a}=t;a&&(a.value=n.meterStyle,a.addEventListener(`change`,e=>{n.meterStyle=e.target.value,r.setVuStyle(e.target.value),n.saveEEPROM(),i.isBuilt=!1}));let o=document.getElementById(`selectVuBallistics`);o&&(o.value=r.vuBallisticPreset||`standard_vu`,o.addEventListener(`change`,t=>{r.setVuBallisticPreset(t.target.value),Du(e)}))}function Wu(e,t){let{model:n,audio:r}=e,{selectToneCal:i}=t;if(i){i.innerHTML=``;for(let e=0;e>=-60;e--){let t=document.createElement(`option`);t.value=String(e);let n=`${e} dBFS`;e===-18?n+=` (0 VU ANSI C16.5 / EBU Reference - Default)`:e===0?n+=` (Peak Full Scale Ceiling)`:e===-6?n+=` (High Peak Alignment)`:e===-12?n+=` (Digital Nominal)`:e===-14?n+=` (AES / Streaming Target)`:e===-20?n+=` (0 VU SMPTE RP155 Reference)`:e===-24&&(n+=` (EBU R128 / ATSC A/85)`),t.textContent=n,i.appendChild(t)}i.value=String(n.toneCalLevels[n.toneCalIdx]??-18),i.addEventListener(`change`,e=>{let t=parseFloat(e.target.value);r.setToneCalibration(t);let i=n.toneCalLevels.indexOf(t);if(i!==-1&&(n.toneCalIdx=i,n.saveEEPROM(),n.mode===`S`&&(n.s.pair[0]===1||n.s.pair[0]===3))){let e=n.s.pair[0]===3?`400 `:`1k `;n.flash((e+(t>=0?`+`:``)+t+`dB`).padEnd(8).substring(0,8))}})}}var Gu=e=>{try{return localStorage.getItem(e)}catch{return null}},Ku=(e,t)=>{try{localStorage.setItem(e,t)}catch{}};function qu(e,t){let{model:n,view:r}=e,{selectLampColor:i}=t,a=()=>document.body.classList.contains(`theme-mccurdy`)?`xtm.lamp.mccurdy`:`xtm.lamp.dark`,o=()=>{let e=document.body.classList.contains(`theme-mccurdy`),t=Gu(a())||(e?`parchment`:n.dialLamp||`amber`);t!==n.dialLamp&&(n.dialLamp=t,r.isBuilt=!1),i&&(i.value=n.dialLamp)};Gu(`xtm.lamp.dark`)||Ku(`xtm.lamp.dark`,n.dialLamp||`amber`),o(),new MutationObserver(o).observe(document.body,{attributes:!0,attributeFilter:[`class`]}),i&&(i.value=n.dialLamp||`amber`,i.addEventListener(`change`,e=>{n.dialLamp=e.target.value,Ku(a(),n.dialLamp),n.saveEEPROM(),r.isBuilt=!1}))}function Ju(e,t){let{model:n,audio:r}=e,{chkHpf:i,chkTerm:a}=t;i&&i.addEventListener(`change`,e=>{n.hp=+!!e.target.checked,r.setHighPass(e.target.checked),n.saveEEPROM(),n.notify()}),a&&a.addEventListener(`change`,e=>{n.term=+!!e.target.checked,n.saveEEPROM(),n.notify()})}function Yu(e,t){let{audio:n,view:r}=e,{selectPpmBallistics:i}=t;i&&(i.value=n.ppmBallisticPreset||`type2`,r.ppmStandard=i.value,r.isBuilt=!1,i.addEventListener(`change`,t=>{n.setPpmType(t.target.value),r.ppmStandard=t.target.value,r.isBuilt=!1,Du(e)}))}function Xu(e){let{audio:t,dbfsView:n}=e;n&&(n.onClear=()=>{t.resetLoudness()});let r=document.getElementById(`selectScopeLogWarp`);r&&n&&r.addEventListener(`change`,e=>{n.setBeta(parseFloat(e.target.value))});let i=document.getElementById(`selectTimeScale`);i&&n&&(i.value=n.timeMode,i.addEventListener(`change`,e=>{n.setTimeMode(e.target.value)}),n.onTimeModeChange=t=>{i.value=t,Du(e)})}function Zu(e){let t=document.getElementById(`wbsConsentBanner`),n=document.getElementById(`btnConsentAllow`),r=document.getElementById(`btnConsentSession`),i=document.getElementById(`btnResetConsent`),a=document.getElementById(`consentStatusText`);function o(){let e=$.getConsent();a&&(e===`allowed`?(a.textContent=`ALLOWED (Persistent Memory)`,a.style.color=`#22c55e`):e===`session_only`?(a.textContent=`SESSION ONLY`,a.style.color=`#eab308`):(a.textContent=`PROMPTING...`,a.style.color=`#38bdf8`)),t&&(t.style.display=e===`prompt`?`flex`:`none`)}n&&n.addEventListener(`click`,()=>{$.setConsent(`allowed`),o(),Du(e)}),r&&r.addEventListener(`click`,()=>{$.setConsent(`session_only`),o()}),i&&i.addEventListener(`click`,()=>{$.resetConsent(),o()}),o()}function Qu(e){let{model:t,audio:n,podView:r,dbfsView:i}=e;i&&$.loadSavedConfig(t,n,r,i)}function $u(e,t){let{model:n,audio:r,podView:i,dbfsView:a}=e,o=document.getElementById(`btnExportWbs`);o&&a&&o.addEventListener(`click`,()=>{$.downloadWbsFile(n,r,i,a),n.flash(`SAVED.WBS`,1400)});let s=document.getElementById(`btnImportWbs`),c=document.getElementById(`inputImportWbs`);s&&c&&a&&(s.addEventListener(`click`,()=>{c.click()}),c.addEventListener(`change`,async e=>{let o=e.target.files?.[0];if(o)try{let e=await o.text(),s=$.parseWbsYaml(e);$.applyConfig(s,n,r,i,a),await t.syncAudioWithHardwareMode(n)}catch(e){console.error(`WBS configuration import failed:`,e),alert(`Error importing .WBS configuration: `+(e?.message||`Invalid format`)),n.flash(`CFG ERR `,1600)}finally{c.value=``}}))}function ed(e,t){let n=()=>Du(e),r=document.getElementById(`selectPeakSens`),i=document.getElementById(`chkExtendedLed22`),a=document.getElementById(`selectVuBallistics`),o=document.getElementById(`selectScopeLogWarp`),{inputGainSlider:s,monitorVolSlider:c,chkMonitor:l,chkPodHold:u,selectPodDecay:d,selectPpmBallistics:f}=t;[s,c,r].forEach(e=>{e?.addEventListener(`change`,n)}),[l,i,u,d,f,a,o].forEach(e=>{e?.addEventListener(`change`,n)})}function td(e,t){let{model:n}=e;window.addEventListener(`keydown`,e=>{if([`INPUT`,`SELECT`,`TEXTAREA`].includes(e.target.tagName))return;let r=e.key.toUpperCase();r===`M`?(n.pressMode(),t.syncAudioWithHardwareMode(n)):r===`S`?(n.pressSource(),t.syncAudioWithHardwareMode(n)):r===`ARROWDOWN`||r===`D`?n.pressDown():r===`ARROWUP`||r===`U`?n.pressUp():r===`H`?n.holdMode():r===`P`&&n.togglePower()})}var nd=!1;function rd(e){if(nd)return;nd=!0,document.body.classList.add(`has-new-version`);let t=document.getElementById(`btnOpenSettings`),n=document.querySelector(`.drawer-gear-label`),r=document.getElementById(`drawerToggleLeft`),i=e?e.startsWith(`v`)?e:`v${e}`:``;if(t&&(t.classList.add(`has-update`),t.setAttribute(`title`,`New version available${i?` (`+i+`)`:``}! Click Settings to update`)),n&&(n.classList.add(`has-update`),!n.querySelector(`.settings-update-dot`))){let e=document.createElement(`span`);e.className=`settings-update-dot`,e.title=`New update available`,n.appendChild(e)}r&&r.classList.add(`has-update`);let a=document.querySelector(`.drawer-grid`);if(a&&!document.getElementById(`updateAvailableBanner`)){let e=document.createElement(`div`);e.id=`updateAvailableBanner`,e.className=`update-available-banner`,e.innerHTML=`
       <span>⚡ New version available${i?` (`+i+`)`:``}</span>
       <button type="button" id="btnReloadNewVersion">Reload &amp; Update Now</button>
-    `,a.parentElement?.insertBefore(e,a),document.getElementById(`btnReloadNewVersion`)?.addEventListener(`click`,()=>{window.location.reload()})}let o=document.querySelector(`.build-stamp`);o&&(o.innerHTML=`<span style="color:#f97316;cursor:pointer;font-weight:bold" title="Click to reload with new version">Update: ${i||`Available`} ⟳</span>`,o.addEventListener(`click`,()=>window.location.reload()))}function id(){window.testUpdatePulse=(e=`1.0.99`)=>rd(e);async function e(){try{let e=await fetch(`./version.json?cache=`+Date.now(),{cache:`no-store`});if(!e.ok)return;let{version:t}=await e.json();t&&t!==`1.0.15`&&rd(t)}catch{}}setTimeout(e,3e3),setInterval(e,6e4),document.addEventListener(`visibilitychange`,()=>{document.visibilityState===`visible`&&e()});let t=document.querySelector(`.build-stamp`);if(t){let e=`v1.0.15`;t.textContent=e,t.setAttribute(`title`,`Ward-Beck Systems XTM-4 ${e}`)}}function ad(){`serviceWorker`in navigator&&(navigator.serviceWorker.addEventListener(`message`,e=>{e.data?.type===`xtm-update-ready`&&(console.info(`XTM: new version stored; update ready.`),rd())}),navigator.serviceWorker.register(`sw.js`,{updateViaCache:`none`}).then(e=>{e.waiting&&rd(),e.addEventListener(`updatefound`,()=>{let t=e.installing;t&&t.addEventListener(`statechange`,()=>{t.state===`installed`&&navigator.serviceWorker.controller&&rd()})})}).catch(e=>{console.warn(`Service worker registration failed:`,e)}))}function od(){let e=document.getElementById(`pwaInstallBanner`),t=document.getElementById(`btnPwaInstall`),n=document.getElementById(`btnPwaDismiss`),r=document.getElementById(`pwaSubText`),i=null,a=/iPad|iPhone|iPod/.test(navigator.userAgent)&&!window.MSStream,o=/Android|iPhone|iPad|iPod|Opera Mini|IEMobile|WPDesktop/i.test(navigator.userAgent)||window.innerWidth<=840,s=window.matchMedia(`(display-mode: standalone)`).matches||window.navigator.standalone===!0;e&&!s&&(window.addEventListener(`beforeinstallprompt`,t=>{t.preventDefault(),i=t,e.style.display=`block`}),o&&a&&(r&&(r.innerHTML=`Tap the Share icon <strong>[⎋]</strong> in Safari and choose <strong>Add to Home Screen</strong>`),t&&(t.textContent=`How to Install`,t.addEventListener(`click`,()=>{alert(`To install this app on iOS:
+    `,a.parentElement?.insertBefore(e,a),document.getElementById(`btnReloadNewVersion`)?.addEventListener(`click`,()=>{window.location.reload()})}let o=document.querySelector(`.build-stamp`);o&&(o.innerHTML=`<span style="color:#f97316;cursor:pointer;font-weight:bold" title="Click to reload with new version">Update: ${i||`Available`} ⟳</span>`,o.addEventListener(`click`,()=>window.location.reload()))}function id(){window.testUpdatePulse=(e=`1.0.99`)=>rd(e);async function e(){try{let e=await fetch(`./version.json?cache=`+Date.now(),{cache:`no-store`});if(!e.ok)return;let{version:t}=await e.json();t&&t!==`1.0.18`&&rd(t)}catch{}}setTimeout(e,3e3),setInterval(e,6e4),document.addEventListener(`visibilitychange`,()=>{document.visibilityState===`visible`&&e()});let t=document.querySelector(`.build-stamp`);if(t){let e=`v1.0.18`;t.textContent=e,t.setAttribute(`title`,`Ward-Beck Systems XTM-4 ${e}`)}}function ad(){`serviceWorker`in navigator&&(navigator.serviceWorker.addEventListener(`message`,e=>{e.data?.type===`xtm-update-ready`&&(console.info(`XTM: new version stored; update ready.`),rd())}),navigator.serviceWorker.register(`sw.js`,{updateViaCache:`none`}).then(e=>{e.waiting&&rd(),e.addEventListener(`updatefound`,()=>{let t=e.installing;t&&t.addEventListener(`statechange`,()=>{t.state===`installed`&&navigator.serviceWorker.controller&&rd()})})}).catch(e=>{console.warn(`Service worker registration failed:`,e)}))}function od(){let e=document.getElementById(`pwaInstallBanner`),t=document.getElementById(`btnPwaInstall`),n=document.getElementById(`btnPwaDismiss`),r=document.getElementById(`pwaSubText`),i=null,a=/iPad|iPhone|iPod/.test(navigator.userAgent)&&!window.MSStream,o=/Android|iPhone|iPad|iPod|Opera Mini|IEMobile|WPDesktop/i.test(navigator.userAgent)||window.innerWidth<=840,s=window.matchMedia(`(display-mode: standalone)`).matches||window.navigator.standalone===!0;e&&!s&&(window.addEventListener(`beforeinstallprompt`,t=>{t.preventDefault(),i=t,e.style.display=`block`}),o&&a&&(r&&(r.innerHTML=`Tap the Share icon <strong>[⎋]</strong> in Safari and choose <strong>Add to Home Screen</strong>`),t&&(t.textContent=`How to Install`,t.addEventListener(`click`,()=>{alert(`To install this app on iOS:
 1. Tap the Share button in Safari (box with up arrow).
 2. Scroll down and tap "Add to Home Screen".`)})),e.style.display=`block`),window.addEventListener(`appinstalled`,()=>{e.style.display=`none`,i=null}),t&&!a&&t.addEventListener(`click`,async()=>{if(i){i.prompt();let{outcome:t}=await i.userChoice;t===`accepted`&&(e.style.display=`none`),i=null}else e.style.display=`none`}),n&&n.addEventListener(`click`,()=>{e.style.display=`none`}))}function sd(e,t){let{model:n,audio:r,view:i,podView:a,dbfsView:o}=e,s=document.querySelector(`.console-viewport`),c=0,l=performance.now(),u=document.getElementById(`fpsDisplay`);function d(e){let f=r&&r.getLevels?r.getLevels():r?.currentLevels||{vu:[0,0],ppm:[-.12,-.12],vuDb:[-1/0,-1/0],ppmDb:[-1/0,-1/0],phaseCorrelation:1,phaseLed:-1,peak:[!1,!1],hasAudio:!1};if(i.updateNeedles(f,n.power,n.meterStyle===`sifam`),n.isIdle=!f.hasAudio,i.renderSecondary(n,f),a.render(n,f),o&&o.render(n,f),t.recordTelemetry(f,e),t.recordTransientEvent(f),s){let e=f&&f.lufs&&typeof f.lufs.m==`number`?f.lufs.m:-60;f.hasAudio&&isFinite(e)?e>=-12?s.className=`console-viewport lufs-glow-red`:e>=-18?s.className=`console-viewport lufs-glow-orange`:e>-24?s.className=`console-viewport lufs-glow-green`:s.className=`console-viewport`:s.className=`console-viewport`}if(c++,e-l>=500){let t=c*1e3/(e-l);u&&(u.textContent=t.toFixed(1)+` FPS`),c=0,l=e}requestAnimationFrame(d)}requestAnimationFrame(d)}async function cd(){let t=document.getElementById(`visualizerStage`),n=document.getElementById(`pod22Stage`),r=document.getElementById(`dbfsStage`),i=new br(t);i.build(e);let a={model:e,audio:it,view:i,podView:new Kr(n),dbfsView:r?new la(r):null};da(),fa(),pa(a),Ou(a);let o=Nu(),s=ua();Fu(a);let c=Pu(a,s);Iu(a,s,c),Lu(a,c),Ru(a,c),zu(a,s),await Bu(a,s),Vu(a,s,c),Hu(a,s),Uu(a,s),Wu(a,s),qu(a,s),Ju(a,s),ku(a,s),Yu(a,s),Au(a,s),Xu(a),Zu(a),Qu(a),$u(a,c),ed(a,s),td(a,c),id(),ad(),od(),sd(a,o)}window.audioReady=!0,cd(),window.audioContext&&window.audioContext.state===`suspended`&&window.audioContext.resume();
-//# sourceMappingURL=index-MR-amqDS.js.map
+//# sourceMappingURL=index-Cj4GeTP1.js.map
