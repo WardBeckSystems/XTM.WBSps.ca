@@ -58,6 +58,18 @@ export async function connectSoundCard(engine: XtmAudioEngine, deviceId: string 
   await engine.ensureContext();
   engine.stopCurrentSource();
 
+  // If no input devices exist on the system, fail early cleanly without repeated candidate logs
+  try {
+    const available = await getAudioInputDevices();
+    if (available.length === 0) {
+      const notFound = new DOMException('No audio input devices detected on this system', 'NotFoundError');
+      if (engine.onStatusChange) engine.onStatusChange({ type: 'error', error: notFound.message });
+      throw notFound;
+    }
+  } catch (checkErr) {
+    if ((checkErr as any)?.name === 'NotFoundError') throw checkErr;
+  }
+
   const constraintList = buildSoundCardConstraints(deviceId);
 
   let stream = null;

@@ -90,12 +90,18 @@ export function createAudioSync(ctx: AppContext, refs: DrawerControls): AudioSyn
       try {
         await audio.connectSoundCard(targetId);
         audio.setInputTrim(m.a.lvl - 64);
-      } catch (err) {
+      } catch (err: any) {
         console.warn('Could not connect soundcard:', err);
+        const isNotFound = err?.name === 'NotFoundError' || err?.message?.includes('not found') || err?.message?.includes('detected');
         if (drawerSourceBadge) {
-          drawerSourceBadge.textContent = 'Source Error: ' + ((err as any)?.message || 'Failed to open soundcard');
-          drawerSourceBadge.style.color = '#ff4d4f';
+          drawerSourceBadge.textContent = isNotFound
+            ? 'No Mic / Soundcard Input (Running Internal 1 kHz Tone)'
+            : 'Source Error: ' + (err?.message || 'Failed to open soundcard');
+          drawerSourceBadge.style.color = isNotFound ? '#38bdf8' : '#ff4d4f';
         }
+        // Fall back gracefully to internal calibrated test tone so meters and visualizers remain active
+        audio.setToneCalibration(-18);
+        audio.startTestGenerator('sine1k');
       }
     } else if (m.mode === 'D') {
       // DIGITAL MODE: D1 = Computer Audio Output, D0 = Digital 1 kHz Tone
