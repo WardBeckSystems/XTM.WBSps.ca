@@ -246,13 +246,19 @@ def main():
         print(f"\n❌ Deployment failed: {e}", file=sys.stderr)
         sys.exit(1)
 
-    # Verification
+    # Verification cycle
     if not args.no_verify:
-        verify_site("https://xtm.wbsps.ca/")
+        test_urls = [
+            ("https://xtm.wbsps.ca/", "Ward-Beck Systems"),
+            ("https://ward-beck.ca/", "Ward-Beck Systems")
+        ]
+        print("\nCycling test URLs...")
+        for url, expected in test_urls:
+            verify_site(url, expected)
 
     print("\n" + "=" * 68)
     print(" Hosted Deployment Complete!")
-    print(" Live URL: https://xtm.wbsps.ca/")
+    print(" Live URLs: https://xtm.wbsps.ca/ | https://ward-beck.ca/")
     print("=" * 68)
 
 if __name__ == '__main__':
