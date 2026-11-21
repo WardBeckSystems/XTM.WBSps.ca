@@ -147,8 +147,8 @@ export function renderVintageWbsCenter(isPowered = true): string {
       </g>
 
       <!-- Skirted Fluted Instrument Knob (Centered at x=262, y=184) -->
-      <g id="instrument-knob" class="xtm-btn wbs-vintage-knob" style="cursor:pointer;" filter="url(#knobDropShadow)">
-        <title>Ward-Beck DR Vernier Attenuator (Click to Rotate)</title>
+      <g id="instrument-knob" class="xtm-btn wbs-vintage-knob" style="cursor:grab; touch-action:none; user-select:none;" filter="url(#knobDropShadow)">
+        <title>Ward-Beck DR Vernier Attenuator (Drag slowly or scroll mouse-wheel to adjust)</title>
         <!-- Outer Skirt Base Disc -->
         <circle cx="262" cy="184" r="76" fill="url(#skirtGrad)" stroke="#090a0b" stroke-width="1.2" />
         <!-- Subtle Specular Rim Highlight on Skirt -->

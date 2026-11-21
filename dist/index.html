@@ -665,16 +665,21 @@
 <!-- In-App Interactive Styleguide Modal -->
 <div id="guideModal" class="guide-modal-overlay">
   <div class="guide-modal-container">
-    <div class="guide-modal-header">
-      <div class="guide-modal-title">
-        <svg viewBox="0 0 75 22" width="54" height="16" aria-hidden="true">
-          <path d="M-0.03 3.81 C-0.03 7.93 -0.03 13.59 -0.03 17.71 C-0.03 21.6 31.29 21.6 33.55 21.6 C35.9 21.6 38.28 21.6 40.67 21.6 C42.87 21.6 74.06 21.6 74.06 17.71 L74.06 3.81 C74.06 -0 42.87 -0 40.67 -0 C36.81 -0 37.4 -0 33.55 -0 C31.29 -0 -0.03 -0 -0.03 3.81 Z" fill="#000000" stroke="#22c55e" stroke-width="1.2"/>
-          <path d="M2.43 4.14 C2.43 8.26 2.43 13.33 2.43 17.45 C2.43 20.03 31.29 20.41 33.55 20.41 C37.4 20.41 36.81 20.41 40.67 20.41 C42.87 20.41 71.66 20.03 71.66 17.45 L71.66 4.14 C71.66 1.57 42.82 1.26 40.67 1.23 L33.55 1.23 C31.29 1.23 2.43 1.57 2.43 4.14 Z" fill="#22c55e"/>
-        </svg>
-        <span>Ward-Beck Systems • Design &amp; Meter Styleguide</span>
+    <div class="guide-modal-header" style="flex-wrap:wrap;gap:10px;">
+      <div class="guide-modal-title" style="display:flex;align-items:center;gap:10px;">
+        <span id="guideModalTitleText">Design &amp; Hardware Guides</span>
       </div>
+
+      <!-- Quick Tab Switcher inside Settings Modal -->
+      <div class="guide-modal-tabs" style="display:flex;gap:4px;background:#090b0e;padding:3px;border-radius:6px;border:1px solid #252e3b;">
+        <button type="button" class="guide-tab-btn active" data-url="styleguide.html" data-title="XTM-4 &amp; POD-22 Mastering Visualizer Styleguide" style="background:#22c55e;color:#000;border:none;padding:4px 9px;border-radius:4px;font-size:11px;font-weight:700;cursor:pointer;">XTM-4</button>
+        <button type="button" class="guide-tab-btn" data-url="styleguide-m600.html" data-title="WBS M600 Series Modular Frame &amp; Module Styleguide" style="background:transparent;color:#94a3b8;border:none;padding:4px 9px;border-radius:4px;font-size:11px;font-weight:700;cursor:pointer;">M600</button>
+        <button type="button" class="guide-tab-btn" data-url="styleguide-mccurdy-meter-logo.html" data-title="McCurdy Meter Dial Cartouche Logo Styleguide" style="background:transparent;color:#94a3b8;border:none;padding:4px 9px;border-radius:4px;font-size:11px;font-weight:700;cursor:pointer;">McCurdy Logo</button>
+        <button type="button" class="guide-tab-btn" data-url="mccurdy_ats_dual_meters.html" data-title="McCurdy ATS-100 Dual Analog Meters Specification" style="background:transparent;color:#94a3b8;border:none;padding:4px 9px;border-radius:4px;font-size:11px;font-weight:700;cursor:pointer;">ATS-100 Meters</button>
+      </div>
+
       <div style="display:flex;gap:12px;align-items:center;">
-        <a href="styleguide.html" target="_blank" style="color:#38bdf8;font-size:11px;font-weight:700;text-decoration:none;">OPEN IN NEW TAB ↗</a>
+        <a id="guideModalExternalLink" href="styleguide.html" target="_blank" style="color:#38bdf8;font-size:11px;font-weight:700;text-decoration:none;">OPEN IN NEW TAB ↗</a>
         <button type="button" id="btnCloseGuideModal" class="guide-modal-close-btn">CLOSE ✕</button>
       </div>
     </div>
@@ -684,18 +689,36 @@
 
 <script>
   // In-App Guide Modal Controller
-  var btnPreviewGuide = document.getElementById("btnPreviewGuideInApp");
   var guideModal = document.getElementById("guideModal");
   var btnCloseGuide = document.getElementById("btnCloseGuideModal");
   var guideIframe = document.getElementById("guideModalIframe");
+  var guideTitle = document.getElementById("guideModalTitleText");
+  var guideExtLink = document.getElementById("guideModalExternalLink");
+  var guideTabs = document.querySelectorAll(".guide-tab-btn");
 
-  if (btnPreviewGuide && guideModal) {
-    btnPreviewGuide.addEventListener("click", function(e) {
-      e.stopPropagation();
-      guideIframe.src = "styleguide.html";
-      guideModal.style.display = "flex";
+  function openGuideInModal(url, title) {
+    if (!guideModal || !guideIframe) return;
+    guideIframe.src = url;
+    if (guideTitle && title) guideTitle.innerHTML = title;
+    if (guideExtLink) guideExtLink.href = url;
+
+    guideTabs.forEach(function(tab) {
+      var isMatch = tab.getAttribute("data-url") === url;
+      tab.style.background = isMatch ? "#22c55e" : "transparent";
+      tab.style.color = isMatch ? "#000" : "#94a3b8";
     });
+
+    guideModal.style.display = "flex";
   }
+
+  guideTabs.forEach(function(tab) {
+    tab.addEventListener("click", function(e) {
+      e.stopPropagation();
+      var url = tab.getAttribute("data-url");
+      var title = tab.getAttribute("data-title");
+      openGuideInModal(url, title);
+    });
+  });
 
   if (btnCloseGuide && guideModal) {
     btnCloseGuide.addEventListener("click", function() {
