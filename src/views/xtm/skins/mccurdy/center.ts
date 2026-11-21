@@ -175,8 +175,8 @@ export function renderMcCurdyCaCenter(): string {
         </filter>
       </defs>
 
-      <!-- Center Console Bay Outline / Bezel in McCurdy Slate Finish (500x398) -->
-      <rect x="1350" y="16" width="500" height="398" rx="8" fill="url(#mc_panel_blue)" stroke="#4d687f" stroke-width="2.5"/>
+      <!-- Center Console Bay in McCurdy Slate Finish (Seamless, No Border) -->
+      <rect x="1350" y="16" width="500" height="398" rx="8" fill="url(#mc_panel_blue)"/>
 
       <!-- ================================================================= -->
       <!-- LEFT SECTION: JACKS (INPUT 600Ω / 20K, MON OUTPUT 20K) & SA14023  -->
