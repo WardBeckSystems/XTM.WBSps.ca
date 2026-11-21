@@ -138,6 +138,9 @@ export function renderMcCurdyCaCenter(): string {
         <linearGradient id="mc_gold_face" x1="0" y1="0" x2="1" y2="1">
           <stop offset="0%" stop-color="#fbbf24"/><stop offset="50%" stop-color="#f59e0b"/><stop offset="100%" stop-color="#d97706"/>
         </linearGradient>
+        <linearGradient id="mc_ivory_face" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stop-color="#f5f2e9"/><stop offset="50%" stop-color="#ebe6da"/><stop offset="100%" stop-color="#dad4c5"/>
+        </linearGradient>
         <linearGradient id="mc_toggle_stick" x1="0" y1="0" x2="1" y2="0">
           <stop offset="0%" stop-color="#e2e8f0"/><stop offset="50%" stop-color="#94a3b8"/><stop offset="100%" stop-color="#475569"/>
         </linearGradient>
@@ -148,21 +151,6 @@ export function renderMcCurdyCaCenter(): string {
 
       <!-- Center Console Bay Outline / Bezel in McCurdy Slate Finish (500x398) -->
       <rect x="1350" y="16" width="500" height="398" rx="8" fill="url(#mc_panel_blue)" stroke="#4d687f" stroke-width="2.5"/>
-
-      <!-- ================================================================= -->
-      <!-- LEFT SECTION: MCCURDY BRAND & MODEL SILKSCREEN DESIGNATION        -->
-      <!-- ================================================================= -->
-      <g id="mc-ca-model-brand" font-family="'Helvetica Neue', Helvetica, Arial, sans-serif" text-anchor="middle">
-        <text x="1398" y="152" font-size="13" font-weight="800" fill="#cbd5e1" letter-spacing="1.8">McCURDY</text>
-        <text x="1398" y="168" font-size="8.5" font-weight="700" fill="#94a3b8" letter-spacing="1">RADIO IND.</text>
-        <line x1="1368" y1="180" x2="1428" y2="180" stroke="#384e61" stroke-width="1.2"/>
-        <text x="1398" y="198" font-size="12" font-weight="800" fill="#f8fafc" letter-spacing="1.5">SA14023</text>
-        <text x="1398" y="214" font-size="8.5" font-weight="700" fill="#cbd5e1" letter-spacing="0.8">EXTENDED</text>
-        <text x="1398" y="226" font-size="8.5" font-weight="700" fill="#cbd5e1" letter-spacing="0.8">RANGE dB</text>
-        <line x1="1368" y1="238" x2="1428" y2="238" stroke="#384e61" stroke-width="1.2"/>
-        <text x="1398" y="254" font-size="8" font-weight="700" fill="#64748b" letter-spacing="0.6">TORONTO</text>
-        <text x="1398" y="266" font-size="7.5" font-weight="700" fill="#64748b" letter-spacing="0.6">CANADA</text>
-      </g>
 
       <!-- ================================================================= -->
       <!-- CENTERPIECE: CENTERED & LARGER MCCURDY 31-STEP DUAL-CONCENTRIC    -->
@@ -182,28 +170,33 @@ export function renderMcCurdyCaCenter(): string {
           ${scaleOuterNums}
         </g>
 
-        <!-- Silver Skirt Base Disc (r=74) with Black Pointer Arrow pointing at 9 o'clock -->
+        <!-- Silver Skirt Base Disc (r=74) -->
         <circle cx="${kx}" cy="${ky}" r="74" fill="url(#mc_skirt_silver)" stroke="#686e7a" stroke-width="1.4"/>
         <circle cx="${kx}" cy="${ky}" r="57" fill="none" stroke="#8a909c" stroke-width="1.0"/>
-        <!-- Solid Black Pointer Arrow at 9 o'clock (-73px from center) -->
-        <polygon points="${kx - 73},${ky} ${kx - 57},${ky - 9.5} ${kx - 57},${ky + 9.5}" fill="#141517"/>
 
-        <!-- 14-Flute Barrel Body (r=51) -->
+        <!-- Rotating 14-Flute Barrel Body with Skirt Pointer (Rotates with drag & wheel) -->
         <g id="mccurdy_vintage_knob_rotor" transform="translate(${kx}, ${ky})">
+          <!-- Solid Black Pointer Arrow at 9 o'clock (-73px from center) on rotating flange -->
+          <polygon points="-73,0 -57,-9.5 -57,9.5" fill="#141517"/>
+
           <path d="${fluteD}" fill="url(#mc_barrel_grad)" stroke="#555a64" stroke-width="1.2"/>
           <g stroke="#666c77" stroke-width="1.1" stroke-linecap="round">
             ${grooves}
           </g>
 
-          <!-- Raised Gold Bezel Ring (r=42) & Highlight -->
-          <circle cx="0" cy="0" r="42" fill="url(#mc_gold_rim)" stroke="#78350f" stroke-width="1.2"/>
+          <!-- Outer Raised Gold Bezel Ring (r=42) & Highlight -->
+          <circle cx="0" cy="0" r="42" fill="none" stroke="url(#mc_gold_rim)" stroke-width="2.2"/>
           <path d="M -30,-28 A 40,40 0 0 1 30,-28" fill="none" stroke="#fde68a" stroke-width="1.4" stroke-opacity="0.85"/>
 
-          <!-- Textured Gold Cap Face (r=37) -->
-          <circle cx="0" cy="0" r="37" fill="url(#mc_gold_face)" stroke="#92400e" stroke-width="1"/>
+          <!-- Inner Gold Bezel Ring (r=36) -->
+          <circle cx="0" cy="0" r="36" fill="none" stroke="#d4af37" stroke-width="1.4" stroke-opacity="0.9"/>
 
-          <!-- Solid Black Radial Pointer Line to 9 o'clock -->
-          <line x1="0" y1="0" x2="-36" y2="0" stroke="#161719" stroke-width="3.8" stroke-linecap="round"/>
+          <!-- Textured Warm Cream / Off-White Cap Face (r=35) -->
+          <circle cx="0" cy="0" r="35" fill="url(#mc_ivory_face)" stroke="#854d0e" stroke-width="0.8"/>
+
+          <!-- Hollow Black Pointer Triangle pointing at 9 o'clock (Matching McCurdy pointer style) -->
+          <polygon points="-34,0 12,-9.5 12,9.5" fill="none" stroke="#141517" stroke-width="2.6" stroke-linejoin="round"/>
+          <line x1="-30" y1="0" x2="6" y2="0" stroke="#141517" stroke-width="1.3"/>
         </g>
       </g>
 
@@ -212,9 +205,9 @@ export function renderMcCurdyCaCenter(): string {
       <!-- ================================================================= -->
       <!-- Chrome Bat-Handle Toggle Switch Assembly (Upper Right, cx=1802, cy=110) -->
       <g id="mc-toggle-assembly" transform="translate(1802, 110)">
-        <text x="0" y="-36" ${font} font-size="10" fill="#cbd5e1" text-anchor="middle">MTR</text>
-        <text x="0" y="-24" ${font} font-size="9" fill="#94a3b8" text-anchor="middle">CAL</text>
-        <text x="0" y="44" ${font} font-size="10" fill="#cbd5e1" text-anchor="middle">MON</text>
+        <text x="0" y="-36" ${font} font-size="10" font-weight="700" fill="#cbd5e1" text-anchor="middle">MTR</text>
+        <text x="24" y="4" ${font} font-size="9" font-weight="700" fill="#94a3b8" text-anchor="start">CAL</text>
+        <text x="0" y="44" ${font} font-size="10" font-weight="700" fill="#cbd5e1" text-anchor="middle">MON</text>
 
         <!-- Chrome Bezel Nut -->
         <circle cx="0" cy="0" r="20" fill="url(#chromeMetalGrad)" stroke="#1a2530" stroke-width="1.4"/>
