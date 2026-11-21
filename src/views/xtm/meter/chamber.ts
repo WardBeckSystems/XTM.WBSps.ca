@@ -21,9 +21,9 @@ export const CHAMBER_GRADIENTS = `<linearGradient id="xch_top" x1="0" y1="0" x2=
           <stop offset="100%" stop-color="#000000" stop-opacity="0.50"/>
         </linearGradient>
         <linearGradient id="meterGlassSheenGrad" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0%" stop-color="#ffffff" stop-opacity="0.28"/>
-          <stop offset="35%" stop-color="#ffffff" stop-opacity="0.10"/>
-          <stop offset="65%" stop-color="#ffffff" stop-opacity="0.02"/>
+          <stop offset="0%" stop-color="#ffffff" stop-opacity="0.14"/>
+          <stop offset="35%" stop-color="#ffffff" stop-opacity="0.05"/>
+          <stop offset="65%" stop-color="#ffffff" stop-opacity="0.01"/>
           <stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
         </linearGradient>
         <!-- Outer Molded Bakelite / ABS Bezel Gradient -->
@@ -66,38 +66,49 @@ export function chamberShadows(x0: number, y0: number): string {
       <rect x="${x0 + 1}" y="${y0 + 1}" width="${MW - 2}" height="${MH - 2}" rx="5" fill="none" stroke="rgba(0,0,0,0.35)" stroke-width="2" pointer-events="none"/>
       <!-- Diagonal Specular Glass Reflection Sheen -->
       <path d="M ${x0 + 6} ${y0 + 6} L ${x0 + MW * 0.72} ${y0 + 6} L ${x0 + 6} ${y0 + MH * 0.82} Z" fill="url(#meterGlassSheenGrad)" pointer-events="none"/>
-      <rect x="${x0 + 6}" y="${(y0 + MH * 0.44).toFixed(1)}" width="${MW - 12}" height="1.6" fill="#ffffff" opacity="0.06" pointer-events="none"/>
+      <rect x="${x0 + 6}" y="${(y0 + MH * 0.44).toFixed(1)}" width="${MW - 12}" height="1.6" fill="#ffffff" opacity="0.03" pointer-events="none"/>
     </g>`;
 }
 
 /** 
  * Bezel assembly:
  * - Sleek modern hairline rim for Ward-Beck.com (.modern-bezel)
- * - 3D molded Bakelite bezel with lower skirt, horizontal seam & trimmer screw for Ward-Beck.ca & McCurdyRadio.ca (.vintage-bezel-3d)
+ * - 3D molded Bakelite bezel for McCurdyRadio.ca (.bezel-mc, full thickness)
+ * - 3D molded Bakelite bezel for Ward-Beck.ca (.bezel-wbs, 1/2 thickness of McCurdy)
  * Outer frame cutout has fill-rule="evenodd" so the meter aperture is 100% open and dials remain visible.
+ * Half-moon needle hub cowl removed per specification.
  */
 export function bezelRim(x0: number, y0: number, cx: number = x0 + MW / 2): string {
-  // Outer molded Bakelite bezel housing geometry (scaled to match vintage Simpson / McCurdy reference proportions)
-  const bx = cx - 304; // 608 wide, matches XTM front panel bay
-  const by = 47;
-  const bw = 608;
-  const bh = 360; // ends at y=407, clear of bottom rail extrusion 410.5
-  const br = 14;
+  // 1. McCurdyRadio.ca: Full-Thickness Molded Bakelite Bezel
+  const bx_mc = cx - 304; // 608 wide
+  const by_mc = 47;
+  const bw_mc = 608;
+  const bh_mc = 360; // ends at y=407
+  const br_mc = 14;
 
-  // Vintage window aperture geometry (proportions matching uploaded reference: window height ~59% of bezel height)
-  const wx = cx - 274; // 548 wide, leaves 30px side borders (~5% of bw)
+  const wx = cx - 274; // 548 wide, 30px side borders
   const wy = 65;
   const ww = 548;
-  const wh = 212; // ends at y=277, framing dial graphics with lower needle entrance
+  const wh = 212; // ends at y=277
   const wr = 7;
   const winBot = wy + wh; // 277
 
-  // Lower skirt geometry (skirt height ~54% of window height; seam separates window from skirt)
-  const seamY = 292; // 15px ridge below window
-  const screwY = 344; // vertically centered in 115px skirt (45.2% from seam to bottom)
+  const seamY_mc = 292;
+  const screwY_mc = 344;
 
-  // Molded housing body with hollow window aperture (evenodd fill rule so dial face remains completely visible)
-  const housingPath = `M ${bx + br} ${by} h ${bw - 2 * br} a ${br} ${br} 0 0 1 ${br} ${br} v ${bh - 2 * br} a ${br} ${br} 0 0 1 -${br} ${br} h -${bw - 2 * br} a ${br} ${br} 0 0 1 -${br} -${br} v -${bh - 2 * br} a ${br} ${br} 0 0 1 ${br} -${br} Z M ${wx + wr} ${wy} h ${ww - 2 * wr} a ${wr} ${wr} 0 0 1 ${wr} ${wr} v ${wh - 2 * wr} a ${wr} ${wr} 0 0 1 -${wr} ${wr} h -${ww - 2 * wr} a ${wr} ${wr} 0 0 1 -${wr} -${wr} v -${wh - 2 * wr} a ${wr} ${wr} 0 0 1 ${wr} -${wr} Z`;
+  const housingPathMc = `M ${bx_mc + br_mc} ${by_mc} h ${bw_mc - 2 * br_mc} a ${br_mc} ${br_mc} 0 0 1 ${br_mc} ${br_mc} v ${bh_mc - 2 * br_mc} a ${br_mc} ${br_mc} 0 0 1 -${br_mc} ${br_mc} h -${bw_mc - 2 * br_mc} a ${br_mc} ${br_mc} 0 0 1 -${br_mc} -${br_mc} v -${bh_mc - 2 * br_mc} a ${br_mc} ${br_mc} 0 0 1 ${br_mc} -${br_mc} Z M ${wx + wr} ${wy} h ${ww - 2 * wr} a ${wr} ${wr} 0 0 1 ${wr} ${wr} v ${wh - 2 * wr} a ${wr} ${wr} 0 0 1 -${wr} ${wr} h -${ww - 2 * wr} a ${wr} ${wr} 0 0 1 -${wr} -${wr} v -${wh - 2 * wr} a ${wr} ${wr} 0 0 1 ${wr} -${wr} Z`;
+
+  // 2. Ward-Beck.ca: 1/2 Border & Skirt Thickness Bezel (Side border = 15px, Top border = 9px, Skirt = 65px)
+  const bx_wbs = cx - 289; // 578 wide (leaves 15px side borders, 1/2 of 30px)
+  const by_wbs = 56;       // 9px top border (1/2 of 18px)
+  const bw_wbs = 578;
+  const bh_wbs = 286;      // ends at y=342 (skirt height = 65px, 1/2 of 130px)
+  const br_wbs = 8;
+
+  const seamY_wbs = 285;
+  const screwY_wbs = 314;
+
+  const housingPathWbs = `M ${bx_wbs + br_wbs} ${by_wbs} h ${bw_wbs - 2 * br_wbs} a ${br_wbs} ${br_wbs} 0 0 1 ${br_wbs} ${br_wbs} v ${bh_wbs - 2 * br_wbs} a ${br_wbs} ${br_wbs} 0 0 1 -${br_wbs} ${br_wbs} h -${bw_wbs - 2 * br_wbs} a ${br_wbs} ${br_wbs} 0 0 1 -${br_wbs} -${br_wbs} v -${bh_wbs - 2 * br_wbs} a ${br_wbs} ${br_wbs} 0 0 1 ${br_wbs} -${br_wbs} Z M ${wx + wr} ${wy} h ${ww - 2 * wr} a ${wr} ${wr} 0 0 1 ${wr} ${wr} v ${wh - 2 * wr} a ${wr} ${wr} 0 0 1 -${wr} ${wr} h -${ww - 2 * wr} a ${wr} ${wr} 0 0 1 -${wr} -${wr} v -${wh - 2 * wr} a ${wr} ${wr} 0 0 1 ${wr} -${wr} Z`;
 
   return `
     <!-- Modern Sleek Bezel (Ward-Beck.com / McCurdyRadio.com) -->
@@ -107,16 +118,16 @@ export function bezelRim(x0: number, y0: number, cx: number = x0 + MW / 2): stri
       <rect x="${x0}" y="${y0}" width="${MW}" height="${MH}" rx="28" fill="none" stroke="#0a0c0f" stroke-width="2.5"/>
     </g>
 
-    <!-- Vintage 3D Molded Bakelite Bezel Housing with Lower Skirt & Zero Trimmer (Ward-Beck.ca & McCurdyRadio.ca) -->
-    <g class="vintage-bezel-3d">
-      <!-- Molded Housing Body with Transparent Window Cutout (Bakelite Apron covers needle base) -->
-      <path fill-rule="evenodd" fill="url(#bezelMoldedGrad)" stroke="#090a0c" stroke-width="1.8" d="${housingPath}"/>
+    <!-- McCurdyRadio.ca Vintage 3D Molded Bakelite Bezel Housing (Full Thickness) -->
+    <g class="vintage-bezel-3d bezel-mc">
+      <!-- Molded Housing Body -->
+      <path fill-rule="evenodd" fill="url(#bezelMoldedGrad)" stroke="#090a0c" stroke-width="1.8" d="${housingPathMc}"/>
 
       <!-- Top Edge Specular Highlight Line -->
-      <path d="M ${bx + 16} ${by + 2} L ${bx + bw - 16} ${by + 2}" stroke="#484d56" stroke-width="1.4" stroke-linecap="round" pointer-events="none"/>
+      <path d="M ${bx_mc + 16} ${by_mc + 2} L ${bx_mc + bw_mc - 16} ${by_mc + 2}" stroke="#484d56" stroke-width="1.4" stroke-linecap="round" pointer-events="none"/>
 
       <!-- Molded Flange Perimeter Groove -->
-      <rect x="${bx + 6}" y="${by + 6}" width="${bw - 12}" height="${bh - 12}" rx="${br - 3}" fill="none" stroke="#25272c" stroke-width="1.0" pointer-events="none"/>
+      <rect x="${bx_mc + 6}" y="${by_mc + 6}" width="${bw_mc - 12}" height="${bh_mc - 12}" rx="${br_mc - 3}" fill="none" stroke="#25272c" stroke-width="1.0" pointer-events="none"/>
 
       <!-- Inner Stepped Recessed Window Frame Rim -->
       <rect x="${wx - 2}" y="${wy - 2}" width="${ww + 4}" height="${wh + 4}" rx="${wr + 2}" fill="none" stroke="#08090b" stroke-width="2.5" pointer-events="none"/>
@@ -128,24 +139,59 @@ export function bezelRim(x0: number, y0: number, cx: number = x0 + MW / 2): stri
       <rect x="${wx}" y="${wy}" width="16" height="${wh}" fill="url(#xch_left)" pointer-events="none"/>
       <rect x="${wx + ww - 16}" y="${wy}" width="16" height="${wh}" fill="url(#xch_right)" pointer-events="none"/>
       <path d="M ${wx + 6} ${wy + 6} L ${wx + ww * 0.65} ${wy + 6} L ${wx + 6} ${winBot - 12} Z" fill="url(#meterGlassSheenGrad)" pointer-events="none"/>
-      <rect x="${wx + 6}" y="${(wy + wh * 0.42).toFixed(1)}" width="${ww - 12}" height="1.6" fill="#ffffff" opacity="0.06" pointer-events="none"/>
-
-      <!-- Needle Movement Hub Cowl at Bottom Center of Window Aperture -->
-      <path d="M ${cx - 26} ${winBot} A 26 26 0 0 1 ${cx + 26} ${winBot} Z" fill="#14161a" stroke="#2c2f36" stroke-width="1.4" pointer-events="none"/>
-      <path d="M ${cx - 17} ${winBot} A 17 17 0 0 1 ${cx + 17} ${winBot} Z" fill="#0a0b0d" pointer-events="none"/>
+      <rect x="${wx + 6}" y="${(wy + wh * 0.42).toFixed(1)}" width="${ww - 12}" height="1.6" fill="#ffffff" opacity="0.03" pointer-events="none"/>
 
       <!-- Lower Skirt Molded Horizontal Seam Line -->
-      <line x1="${bx + 2}" y1="${seamY}" x2="${bx + bw - 2}" y2="${seamY}" stroke="#0c0d0f" stroke-width="2.0" pointer-events="none"/>
-      <line x1="${bx + 2}" y1="${seamY + 1.8}" x2="${bx + bw - 2}" y2="${seamY + 1.8}" stroke="#2c2f36" stroke-width="1.1" pointer-events="none"/>
+      <line x1="${bx_mc + 2}" y1="${seamY_mc}" x2="${bx_mc + bw_mc - 2}" y2="${seamY_mc}" stroke="#0c0d0f" stroke-width="2.0" pointer-events="none"/>
+      <line x1="${bx_mc + 2}" y1="${seamY_mc + 1.8}" x2="${bx_mc + bw_mc - 2}" y2="${seamY_mc + 1.8}" stroke="#2c2f36" stroke-width="1.1" pointer-events="none"/>
 
-      <!-- Mechanical Zero-Adjust Trimmer Screw Assembly in Center of Skirt (No Corner Screws) -->
-      <g class="trim-screw-interactive" transform="translate(${cx}, ${screwY})">
+      <!-- Mechanical Zero-Adjust Trimmer Screw Assembly in Center of Skirt -->
+      <g class="trim-screw-interactive" transform="translate(${cx}, ${screwY_mc})">
         <circle cx="0" cy="0" r="18" fill="#0d0e10" stroke="#2c2f36" stroke-width="1.3"/>
         <circle cx="0" cy="0" r="16.5" fill="none" stroke="#08090a" stroke-width="0.9"/>
         <g transform="rotate(-38)">
           <circle cx="0" cy="0" r="14.2" fill="url(#trimScrewHeadGrad)" stroke="#111214" stroke-width="1.1"/>
           <rect x="-12.5" y="-2.0" width="25" height="4.0" rx="0.9" fill="#090a0c"/>
           <line x1="-11.8" y1="2.1" x2="11.8" y2="2.1" stroke="#4e525b" stroke-width="0.8"/>
+        </g>
+      </g>
+    </g>
+
+    <!-- Ward-Beck.ca Vintage 3D Molded Bakelite Bezel Housing (1/2 Thickness of McCurdy) -->
+    <g class="vintage-bezel-3d bezel-wbs">
+      <!-- Molded Housing Body -->
+      <path fill-rule="evenodd" fill="url(#bezelMoldedGrad)" stroke="#090a0c" stroke-width="1.1" d="${housingPathWbs}"/>
+
+      <!-- Top Edge Specular Highlight Line -->
+      <path d="M ${bx_wbs + 10} ${by_wbs + 1.5} L ${bx_wbs + bw_wbs - 10} ${by_wbs + 1.5}" stroke="#484d56" stroke-width="1.0" stroke-linecap="round" pointer-events="none"/>
+
+      <!-- Molded Flange Perimeter Groove -->
+      <rect x="${bx_wbs + 4}" y="${by_wbs + 4}" width="${bw_wbs - 8}" height="${bh_wbs - 8}" rx="${br_wbs - 2}" fill="none" stroke="#25272c" stroke-width="0.8" pointer-events="none"/>
+
+      <!-- Inner Stepped Recessed Window Frame Rim -->
+      <rect x="${wx - 1.5}" y="${wy - 1.5}" width="${ww + 3}" height="${wh + 3}" rx="${wr + 1}" fill="none" stroke="#08090b" stroke-width="1.6" pointer-events="none"/>
+      <rect x="${wx}" y="${wy}" width="${ww}" height="${wh}" rx="${wr}" fill="none" stroke="#2b2e34" stroke-width="1.0" stroke-opacity="0.85" pointer-events="none"/>
+
+      <!-- Window Inner Shadows & Specular Glass Reflection Sheen -->
+      <rect x="${wx}" y="${wy}" width="${ww}" height="18" fill="url(#xch_top)" pointer-events="none"/>
+      <rect x="${wx}" y="${winBot - 14}" width="${ww}" height="14" fill="url(#xch_bot)" pointer-events="none"/>
+      <rect x="${wx}" y="${wy}" width="12" height="${wh}" fill="url(#xch_left)" pointer-events="none"/>
+      <rect x="${wx + ww - 12}" y="${wy}" width="12" height="${wh}" fill="url(#xch_right)" pointer-events="none"/>
+      <path d="M ${wx + 6} ${wy + 6} L ${wx + ww * 0.65} ${wy + 6} L ${wx + 6} ${winBot - 12} Z" fill="url(#meterGlassSheenGrad)" pointer-events="none"/>
+      <rect x="${wx + 6}" y="${(wy + wh * 0.42).toFixed(1)}" width="${ww - 12}" height="1.6" fill="#ffffff" opacity="0.03" pointer-events="none"/>
+
+      <!-- Lower Skirt Molded Horizontal Seam Line -->
+      <line x1="${bx_wbs + 2}" y1="${seamY_wbs}" x2="${bx_wbs + bw_wbs - 2}" y2="${seamY_wbs}" stroke="#0c0d0f" stroke-width="1.4" pointer-events="none"/>
+      <line x1="${bx_wbs + 2}" y1="${seamY_wbs + 1.2}" x2="${bx_wbs + bw_wbs - 2}" y2="${seamY_wbs + 1.2}" stroke="#2c2f36" stroke-width="0.8" pointer-events="none"/>
+
+      <!-- Mechanical Zero-Adjust Trimmer Screw Assembly in Center of Skirt -->
+      <g class="trim-screw-interactive" transform="translate(${cx}, ${screwY_wbs})">
+        <circle cx="0" cy="0" r="13" fill="#0d0e10" stroke="#2c2f36" stroke-width="1.0"/>
+        <circle cx="0" cy="0" r="11.8" fill="none" stroke="#08090a" stroke-width="0.7"/>
+        <g transform="rotate(-38)">
+          <circle cx="0" cy="0" r="10.2" fill="url(#trimScrewHeadGrad)" stroke="#111214" stroke-width="0.9"/>
+          <rect x="-8.5" y="-1.5" width="17" height="3.0" rx="0.6" fill="#090a0c"/>
+          <line x1="-8.0" y1="1.6" x2="8.0" y2="1.6" stroke="#4e525b" stroke-width="0.6"/>
         </g>
       </g>
     </g>`;

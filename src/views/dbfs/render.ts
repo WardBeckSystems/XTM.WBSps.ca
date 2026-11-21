@@ -38,10 +38,9 @@ export function renderFrame(v: DbfsView, _model: XtmModel, levels: MeterFrameTel
     v._lastHoveringLime = v.isHoveringLime;
   }
 
-  // Graph is drawn at 1/2 frame rate (~30 FPS) since it displays historical audio.
-  // The leading dots on the right edge update at full 100% frame rate (60/120 FPS).
+  // Graph and leading indicators update synchronously every frame for rock-solid stability and zero flicker.
   v.renderFrameCount = (v.renderFrameCount || 0) + 1;
-  const shouldUpdateGraph = v.graphDirty || (v.renderFrameCount % 2 === 0);
+  const shouldUpdateGraph = true;
 
   const L = computeLayout(v);
 

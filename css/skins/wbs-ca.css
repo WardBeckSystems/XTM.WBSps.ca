@@ -13,6 +13,9 @@
 .vintage-bezel-3d {
   display: none;
 }
+.bezel-mc, .bezel-wbs {
+  display: none;
+}
 .modern-bezel {
   display: inline;
 }
@@ -34,8 +37,12 @@ body.theme-wbs-ca .wbs-ca-only {
   display: inline;
 }
 
-body.theme-wbs-ca .vintage-bezel-3d {
+body.theme-wbs-ca .vintage-bezel-3d.bezel-wbs {
   display: inline !important;
+}
+
+body.theme-wbs-ca .vintage-bezel-3d.bezel-mc {
+  display: none !important;
 }
 
 body.theme-wbs-ca .modern-bezel {
@@ -149,14 +156,19 @@ body:not(.theme-wbs-ca):not(.theme-mccurdy):not(.theme-mccurdy-dark) .wbs-modern
 
 /* ---------------------------------------------------------------
    WBS Wink Switch Selector Cluster (Ward-Beck.ca)
-   - Shutter aperture mechanics from https://like.audio/20260116/winkbutton-widget-documentation/
-   - Responsive peek on hover
-   - Latching animated shutter retraction revealing radiant neon green aperture
+   - Continuous 4-gang interlocking push switch bank
+   - Depresses / pushes downward when selected
+   - Illuminated neon green core with etched numeral & source
    --------------------------------------------------------------- */
 .wink-switch {
   cursor: pointer;
   user-select: none;
   -webkit-user-select: none;
+}
+
+.wink-switch .wink-button-cap {
+  transition: transform 0.16s cubic-bezier(0.2, 0.9, 0.3, 1), filter 0.12s ease;
+  transform-box: fill-box;
 }
 
 .wink-switch .wink-shutter-top,
@@ -166,6 +178,9 @@ body:not(.theme-wbs-ca):not(.theme-mccurdy):not(.theme-mccurdy-dark) .wbs-modern
 }
 
 /* Hover peek effect when inactive */
+.wink-switch:not(.wink-open):hover .wink-button-cap {
+  transform: translateY(1.5px);
+}
 .wink-switch:not(.wink-open):hover .wink-shutter-top {
   transform: translateY(-22%);
 }
@@ -176,7 +191,10 @@ body:not(.theme-wbs-ca):not(.theme-mccurdy):not(.theme-mccurdy-dark) .wbs-modern
   opacity: 0.35;
 }
 
-/* Active open eye state (shutter blades retract) */
+/* Active open eye state (shutter blades retract & button pushes downward) */
+.wink-switch.wink-open .wink-button-cap {
+  transform: translateY(4.5px);
+}
 .wink-switch.wink-open .wink-shutter-top {
   transform: translateY(-110%);
 }
@@ -197,7 +215,12 @@ body:not(.theme-wbs-ca):not(.theme-mccurdy):not(.theme-mccurdy-dark) .wbs-modern
   stroke: #86efac;
   stroke-width: 1.8;
 }
-.wink-switch:active {
+.wink-switch.wink-open .wink-depressed-shadow {
+  opacity: 1;
+}
+
+.wink-switch:active .wink-button-cap {
+  transform: translateY(6px) !important;
   filter: brightness(0.92);
 }
 

@@ -16,6 +16,7 @@ import { lampHasBloom } from '../skins/lamps/index';
 import { renderWbsFaceLogo } from '../skins/wbs/face-logo';
 import { renderMcCurdyVuBadge } from '../skins/mccurdy/vu-badge';
 import { chamberShadows, bezelRim } from './chamber';
+import { renderGlassShatter } from './shatter';
 
 export function renderMeterShell(id: number, cx: number, cy: number, kind: 'vu' | 'ppm', isPowered: boolean,
                                  dialLamp: string, isBlackPpm: boolean, meterStyle: string, ppmStandard: string): string {
@@ -47,21 +48,28 @@ export function renderMeterShell(id: number, cx: number, cy: number, kind: 'vu' 
     s += renderPpmFace(ctx, ppmStandard, isBlackPpm);
   }
 
-  // Lower half of the face: Custom style face logo OR default WBS / McCurdy logo
-  if (style.faceLogo) {
-    s += style.faceLogo(cx, cy, ink);
-  } else {
-    s += renderWbsFaceLogo(cx, cy, ink);
-    if (kind === 'vu' && !isBlackPpm) {
-      s += renderMcCurdyVuBadge(cx, cy, ink);
-    }
-  }
+  // Lower half of the face: Brand logos ALWAYS correspond to the active page theme!
+  // Clicking either logo cycles the meter styles. The logo remains with its theme page and does not swap brand.
+  s += `<g class="wbs-only dial-logo-interactive" data-action="cycle-meter-style" style="cursor: pointer;">
+          <title>Click to cycle meter styles (Ward-Beck)</title>
+          ${renderWbsFaceLogo(cx, cy, ink)}
+        </g>`;
+  s += `<g class="mc-only dial-logo-interactive" data-action="cycle-meter-style" style="cursor: pointer;">
+          <title>Click to cycle meter styles (McCurdy)</title>
+          ${renderMcCurdyVuBadge(cx, cy, ink)}
+        </g>`;
 
   // Hardware-accelerated rotating needle assembly
   const needle = isPpm ? style.ppmNeedle(px, py, R) : style.vuNeedle(px, py, R);
   s += renderNeedleGroup(id, restAngle(isSifam), px, py, needle);
 
   s += chamberShadows(x0, y0);
+
+  // VU Meter Shattered Glass Fracture Overlay (for VU meters 0 and 2)
+  if (kind === 'vu' && !isBlackPpm) {
+    s += renderGlassShatter(cx, cy, id);
+  }
+
   s += bezelRim(x0, y0, cx);
   return s;
 }

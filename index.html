@@ -164,7 +164,7 @@
             </svg>
             <span class="footer-btn-text mc-com-text">McCurdyRadio.com</span>
           </button>
-          <span class="build-stamp" style="font-size: 0.7em; opacity: 0.6; margin-left: 12px;">v1.0.36</span>
+          <span class="build-stamp" style="font-size: 0.7em; opacity: 0.6; margin-left: 12px;">v1.0.40</span>
         </div>
       </summary>
 
@@ -697,17 +697,17 @@
     var ptr = document.getElementById("wbs_vintage_knob_pointer");
     var rotor = document.getElementById("wbs_vintage_knob_rotor");
     if (ptr) ptr.setAttribute("transform", "rotate(" + vintageKnobAngle.toFixed(1) + ")");
-    if (rotor) rotor.setAttribute("transform", "translate(7, 9) rotate(" + vintageKnobAngle.toFixed(1) + ")");
+    if (rotor) rotor.setAttribute("transform", "rotate(" + vintageKnobAngle.toFixed(1) + ")");
     try {
       localStorage.setItem("xtm.wbs_vintage_knob", vintageKnobAngle.toFixed(1));
     } catch (e) {}
   }
 
   function updateMcCurdyKnob(angle) {
-    mcKnobAngle = Math.max(-168.75, Math.min(168.75, angle));
+    mcKnobAngle = Math.max(-135, Math.min(135, angle));
     var mcRotor = document.getElementById("mccurdy_vintage_knob_rotor");
     if (mcRotor) {
-      var cx = mcRotor.getAttribute("data-cx") || "1545";
+      var cx = mcRotor.getAttribute("data-cx") || "1580";
       var cy = mcRotor.getAttribute("data-cy") || "215";
       mcRotor.setAttribute("transform", "translate(" + cx + ", " + cy + ") rotate(" + mcKnobAngle.toFixed(1) + ")");
     }
@@ -792,7 +792,7 @@
     if (knob) {
       updateVintageKnob(vintageKnobAngle + delta);
     } else if (mcKnob) {
-      var mcStep = (e.shiftKey) ? 2.5 : 11.25; // 11.25 deg per attenuator notch (31 steps)
+      var mcStep = (e.shiftKey) ? 1.8 : 9.0; // 9 deg per attenuator notch (31 steps spanning 270 deg)
       var mcDelta = (e.deltaY < 0) ? mcStep : -mcStep;
       updateMcCurdyKnob(mcKnobAngle + mcDelta);
     }
@@ -809,8 +809,8 @@
       if (nextAngle > 108) nextAngle = -180;
       updateVintageKnob(nextAngle);
     } else if (mcKnob) {
-      var nextMcAngle = mcKnobAngle + 11.25;
-      if (nextMcAngle > 168.75) nextMcAngle = -168.75;
+      var nextMcAngle = mcKnobAngle + 9.0;
+      if (nextMcAngle > 135) nextMcAngle = -135;
       updateMcCurdyKnob(nextMcAngle);
     }
   });

@@ -12,7 +12,6 @@ export interface AudioSync {
   isAudioStarted: boolean;
   /** Last routed "mode:source" key; a change means the source (re)connected. */
   lastModeKey: string | null;
-  nudgeSens(m: any): void;
   syncAudioWithHardwareMode(m: any): Promise<void>;
 }
 
@@ -23,34 +22,15 @@ export function createAudioSync(ctx: AppContext, refs: DrawerControls): AudioSyn
   const state: AudioSync = {
     isAudioStarted: false,
     lastModeKey: null,
-    nudgeSens,
     syncAudioWithHardwareMode
   };
-
-  // Whenever the input changes, step SENS up one value then back down one value
-  // (exactly like pressing UP then DOWN) to re-prime the audio engine's level chain.
-  let sensNudging = false;
-  function nudgeSens(m: any) {
-    if (sensNudging || !m.power || (m.mode !== 'A' && m.mode !== 'D')) return;
-    const st = m.mode === 'A' ? m.a : m.d;
-    const atTop = st.lvl >= 90;
-    sensNudging = true;
-    setTimeout(() => {
-      if (atTop) m.pressDown(); else m.pressUp();
-      setTimeout(() => {
-        if (atTop) m.pressUp(); else m.pressDown();
-        sensNudging = false;
-      }, 180);
-    }, 120);
-  }
 
   async function syncAudioWithHardwareMode(m: any) {
     const before = state.lastModeKey;
     await syncAudioCore(m);
     if (state.lastModeKey !== before) {
-      // Source just (re)connected: re-assert the reference level, then step SENS up/down.
+      // Source just (re)connected: re-assert the reference level
       audio.setReferenceLevel(m.getActiveReferenceLevel(), m.mode === 'D');
-      nudgeSens(m);
     }
   }
 

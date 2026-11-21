@@ -116,8 +116,4 @@ export function stopCurrentSource(engine: XtmAudioEngine): void {
   }
   engine.sourceType = 'none';
   engine.isSystemAudio = false;
-
-  // Reset levels
-  clearLufsAccumulators(engine.lufsState);
-  engine.currentLevels = createCurrentLevels();
 }

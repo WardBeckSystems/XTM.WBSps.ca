@@ -76,6 +76,8 @@ export class DbfsView {
   envR: number = -60;
   envSum: number = -60;
   envDiff: number = -60;
+  envLufsM: number = -60;
+  envLufsS: number = -60;
   normL: number = -60;
   normR: number = -60;
   normSum: number = -60;

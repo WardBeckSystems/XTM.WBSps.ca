@@ -100,7 +100,7 @@ export function computeLit(
 ): LitMap {
   const lit = emptyLitMap(st.minP, st.maxP);
 
-  if (powered && levels.hasAudio) {
+  if (powered) {
     for (let ch = 0; ch < 2; ch++) {
       const curDb = applyBallistics(st, ch, targetDbFor(st, levels, ch), dt);
 

@@ -23,6 +23,8 @@ export class XtmModel {
   public d: XtmModeStateD = { src: 1, lvl: 42 }; // lvl 42 = -18 dBFS (0 VU Standard Reference)
   public s: XtmModeStateS = { pair: [1] };       // S1..S4 (1kHz, Pink Noise, 400Hz, Sweep)
   public selectedInput: number = 1;             // 1..4 (Hardware Selector Switch)
+  public mcRangeMode: 'outer' | 'inner' | 'cal' = 'outer'; // McCurdy Range Selector Switch
+  public mcAttenuatorStep: number = 15;         // 0..30 (McCurdy 31-step Attenuator, step 15 = -20 outer / 0 inner)
 
   public hp: number = 0;   // 0 = HP OUT, 1 = HP IN (80Hz rumble cut)
   public term: number = 0; // 0 = TERM HZ, 1 = TERM LZ (600 Ohm load)
@@ -235,6 +237,74 @@ export class XtmModel {
       this.mode = 'S';
       this.s.pair[0] = 1;
       this.flash('INPUT 4');
+    }
+    this.saveEEPROM();
+    this.notify();
+  }
+
+  public getMcCurdySensitivityDb(): number {
+    if (this.mcRangeMode === 'cal') return 4;
+    if (this.mcRangeMode === 'inner') {
+      return -30 + this.mcAttenuatorStep * 2;
+    }
+    return -50 + this.mcAttenuatorStep * 2;
+  }
+
+  public setMccurdyRange(mode: 'outer' | 'inner' | 'cal'): void {
+    if (!this.power) return;
+    this.mcRangeMode = mode;
+    this.applyMccurdySensitivity();
+  }
+
+  public toggleMccurdyRange(): void {
+    if (!this.power) return;
+    if (this.mcRangeMode === 'outer') {
+      this.mcRangeMode = 'inner';
+    } else if (this.mcRangeMode === 'inner') {
+      this.mcRangeMode = 'outer';
+    } else {
+      this.mcRangeMode = 'outer';
+    }
+    this.applyMccurdySensitivity();
+  }
+
+  public setMccurdyAttenuatorStep(step: number): void {
+    if (!this.power) return;
+    this.mcAttenuatorStep = Math.max(0, Math.min(30, Math.round(step)));
+    if (this.mcRangeMode === 'cal') {
+      this.mcRangeMode = 'outer';
+    }
+    this.applyMccurdySensitivity();
+  }
+
+  public setSensitivityDb(db: number): void {
+    if (!this.power) return;
+    const lvl = Math.max(0, Math.min(90, Math.round(db + 60)));
+    this.a.lvl = lvl;
+    this.d.lvl = lvl;
+    if (this.mcRangeMode === 'inner') {
+      const step = (db - (-30)) / 2;
+      if (step >= 0 && step <= 30) this.mcAttenuatorStep = Math.round(step);
+    } else if (this.mcRangeMode === 'outer') {
+      const step = (db - (-50)) / 2;
+      if (step >= 0 && step <= 30) this.mcAttenuatorStep = Math.round(step);
+    }
+    this.flash('SENS ' + this.lvlChars(lvl));
+    this.saveEEPROM();
+    this.notify();
+  }
+
+  public applyMccurdySensitivity(): void {
+    const db = this.getMcCurdySensitivityDb();
+    const lvl = Math.max(0, Math.min(90, Math.round(db + 60)));
+    this.a.lvl = lvl;
+    this.d.lvl = lvl;
+    if (this.mcRangeMode === 'cal') {
+      this.flash('CAL +4dBu');
+    } else {
+      const modeLabel = this.mcRangeMode === 'outer' ? 'OUT' : 'IN ';
+      const dbStr = (db > 0 ? '+' : '') + db;
+      this.flash(`${modeLabel} ${dbStr}dB`);
     }
     this.saveEEPROM();
     this.notify();

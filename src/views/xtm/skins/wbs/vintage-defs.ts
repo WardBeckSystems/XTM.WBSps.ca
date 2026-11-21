@@ -205,4 +205,11 @@ export const WBS_VINTAGE_DEFS = `
   <filter id="winkButtonShadow" x="-20%" y="-20%" width="140%" height="140%">
     <feDropShadow dx="0" dy="3" stdDeviation="2.5" flood-color="#000000" flood-opacity="0.45" />
   </filter>
+
+  <!-- Top Inset Shadow when Button is Depressed / Pushed Down -->
+  <linearGradient id="depressedShadowGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+    <stop offset="0%" stop-color="#000000" stop-opacity="0.85" />
+    <stop offset="60%" stop-color="#000000" stop-opacity="0.30" />
+    <stop offset="100%" stop-color="#000000" stop-opacity="0.0" />
+  </linearGradient>
 `;

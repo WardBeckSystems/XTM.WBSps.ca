@@ -21,8 +21,7 @@ export function renderPhaseLedRow(): string {
     const cy = PHASE_LED.cy;
     ps += `
               <circle class="wbs-only" cx="${cx}" cy="${cy}" r="22" fill="#08090a" stroke="#25282f" stroke-width="2"/>
-              <circle class="wbs-only" id="xphase_led_${i}" cx="${cx}" cy="${cy}" r="17" fill="#142e17"/>
-              <rect class="mc-only" id="xphase_ledr_${i}" x="${(cx-12).toFixed(1)}" y="${(cy-8).toFixed(1)}" width="24" height="16" fill="#4a1a17"/>`;
+              <circle class="wbs-only" id="xphase_led_${i}" cx="${cx}" cy="${cy}" r="17" fill="#142e17"/>`;
   }
   return ps;
 }

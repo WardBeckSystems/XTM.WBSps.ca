@@ -45,15 +45,13 @@ export function startFrameLoop(ctx: AppContext, recorder: TelemetryRecorder): vo
     // > -24 LUFS: Green glow, > -18 LUFS: Orange glow, >= -12 LUFS: Red glow & red background
     if (viewportEl) {
       const curLufs = (levels && levels.lufs && typeof levels.lufs.m === 'number') ? levels.lufs.m : -60;
-      if (levels.hasAudio && isFinite(curLufs)) {
+      if (isFinite(curLufs) && curLufs > -24) {
         if (curLufs >= -12) {
           viewportEl.className = 'console-viewport lufs-glow-red';
         } else if (curLufs >= -18) {
           viewportEl.className = 'console-viewport lufs-glow-orange';
-        } else if (curLufs > -24) {
-          viewportEl.className = 'console-viewport lufs-glow-green';
         } else {
-          viewportEl.className = 'console-viewport';
+          viewportEl.className = 'console-viewport lufs-glow-green';
         }
       } else {
         viewportEl.className = 'console-viewport';

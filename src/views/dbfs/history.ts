@@ -47,6 +47,8 @@ export function clearHistory(v: DbfsView): void {
   v.envR = -60;
   v.envSum = -60;
   v.envDiff = -60;
+  v.envLufsM = -60;
+  v.envLufsS = -60;
   v.normL = -60;
   v.normR = -60;
   v.normSum = -60;
@@ -94,6 +96,15 @@ export function pushSample(v: DbfsView, dbL: number, dbR: number, lufsM: number,
   v.normSum += alphaNorm * (v.envSum - v.normSum);
   v.normDiff += alphaNorm * (v.envDiff - v.normDiff);
 
+  // Loudness Envelope Follower with Instant Attack & Physically-Bounded Release:
+  // BS.1770 momentary loudness (400ms) has a physical decay bound of ~15-25 dB/sec.
+  // Instantaneous attack captures immediate upward jumps; decay limit eliminates 1-frame
+  // disconnect notches, buffer dropouts, and artificial flickering.
+  const decayM = 30 * dt;
+  const decayS = 10 * dt;
+  v.envLufsM = (v.envLufsM === undefined || v.count === 0) ? vM : ((vM >= v.envLufsM) ? vM : Math.max(-60, v.envLufsM - decayM));
+  v.envLufsS = (v.envLufsS === undefined || v.count === 0) ? vS : ((vS >= v.envLufsS) ? vS : Math.max(-60, v.envLufsS - decayS));
+
   v.histL[v.head] = v.envL;
   v.histR[v.head] = v.envR;
   v.histSum[v.head] = v.envSum;
@@ -102,8 +113,8 @@ export function pushSample(v: DbfsView, dbL: number, dbR: number, lufsM: number,
   v.histNormR[v.head] = v.normR;
   v.histNormSum[v.head] = v.normSum;
   v.histNormDiff[v.head] = v.normDiff;
-  v.histLufsM[v.head] = vM;
-  v.histLufsS[v.head] = vS;
+  v.histLufsM[v.head] = v.envLufsM;
+  v.histLufsS[v.head] = v.envLufsS;
   v.histLufsI[v.head] = vI;
   v.histPhase[v.head] = vP;
 
