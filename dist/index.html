@@ -16,7 +16,7 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Ward-Beck Systems">
-  <script type="module" crossorigin src="./assets/index-CGuXS53l.js"></script>
+  <script type="module" crossorigin src="./assets/index-Bi6YuQDq.js"></script>
   <link rel="stylesheet" crossorigin href="./assets/index-DFTLTgKg.css">
 </head>
 <body class="">
@@ -572,7 +572,7 @@
 
     var meta = document.querySelector('meta[name="theme-color"]');
     if (meta) {
-      var themeColor = isMcLight ? "#dedad0" : (isMcDark ? "#0d172a" : (isWbsCa ? "#2c4454" : "#07080a"));
+      var themeColor = isMcLight ? "#dedad0" : (isMcDark ? "#0d172a" : (isWbsCa ? "#161c35" : "#07080a"));
       meta.setAttribute("content", themeColor);
     }
   }
@@ -589,7 +589,7 @@
   function cycleWardBeckStyle() {
     var select = document.getElementById("selectMeterStyle");
     if (!select) return;
-    var styles = ["wbs_m405", "simpson", "sifam"];
+    var styles = ["wbs_m405", "simpson", "sifam", "mccurdy_vu"];
     var currentIdx = styles.indexOf(select.value);
     var nextStyle = styles[(currentIdx + 1) % styles.length];
     select.value = nextStyle;
