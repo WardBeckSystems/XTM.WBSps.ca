@@ -389,8 +389,8 @@ export class XtmView {
       // Update main attenuator knob rotor pointer position
       const rotor = this.container?.querySelector<SVGElement>('#mccurdy_vintage_knob_rotor');
       if (rotor) {
-        const cx = rotor.getAttribute('data-cx') || '1580';
-        const cy = rotor.getAttribute('data-cy') || '215';
+        const cx = rotor.getAttribute('data-cx') || '1600';
+        const cy = rotor.getAttribute('data-cy') || '162';
         const angle = (mcStep - 15) * 9;
         rotor.setAttribute('transform', `translate(${cx}, ${cy}) rotate(${angle.toFixed(1)})`);
       }
