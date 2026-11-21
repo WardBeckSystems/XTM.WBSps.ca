@@ -1,19 +1,17 @@
 /*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.ca). All rights reserved. */
 /**
- * McCurdy Folded Sheet Metal Faceplate:
- * - Baked enamel folded sheet metal chassis with top and bottom ventilation louvers.
- * - Flush meter windows (no bezels, no rack mounts).
- * - Sourced from wbs_mccurdy_dual_channel_19_2u_metering_panel.html and mccurdy-ats-2v2.svg specifications.
+ * McCurdy ATS-100 faceplate (light mode), shown only when <body class="theme-mccurdy">.
+ * Meters, LEDs, VFD and ballistics are untouched; this only swaps the panel around them.
  */
-import { VW, VH } from '../../layout/wbs-layout';
-import { MC_LEGENDS } from '../../layout/mccurdy-layout';
+import { VW, VH, MW, MH, MX, MYc } from '../../layout/wbs-layout';
+import { MC_BEZEL, MC_LEGENDS } from '../../layout/mccurdy-layout';
 
 const PANEL_DEFS = `<defs>
         <linearGradient id="mc_panel" x1="0" y1="0" x2="0" y2="1">
           <stop offset="0%" stop-color="#e5e1d5"/><stop offset="50%" stop-color="#dedad0"/><stop offset="100%" stop-color="#d2cec2"/>
         </linearGradient>
-        <linearGradient id="mc_top_rim" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stop-color="#4e738a" /><stop offset="75%" stop-color="#3b5a6e" /><stop offset="100%" stop-color="#294150" />
+        <linearGradient id="mc_bezel" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#2a2a2c"/><stop offset="100%" stop-color="#141416"/>
         </linearGradient>
         <linearGradient id="mc_blue" x1="0" y1="0" x2="0" y2="1">
           <stop offset="0%" stop-color="#4ba7e8"/><stop offset="100%" stop-color="#3892d4"/>
@@ -27,22 +25,24 @@ const PANEL_DEFS = `<defs>
         </filter>
       </defs>`;
 
-/** Generates realistic perforated ventilation louvers across the folded sheet metal */
-function ventSlots(w: number, y: number, h: number, count: number): string {
-  let s = '';
-  const startX = 36;
-  const availW = w - 72;
-  const slotW = availW / count;
-  for (let i = 0; i < count; i++) {
-    const x = startX + i * slotW;
-    s += `<rect x="${(x + 4).toFixed(1)}" y="${y}" width="${(slotW - 8).toFixed(1)}" height="${h}" rx="2.5" />`;
-  }
-  return s;
+/** Black stepped bezel behind one meter window */
+function bezel(cx: number): string {
+  const { bx, by } = MC_BEZEL;
+  const x0 = cx - MW / 2 - bx, y0 = MYc - MH / 2 - by;
+  const w = MW + 2 * bx, h = MH + 2 * by;
+  return `<g filter="url(#mc_shadow)">
+        <rect x="${x0}" y="${y0}" width="${w}" height="${h}" rx="4" fill="url(#mc_bezel)" stroke="#0d0d0e" stroke-width="2"/>
+        <polygon points="${x0},${y0} ${x0 + w},${y0} ${x0 + w - bx},${y0 + by} ${x0 + bx},${y0 + by}" fill="#36373a"/>
+        <polygon points="${x0},${y0 + h} ${x0 + w},${y0 + h} ${x0 + w - bx},${y0 + h - by} ${x0 + bx},${y0 + h - by}" fill="#111113"/>
+        <polygon points="${x0},${y0} ${x0 + bx},${y0 + by} ${x0 + bx},${y0 + h - by} ${x0},${y0 + h}" fill="#232426"/>
+        <polygon points="${x0 + w},${y0} ${x0 + w - bx},${y0 + by} ${x0 + w - bx},${y0 + h - by} ${x0 + w},${y0 + h}" fill="#191a1c"/>
+        <rect x="${x0 + bx}" y="${y0 + by}" width="${MW}" height="${MH}" fill="#0e0e10"/>
+      </g>`;
 }
 
 /** INPUT 1 / INPUT 2 legend with hairlines between each meter pair */
 function legend(cx: number, label: string, x0: number | null): string {
-  const ly = VH - 38;
+  const ly = VH - 26;
   return `
       ${x0 === null ? '' : `<line x1="${x0}" y1="${ly}" x2="${cx - 70}" y2="${ly}" stroke="#5c5952" stroke-width="1.5"/>`}
       <line x1="${cx + 70}" y1="${ly}" x2="${cx + 600}" y2="${ly}" stroke="#5c5952" stroke-width="1.5"/>
@@ -53,30 +53,12 @@ export function renderMcCurdyPanel(): string {
   const W = VW, H = VH;
   let s = `<g class="mc-only">
       ${PANEL_DEFS}
+      <rect x="1" y="1" width="${W - 2}" height="${H - 2}" rx="6" fill="url(#mc_panel)" stroke="#b5b1a6" stroke-width="2"/>
+      <line x1="4" y1="3" x2="${W - 4}" y2="3" stroke="#ffffff" stroke-opacity="0.7" stroke-width="2"/>`;
 
-      <!-- Main Folded Sheet Metal Faceplate -->
-      <rect class="mc-panel-bg" x="0" y="24" width="${W}" height="${H - 48}" fill="url(#mc_panel)" stroke="#b5b1a6" stroke-width="2"/>
-      <line x1="0" y1="26" x2="${W}" y2="26" stroke="#ffffff" stroke-opacity="0.75" stroke-width="2"/>
+  for (const cx of MX) s += bezel(cx);
 
-      <!-- Top Perforated Ventilation Cover Rim (y = 0..24) -->
-      <rect class="mc-top-rim" x="0" y="0" width="${W}" height="24" fill="url(#mc_top_rim)" />
-      <line x1="0" y1="23.5" x2="${W}" y2="23.5" stroke="#182832" stroke-width="1.6" />
-      <line x1="0" y1="25.5" x2="${W}" y2="25.5" stroke="#628aa1" stroke-width="1.0" stroke-opacity="0.6" />
-      <g class="mc-top-vents" fill="#141e26" opacity="0.85">${ventSlots(W, 5, 14, 56)}</g>
-
-      <!-- Bottom Ventilation Louver Strip (y = H-24..H) -->
-      <rect class="mc-bottom-rim" x="0" y="${H - 24}" width="${W}" height="24" fill="#202c36" />
-      <line x1="0" y1="${H - 24.5}" x2="${W}" y2="${H - 24.5}" stroke="#10171d" stroke-width="1.6" />
-      <g class="mc-bottom-vents" fill="#0d1318">${ventSlots(W, H - 19, 14, 56)}</g>
-
-      <!-- Authentic McCurdy Brand Cartouche & Model Title on Panel Face -->
-      <g class="mc-panel-brand" transform="translate(48, 375)">
-        <rect x="0" y="0" width="112" height="34" rx="3" fill="none" stroke="#7a766d" stroke-width="1.4" />
-        <text x="56" y="23" font-family="'Arial Black', Helvetica, Arial, sans-serif" font-size="16" font-weight="900" letter-spacing="-0.6" text-anchor="middle" fill="none" stroke="#68655d" stroke-width="1.3">McCurdy</text>
-        <text x="126" y="23" font-family="'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="13" font-weight="600" letter-spacing="1.2" fill="#68655d">MODEL ATS-100</text>
-      </g>`;
-
-  s += legend(MC_LEGENDS.input1X, 'INPUT 1', 320) + legend(MC_LEGENDS.input2X, 'INPUT 2', MC_LEGENDS.input2LineX0);
+  s += legend(MC_LEGENDS.input1X, 'INPUT 1', null) + legend(MC_LEGENDS.input2X, 'INPUT 2', MC_LEGENDS.input2LineX0);
 
   s += `</g>`;
   return s;

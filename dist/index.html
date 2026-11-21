@@ -16,7 +16,7 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Ward-Beck Systems">
-  <script type="module" crossorigin src="./assets/index-od8Ri0Ph.js"></script>
+  <script type="module" crossorigin src="./assets/index-ypGRRw7p.js"></script>
   <link rel="stylesheet" crossorigin href="./assets/index-CJTqGYID.css">
 </head>
 <body class="">
@@ -107,11 +107,11 @@
             <span class="footer-btn-text mc-ca-text">McCurdyRadio.ca</span>
           </button>
 
-          <!-- 4. McCurdyRadio.com (Dark Navy) - Style toggle -->
-          <button type="button" class="footer-style-btn mc-btn-com" id="btnMcCurdyCom" title="McCurdy Radio Industries (McCurdyRadio.com) - Switch to McCurdy Dark Navy style" onclick="event.stopPropagation(); setMode('mccurdy-dark');">
+          <!-- 4. McCurdyRadio.com - Style toggle -->
+          <button type="button" class="footer-style-btn mc-btn-com" id="btnMcCurdyCom" title="McCurdy Radio Industries (McCurdyRadio.com) - Switch to McCurdy ATS-100 style" onclick="event.stopPropagation(); setMode('mccurdy-light');">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 154 54" width="56" height="20" aria-hidden="true" style="border-radius:4px;">
-              <rect x="2" y="2" width="150" height="50" rx="8" fill="#0d172a" stroke="#3892d4" stroke-width="4" />
-              <text x="77" y="37" font-family="'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="28" font-weight="800" text-anchor="middle" fill="#3892d4">McCurdy</text>
+              <rect x="2" y="2" width="150" height="50" rx="8" fill="#dedad0" stroke="#3892d4" stroke-width="4" />
+              <text x="77" y="37" font-family="'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="28" font-weight="800" text-anchor="middle" fill="#0d172a">McCurdy</text>
             </svg>
             <span class="footer-btn-text mc-com-text">McCurdyRadio.com</span>
           </button>
@@ -719,22 +719,19 @@
 <div id="mccurdyLogo" style="display:none;"></div>
 <script>
   // Domain self-awareness:
-  // mccurdyradio.ca  -> McCurdy light mode (ATS-100 cream faceplate)
-  // mccurdyradio.com -> McCurdy dark mode (dark navy #0d172a background & logo)
+  // mccurdyradio.ca / mccurdyradio.com -> McCurdy light mode (ATS-100 cream faceplate)
+  // ward-beck.ca -> Ward-Beck vintage slate-blue mode
   // ward-beck.* / wbsps.ca -> Ward-Beck dark mode
   // anywhere else (e.g. localhost) -> viewer's remembered preference
   var host = location.hostname;
-  var onMcCurdyCa = /(^|\.)mccurdyradio\.ca$/i.test(host);
-  var onMcCurdyCom = /(^|\.)mccurdyradio\.com$/i.test(host);
+  var onMcCurdy = /(^|\.)mccurdyradio\.(ca|com)$/i.test(host);
   var onWardBeckCa = /(^|\.)ward-beck\.ca$/i.test(host);
   var onWardBeckHost = /(^|\.)(ward-beck\.[a-z]+|wbsps\.ca)$/i.test(host);
 
   if (onWardBeckCa) {
     applyMode('wbs-ca');
-  } else if (onMcCurdyCa) {
+  } else if (onMcCurdy) {
     applyMode('mccurdy-light');
-  } else if (onMcCurdyCom) {
-    applyMode('mccurdy-dark');
   } else if (onWardBeckHost) {
     applyMode('wbs-dark');
   } else {
