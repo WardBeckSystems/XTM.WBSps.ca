@@ -28,12 +28,12 @@ const PANEL_DEFS = `<defs>
         </filter>
       </defs>`;
 
-/** Black stepped bezel behind one meter window */
+/** Black stepped bezel behind one meter window (ATS-100 console mode only) */
 function bezel(cx: number): string {
   const { bx, by } = MC_BEZEL;
   const x0 = cx - MW / 2 - bx, y0 = MYc - MH / 2 - by;
   const w = MW + 2 * bx, h = MH + 2 * by;
-  return `<g filter="url(#mc_shadow)">
+  return `<g class="mc-com-only" filter="url(#mc_shadow)">
         <rect x="${x0}" y="${y0}" width="${w}" height="${h}" rx="4" fill="url(#mc_bezel)" stroke="#0d0d0e" stroke-width="2"/>
         <polygon points="${x0},${y0} ${x0 + w},${y0} ${x0 + w - bx},${y0 + by} ${x0 + bx},${y0 + by}" fill="#36373a"/>
         <polygon points="${x0},${y0 + h} ${x0 + w},${y0 + h} ${x0 + w - bx},${y0 + h - by} ${x0 + bx},${y0 + h - by}" fill="#111113"/>

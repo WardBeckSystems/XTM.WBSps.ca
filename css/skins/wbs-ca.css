@@ -10,6 +10,12 @@
 .wbs-ca-only {
   display: none;
 }
+.vintage-bezel-3d {
+  display: none;
+}
+.modern-bezel {
+  display: inline;
+}
 
 body.theme-wbs-ca {
   --bg-deep: #111316;
@@ -26,6 +32,14 @@ html:has(body.theme-wbs-ca) {
 
 body.theme-wbs-ca .wbs-ca-only {
   display: inline;
+}
+
+body.theme-wbs-ca .vintage-bezel-3d {
+  display: inline !important;
+}
+
+body.theme-wbs-ca .modern-bezel {
+  display: none !important;
 }
 
 body.theme-wbs-ca .wbs-modern-only {
