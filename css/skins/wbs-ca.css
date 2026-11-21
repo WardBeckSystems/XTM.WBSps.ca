@@ -95,12 +95,3 @@ body:not(.theme-wbs-ca):not(.theme-mccurdy):not(.theme-mccurdy-dark) .wbs-modern
 .wbs-ac-pilot-lamp:hover {
   filter: brightness(1.15);
 }
-
-/* 3D Meter Bezel Trimmer Screw Hover Styling */
-.trim-screw {
-  cursor: pointer;
-  transition: filter 0.15s ease;
-}
-.trim-screw:hover {
-  filter: brightness(1.2);
-}

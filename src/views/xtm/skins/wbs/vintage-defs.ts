@@ -26,51 +26,6 @@ export const WBS_VINTAGE_DEFS = `
     <stop offset="100%" stop-color="#243846" />
   </linearGradient>
 
-  <!-- Outer Molded Black Bakelite / ABS Bezel Gradient -->
-  <linearGradient id="bezelMoldedGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-    <stop offset="0%" stop-color="#27292e" />
-    <stop offset="6%" stop-color="#1c1e22" />
-    <stop offset="50%" stop-color="#17181b" />
-    <stop offset="94%" stop-color="#121316" />
-    <stop offset="100%" stop-color="#0b0c0d" />
-  </linearGradient>
-
-  <!-- Bezel Inner Recessed Step Bevel -->
-  <linearGradient id="bezelInnerStepGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-    <stop offset="0%" stop-color="#0c0d0f" />
-    <stop offset="85%" stop-color="#1a1c20" />
-    <stop offset="100%" stop-color="#2b2e34" />
-  </linearGradient>
-
-  <!-- Top Window Shadow Cast by Bezel Overhang -->
-  <linearGradient id="windowTopShadow" x1="0%" y1="0%" x2="0%" y2="100%">
-    <stop offset="0%" stop-color="#000000" stop-opacity="0.45" />
-    <stop offset="35%" stop-color="#000000" stop-opacity="0.14" />
-    <stop offset="100%" stop-color="#000000" stop-opacity="0" />
-  </linearGradient>
-
-  <!-- Mechanical Zero-Adjust Trimmer Screw Head Radial Shading -->
-  <radialGradient id="trimScrewHeadGrad" cx="35%" cy="32%" r="68%">
-    <stop offset="0%" stop-color="#484b52" />
-    <stop offset="52%" stop-color="#232529" />
-    <stop offset="88%" stop-color="#131417" />
-    <stop offset="100%" stop-color="#0a0b0d" />
-  </radialGradient>
-
-  <!-- Four-Corner Molded Bezel Slotted Screws Radial Shading -->
-  <radialGradient id="mcScrewGrad" cx="35%" cy="35%" r="65%">
-    <stop offset="0%" stop-color="#555861"/>
-    <stop offset="45%" stop-color="#2d2f34"/>
-    <stop offset="85%" stop-color="#18191c"/>
-    <stop offset="100%" stop-color="#0b0c0d"/>
-  </radialGradient>
-
-  <!-- Housing Drop Shadow on Front Panel -->
-  <filter id="meterHousingShadow" x="-12%" y="-12%" width="124%" height="128%">
-    <feDropShadow dx="0" dy="10" stdDeviation="10" flood-color="#000000" flood-opacity="0.72" />
-    <feDropShadow dx="0" dy="2" stdDeviation="2.5" flood-color="#000000" flood-opacity="0.55" />
-  </filter>
-
   <!-- Enamel / Painted Off-White Front Panel -->
   <linearGradient id="panelGrad" x1="0%" y1="0%" x2="0%" y2="100%">
     <stop offset="0%" stop-color="#e5e3dc" />
