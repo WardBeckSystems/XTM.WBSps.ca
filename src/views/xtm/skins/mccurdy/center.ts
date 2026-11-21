@@ -233,8 +233,8 @@ export function renderMcCurdyCaCenter(): string {
         <!-- Silkscreen Scales Group (Inner -30 to +30, Outer -50 to +10) -->
         <g id="mc-knob-scales" ${font}>
           ${scaleTicks}
-          ${scaleInnerNums}
-          ${scaleOuterNums}
+          <g id="mc_scale_inner_group">${scaleInnerNums}</g>
+          <g id="mc_scale_outer_group">${scaleOuterNums}</g>
         </g>
 
         <!-- Silver Skirt Base Disc (r=96) with Inner Bevel Line -->
@@ -265,36 +265,53 @@ export function renderMcCurdyCaCenter(): string {
       </g>
 
       <!-- ================================================================= -->
-      <!-- RIGHT SECTION: RANGE SWITCH, MCCURDY SHIELD LOGO & TITLE MARKING  -->
+      <!-- RIGHT SECTION: TOGGLE RANGE SWITCH, MCCURDY SHIELD LOGO & TITLE   -->
       <!-- ================================================================= -->
       <g id="mc-right-controls" ${font}>
-        <!-- RANGE SWITCH Header & Range Position Markings -->
-        <text x="1785" y="78" font-size="11" font-weight="800" fill="#f8fafc" text-anchor="middle" letter-spacing="1.2">RANGE SWITCH</text>
-        <text x="1742" y="98" font-size="9.5" font-weight="700" fill="#cbd5e1" text-anchor="middle">-50 TO +10</text>
-        <text x="1828" y="98" font-size="9.5" font-weight="700" fill="#cbd5e1" text-anchor="middle">-30 TO +30</text>
+        <!-- RANGE Header -->
+        <text x="1785" y="66" font-size="11" font-weight="800" fill="#f8fafc" text-anchor="middle" letter-spacing="1.2">RANGE</text>
 
-        <!-- Position Detent Arcs & Routing Brackets -->
-        <path d="M 1748,103 A 42,42 0 0 1 1822,103" fill="none" stroke="#f8fafc" stroke-width="1.2"/>
-        <line x1="1750" y1="99" x2="1756" y2="108" stroke="#f8fafc" stroke-width="1.5"/>
-        <line x1="1820" y1="99" x2="1814" y2="108" stroke="#f8fafc" stroke-width="1.5"/>
+        <!-- Top Position: MTR Outer (-50 to +10 dB) -->
+        <g class="xtm-btn mc-toggle-pos" data-btn="MC_RANGE_OUTER" style="cursor:pointer">
+          <text id="mc_toggle_lbl_outer" x="1785" y="84" font-size="11" font-weight="800" fill="#fbbf24" text-anchor="middle" letter-spacing="0.5">MTR</text>
+          <text id="mc_toggle_sub_outer" x="1785" y="94" font-size="8" font-weight="700" fill="#fbbf24" text-anchor="middle" letter-spacing="0.4">-50 TO +10</text>
+        </g>
+
+        <!-- Middle Position: CAL (+4 dBu reference line-up) -->
+        <g class="xtm-btn mc-toggle-pos" data-btn="MC_RANGE_CAL" style="cursor:pointer">
+          <text id="mc_toggle_lbl_cal" x="1808" y="118" font-size="9" font-weight="700" fill="#94a3b8" text-anchor="start" letter-spacing="0.4">CAL</text>
+        </g>
+
+        <!-- Bottom Position: MON Inner (-30 to +30 dB) -->
+        <g class="xtm-btn mc-toggle-pos" data-btn="MC_RANGE_INNER" style="cursor:pointer">
+          <text id="mc_toggle_sub_inner" x="1785" y="142" font-size="8" font-weight="700" fill="#64748b" text-anchor="middle" letter-spacing="0.4">-30 TO +30</text>
+          <text id="mc_toggle_lbl_inner" x="1785" y="154" font-size="11" font-weight="800" fill="#64748b" text-anchor="middle" letter-spacing="0.5">MON</text>
+        </g>
 
         <!-- Guidance Routing Lines connecting Range Switch to dial scales -->
         <!-- Outer scale bracket line from -50 TO +10 -->
-        <path d="M 1735,102 C 1718,108 1704,118 1702,135 V 285 C 1704,302 1718,312 1735,318" fill="none" stroke="#f8fafc" stroke-width="1.2"/>
-        <line x1="1735" y1="102" x2="1740" y2="102" stroke="#f8fafc" stroke-width="1.2"/>
-        <line x1="1735" y1="318" x2="1740" y2="318" stroke="#f8fafc" stroke-width="1.2"/>
+        <path d="M 1735,94 C 1718,100 1704,115 1702,135 V 285 C 1704,302 1718,312 1735,318" fill="none" stroke="#f8fafc" stroke-width="1.2" stroke-opacity="0.8"/>
+        <line x1="1735" y1="94" x2="1742" y2="94" stroke="#f8fafc" stroke-width="1.2" stroke-opacity="0.8"/>
+        <line x1="1735" y1="318" x2="1742" y2="318" stroke="#f8fafc" stroke-width="1.2" stroke-opacity="0.8"/>
 
-        <!-- Smaller Range Switch Rotary Knob (cx=1785, cy=128) -->
-        <g id="mccurdy-range-switch" class="xtm-btn" data-btn="UP" style="cursor:pointer" transform="translate(1785, 128)">
-          <title>Range Switch: Click to Toggle Range (-50 to +10 dB / -30 to +30 dB)</title>
-          <!-- Skirt -->
-          <circle cx="0" cy="0" r="23" fill="url(#mc_skirt_silver)" stroke="#4b505a" stroke-width="1.1"/>
-          <!-- Fluted body rotated to -50 TO +10 (left position ~ -22 deg) -->
-          <g transform="rotate(-22)">
-            <path d="${swFluteD}" fill="url(#mc_barrel_grad)" stroke="#4b505a" stroke-width="1"/>
-            <circle cx="0" cy="0" r="11.5" fill="none" stroke="url(#mc_gold_rim)" stroke-width="1.5"/>
-            <circle cx="0" cy="0" r="10" fill="url(#mc_yellow_cap)" stroke="#9c7a0b" stroke-width="0.8"/>
-            <line x1="0" y1="0" x2="0" y2="-9.5" stroke="#141517" stroke-width="2" stroke-linecap="round"/>
+        <!-- Chrome Bat-Handle Toggle Switch Assembly (cx=1785, cy=115) -->
+        <g id="mc-toggle-assembly" class="xtm-btn" data-btn="MC_TOGGLE" style="cursor:pointer" transform="translate(1785, 115)">
+          <title>Range Switch: Click to Toggle Range (MTR Outer: -50..+10 dB / MON Inner: -30..+30 dB / CAL: 0 VU)</title>
+          <!-- Chrome Hex Nut & Mounting Bushing -->
+          <polygon points="0,-12 10.4,-6 10.4,6 0,12 -10.4,6 -10.4,-6" fill="url(#chromeMetalGrad)" stroke="#1a252f" stroke-width="1.2" />
+          <circle cx="0" cy="0" r="9" fill="url(#chromeMetalGrad)" stroke="#1a252f" stroke-width="1.0" />
+          <circle cx="0" cy="0" r="5.5" fill="#141c24" stroke="#0a121a" stroke-width="0.9" />
+
+          <!-- Bat Handle Stick (Angled to -24° Outer, 0° CAL, +24° Inner) -->
+          <g id="mc_toggle_stick_rotor" transform="rotate(-24)">
+            <!-- Drop Shadow under Lever -->
+            <line x1="1" y1="1" x2="1" y2="-25" stroke="#0f171e" stroke-width="5.2" stroke-linecap="round" opacity="0.6" />
+            <!-- Main Chrome Shaft -->
+            <line x1="0" y1="0" x2="0" y2="-24" stroke="#dce1e8" stroke-width="4.8" stroke-linecap="round" />
+            <!-- Specular Highlight -->
+            <line x1="0" y1="0" x2="0" y2="-24" stroke="#ffffff" stroke-width="1.5" stroke-linecap="round" opacity="0.85" />
+            <!-- Tip Ball -->
+            <circle cx="0" cy="-24" r="3.2" fill="#f8fafc" stroke="#6b7280" stroke-width="0.7" />
           </g>
         </g>
 

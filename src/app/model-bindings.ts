@@ -62,6 +62,11 @@ export function bindFrontPanel(ctx: AppContext, sync: AudioSync): void {
       if (inputNum >= 1 && inputNum <= 4) {
         model.setInput(inputNum);
       }
+    } else if (btnName === 'CYCLE_STYLE') {
+      const styles = ['sifam', 'simpson', 'wbs_m405', 'mccurdy_vu', 'standard_vu'];
+      const curIdx = styles.indexOf(model.meterStyle);
+      model.meterStyle = styles[(curIdx + 1) % styles.length] as any;
+      model.notify();
     } else if (btnName === 'MC_TOGGLE') {
       model.toggleMccurdyRange();
     } else if (btnName === 'MC_RANGE_OUTER') {

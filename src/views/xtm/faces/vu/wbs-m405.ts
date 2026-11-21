@@ -140,6 +140,5 @@ export const WBS_M405_STYLE: VuFaceStyle = {
   legend,
   vuNeedle: wbsOrangeVuNeedle,
   ppmNeedle: wbsOrangePpmNeedle,
-  renderScale: renderWbsM405Scale,
-  faceLogo: renderWbsM405FaceLogo
+  renderScale: renderWbsM405Scale
 };

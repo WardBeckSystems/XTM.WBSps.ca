@@ -88,6 +88,5 @@ export const MCCURDY_VU_STYLE: VuFaceStyle = {
   legend,
   vuNeedle: SIMPSON_STYLE.vuNeedle,
   ppmNeedle: SIMPSON_STYLE.ppmNeedle,
-  renderScale: renderMcCurdyScale,
-  faceLogo: renderMcCurdyFaceLogo
+  renderScale: renderMcCurdyScale
 };

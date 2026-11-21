@@ -90,6 +90,8 @@ export class XtmView {
   lastModeTitle: string = '';
   lastHeldButton: string | null = null;
   lastActiveInput: number = -999;
+  lastMcRangeMode: string = '';
+  lastMcAttenuatorStep: number = -999;
 
   /* 2-digit red 7-segment RANGE readout for McCurdy mode */
   readonly MC_WIN = MC_WIN;
@@ -147,6 +149,8 @@ export class XtmView {
     this.lastMcDigits = '';
     this.lastPhaseLed = -999;
     this.lastActiveInput = -999;
+    this.lastMcRangeMode = '';
+    this.lastMcAttenuatorStep = -999;
     this.isBuilt = true;
   }
 
@@ -253,6 +257,65 @@ export class XtmView {
           el.classList.toggle('wink-open', isOpen);
           el.setAttribute('aria-pressed', isOpen ? 'true' : 'false');
         }
+      }
+    }
+
+    // 7. McCurdy Range Selector Switch & 31-Step Attenuator Sync
+    const mcMode = model.mcRangeMode || 'outer';
+    const mcStep = model.mcAttenuatorStep ?? 15;
+    if (mcMode !== this.lastMcRangeMode || mcStep !== this.lastMcAttenuatorStep) {
+      this.lastMcRangeMode = mcMode;
+      this.lastMcAttenuatorStep = mcStep;
+
+      // Update bat-handle switch stick (-24° Outer, 0° CAL, +24° Inner)
+      const stick = this.container?.querySelector<SVGElement>('#mc_toggle_stick_rotor');
+      if (stick) {
+        const deg = mcMode === 'outer' ? -24 : (mcMode === 'inner' ? 24 : 0);
+        stick.setAttribute('transform', `rotate(${deg})`);
+      }
+
+      // Update silkscreen toggle labels
+      const lblOuter = this.container?.querySelector<SVGElement>('#mc_toggle_lbl_outer');
+      const subOuter = this.container?.querySelector<SVGElement>('#mc_toggle_sub_outer');
+      const lblCal = this.container?.querySelector<SVGElement>('#mc_toggle_lbl_cal');
+      const lblInner = this.container?.querySelector<SVGElement>('#mc_toggle_lbl_inner');
+      const subInner = this.container?.querySelector<SVGElement>('#mc_toggle_sub_inner');
+
+      const isOuter = mcMode === 'outer';
+      const isInner = mcMode === 'inner';
+      const isCal = mcMode === 'cal';
+
+      if (lblOuter) lblOuter.setAttribute('fill', isOuter ? '#fbbf24' : '#64748b');
+      if (subOuter) {
+        subOuter.setAttribute('fill', isOuter ? '#fbbf24' : '#64748b');
+        subOuter.setAttribute('fill-opacity', isOuter ? '1' : '0.5');
+      }
+      if (lblCal) lblCal.setAttribute('fill', isCal ? '#fbbf24' : '#94a3b8');
+      if (lblInner) lblInner.setAttribute('fill', isInner ? '#fbbf24' : '#64748b');
+      if (subInner) {
+        subInner.setAttribute('fill', isInner ? '#fbbf24' : '#64748b');
+        subInner.setAttribute('fill-opacity', isInner ? '1' : '0.5');
+      }
+
+      // Highlight active scale ring on main attenuator dial
+      const scaleOuter = this.container?.querySelector<SVGElement>('#mc_scale_outer_group');
+      const scaleInner = this.container?.querySelector<SVGElement>('#mc_scale_inner_group');
+      if (scaleOuter) {
+        scaleOuter.style.transition = 'opacity 0.2s ease';
+        scaleOuter.style.opacity = isOuter ? '1' : '0.35';
+      }
+      if (scaleInner) {
+        scaleInner.style.transition = 'opacity 0.2s ease';
+        scaleInner.style.opacity = isInner ? '1' : '0.35';
+      }
+
+      // Update main attenuator knob rotor pointer position
+      const rotor = this.container?.querySelector<SVGElement>('#mccurdy_vintage_knob_rotor');
+      if (rotor) {
+        const cx = rotor.getAttribute('data-cx') || '1580';
+        const cy = rotor.getAttribute('data-cy') || '215';
+        const angle = (mcStep - 15) * 9;
+        rotor.setAttribute('transform', `translate(${cx}, ${cy}) rotate(${angle.toFixed(1)})`);
       }
     }
   }

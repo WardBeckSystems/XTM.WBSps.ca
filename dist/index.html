@@ -16,7 +16,7 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Ward-Beck Systems">
-  <script type="module" crossorigin src="./assets/index-07QFq9qs.js"></script>
+  <script type="module" crossorigin src="./assets/index-D1bJ8V8E.js"></script>
   <link rel="stylesheet" crossorigin href="./assets/index-yzveVt4V.css">
 </head>
 <body class="">
@@ -136,7 +136,7 @@
           </button>
 
           <!-- 3. McCurdyRadio.ca (Studio Dark Broadcast) - Style toggle -->
-          <button type="button" class="footer-style-btn mc-btn-ca" id="btnMcCurdyCa" title="McCurdy Radio Industries (McCurdyRadio.ca) - Switch to McCurdy Studio Dark Neutral style" onclick="event.stopPropagation(); setMode('mccurdy-dark');">
+          <button type="button" class="footer-style-btn mc-btn-ca" id="btnMcCurdyCa" title="McCurdy Radio Industries (McCurdyRadio.ca) - Switch to McCurdy Studio Dark Neutral style" onclick="event.stopPropagation(); if (document.body.classList.contains('theme-wbs-ca') || document.body.classList.contains('theme-wbs-dark') || !document.body.classList.contains('theme-mccurdy-dark')) { setMode('mccurdy-dark'); } cycleWardBeckStyle();">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="100 85 800 370" width="56" height="22" aria-hidden="true">
               <defs>
                 <linearGradient id="mcShieldBlueFooter" x1="0" y1="0" x2="0" y2="1">
@@ -158,14 +158,14 @@
           </button>
 
           <!-- 4. McCurdyRadio.com (ATS-100 Cream Console) - Style toggle -->
-          <button type="button" class="footer-style-btn mc-btn-com" id="btnMcCurdyCom" title="McCurdy Radio Industries (McCurdyRadio.com) - Switch to McCurdy ATS-100 Cream Console style" onclick="event.stopPropagation(); setMode('mccurdy-light');">
+          <button type="button" class="footer-style-btn mc-btn-com" id="btnMcCurdyCom" title="McCurdy Radio Industries (McCurdyRadio.com) - Switch to McCurdy ATS-100 Cream Console style" onclick="event.stopPropagation(); if (document.body.classList.contains('theme-wbs-ca') || document.body.classList.contains('theme-wbs-dark') || !document.body.classList.contains('theme-mccurdy')) { setMode('mccurdy-light'); } cycleWardBeckStyle();">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 154 54" width="56" height="20" aria-hidden="true" style="border-radius:4px;">
               <rect x="2" y="2" width="150" height="50" rx="8" fill="#dedad0" stroke="#3892d4" stroke-width="4" />
               <text x="77" y="37" font-family="'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="28" font-weight="800" text-anchor="middle" fill="#0d172a">McCurdy</text>
             </svg>
             <span class="footer-btn-text mc-com-text">McCurdyRadio.com</span>
           </button>
-          <span class="build-stamp" style="font-size: 0.7em; opacity: 0.6; margin-left: 12px;">v1.0.40</span>
+          <span class="build-stamp" style="font-size: 0.7em; opacity: 0.6; margin-left: 12px;">v1.0.42</span>
         </div>
       </summary>
 
@@ -646,7 +646,7 @@
   function cycleWardBeckStyle() {
     var select = document.getElementById("selectMeterStyle");
     if (!select) return;
-    var styles = ["wbs_m405", "simpson", "sifam", "mccurdy_vu"];
+    var styles = ["sifam", "simpson", "wbs_m405", "mccurdy_vu", "standard_vu"];
     var currentIdx = styles.indexOf(select.value);
     var nextStyle = styles[(currentIdx + 1) % styles.length];
     select.value = nextStyle;
@@ -691,6 +691,10 @@
     var rotor = document.getElementById("wbs_vintage_knob_rotor");
     if (ptr) ptr.setAttribute("transform", "rotate(" + vintageKnobAngle.toFixed(1) + ")");
     if (rotor) rotor.setAttribute("transform", "rotate(" + vintageKnobAngle.toFixed(1) + ")");
+    var db = Math.round(vintageKnobAngle / 3.6);
+    if (window.xtmModel) {
+      window.xtmModel.setSensitivityDb(db);
+    }
     try {
       localStorage.setItem("xtm.wbs_vintage_knob", vintageKnobAngle.toFixed(1));
     } catch (e) {}
@@ -698,11 +702,17 @@
 
   function updateMcCurdyKnob(angle) {
     mcKnobAngle = Math.max(-135, Math.min(135, angle));
-    var mcRotor = document.getElementById("mccurdy_vintage_knob_rotor");
-    if (mcRotor) {
-      var cx = mcRotor.getAttribute("data-cx") || "1580";
-      var cy = mcRotor.getAttribute("data-cy") || "215";
-      mcRotor.setAttribute("transform", "translate(" + cx + ", " + cy + ") rotate(" + mcKnobAngle.toFixed(1) + ")");
+    var step = Math.round((mcKnobAngle / 9) + 15);
+    step = Math.max(0, Math.min(30, step));
+    if (window.xtmModel) {
+      window.xtmModel.setMccurdyAttenuatorStep(step);
+    } else {
+      var mcRotor = document.getElementById("mccurdy_vintage_knob_rotor");
+      if (mcRotor) {
+        var cx = mcRotor.getAttribute("data-cx") || "1580";
+        var cy = mcRotor.getAttribute("data-cy") || "215";
+        mcRotor.setAttribute("transform", "translate(" + cx + ", " + cy + ") rotate(" + mcKnobAngle.toFixed(1) + ")");
+      }
     }
     try {
       localStorage.setItem("xtm.mc_vintage_knob", mcKnobAngle.toFixed(1));
@@ -805,6 +815,26 @@
       var nextMcAngle = mcKnobAngle + 9.0;
       if (nextMcAngle > 135) nextMcAngle = -135;
       updateMcCurdyKnob(nextMcAngle);
+    }
+  });
+
+  // McCurdy Toggle Switch Click Handler (MTR Outer / CAL / MON Inner)
+  document.addEventListener("click", function(e) {
+    var toggle = e.target.closest("#mc-toggle-assembly") || e.target.closest(".mc-toggle-pos");
+    if (toggle && window.xtmModel) {
+      var outerBtn = e.target.closest("[data-btn='MC_RANGE_OUTER']");
+      var innerBtn = e.target.closest("[data-btn='MC_RANGE_INNER']");
+      var calBtn = e.target.closest("[data-btn='MC_RANGE_CAL']");
+      if (outerBtn) {
+        window.xtmModel.setMccurdyRange('outer');
+      } else if (innerBtn) {
+        window.xtmModel.setMccurdyRange('inner');
+      } else if (calBtn) {
+        window.xtmModel.setMccurdyRange('cal');
+      } else {
+        window.xtmModel.toggleMccurdyRange();
+      }
+      resumeAudio();
     }
   });
 </script>

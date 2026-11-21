@@ -50,11 +50,11 @@ export function renderMeterShell(id: number, cx: number, cy: number, kind: 'vu' 
 
   // Lower half of the face: Brand logos ALWAYS correspond to the active page theme!
   // Clicking either logo cycles the meter styles. The logo remains with its theme page and does not swap brand.
-  s += `<g class="wbs-only dial-logo-interactive" data-action="cycle-meter-style" style="cursor: pointer;">
+  s += `<g class="wbs-only xtm-btn dial-logo-interactive" data-btn="CYCLE_STYLE" style="cursor: pointer;">
           <title>Click to cycle meter styles (Ward-Beck)</title>
           ${renderWbsFaceLogo(cx, cy, ink)}
         </g>`;
-  s += `<g class="mc-only dial-logo-interactive" data-action="cycle-meter-style" style="cursor: pointer;">
+  s += `<g class="mc-only xtm-btn dial-logo-interactive" data-btn="CYCLE_STYLE" style="cursor: pointer;">
           <title>Click to cycle meter styles (McCurdy)</title>
           ${renderMcCurdyVuBadge(cx, cy, ink)}
         </g>`;
