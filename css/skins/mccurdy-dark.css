@@ -62,17 +62,18 @@ body.theme-mccurdy-dark .ctrl-select {
 }
 body.theme-mccurdy-dark .ctrl-hint { color: #94a3b8; }
 
-body.theme-mccurdy-dark .meter-stack { background-color: #1e2c38; }
-body.theme-mccurdy-dark .p22-bg { fill: #223240; }
+body.theme-mccurdy-dark .meter-stack { background-color: #16222c; }
+body.theme-mccurdy-dark .p22-bg { fill: #1c2b37; }
 body.theme-mccurdy-dark .p22-legend { fill: #cbd5e1; }
 body.theme-mccurdy-dark .meter-unit.dbfs-unit {
-  background: #141f28;
-  border-top: 1px solid #2d4152;
+  --dbfs-bg: #16222c;
+  background: #16222c;
+  border-top: 1px solid #384e61;
 }
 
 /* Scope Dark Blue Styling */
 body.theme-mccurdy-dark .scope-toolbar {
-  background: #1c2b37;
+  background: #182531;
   border-color: #384e61;
   color: #f8fafc;
 }

@@ -44,26 +44,53 @@ body.theme-wbs-ca .mc-only {
   display: none !important;
 }
 
+/* Ward-Beck.ca: warm creme/champagne anodized backgrounds for POD-22 and dBFS graph */
 body.theme-wbs-ca .meter-stack {
-  background-color: #191c21;
+  background-color: #dedcd4;
+}
+
+body.theme-wbs-ca .p22-bg {
+  fill: #dedcd4;
+}
+
+body.theme-wbs-ca .p22-legend {
+  fill: #2a2b2a;
+}
+
+body.theme-wbs-ca .meter-unit.dbfs-unit {
+  --dbfs-bg: #dedcd4;
+  background: #dedcd4;
+  border-top: 1px solid #8c897b;
 }
 
 body.theme-wbs-ca .scope-toolbar {
-  background: #191c21;
-  border-color: #2e333d;
-  color: #f2efe9;
+  background: #dedcd4;
+  border-color: #8c897b;
+  color: #2a2b2a;
+}
+
+body.theme-wbs-ca .scope-toolbar-label,
+body.theme-wbs-ca .scope-ctrl-item label {
+  color: #5c5a50;
 }
 
 body.theme-wbs-ca .scope-tab-btn {
-  background: #22262d;
-  color: #a0a4ab;
-  border-color: #2e333d;
+  background: #e5e3dc;
+  color: #2a2b2a;
+  border-color: #8c897b;
 }
 
 body.theme-wbs-ca .scope-tab-btn.active {
-  background: #c6c3b3;
+  background: #2a2b2a;
+  color: #eae7de;
+  border-color: #1a1a1a;
+}
+
+body.theme-wbs-ca .scope-val-badge,
+body.theme-wbs-ca .scope-meta-badge {
+  background: #e5e3dc;
   color: #2a2b2a;
-  border-color: #d4d2c5;
+  border-color: #8c897b;
 }
 
 /* In non-wbs-ca modes, hide wbs-ca elements */
