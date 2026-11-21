@@ -132,3 +132,121 @@
   padding: 3px 10px;
   border-radius: 12px;
 }
+
+/* -------------------------------------------------------------
+   Update Pulse: When a new version is available, Settings pulses orange
+   ------------------------------------------------------------- */
+@keyframes pulseOrangeCog {
+  0% {
+    color: #f97316;
+    filter: drop-shadow(0 0 3px rgba(249, 115, 22, 0.7));
+    opacity: 0.85;
+    transform: scale(1);
+  }
+  50% {
+    color: #ff8c38;
+    filter: drop-shadow(0 0 10px #f97316) drop-shadow(0 0 20px rgba(234, 88, 12, 0.9));
+    opacity: 1;
+    transform: scale(1.22) rotate(30deg);
+  }
+  100% {
+    color: #f97316;
+    filter: drop-shadow(0 0 3px rgba(249, 115, 22, 0.7));
+    opacity: 0.85;
+    transform: scale(1);
+  }
+}
+
+@keyframes pulseOrangeLabel {
+  0% {
+    color: #f97316;
+    text-shadow: 0 0 3px rgba(249, 115, 22, 0.6);
+    opacity: 0.85;
+  }
+  50% {
+    color: #ff9d47;
+    text-shadow: 0 0 10px rgba(249, 115, 22, 0.95), 0 0 18px rgba(234, 88, 12, 0.8);
+    opacity: 1;
+  }
+  100% {
+    color: #f97316;
+    text-shadow: 0 0 3px rgba(249, 115, 22, 0.6);
+    opacity: 0.85;
+  }
+}
+
+@keyframes pulseOrangeBadge {
+  0% {
+    background-color: #f97316;
+    box-shadow: 0 0 0 0 rgba(249, 115, 22, 0.8);
+    transform: scale(1);
+  }
+  70% {
+    background-color: #ea580c;
+    box-shadow: 0 0 0 8px rgba(249, 115, 22, 0);
+    transform: scale(1.2);
+  }
+  100% {
+    background-color: #f97316;
+    box-shadow: 0 0 0 0 rgba(249, 115, 22, 0);
+    transform: scale(1);
+  }
+}
+
+.btn-settings-cog.has-update,
+body.has-new-version .btn-settings-cog,
+.drawer-toggle-left.has-update .btn-settings-cog {
+  opacity: 1 !important;
+  color: #f97316 !important;
+  animation: pulseOrangeCog 1.6s infinite ease-in-out !important;
+}
+
+.drawer-gear-label.has-update,
+body.has-new-version .drawer-gear-label,
+.drawer-toggle-left.has-update .drawer-gear-label {
+  color: #f97316 !important;
+  font-weight: 800 !important;
+  animation: pulseOrangeLabel 1.6s infinite ease-in-out !important;
+}
+
+.settings-update-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: #f97316;
+  margin-left: 6px;
+  animation: pulseOrangeBadge 1.6s infinite ease-in-out;
+  vertical-align: middle;
+}
+
+.update-available-banner {
+  background: linear-gradient(90deg, #ea580c 0%, #f97316 100%);
+  color: #ffffff;
+  padding: 8px 14px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 10px 14px 4px;
+  box-shadow: 0 4px 14px rgba(234, 88, 12, 0.4);
+}
+
+.update-available-banner button {
+  background: #ffffff;
+  color: #ea580c;
+  border: none;
+  border-radius: 4px;
+  padding: 4px 12px;
+  font-size: 11px;
+  font-weight: 800;
+  cursor: pointer;
+  margin-left: 10px;
+  transition: all 0.15s ease;
+}
+.update-available-banner button:hover {
+  background: #fff7ed;
+  transform: scale(1.04);
+}
