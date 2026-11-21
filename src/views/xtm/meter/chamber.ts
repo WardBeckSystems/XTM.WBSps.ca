@@ -77,15 +77,27 @@ export function chamberShadows(x0: number, y0: number): string {
  * Outer frame cutout has fill-rule="evenodd" so the meter aperture is 100% open and dials remain visible.
  */
 export function bezelRim(x0: number, y0: number, cx: number = x0 + MW / 2): string {
-  const bx = x0 - 14;
-  const by = y0 - 16;
-  const bw = MW + 28; // 608
-  const bh = MH + 68; // 358 (ends at y=407, well above bottom extrusion 410.5)
-  const seamY = y0 + MH + 10; // 365
-  const screwY = y0 + MH + 33; // 388
+  // Outer molded Bakelite bezel housing geometry (scaled to match vintage Simpson / McCurdy reference proportions)
+  const bx = cx - 304; // 608 wide, matches XTM front panel bay
+  const by = 47;
+  const bw = 608;
+  const bh = 360; // ends at y=407, clear of bottom rail extrusion 410.5
+  const br = 14;
 
-  // Molded housing path with hollow window aperture (evenodd fill rule)
-  const housingPath = `M ${bx + 10} ${by} h ${bw - 20} a 10 10 0 0 1 10 10 v ${bh - 20} a 10 10 0 0 1 -10 10 h -${bw - 20} a 10 10 0 0 1 -10 -10 v -${bh - 20} a 10 10 0 0 1 10 -10 Z M ${x0 + 6} ${y0} h ${MW - 12} a 6 6 0 0 1 6 6 v ${MH - 12} a 6 6 0 0 1 -6 6 h -${MW - 12} a 6 6 0 0 1 -6 -6 v -${MH - 12} a 6 6 0 0 1 6 -6 Z`;
+  // Vintage window aperture geometry (proportions matching uploaded reference: window height ~59% of bezel height)
+  const wx = cx - 274; // 548 wide, leaves 30px side borders (~5% of bw)
+  const wy = 65;
+  const ww = 548;
+  const wh = 212; // ends at y=277, framing dial graphics with lower needle entrance
+  const wr = 7;
+  const winBot = wy + wh; // 277
+
+  // Lower skirt geometry (skirt height ~54% of window height; seam separates window from skirt)
+  const seamY = 292; // 15px ridge below window
+  const screwY = 344; // vertically centered in 115px skirt (45.2% from seam to bottom)
+
+  // Molded housing body with hollow window aperture (evenodd fill rule so dial face remains completely visible)
+  const housingPath = `M ${bx + br} ${by} h ${bw - 2 * br} a ${br} ${br} 0 0 1 ${br} ${br} v ${bh - 2 * br} a ${br} ${br} 0 0 1 -${br} ${br} h -${bw - 2 * br} a ${br} ${br} 0 0 1 -${br} -${br} v -${bh - 2 * br} a ${br} ${br} 0 0 1 ${br} -${br} Z M ${wx + wr} ${wy} h ${ww - 2 * wr} a ${wr} ${wr} 0 0 1 ${wr} ${wr} v ${wh - 2 * wr} a ${wr} ${wr} 0 0 1 -${wr} ${wr} h -${ww - 2 * wr} a ${wr} ${wr} 0 0 1 -${wr} -${wr} v -${wh - 2 * wr} a ${wr} ${wr} 0 0 1 ${wr} -${wr} Z`;
 
   return `
     <!-- Modern Sleek Bezel (Ward-Beck.com / McCurdyRadio.com) -->
@@ -97,53 +109,44 @@ export function bezelRim(x0: number, y0: number, cx: number = x0 + MW / 2): stri
 
     <!-- Vintage 3D Molded Bakelite Bezel Housing with Lower Skirt & Zero Trimmer (Ward-Beck.ca & McCurdyRadio.ca) -->
     <g class="vintage-bezel-3d">
-      <!-- Molded Housing Body with Transparent Window Cutout -->
+      <!-- Molded Housing Body with Transparent Window Cutout (Bakelite Apron covers needle base) -->
       <path fill-rule="evenodd" fill="url(#bezelMoldedGrad)" stroke="#090a0c" stroke-width="1.8" d="${housingPath}"/>
 
       <!-- Top Edge Specular Highlight Line -->
-      <path d="M ${bx + 14} ${by + 2} L ${bx + bw - 14} ${by + 2}" stroke="#484d56" stroke-width="1.4" stroke-linecap="round" pointer-events="none"/>
+      <path d="M ${bx + 16} ${by + 2} L ${bx + bw - 16} ${by + 2}" stroke="#484d56" stroke-width="1.4" stroke-linecap="round" pointer-events="none"/>
 
       <!-- Molded Flange Perimeter Groove -->
-      <rect x="${bx + 5}" y="${by + 5}" width="${bw - 10}" height="${bh - 10}" rx="8" fill="none" stroke="#25272c" stroke-width="1.0" pointer-events="none"/>
+      <rect x="${bx + 6}" y="${by + 6}" width="${bw - 12}" height="${bh - 12}" rx="${br - 3}" fill="none" stroke="#25272c" stroke-width="1.0" pointer-events="none"/>
 
       <!-- Inner Stepped Recessed Window Frame Rim -->
-      <rect x="${x0 - 2}" y="${y0 - 2}" width="${MW + 4}" height="${MH + 4}" rx="6" fill="none" stroke="#08090b" stroke-width="2.5" pointer-events="none"/>
-      <rect x="${x0}" y="${y0}" width="${MW}" height="${MH}" rx="5" fill="none" stroke="#2b2e34" stroke-width="1.4" stroke-opacity="0.8" pointer-events="none"/>
+      <rect x="${wx - 2}" y="${wy - 2}" width="${ww + 4}" height="${wh + 4}" rx="${wr + 2}" fill="none" stroke="#08090b" stroke-width="2.5" pointer-events="none"/>
+      <rect x="${wx}" y="${wy}" width="${ww}" height="${wh}" rx="${wr}" fill="none" stroke="#2b2e34" stroke-width="1.4" stroke-opacity="0.85" pointer-events="none"/>
+
+      <!-- Window Inner Shadows & Specular Glass Reflection Sheen -->
+      <rect x="${wx}" y="${wy}" width="${ww}" height="22" fill="url(#xch_top)" pointer-events="none"/>
+      <rect x="${wx}" y="${winBot - 18}" width="${ww}" height="18" fill="url(#xch_bot)" pointer-events="none"/>
+      <rect x="${wx}" y="${wy}" width="16" height="${wh}" fill="url(#xch_left)" pointer-events="none"/>
+      <rect x="${wx + ww - 16}" y="${wy}" width="16" height="${wh}" fill="url(#xch_right)" pointer-events="none"/>
+      <path d="M ${wx + 6} ${wy + 6} L ${wx + ww * 0.65} ${wy + 6} L ${wx + 6} ${winBot - 12} Z" fill="url(#meterGlassSheenGrad)" pointer-events="none"/>
+      <rect x="${wx + 6}" y="${(wy + wh * 0.42).toFixed(1)}" width="${ww - 12}" height="1.6" fill="#ffffff" opacity="0.06" pointer-events="none"/>
+
+      <!-- Needle Movement Hub Cowl at Bottom Center of Window Aperture -->
+      <path d="M ${cx - 26} ${winBot} A 26 26 0 0 1 ${cx + 26} ${winBot} Z" fill="#14161a" stroke="#2c2f36" stroke-width="1.4" pointer-events="none"/>
+      <path d="M ${cx - 17} ${winBot} A 17 17 0 0 1 ${cx + 17} ${winBot} Z" fill="#0a0b0d" pointer-events="none"/>
 
       <!-- Lower Skirt Molded Horizontal Seam Line -->
-      <line x1="${bx + 2}" y1="${seamY}" x2="${bx + bw - 2}" y2="${seamY}" stroke="#0c0d0f" stroke-width="2" pointer-events="none"/>
+      <line x1="${bx + 2}" y1="${seamY}" x2="${bx + bw - 2}" y2="${seamY}" stroke="#0c0d0f" stroke-width="2.0" pointer-events="none"/>
       <line x1="${bx + 2}" y1="${seamY + 1.8}" x2="${bx + bw - 2}" y2="${seamY + 1.8}" stroke="#2c2f36" stroke-width="1.1" pointer-events="none"/>
 
-      <!-- Mechanical Zero-Adjust Trimmer Screw Assembly at Bottom Center -->
+      <!-- Mechanical Zero-Adjust Trimmer Screw Assembly in Center of Skirt (No Corner Screws) -->
       <g class="trim-screw-interactive" transform="translate(${cx}, ${screwY})">
-        <circle cx="0" cy="0" r="15" fill="#0d0e10" stroke="#2c2f36" stroke-width="1.2"/>
+        <circle cx="0" cy="0" r="18" fill="#0d0e10" stroke="#2c2f36" stroke-width="1.3"/>
+        <circle cx="0" cy="0" r="16.5" fill="none" stroke="#08090a" stroke-width="0.9"/>
         <g transform="rotate(-38)">
-          <circle cx="0" cy="0" r="12.2" fill="url(#trimScrewHeadGrad)" stroke="#111214" stroke-width="1.0"/>
-          <rect x="-10.8" y="-1.8" width="21.6" height="3.6" rx="0.8" fill="#090a0c"/>
-          <line x1="-10.2" y1="2.0" x2="10.2" y2="2.0" stroke="#4e525b" stroke-width="0.7"/>
+          <circle cx="0" cy="0" r="14.2" fill="url(#trimScrewHeadGrad)" stroke="#111214" stroke-width="1.1"/>
+          <rect x="-12.5" y="-2.0" width="25" height="4.0" rx="0.9" fill="#090a0c"/>
+          <line x1="-11.8" y1="2.1" x2="11.8" y2="2.1" stroke="#4e525b" stroke-width="0.8"/>
         </g>
-      </g>
-
-      <!-- Four Corner Molded Bezel Slotted Screws -->
-      <g transform="translate(${bx + 12}, ${by + 12})">
-        <circle cx="0" cy="0" r="5" fill="#08090a" stroke="#1d1f23" stroke-width="0.8"/>
-        <circle cx="0" cy="0" r="3.6" fill="url(#mcScrewGrad)" stroke="#111215" stroke-width="0.7"/>
-        <line x1="-1.8" y1="-1.5" x2="1.8" y2="1.5" stroke="#060708" stroke-width="1.3" stroke-linecap="round"/>
-      </g>
-      <g transform="translate(${bx + bw - 12}, ${by + 12})">
-        <circle cx="0" cy="0" r="5" fill="#08090a" stroke="#1d1f23" stroke-width="0.8"/>
-        <circle cx="0" cy="0" r="3.6" fill="url(#mcScrewGrad)" stroke="#111215" stroke-width="0.7"/>
-        <line x1="-1.8" y1="1.5" x2="1.8" y2="-1.5" stroke="#060708" stroke-width="1.3" stroke-linecap="round"/>
-      </g>
-      <g transform="translate(${bx + 12}, ${by + bh - 12})">
-        <circle cx="0" cy="0" r="5" fill="#08090a" stroke="#1d1f23" stroke-width="0.8"/>
-        <circle cx="0" cy="0" r="3.6" fill="url(#mcScrewGrad)" stroke="#111215" stroke-width="0.7"/>
-        <line x1="-2.1" y1="-1.0" x2="2.1" y2="1.0" stroke="#060708" stroke-width="1.3" stroke-linecap="round"/>
-      </g>
-      <g transform="translate(${bx + bw - 12}, ${by + bh - 12})">
-        <circle cx="0" cy="0" r="5" fill="#08090a" stroke="#1d1f23" stroke-width="0.8"/>
-        <circle cx="0" cy="0" r="3.6" fill="url(#mcScrewGrad)" stroke="#111215" stroke-width="0.7"/>
-        <line x1="-1.5" y1="1.8" x2="1.5" y2="-1.8" stroke="#060708" stroke-width="1.3" stroke-linecap="round"/>
       </g>
     </g>`;
 }

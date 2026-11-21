@@ -72,7 +72,7 @@ export function renderMcCurdyScale(ctx: FaceCtx): string {
 }
 
 export function renderMcCurdyFaceLogo(cx: number, cy: number, ink: string): string {
-  return `<g id="mccurdy-dial-logo" transform="translate(${(cx - 42).toFixed(1)}, ${(cy + 34).toFixed(1)})">
+  return `<g id="mccurdy-dial-logo" transform="translate(${(cx - 42).toFixed(1)}, ${(cy + 22).toFixed(1)})">
       <!-- Authentic McCurdy Cartouche Box & Wordmark -->
       <rect x="0" y="0" width="84" height="28" rx="2.5"
             fill="none" stroke="${ink}" stroke-width="1.5" stroke-opacity="0.85" />

@@ -3,10 +3,10 @@
 
 export function renderMcCurdyVuBadge(cx: number, cy: number, ink: string): string {
   const x = cx - 42;
-  const y = cy + 28;
+  const y = cy + 16;
   return `
     <!-- McCurdyRadio.com ATS-100 Cream Console: Authentic Cartouche Box & Wordmark -->
-    <g class="mc-only mc-com-only" transform="translate(${(cx - 42).toFixed(1)}, ${(cy + 34).toFixed(1)})">
+    <g class="mc-only mc-com-only" transform="translate(${(cx - 42).toFixed(1)}, ${(cy + 22).toFixed(1)})">
       <rect x="0" y="0" width="84" height="28" rx="2.5"
             fill="none" stroke="${ink}" stroke-width="1.5" stroke-opacity="0.85" />
       <text x="42" y="19"

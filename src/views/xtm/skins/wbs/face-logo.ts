@@ -3,7 +3,7 @@
 import { WBS_LOGO_PATH } from '../../lib/wbs-logo';
 
 export function renderWbsFaceLogo(cx: number, cy: number, ink: string): string {
-  return `<g class="wbs-only" transform="translate(${(cx - 44.5).toFixed(1)}, ${(cy + 42).toFixed(1)}) scale(1.2)">
+  return `<g class="wbs-only" transform="translate(${(cx - 44.5).toFixed(1)}, ${(cy + 22).toFixed(1)}) scale(1.2)">
               <path d="${WBS_LOGO_PATH}" fill="${ink}" fill-rule="evenodd"/>
             </g>`;
 }
