@@ -10,6 +10,9 @@ const PANEL_DEFS = `<defs>
         <linearGradient id="mc_panel" x1="0" y1="0" x2="0" y2="1">
           <stop offset="0%" stop-color="#e5e1d5"/><stop offset="50%" stop-color="#dedad0"/><stop offset="100%" stop-color="#d2cec2"/>
         </linearGradient>
+        <linearGradient id="mc_panel_blue" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#3d566c"/><stop offset="50%" stop-color="#2e4354"/><stop offset="100%" stop-color="#243543"/>
+        </linearGradient>
         <linearGradient id="mc_bezel" x1="0" y1="0" x2="0" y2="1">
           <stop offset="0%" stop-color="#2a2a2c"/><stop offset="100%" stop-color="#141416"/>
         </linearGradient>
@@ -53,7 +56,7 @@ export function renderMcCurdyPanel(): string {
   const W = VW, H = VH;
   let s = `<g class="mc-only">
       ${PANEL_DEFS}
-      <rect x="1" y="1" width="${W - 2}" height="${H - 2}" rx="6" fill="url(#mc_panel)" stroke="#b5b1a6" stroke-width="2"/>
+      <rect class="mc-panel-bg" x="1" y="1" width="${W - 2}" height="${H - 2}" rx="6" fill="url(#mc_panel)" stroke="#b5b1a6" stroke-width="2"/>
       <line x1="4" y1="3" x2="${W - 4}" y2="3" stroke="#ffffff" stroke-opacity="0.7" stroke-width="2"/>`;
 
   for (const cx of MX) s += bezel(cx);

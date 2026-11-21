@@ -63,8 +63,8 @@ export function chamberShadows(x0: number, y0: number): string {
     </g>`;
 }
 
-/** 3D Molded Bakelite Bezel Housing with Stepped Inner Well, Seam Line, and Mechanical Trimmer Screw */
-export function bezelRim(x0: number, y0: number, cx: number = x0 + MW / 2): string {
+/** 3D Molded Bakelite Bezel Outer Housing (rendered BEFORE the dial face so the dial is never covered) */
+export function bezelBase(x0: number, y0: number, cx: number = x0 + MW / 2): string {
   const bx = x0 - 16;
   const by = y0 - 18;
   const bw = MW + 32; // 612
@@ -73,14 +73,13 @@ export function bezelRim(x0: number, y0: number, cx: number = x0 + MW / 2): stri
   const screwY = y0 + MH + 46; // 401
 
   return `
-    <!-- Outer Molded Bakelite Bezel with Specular Top Highlight -->
+    <!-- Outer Molded Bakelite Bezel Housing & Specular Top Highlight -->
     <rect x="${bx}" y="${by}" width="${bw}" height="${bh}" rx="10" fill="url(#bezelMoldedGrad)" stroke="#090a0c" stroke-width="2.2"/>
     <path d="M ${bx + 14} ${by + 2} L ${bx + bw - 14} ${by + 2}" stroke="#484d56" stroke-width="1.6" stroke-linecap="round"/>
     <rect x="${bx + 5}" y="${by + 5}" width="${bw - 10}" height="${bh - 10}" rx="8" fill="none" stroke="#25272c" stroke-width="1.1"/>
 
-    <!-- Inner Stepped Recessed Window Opening -->
+    <!-- Stepped Recessed Well Base behind Dial Face -->
     <rect x="${x0 - 2}" y="${y0 - 2}" width="${MW + 4}" height="${MH + 4}" rx="6" fill="url(#bezelInnerStepGrad)" stroke="#08090b" stroke-width="1.8"/>
-    <rect x="${x0}" y="${y0}" width="${MW}" height="${MH}" rx="4" fill="none" stroke="#0a0c0f" stroke-width="1.5"/>
 
     <!-- Lower Bezel Horizontal Seam -->
     <line x1="${bx + 2}" y1="${seamY}" x2="${bx + bw - 2}" y2="${seamY}" stroke="#0c0d0f" stroke-width="2"/>
@@ -95,4 +94,11 @@ export function bezelRim(x0: number, y0: number, cx: number = x0 + MW / 2): stri
         <line x1="-10.5" y1="2.2" x2="10.5" y2="2.2" stroke="#4e525b" stroke-width="0.8"/>
       </g>
     </g>`;
+}
+
+/** Stepped Rim around Dial Window (hairline outline, OPEN VIEWPORT - fill="none" so meters are visible) */
+export function bezelOpeningRim(x0: number, y0: number): string {
+  return `
+    <rect x="${x0 - 2}" y="${y0 - 2}" width="${MW + 4}" height="${MH + 4}" rx="6" fill="none" stroke="#08090b" stroke-width="2"/>
+    <rect x="${x0}" y="${y0}" width="${MW}" height="${MH}" rx="4" fill="none" stroke="#0a0c0f" stroke-width="1.5"/>`;
 }

@@ -1,100 +1,100 @@
 /*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.ca). All rights reserved. */
 /* ---------------------------------------------------------------
-   McCurdy Dark Studio Broadcast Mode (McCurdyRadio.ca)
-   Neutral Studio Charcoal / Black palette (NO blue / light-blue tint)
+   McCurdy Dark Broadcast Mode (McCurdyRadio.ca)
+   Classic McCurdy Broadcast Slate / Petrol Blue Enamel Palette
    --------------------------------------------------------------- */
 body.theme-mccurdy-dark .mc-only { display: inline; }
+body.theme-mccurdy-dark .mc-ca-only { display: inline !important; }
+body.theme-mccurdy-dark .mc-com-only { display: none !important; }
 body.theme-mccurdy-dark .wbs-only { display: none; }
 
 body.theme-mccurdy-dark {
-  --bg-deep: #111316;
-  --bg-panel: #181b20;
-  --border-subtle: #2b303a;
-  --ink-primary: #f2efe9;
-  --ink-secondary: #9ea3ae;
-  --ink-muted: #656b77;
-  --accent: #e5a91a;
+  --bg-deep: #16222c;
+  --bg-panel: #263847;
+  --border-subtle: #3d566c;
+  --ink-primary: #f8fafc;
+  --ink-secondary: #cbd5e1;
+  --ink-muted: #94a3b8;
+  --accent: #3892d4;
 }
 
-html:has(body.theme-mccurdy-dark) { background-color: #111316; }
+html:has(body.theme-mccurdy-dark) { background-color: #16222c; }
 
-body.theme-mccurdy-dark .xt-deg { fill: #f2efe9; }
-body.theme-mccurdy-dark .xt-btn-lbl { fill: #f2efe9 !important; }
+body.theme-mccurdy-dark .xt-deg { fill: #cbd5e1; }
+body.theme-mccurdy-dark .xt-btn-lbl { fill: #f8fafc !important; }
 
 body.theme-mccurdy-dark .aux-drawer {
-  background: #111316;
-  border-top-color: #2b303a;
+  background: #182531;
+  border-top-color: #384e61;
 }
 
 body.theme-mccurdy-dark .drawer-toggle {
-  background: linear-gradient(180deg, #1c2026 0%, #111316 100%);
-  border-top-color: #2b303a;
-  color: #f2efe9;
+  background: linear-gradient(180deg, #243543 0%, #1a2835 100%);
+  border-top-color: #384e61;
+  color: #f8fafc;
 }
 
 body.theme-mccurdy-dark .drawer-toggle:hover {
-  background: #242932;
-  border-top-color: #454c59;
+  background: #2e4456;
+  border-top-color: #4ba7e8;
 }
 
-body.theme-mccurdy-dark .btn-settings-cog { color: #9ea3ae; }
-body.theme-mccurdy-dark .btn-settings-cog:hover { color: #f2efe9; }
-body.theme-mccurdy-dark .drawer-gear-label { color: #656b77; }
-body.theme-mccurdy-dark .wbs-bottom-logo { color: #f2efe9 !important; }
+body.theme-mccurdy-dark .btn-settings-cog { color: #94a3b8; }
+body.theme-mccurdy-dark .btn-settings-cog:hover { color: #7ac0f5; }
+body.theme-mccurdy-dark .drawer-gear-label { color: #94a3b8; }
+body.theme-mccurdy-dark .wbs-bottom-logo { color: #f8fafc !important; }
 body.theme-mccurdy-dark .wbs-bottom-text { color: #cbd5e1; }
 body.theme-mccurdy-dark .mc-toggle-text { color: #cbd5e1; }
 
-body.theme-mccurdy-dark .drawer-grid { background: #111316; }
+body.theme-mccurdy-dark .drawer-grid { background: #182531; }
 body.theme-mccurdy-dark .drawer-card {
-  background: #181b20;
-  border-color: #2b303a;
+  background: #223240;
+  border-color: #384e61;
 }
 
 body.theme-mccurdy-dark .drawer-card h4,
-body.theme-mccurdy-dark .drawer-row label { color: #f2efe9; }
-body.theme-mccurdy-dark .drawer-section-sub { color: #9ea3ae; border-color: #2b303a; }
+body.theme-mccurdy-dark .drawer-row label { color: #f8fafc; }
+body.theme-mccurdy-dark .drawer-section-sub { color: #94a3b8; border-color: #384e61; }
 body.theme-mccurdy-dark .ctrl-select {
-  background: #20242c;
-  color: #f2efe9;
-  border-color: #353c48;
+  background: #1c2b37;
+  color: #f8fafc;
+  border-color: #3d566c;
 }
-body.theme-mccurdy-dark .ctrl-hint { color: #9ea3ae; }
+body.theme-mccurdy-dark .ctrl-hint { color: #94a3b8; }
 
-/* McCurdy Dark: Meter stack, POD-22, Scope */
-body.theme-mccurdy-dark .meter-stack { background-color: #111316; }
-body.theme-mccurdy-dark .p22-bg { fill: #181b20; }
-body.theme-mccurdy-dark .p22-legend { fill: #9ea3ae; }
+body.theme-mccurdy-dark .meter-stack { background-color: #1e2c38; }
+body.theme-mccurdy-dark .p22-bg { fill: #223240; }
+body.theme-mccurdy-dark .p22-legend { fill: #cbd5e1; }
 body.theme-mccurdy-dark .meter-unit.dbfs-unit {
-  --dbfs-bg: #181b20;
-  background: #181b20;
-  border-top-color: #2b303a;
+  background: #141f28;
+  border-top: 1px solid #2d4152;
 }
 
+/* Scope Dark Blue Styling */
 body.theme-mccurdy-dark .scope-toolbar {
-  background: #111316;
-  border-color: #2b303a;
-  color: #f2efe9;
+  background: #1c2b37;
+  border-color: #384e61;
+  color: #f8fafc;
 }
 body.theme-mccurdy-dark .scope-toolbar-label,
-body.theme-mccurdy-dark .scope-ctrl-item label { color: #9ea3ae; }
+body.theme-mccurdy-dark .scope-ctrl-item label { color: #94a3b8; }
 body.theme-mccurdy-dark .scope-tab-btn {
-  background: #20242c;
-  color: #a0a4ab;
-  border-color: #2b303a;
+  background: #243543;
+  color: #f8fafc;
+  border-color: #384e61;
 }
 body.theme-mccurdy-dark .scope-tab-btn.active {
-  background: #363c48;
-  color: #fff;
-  border-color: #555d6e;
+  background: #3892d4;
+  color: #ffffff;
+  border-color: #1d4ed8;
 }
 body.theme-mccurdy-dark .scope-val-badge,
 body.theme-mccurdy-dark .scope-meta-badge {
-  background: #20242c;
-  color: #f2efe9;
-  border-color: #2b303a;
+  background: #243543;
+  color: #f8fafc;
+  border-color: #384e61;
 }
 
-/* McCurdy ATS-100 buttons & jacks in dark studio finish */
 body.theme-mccurdy-dark #xtm_btn_UP { transform: translate(681.5px, 78px) scale(0.5); }
 body.theme-mccurdy-dark #xtm_btn_DOWN { transform: translate(801.5px, 78px) scale(0.5); }
 body.theme-mccurdy-dark #xtm_btn_lbl_UP,
@@ -104,48 +104,31 @@ body.theme-mccurdy-dark #xtm_btn_lbl_SOURCE { display: none; }
 body.theme-mccurdy-dark #xtm_btn_MODE,
 body.theme-mccurdy-dark #xtm_btn_SOURCE { display: none; }
 
-/* McCurdy Panel SVG dark studio neutral overrides */
+/* McCurdy Panel SVG Classic Broadcast Slate-Blue Background */
 body.theme-mccurdy-dark .mc-panel-bg {
-  fill: #181b20 !important;
-  stroke: #2b303a !important;
+  fill: url(#mc_panel_blue) !important;
+  stroke: #456177 !important;
 }
 body.theme-mccurdy-dark .mc-only text {
-  fill: #9ea3ae;
+  fill: #cbd5e1;
 }
 body.theme-mccurdy-dark .mc-only line {
-  stroke: #2b303a;
-}
-body.theme-mccurdy-dark .mc-range-box {
-  fill: #1c2027 !important;
-  stroke: #353c48 !important;
-}
-body.theme-mccurdy-dark .mc-range-text {
-  fill: #f2efe9 !important;
-}
-body.theme-mccurdy-dark .mc-range-arrow {
-  stroke: #9ea3ae !important;
-}
-body.theme-mccurdy-dark .mc-input-box {
-  stroke: #353c48 !important;
-  fill: #222731 !important;
-}
-body.theme-mccurdy-dark .mc-input-text {
-  fill: #f2efe9 !important;
+  stroke: #456177;
 }
 
-/* McCurdy Folded Sheet Metal Chassis Neutral Dark Overrides */
+/* McCurdy Folded Sheet Metal Chassis Broadcast Blue Overrides */
 body.theme-mccurdy-dark .mc-top-rim {
-  fill: #22262e !important;
+  fill: #2d4254 !important;
 }
 body.theme-mccurdy-dark .mc-top-vents {
-  fill: #14171c !important;
+  fill: #192733 !important;
 }
 body.theme-mccurdy-dark .mc-bottom-rim {
-  fill: #1c2026 !important;
+  fill: #243644 !important;
 }
 body.theme-mccurdy-dark .mc-bottom-vents {
-  fill: #0f1115 !important;
+  fill: #141f28 !important;
 }
 body.theme-mccurdy-dark .mc-rack-flange {
-  fill: #14171c !important;
+  fill: #1a2936 !important;
 }

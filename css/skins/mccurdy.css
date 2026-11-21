@@ -5,7 +5,11 @@
    panel and page chrome change.
    --------------------------------------------------------------- */
 .mc-only { display: none; }
+.mc-com-only { display: none; }
+.mc-ca-only { display: none; }
 body.theme-mccurdy .mc-only { display: inline; }
+body.theme-mccurdy .mc-com-only { display: inline !important; }
+body.theme-mccurdy .mc-ca-only { display: none !important; }
 body.theme-mccurdy .wbs-only { display: none; }
 
 body.theme-mccurdy {
