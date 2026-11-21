@@ -60,10 +60,14 @@
 
 body.theme-mccurdy .wbs-ca-text,
 body.theme-mccurdy .wbs-com-text,
-body.theme-mccurdy .mc-ca-text,
-body.theme-mccurdy .mc-com-text,
 body.theme-mccurdy .wbsps-text {
   color: #1e293b;
+  text-decoration: none;
+}
+
+body.theme-mccurdy .mc-ca-text {
+  color: #ffffff;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
   text-decoration: none;
 }
 
