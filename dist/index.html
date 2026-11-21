@@ -510,6 +510,20 @@
                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14L21 3"/></svg>
               </a>
             </div>
+
+            <!-- 5. Dark Blue Baked Enamel Chassis Styleguide (Local) -->
+            <div class="styleguide-link-btn" onclick="openGuideInModal('styleguide-dark-blue-enamel.html', 'Dark Blue Baked Enamel Chassis Styleguide')">
+              <div class="styleguide-link-icon">
+                <span class="wbs-mini-pill" style="border-color:#38bdf8;background:#161c35;color:#38bdf8;">#161c35</span>
+              </div>
+              <div class="styleguide-link-info">
+                <strong>Dark Blue Baked Enamel Guide</strong>
+                <span>Authentic broadcast chassis finish (#161c35), stipple texture &amp; contrast tokens</span>
+              </div>
+              <a href="styleguide-dark-blue-enamel.html" target="_blank" onclick="event.stopPropagation();" title="Open in new tab" style="color:#94a3b8;display:flex;align-items:center;padding:4px;">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14L21 3"/></svg>
+              </a>
+            </div>
           </div>
 
           <div class="drawer-section-sub">QUICK REFERENCE RULES</div>
@@ -614,18 +628,91 @@
     }
   }
 
-  // Interactive vintage Ward-Beck DR Vernier knob rotation
-  var vintageKnobSteps = [-180, -144, -108, -72, -36, 0, 15, 36, 72, 108];
-  var vintageKnobIndex = 6; // default 15 deg (+4.2 index position)
-  document.addEventListener("click", function(e) {
-    var knob = e.target.closest("#instrument-knob");
-    if (!knob) return;
-    vintageKnobIndex = (vintageKnobIndex + 1) % vintageKnobSteps.length;
-    var angle = vintageKnobSteps[vintageKnobIndex];
+  // Interactive vintage Ward-Beck DR Vernier knob rotation (drag & wheel)
+  var vintageKnobAngle = 15; // default 15 deg (+4.2 index position in SVG)
+  try {
+    var savedKnob = localStorage.getItem("xtm.wbs_vintage_knob");
+    if (savedKnob !== null && !isNaN(parseFloat(savedKnob))) {
+      vintageKnobAngle = parseFloat(savedKnob);
+    }
+  } catch (e) {}
+
+  function updateVintageKnob(angle) {
+    vintageKnobAngle = Math.max(-180, Math.min(108, angle));
     var ptr = document.getElementById("wbs_vintage_knob_pointer");
     var rotor = document.getElementById("wbs_vintage_knob_rotor");
-    if (ptr) ptr.setAttribute("transform", "translate(262, 184) rotate(" + angle + ")");
-    if (rotor) rotor.setAttribute("transform", "translate(269, 193) rotate(" + angle + ")");
+    if (ptr) ptr.setAttribute("transform", "translate(262, 184) rotate(" + vintageKnobAngle.toFixed(1) + ")");
+    if (rotor) rotor.setAttribute("transform", "translate(269, 193) rotate(" + vintageKnobAngle.toFixed(1) + ")");
+    try {
+      localStorage.setItem("xtm.wbs_vintage_knob", vintageKnobAngle.toFixed(1));
+    } catch (e) {}
+  }
+
+  // Ensure initial rotation is set once DOM is loaded or re-rendered
+  setTimeout(function() {
+    updateVintageKnob(vintageKnobAngle);
+  }, 120);
+
+  // Mouse grabbing / dragging slowly
+  var isKnobDragging = false;
+  var dragStartY = 0;
+  var dragStartAngle = 0;
+  var hasDraggedMoved = false;
+
+  document.addEventListener("pointerdown", function(e) {
+    var knob = e.target.closest("#instrument-knob");
+    if (!knob) return;
+    e.preventDefault();
+    isKnobDragging = true;
+    hasDraggedMoved = false;
+    dragStartY = e.clientY;
+    dragStartAngle = vintageKnobAngle;
+    knob.style.cursor = "grabbing";
+    try { knob.setPointerCapture(e.pointerId); } catch (_) {}
+    resumeAudio();
+  });
+
+  document.addEventListener("pointermove", function(e) {
+    if (!isKnobDragging) return;
+    var dy = dragStartY - e.clientY; // moving upward turns clockwise (+dB)
+    if (Math.abs(dy) > 2) hasDraggedMoved = true;
+    // Adjust slowly: 0.40 deg per pixel for weighted precision feel
+    var newAngle = dragStartAngle + (dy * 0.40);
+    updateVintageKnob(newAngle);
+  });
+
+  function endKnobDrag(e) {
+    if (!isKnobDragging) return;
+    isKnobDragging = false;
+    var knob = document.getElementById("instrument-knob");
+    if (knob) knob.style.cursor = "grab";
+    try {
+      if (e && e.pointerId && knob) knob.releasePointerCapture(e.pointerId);
+    } catch (_) {}
+  }
+
+  document.addEventListener("pointerup", endKnobDrag);
+  document.addEventListener("pointercancel", endKnobDrag);
+
+  // Mouse wheel: 5 to 1 clicks nice and slow
+  document.addEventListener("wheel", function(e) {
+    var knob = e.target.closest("#instrument-knob");
+    if (!knob) return;
+    e.preventDefault();
+    // 5 to 1 clicks: 1.5 to 2.5 degrees per detent notch, nice and slow
+    var step = (e.shiftKey) ? 0.5 : 2.0;
+    var delta = (e.deltaY < 0) ? step : -step;
+    updateVintageKnob(vintageKnobAngle + delta);
+    resumeAudio();
+  }, { passive: false });
+
+  // Optional tap/click without drag advances by 5 degrees
+  document.addEventListener("click", function(e) {
+    var knob = e.target.closest("#instrument-knob");
+    if (!knob || hasDraggedMoved) return;
+    var nextAngle = vintageKnobAngle + 5;
+    if (nextAngle > 108) nextAngle = -180;
+    updateVintageKnob(nextAngle);
   });
 </script>
 
