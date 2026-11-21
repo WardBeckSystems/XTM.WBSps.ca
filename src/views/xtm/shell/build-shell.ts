@@ -10,14 +10,16 @@ import { renderWbsCanvas, CHANNEL_A_FRAME, CHANNEL_B_FRAME } from '../skins/wbs/
 export interface ShellOptions {
   power: boolean;
   dialLamp: string;
+  dialBg?: string;
   meterStyle: string;
   ppmStandard: string;
 }
 
 export function buildShellSvg(o: ShellOptions): string {
   const on = o.power;
+  const dialBg = o.dialBg || 'auto';
   const meter = (id: number, fallbackX: number, kind: 'vu' | 'ppm') =>
-    renderMeterShell(id, MX[id] ?? fallbackX, MYc, kind, on, o.dialLamp, kind === 'ppm', o.meterStyle, o.ppmStandard);
+    renderMeterShell(id, MX[id] ?? fallbackX, MYc, kind, on, o.dialLamp, kind === 'ppm', o.meterStyle, o.ppmStandard, dialBg);
 
   return `<svg viewBox="0 0 ${VW} ${VH}" role="img" aria-label="Ward-Beck Systems XTM Master Visualizer" style="width:100%;display:block;border-radius:0">
       ${SHELL_DEFS}

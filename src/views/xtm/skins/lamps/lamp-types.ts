@@ -9,4 +9,6 @@ export interface LampVariant {
   readonly gradient: string;
   /** warm incandescent bloom ellipse behind the VU scale */
   readonly bloom: boolean;
+  /** Bloom location: 'top' (default) or 'bottom' */
+  readonly bloomPos?: 'top' | 'bottom';
 }

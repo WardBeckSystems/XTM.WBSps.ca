@@ -164,7 +164,7 @@
             </svg>
             <span class="footer-btn-text mc-com-text">McCurdyRadio.com</span>
           </button>
-          <span class="build-stamp" style="font-size: 0.7em; opacity: 0.6; margin-left: 12px;">v1.0.51</span>
+          <span class="build-stamp" style="font-size: 0.7em; opacity: 0.6; margin-left: 12px;">v1.0.54</span>
         </div>
       </summary>
 
@@ -277,11 +277,39 @@
             </select>
           </div>
           <div class="drawer-row">
-            <label for="selectLampColor">VU Backlight Tone</label>
+            <label for="selectLampColor">VU Meter Lighting</label>
             <select id="selectLampColor" class="ctrl-select">
-              <option value="amber">Warm Amber Glow (Classic)</option>
-              <option value="white">Crisp Studio White</option>
-              <option value="parchment">Vintage Parchment</option>
+              <option value="amber">Warm Amber Glow (Classic Top Filament)</option>
+              <option value="amber_bottom">Warm Amber Glow (Bottom Rim Bezel Uplight)</option>
+              <option value="tungsten">Warm Incandescent Tungsten (2700K)</option>
+              <option value="golden">Vintage Golden Honey (Aged Bulb)</option>
+              <option value="parchment">Vintage Aged Parchment</option>
+              <option value="white">Crisp Studio White (Daylight 5000K)</option>
+              <option value="warm_white">Warm Studio White (3200K Halogen)</option>
+              <option value="green_glow">Vintage Radio Soft Green Phosphor</option>
+              <option value="dark_night">Dark / Night Dial (High Contrast)</option>
+              <option value="unlit">Passive Studio Daylight (Unlit Dial)</option>
+            </select>
+          </div>
+          <div class="drawer-row">
+            <label for="selectDialBackground">VU Meter Dial Face</label>
+            <select id="selectDialBackground" class="ctrl-select">
+              <option value="auto" selected>Automatic (Matched to Lighting Tone)</option>
+              <option value="classic_buff">Classic Analog Buff / Warm Cream</option>
+              <option value="parchment">Aged Vintage Parchment Paper</option>
+              <option value="champagne">Champagne Anodized Metallic</option>
+              <option value="slate_neutral">Studio Slate Neutral Gray</option>
+              <option value="dark_night">Dark High-Contrast Night Dial</option>
+              <option value="pure_white">Bright Studio Technical White</option>
+            </select>
+          </div>
+          <div class="drawer-row">
+            <label for="selectConsoleBackground">Console / Chassis Background</label>
+            <select id="selectConsoleBackground" class="ctrl-select">
+              <option value="wbs-ca">Ward-Beck.ca · Vintage Champagne Anodized</option>
+              <option value="wbs-dark">Ward-Beck.com · Modern Studio Dark Mastering</option>
+              <option value="mccurdy-dark">McCurdyRadio.ca · McCurdy Studio Slate Neutral</option>
+              <option value="mccurdy-light">McCurdyRadio.com · McCurdy ATS-100 Cream Enamel</option>
             </select>
           </div>
 
@@ -623,6 +651,7 @@
     document.body.classList.toggle("theme-mccurdy", isMcLight);
     document.body.classList.toggle("theme-mccurdy-dark", isMcDark);
     document.body.classList.toggle("theme-wbs-ca", isWbsCa);
+    document.body.classList.toggle("theme-wbs-dark", isWbsDark);
 
     var btnWbsCa = document.getElementById("btnWardBeckCa");
     var btnWbsCom = document.getElementById("btnWardBeckCom");

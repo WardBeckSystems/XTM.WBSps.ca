@@ -33,6 +33,7 @@ export class XtmModel {
 
   public meterStyle: MeterStyle = 'sifam';
   public dialLamp: string = 'amber';
+  public dialBg: string = 'auto';
   public ppmStyle: string = 'black';
   public artMode: string = 'svg';
   public vfdMetric: string = 'lufs';
@@ -384,6 +385,7 @@ export class XtmModel {
         term: this.term,
         meterStyle: this.meterStyle,
         dialLamp: this.dialLamp,
+        dialBg: this.dialBg,
         ppmStyle: this.ppmStyle,
         selectedInput: this.getSelectedInput(),
         mcRangeMode: this.mcRangeMode,
@@ -412,6 +414,7 @@ export class XtmModel {
         if (obj.mcRangeMode) this.mcRangeMode = obj.mcRangeMode;
         if (typeof obj.mcAttenuatorStep === 'number') this.mcAttenuatorStep = obj.mcAttenuatorStep;
         if (obj.dialLamp) this.dialLamp = obj.dialLamp;
+        if (obj.dialBg) this.dialBg = obj.dialBg;
         if (obj.ppmStyle) this.ppmStyle = obj.ppmStyle;
         if (typeof localStorage !== 'undefined' && localStorage.getItem('wbs_xtm4_tone_cal_dbfs_v3') !== 'true') {
           this.toneCalIdx = this.toneCalLevels.indexOf(-18);

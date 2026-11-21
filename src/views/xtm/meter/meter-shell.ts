@@ -12,14 +12,14 @@ import type { FaceCtx } from '../faces/face-types';
 import { vuFaceStyle, renderVuScale } from '../faces/vu/index';
 import { renderPpmFace } from '../faces/ppm/index';
 import { dialPalette } from '../skins/dial-palette';
-import { lampHasBloom } from '../skins/lamps/index';
+import { lampHasBloom, lampBloomPos } from '../skins/lamps/index';
 import { renderWbsFaceLogo } from '../skins/wbs/face-logo';
 import { renderMcCurdyVuBadge } from '../skins/mccurdy/vu-badge';
 import { chamberShadows, bezelRim } from './chamber';
 import { renderGlassShatter } from './shatter';
 
 export function renderMeterShell(id: number, cx: number, cy: number, kind: 'vu' | 'ppm', isPowered: boolean,
-                                 dialLamp: string, isBlackPpm: boolean, meterStyle: string, ppmStandard: string): string {
+                                 dialLamp: string, isBlackPpm: boolean, meterStyle: string, ppmStandard: string, dialBg = 'auto'): string {
   const x0 = cx - MW / 2, y0 = cy - MH / 2;
   const px = cx, py = PY;
   const style = vuFaceStyle(meterStyle);
@@ -28,7 +28,7 @@ export function renderMeterShell(id: number, cx: number, cy: number, kind: 'vu' 
 
   const P = makePolar(px, py);
   const arc = makeArc(P);
-  const { fill: fillGrad, ink } = dialPalette(isPpm, isPowered, dialLamp);
+  const { fill: fillGrad, ink } = dialPalette(isPpm, isPowered, dialLamp, dialBg);
   const ctx: FaceCtx = { P, arc, ink, isSifam, x0, y0 };
 
   let s = `<clipPath id="xmc${id}"><rect x="${x0}" y="${y0}" width="${MW}" height="${MH}" rx="5"/></clipPath>
@@ -37,8 +37,13 @@ export function renderMeterShell(id: number, cx: number, cy: number, kind: 'vu' 
       <rect class="xt-face xt-lamp-${kind === 'vu' && !isBlackPpm ? dialLamp : 'ppm'}" x="${x0}" y="${y0}" width="${MW}" height="${MH}" rx="5" fill="${fillGrad}"/>`;
 
   // Warm incandescent filament halo glow behind VU scales
-  if (kind === 'vu' && isPowered && lampHasBloom(dialLamp)) {
-    s += `<ellipse class="xt-bloom xt-lamp-${dialLamp}" cx="${cx}" cy="${y0 + 115}" rx="${(MW * 0.42).toFixed(1)}" ry="82" fill="url(#xincand_bloom)"/>`;
+  if (kind === 'vu' && isPowered && lampHasBloom(dialLamp) && dialBg !== 'dark_night') {
+    const isBottom = lampBloomPos(dialLamp) === 'bottom';
+    const bloomCy = isBottom ? y0 + 285 : y0 + 115;
+    const bloomRx = isBottom ? (MW * 0.46).toFixed(1) : (MW * 0.42).toFixed(1);
+    const bloomRy = isBottom ? 105 : 82;
+    const bloomGrad = isBottom ? 'xincand_bloom_bottom' : 'xincand_bloom';
+    s += `<ellipse class="xt-bloom xt-lamp-${dialLamp}" cx="${cx}" cy="${bloomCy}" rx="${bloomRx}" ry="${bloomRy}" fill="url(#${bloomGrad})"/>`;
   }
 
   if (kind === 'vu') {

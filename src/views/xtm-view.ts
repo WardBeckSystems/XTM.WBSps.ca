@@ -130,8 +130,8 @@ export class XtmView {
     return renderAltPpmFace(altPpmFace(this.ppmStandard), P, arc, ink, isSifam);
   }
 
-  renderMeterShell(id: number, cx: number, cy: number, kind: 'vu' | 'ppm', isPowered: boolean, dialLamp: string, isBlackPpm = false, meterStyle = 'simpson'): string {
-    return renderMeterShell(id, cx, cy, kind, isPowered, dialLamp, isBlackPpm, meterStyle, this.ppmStandard);
+  renderMeterShell(id: number, cx: number, cy: number, kind: 'vu' | 'ppm', isPowered: boolean, dialLamp: string, isBlackPpm = false, meterStyle = 'simpson', dialBg = 'auto'): string {
+    return renderMeterShell(id, cx, cy, kind, isPowered, dialLamp, isBlackPpm, meterStyle, this.ppmStandard, dialBg);
   }
 
   renderMcCurdyPanel(): string { return renderMcCurdyPanel(); }
@@ -145,6 +145,7 @@ export class XtmView {
     return buildShellSvg({
       power: model.power,
       dialLamp: model.dialLamp,
+      dialBg: model.dialBg,
       meterStyle: model.meterStyle,
       ppmStandard: this.ppmStandard
     });

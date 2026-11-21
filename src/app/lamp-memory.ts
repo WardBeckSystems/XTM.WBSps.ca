@@ -12,7 +12,7 @@ const lsSet = (k: string, v: string) => { try { localStorage.setItem(k, v); } ca
 
 export function initLampMemory(ctx: AppContext, refs: DrawerControls): void {
   const { model, view } = ctx;
-  const { selectLampColor } = refs;
+  const { selectLampColor, selectDialBg, selectConsoleBg } = refs;
 
   const lampKey = () => document.body.classList.contains('theme-mccurdy') ? 'xtm.lamp.mccurdy' : 'xtm.lamp.dark';
   const applyModeLamp = () => {
@@ -35,6 +35,42 @@ export function initLampMemory(ctx: AppContext, refs: DrawerControls): void {
       lsSet(lampKey(), model.dialLamp);
       model.saveEEPROM();
       view.isBuilt = false;
+    });
+  }
+
+  // Dial Background Memory & Selection
+  const dialBgKey = 'xtm.dial.bg';
+  const savedDialBg = lsGet(dialBgKey) || model.dialBg || 'auto';
+  if (savedDialBg !== model.dialBg) {
+    model.dialBg = savedDialBg;
+  }
+  if (selectDialBg) {
+    selectDialBg.value = model.dialBg || 'auto';
+    selectDialBg.addEventListener('change', (e: any) => {
+      model.dialBg = e.target.value;
+      lsSet(dialBgKey, model.dialBg);
+      model.saveEEPROM();
+      view.isBuilt = false;
+    });
+  }
+
+  // Console / Chassis Background Mode Selection
+  const updateConsoleBg = () => {
+    if (!selectConsoleBg) return;
+    if (document.body.classList.contains('theme-wbs-ca')) selectConsoleBg.value = 'wbs-ca';
+    else if (document.body.classList.contains('theme-mccurdy-dark')) selectConsoleBg.value = 'mccurdy-dark';
+    else if (document.body.classList.contains('theme-mccurdy')) selectConsoleBg.value = 'mccurdy-light';
+    else selectConsoleBg.value = 'wbs-dark';
+  };
+  updateConsoleBg();
+  new MutationObserver(updateConsoleBg).observe(document.body, { attributes: true, attributeFilter: ['class'] });
+
+  if (selectConsoleBg) {
+    selectConsoleBg.addEventListener('change', (e: any) => {
+      const mode = e.target.value;
+      if (typeof (window as any).setMode === 'function') {
+        (window as any).setMode(mode);
+      }
     });
   }
 }

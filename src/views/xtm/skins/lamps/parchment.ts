@@ -6,6 +6,7 @@ export const PARCHMENT_LAMP: LampVariant = {
   id: 'parchment',
   gradientId: 'xparchment',
   bloom: true,
+  bloomPos: 'top',
   gradient: `<radialGradient id="xparchment" cx="50%" cy="38%" r="68%">
           <stop offset="0%" stop-color="#fffdf5"/>
           <stop offset="22%" stop-color="#fef3d6"/>

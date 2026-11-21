@@ -12,15 +12,36 @@ export const BLACK_PPM_GRADIENT = `<radialGradient id="xblackppm" cx="50%" cy="3
 
 export interface DialPalette { fill: string; ink: string }
 
-export function dialPalette(isPpm: boolean, isPowered: boolean, dialLamp: string): DialPalette {
+export function dialPalette(isPpm: boolean, isPowered: boolean, dialLamp: string, dialBg = 'auto'): DialPalette {
   let fill = '#171512';
   let ink = '#141008';
   if (isPpm) {
     fill = isPowered ? 'url(#xblackppm)' : '#0a0b0d';
     ink = isPowered ? '#f8fafc' : '#475569';
   } else if (isPowered) {
-    fill = lampFill(dialLamp);
-    ink = '#141008';
+    if (dialBg && dialBg !== 'auto') {
+      if (dialBg === 'dark_night') {
+        fill = 'url(#xdark_night)';
+        ink = '#f8fafc';
+      } else if (dialBg === 'classic_buff') {
+        fill = 'url(#xdial_buff)';
+      } else if (dialBg === 'parchment') {
+        fill = 'url(#xparchment)';
+      } else if (dialBg === 'champagne') {
+        fill = 'url(#xdial_champagne)';
+      } else if (dialBg === 'slate_neutral') {
+        fill = 'url(#xdial_slate)';
+        ink = '#f8fafc';
+      } else if (dialBg === 'pure_white') {
+        fill = 'url(#xwhite)';
+      } else {
+        fill = lampFill(dialLamp);
+        if (dialLamp === 'dark_night') ink = '#f8fafc';
+      }
+    } else {
+      fill = lampFill(dialLamp);
+      if (dialLamp === 'dark_night') ink = '#f8fafc';
+    }
   } else {
     ink = '#0c0a06';
   }

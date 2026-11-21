@@ -15,7 +15,7 @@ export function applyInitialAudioState(ctx: AppContext): void {
 
 export function bindModelChange(ctx: AppContext, refs: DrawerControls, sync: AudioSync): void {
   const { model, audio } = ctx;
-  const { selectToneCal, chkHpf, chkTerm, selectLampColor, selectMeterStyle, drawerSourceBadge } = refs;
+  const { selectToneCal, chkHpf, chkTerm, selectLampColor, selectDialBg, selectMeterStyle, drawerSourceBadge } = refs;
 
   model.onChange = (m: any) => {
     const isDigital = (m.mode === 'D');
@@ -29,6 +29,7 @@ export function bindModelChange(ctx: AppContext, refs: DrawerControls, sync: Aud
     if (chkHpf) chkHpf.checked = m.hp === 1;
     if (chkTerm) chkTerm.checked = m.term === 1;
     if (selectLampColor) selectLampColor.value = m.dialLamp;
+    if (selectDialBg) selectDialBg.value = m.dialBg;
     if (selectMeterStyle) selectMeterStyle.value = m.meterStyle;
 
     if (drawerSourceBadge && m.mode === 'S') {
