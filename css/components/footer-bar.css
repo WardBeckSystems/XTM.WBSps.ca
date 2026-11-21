@@ -43,7 +43,8 @@
 .wbs-ca-text,
 .wbs-com-text,
 .mc-ca-text,
-.mc-com-text {
+.mc-com-text,
+.wbsps-text {
   color: #f8fafc;
   text-decoration: none;
 }
@@ -51,7 +52,8 @@
 .footer-style-btn:hover .mc-ca-text,
 .footer-style-btn:hover .mc-com-text,
 .footer-style-btn:hover .wbs-ca-text,
-.footer-style-btn:hover .wbs-com-text {
+.footer-style-btn:hover .wbs-com-text,
+.footer-style-btn:hover .wbsps-text {
   color: #ffffff;
   text-decoration: none;
 }
@@ -59,7 +61,8 @@
 body.theme-mccurdy .wbs-ca-text,
 body.theme-mccurdy .wbs-com-text,
 body.theme-mccurdy .mc-ca-text,
-body.theme-mccurdy .mc-com-text {
+body.theme-mccurdy .mc-com-text,
+body.theme-mccurdy .wbsps-text {
   color: #1e293b;
   text-decoration: none;
 }
@@ -67,9 +70,34 @@ body.theme-mccurdy .mc-com-text {
 body.theme-mccurdy-dark .wbs-ca-text,
 body.theme-mccurdy-dark .wbs-com-text,
 body.theme-mccurdy-dark .mc-ca-text,
-body.theme-mccurdy-dark .mc-com-text {
+body.theme-mccurdy-dark .mc-com-text,
+body.theme-mccurdy-dark .wbsps-text {
   color: #f8fafc;
   text-decoration: none;
+}
+
+.wbsps-btn {
+  color: #cbd5e1;
+}
+
+.wbsps-btn:hover {
+  color: #ffffff;
+}
+
+body.theme-mccurdy .wbsps-btn {
+  color: #334155;
+}
+
+body.theme-mccurdy .wbsps-btn:hover {
+  color: #0f172a;
+}
+
+body.theme-mccurdy-dark .wbsps-btn {
+  color: #cbd5e1;
+}
+
+body.theme-mccurdy-dark .wbsps-btn:hover {
+  color: #ffffff;
 }
 
 /* Legacy class compatibility */

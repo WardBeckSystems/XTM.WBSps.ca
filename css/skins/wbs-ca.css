@@ -11,16 +11,16 @@
 }
 
 body.theme-wbs-ca {
-  --bg-deep: #121922;
-  --bg-panel: #2c4454;
-  --border-subtle: #3a566b;
+  --bg-deep: #0e1222;
+  --bg-panel: #161c35;
+  --border-subtle: #242d54;
   --ink-primary: #f8fafc;
   --ink-secondary: #cbd5e1;
   --ink-muted: #94a3b8;
 }
 
 html:has(body.theme-wbs-ca) {
-  background-color: #121922;
+  background-color: #0e1222;
 }
 
 body.theme-wbs-ca .wbs-ca-only {

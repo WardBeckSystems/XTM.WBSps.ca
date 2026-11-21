@@ -12,18 +12,19 @@
  */
 
 export const WBS_VINTAGE_DEFS = `
-  <!-- McCurdy / WBS Radio Slate-Blue Baked Enamel Faceplate (#436478 to #2c4454) -->
+  <!-- Ward-Beck.ca Dark Blue Broadcast Baked Enamel Faceplate (#161c35 from authentic swatch) -->
   <linearGradient id="wbsSlateBlueGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-    <stop offset="0%" stop-color="#436478" />
-    <stop offset="48%" stop-color="#375466" />
-    <stop offset="100%" stop-color="#2c4454" />
+    <stop offset="0%" stop-color="#253158" />
+    <stop offset="28%" stop-color="#1b2444" />
+    <stop offset="65%" stop-color="#161c35" />
+    <stop offset="100%" stop-color="#10152b" />
   </linearGradient>
 
-  <!-- Top Perforated Ventilation Rim -->
+  <!-- Top Perforated Ventilation Rim in Dark Blue Baked Enamel -->
   <linearGradient id="topRimSlateBlue" x1="0%" y1="0%" x2="0%" y2="100%">
-    <stop offset="0%" stop-color="#51768c" />
-    <stop offset="75%" stop-color="#3b596b" />
-    <stop offset="100%" stop-color="#243846" />
+    <stop offset="0%" stop-color="#2f3d6c" />
+    <stop offset="75%" stop-color="#1b2342" />
+    <stop offset="100%" stop-color="#11162b" />
   </linearGradient>
 
   <!-- Enamel / Painted Off-White Front Panel -->
