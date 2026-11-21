@@ -65,37 +65,58 @@ export function createAudioSync(ctx: AppContext, refs: DrawerControls): AudioSyn
 
     if (m.mode === 'A') {
       // ANALOG MODE: Soundcard Mic / Line In / Loopback
-      const devices = await audio.getAudioInputDevices();
+      let devices: MediaDeviceInfo[] = [];
+      try {
+        devices = await audio.getAudioInputDevices();
+      } catch (_) {
+        devices = [];
+      }
+
+      // If system has no audio input devices detected, gracefully run internal reference tone without console error spam
+      if (!devices || devices.length === 0) {
+        if (drawerSourceBadge) {
+          drawerSourceBadge.textContent = 'Source: Calibrated Internal Tone (No Audio Input Devices Detected)';
+          drawerSourceBadge.style.color = '#38bdf8';
+        }
+        audio.setToneCalibration(-18);
+        audio.startTestGenerator('sine1k');
+        return;
+      }
+
       let targetId = selectDevice ? selectDevice.value : null;
 
-      // Ensure naming based on A0/A1
+      // Ensure naming based on A0/A1 only if user hasn't explicitly chosen a device or targetId is empty
       const micDevices = devices.filter(d => d.label.toLowerCase().includes('mic'));
       const lineDevices = devices.filter(d => d.label.toLowerCase().includes('line'));
 
-      // If user toggled A0 vs A1 via front panel SOURCE button:
-      if (m.a.src === 1) { // Line / Input 2
-        targetId = (lineDevices.length > 0 ? lineDevices[0].deviceId : (devices.length > 1 ? devices[1].deviceId : null));
-        if (selectDevice) selectDevice.value = targetId || '';
-      } else if (m.a.src === 0) { // Mic / Input 1
-        targetId = (micDevices.length > 0 ? micDevices[0].deviceId : (devices.length > 0 ? devices[0].deviceId : null));
+      if (!targetId) {
+        if (m.a.src === 1) { // Line / Input 2
+          targetId = (lineDevices.length > 0 ? lineDevices[0].deviceId : (devices.length > 1 ? devices[1].deviceId : devices[0].deviceId));
+        } else { // Mic / Input 1
+          targetId = (micDevices.length > 0 ? micDevices[0].deviceId : devices[0].deviceId);
+        }
         if (selectDevice) selectDevice.value = targetId || '';
       }
 
+      const activeOpt = selectDevice?.options[selectDevice.selectedIndex];
+      const curName = activeOpt?.text || devices.find(d => d.deviceId === targetId)?.label || 'Soundcard Input';
+
       if (drawerSourceBadge) {
-        const curName = selectDevice?.options[selectDevice.selectedIndex]?.text || 'Soundcard Input';
-        drawerSourceBadge.textContent = 'Connecting: ' + curName + '...';
-        drawerSourceBadge.style.color = '#ffd152';
+        drawerSourceBadge.textContent = 'Source: ' + curName;
+        drawerSourceBadge.style.color = '#7df9ff';
       }
 
       try {
         await audio.connectSoundCard(targetId);
         audio.setInputTrim(m.a.lvl - 64);
       } catch (err: any) {
-        console.warn('Could not connect soundcard:', err);
         const isNotFound = err?.name === 'NotFoundError' || err?.message?.includes('not found') || err?.message?.includes('detected');
+        if (!isNotFound) {
+          console.warn('Could not connect soundcard:', err);
+        }
         if (drawerSourceBadge) {
           drawerSourceBadge.textContent = isNotFound
-            ? 'No Mic / Soundcard Input (Running Internal 1 kHz Tone)'
+            ? 'Source: Calibrated Internal Tone (No Audio Input Devices)'
             : 'Source Error: ' + (err?.message || 'Failed to open soundcard');
           drawerSourceBadge.style.color = isNotFound ? '#38bdf8' : '#ff4d4f';
         }

@@ -82,33 +82,43 @@ export function initDeviceSelector(ctx: AppContext, refs: DrawerControls, sync: 
     const selectedId = selectDevice.value || null;
     sync.isAudioStarted = true;
 
-    // Ensure model is set to Analog Soundcard Input mode
-    if (model.mode !== 'A') {
-      model.mode = 'A';
-      model.a.src = 0;
-      model.saveEEPROM();
-      model.notify();
-    }
-
-    sync.lastModeKey = 'A:0';
-
     const optText = selectDevice.options[selectDevice.selectedIndex]?.text || 'Soundcard Input';
     if (drawerSourceBadge) {
       drawerSourceBadge.textContent = 'Connecting: ' + optText + '...';
       drawerSourceBadge.style.color = '#ffd152';
     }
 
+    if (model.mode !== 'A') {
+      model.mode = 'A';
+      model.a.src = 0;
+      model.saveEEPROM();
+    }
+
+    sync.lastModeKey = 'A:' + selectedId;
+
     try {
       await audio.connectSoundCard(selectedId);
+      if (drawerSourceBadge) {
+        drawerSourceBadge.textContent = 'Source: ' + optText;
+        drawerSourceBadge.style.color = '#7df9ff';
+      }
       model.flash('CARD IN');
       audio.setReferenceLevel(model.getActiveReferenceLevel(), (model.mode as string) === 'D');
       sync.nudgeSens(model);
-    } catch (err) {
-      console.error('Failed to connect selected device:', err);
-      if (drawerSourceBadge) {
-        drawerSourceBadge.textContent = 'Device Error: ' + ((err as any)?.message || 'Cannot access device');
-        drawerSourceBadge.style.color = '#ff4d4f';
+    } catch (err: any) {
+      const isNotFound = err?.name === 'NotFoundError' || err?.message?.includes('not found') || err?.message?.includes('detected');
+      if (!isNotFound) {
+        console.error('Failed to connect selected device:', err);
       }
+      if (drawerSourceBadge) {
+        drawerSourceBadge.textContent = isNotFound
+          ? 'Source: Calibrated Internal Tone (No Audio Input Devices)'
+          : 'Device Error: ' + (err?.message || 'Cannot access device');
+        drawerSourceBadge.style.color = isNotFound ? '#38bdf8' : '#ff4d4f';
+      }
+      // Fallback to internal test tone
+      audio.setToneCalibration(-18);
+      audio.startTestGenerator('sine1k');
     }
   });
 }
