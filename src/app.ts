@@ -45,6 +45,10 @@ export async function initApp(): Promise<void> {
   const podView = new Pod22View(podStageEl);
   const dbfsView = dbfsStageEl ? new DbfsView(dbfsStageEl) : null;
   const ctx: AppContext = { model, audio, view, podView, dbfsView };
+  (window as any).xtmModel = model;
+  (window as any).xtmAudio = audio;
+  (window as any).xtmView = view;
+  (window as any).xtmCtx = ctx;
 
   initSettingsDrawer();
   initSettingsLock();

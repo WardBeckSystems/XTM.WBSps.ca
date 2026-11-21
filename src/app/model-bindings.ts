@@ -62,6 +62,14 @@ export function bindFrontPanel(ctx: AppContext, sync: AudioSync): void {
       if (inputNum >= 1 && inputNum <= 4) {
         model.setInput(inputNum);
       }
+    } else if (btnName === 'MC_TOGGLE') {
+      model.toggleMccurdyRange();
+    } else if (btnName === 'MC_RANGE_OUTER') {
+      model.setMccurdyRange('outer');
+    } else if (btnName === 'MC_RANGE_INNER') {
+      model.setMccurdyRange('inner');
+    } else if (btnName === 'MC_RANGE_CAL') {
+      model.setMccurdyRange('cal');
     }
     sync.syncAudioWithHardwareMode(model);
   };
