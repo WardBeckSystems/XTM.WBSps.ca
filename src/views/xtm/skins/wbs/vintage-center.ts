@@ -8,8 +8,8 @@
 
 export function renderVintageWbsCenter(isPowered = true): string {
   return `<g class="wbs-ca-only" id="vintage-wbs-center">
-    <!-- 1. Centered DR Vernier Dial Scale + Fluted Instrument Knob (Centered at x=1600, y=182, Scale=1.10 - Taller Knob) -->
-    <g transform="translate(1600, 182) scale(1.10)">
+    <!-- 1. Centered DR Vernier Dial Scale + Fluted Instrument Knob (Centered at x=1600, y=180, Scale=1.32 - 20% Larger) -->
+    <g transform="translate(1600, 180) scale(1.32)">
       <!-- DR Differential Decade / Vernier Dial Scale & Markings (Origin at 0, 0) -->
       <g id="dr-dial-scale" font-family="'Helvetica Neue', Helvetica, Arial, sans-serif" fill="#2A2B2A" stroke="#2A2B2A">
         <!-- Top Header "DR" and "- 0 +" with interactive Auto-Range toggle -->
@@ -157,8 +157,8 @@ export function renderVintageWbsCenter(isPowered = true): string {
       </g>
     </g>
 
-    <!-- 2. AC Pilot Indicator Lamp Assembly (Placed in Right Margin at cx=1785, cy=182) -->
-    <g id="ac-pilot-lamp" class="wbs-ac-pilot-lamp" transform="translate(1785, 182)" filter="url(#lampDropShadow)">
+    <!-- 2. AC Pilot Indicator Lamp Assembly (Placed in Right Margin at cx=1785, cy=180) -->
+    <g id="ac-pilot-lamp" class="wbs-ac-pilot-lamp" transform="translate(1785, 180)" filter="url(#lampDropShadow)">
       <title>AC Mains Pilot Lamp ${isPowered ? '(Energized)' : '(Off)'}</title>
       <!-- Outer Chrome Mounting Collar / Nut -->
       <ellipse cx="-4" cy="-1" rx="17.5" ry="18.5" fill="url(#chromeBezelGrad)" stroke="#383c42" stroke-width="0.9" />
@@ -189,18 +189,18 @@ export function renderWinkSwitchCluster(isPowered = true): string {
     { num: 4, sub: 'TEST GEN' }
   ];
 
-  const y = 342;
-  const bw = 90;
+  const y = 362;
+  const bw = 78;
   const bh = 38; // Shorter buttons per specification
-  const totalW = bw * 4; // 360px wide, centered at 1600
-  const startX = 1420;
+  const totalW = bw * 4; // 312px wide, centered at 1600
+  const startX = 1600 - totalW / 2; // 1444
 
   let out = `
     <!-- INPUT SELECTOR Header & Hairline Rules (Above switches) -->
     <g ${font}>
-      <line x1="1380" y1="319" x2="1515" y2="319" stroke="#8C897B" stroke-width="1.2" stroke-opacity="0.8" />
-      <text x="1600" y="322.5" font-size="10.5" font-weight="700" fill="#2A2B2A" text-anchor="middle" letter-spacing="2.5">INPUT SELECTOR</text>
-      <line x1="1685" y1="319" x2="1820" y2="319" stroke="#8C897B" stroke-width="1.2" stroke-opacity="0.8" />
+      <line x1="1400" y1="338" x2="1515" y2="338" stroke="#8C897B" stroke-width="1.2" stroke-opacity="0.8" />
+      <text x="1600" y="341.5" font-size="10.5" font-weight="700" fill="#2A2B2A" text-anchor="middle" letter-spacing="2.5">INPUT SELECTOR</text>
+      <line x1="1685" y1="338" x2="1800" y2="338" stroke="#8C897B" stroke-width="1.2" stroke-opacity="0.8" />
     </g>
 
     <!-- Continuous Outer Recessed Bezel Housing for 4 Butted Switches -->
