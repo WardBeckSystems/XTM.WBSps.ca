@@ -43,13 +43,14 @@ function bezel(cx: number): string {
       </g>`;
 }
 
-/** INPUT 1 / INPUT 2 legend with hairlines between each meter pair */
+/** INPUT 1 / INPUT 2 legend with hairlines between each meter pair (ATS-100 Cream Console only) */
 function legend(cx: number, label: string, x0: number | null): string {
   const ly = VH - 26;
-  return `
+  return `<g class="mc-com-only">
       ${x0 === null ? '' : `<line x1="${x0}" y1="${ly}" x2="${cx - 70}" y2="${ly}" stroke="#5c5952" stroke-width="1.5"/>`}
       <line x1="${cx + 70}" y1="${ly}" x2="${cx + 600}" y2="${ly}" stroke="#5c5952" stroke-width="1.5"/>
-      <text x="${cx}" y="${ly}" dominant-baseline="central" text-anchor="middle" font-family="Helvetica, Arial, sans-serif" font-size="20" font-weight="500" letter-spacing="2" fill="#636058">${label}</text>`;
+      <text x="${cx}" y="${ly}" dominant-baseline="central" text-anchor="middle" font-family="Helvetica, Arial, sans-serif" font-size="20" font-weight="500" letter-spacing="2" fill="#636058">${label}</text>
+    </g>`;
 }
 
 export function renderMcCurdyPanel(): string {
