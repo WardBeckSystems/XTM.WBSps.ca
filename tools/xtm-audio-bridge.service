@@ -1,0 +1,13 @@
+[Unit]
+Description=Ward-Beck Systems XTM Virtual Audio Loopback Bridge (PipeWire)
+After=pipewire.service
+BindsTo=pipewire.service
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/pw-loopback --capture-props="node.name=XTM_Audio_Bridge node.description=\"XTM Desktop Loopback\"" --playback-props="media.class=Audio/Source/Virtual node.name=XTM_Audio_Source node.description=\"XTM Audio Bridge (Banner-Free)\""
+Restart=on-failure
+RestartSec=2
+
+[Install]
+WantedBy=default.target
