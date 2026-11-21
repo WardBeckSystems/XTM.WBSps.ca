@@ -265,77 +265,42 @@ export function renderMcCurdyCaCenter(): string {
       </g>
 
       <!-- ================================================================= -->
-      <!-- RIGHT SECTION: TOGGLE RANGE SWITCH, MCCURDY SHIELD LOGO & TITLE   -->
+      <!-- RIGHT SECTION: TOGGLE SWITCH (UPPER) & 4 SELECTOR SWITCHES (SIDE) -->
       <!-- ================================================================= -->
-      <g id="mc-right-controls" ${font}>
-        <!-- RANGE Header -->
-        <text x="1785" y="66" font-size="11" font-weight="800" fill="#f8fafc" text-anchor="middle" letter-spacing="1.2">RANGE</text>
+      <!-- Chrome Bat-Handle Toggle Switch Assembly (Upper Right, cx=1802, cy=95) -->
+      <g id="mc-toggle-assembly" class="xtm-btn" data-btn="MC_TOGGLE" style="cursor:pointer" transform="translate(1802, 95)">
+        <title>Range Switch: Click to Toggle Range (MTR / CAL / MON)</title>
+        <text x="0" y="-32" ${font} font-size="10" font-weight="700" fill="#cbd5e1" text-anchor="middle">MTR</text>
+        <text x="22" y="3.5" ${font} font-size="9" font-weight="700" fill="#94a3b8" text-anchor="start">CAL</text>
+        <text x="0" y="38" ${font} font-size="10" font-weight="700" fill="#cbd5e1" text-anchor="middle">MON</text>
 
-        <!-- Top Position: MTR Outer (-50 to +10 dB) -->
-        <g class="xtm-btn mc-toggle-pos" data-btn="MC_RANGE_OUTER" style="cursor:pointer">
-          <text id="mc_toggle_lbl_outer" x="1785" y="84" font-size="11" font-weight="800" fill="#fbbf24" text-anchor="middle" letter-spacing="0.5">MTR</text>
-          <text id="mc_toggle_sub_outer" x="1785" y="94" font-size="8" font-weight="700" fill="#fbbf24" text-anchor="middle" letter-spacing="0.4">-50 TO +10</text>
+        <!-- Chrome Bezel Nut -->
+        <circle cx="0" cy="0" r="19" fill="url(#chromeMetalGrad)" stroke="#1a2530" stroke-width="1.3"/>
+        <circle cx="0" cy="0" r="13.5" fill="#141c24" stroke="#0a121a" stroke-width="1"/>
+
+        <!-- Bat Handle Stick (Angled Upwards to MTR) -->
+        <g id="mc_toggle_stick_rotor" transform="rotate(-24)">
+          <path d="M -3.5,0 L -4,-28 C -4,-33 4,-33 4,-28 L 3.5,0 Z" fill="url(#mc_toggle_stick)" stroke="#334155" stroke-width="0.8"/>
+          <circle cx="0" cy="-30" r="4.8" fill="#f1f5f9"/>
         </g>
-
-        <!-- Middle Position: CAL (+4 dBu reference line-up) -->
-        <g class="xtm-btn mc-toggle-pos" data-btn="MC_RANGE_CAL" style="cursor:pointer">
-          <text id="mc_toggle_lbl_cal" x="1808" y="118" font-size="9" font-weight="700" fill="#94a3b8" text-anchor="start" letter-spacing="0.4">CAL</text>
-        </g>
-
-        <!-- Bottom Position: MON Inner (-30 to +30 dB) -->
-        <g class="xtm-btn mc-toggle-pos" data-btn="MC_RANGE_INNER" style="cursor:pointer">
-          <text id="mc_toggle_sub_inner" x="1785" y="142" font-size="8" font-weight="700" fill="#64748b" text-anchor="middle" letter-spacing="0.4">-30 TO +30</text>
-          <text id="mc_toggle_lbl_inner" x="1785" y="154" font-size="11" font-weight="800" fill="#64748b" text-anchor="middle" letter-spacing="0.5">MON</text>
-        </g>
-
-        <!-- Guidance Routing Lines connecting Range Switch to dial scales -->
-        <!-- Outer scale bracket line from -50 TO +10 -->
-        <path d="M 1735,94 C 1718,100 1704,115 1702,135 V 285 C 1704,302 1718,312 1735,318" fill="none" stroke="#f8fafc" stroke-width="1.2" stroke-opacity="0.8"/>
-        <line x1="1735" y1="94" x2="1742" y2="94" stroke="#f8fafc" stroke-width="1.2" stroke-opacity="0.8"/>
-        <line x1="1735" y1="318" x2="1742" y2="318" stroke="#f8fafc" stroke-width="1.2" stroke-opacity="0.8"/>
-
-        <!-- Chrome Bat-Handle Toggle Switch Assembly (cx=1785, cy=115) -->
-        <g id="mc-toggle-assembly" class="xtm-btn" data-btn="MC_TOGGLE" style="cursor:pointer" transform="translate(1785, 115)">
-          <title>Range Switch: Click to Toggle Range (MTR Outer: -50..+10 dB / MON Inner: -30..+30 dB / CAL: 0 VU)</title>
-          <!-- Chrome Hex Nut & Mounting Bushing -->
-          <polygon points="0,-12 10.4,-6 10.4,6 0,12 -10.4,6 -10.4,-6" fill="url(#chromeMetalGrad)" stroke="#1a252f" stroke-width="1.2" />
-          <circle cx="0" cy="0" r="9" fill="url(#chromeMetalGrad)" stroke="#1a252f" stroke-width="1.0" />
-          <circle cx="0" cy="0" r="5.5" fill="#141c24" stroke="#0a121a" stroke-width="0.9" />
-
-          <!-- Bat Handle Stick (Angled to -24° Outer, 0° CAL, +24° Inner) -->
-          <g id="mc_toggle_stick_rotor" transform="rotate(-24)">
-            <!-- Drop Shadow under Lever -->
-            <line x1="1" y1="1" x2="1" y2="-25" stroke="#0f171e" stroke-width="5.2" stroke-linecap="round" opacity="0.6" />
-            <!-- Main Chrome Shaft -->
-            <line x1="0" y1="0" x2="0" y2="-24" stroke="#dce1e8" stroke-width="4.8" stroke-linecap="round" />
-            <!-- Specular Highlight -->
-            <line x1="0" y1="0" x2="0" y2="-24" stroke="#ffffff" stroke-width="1.5" stroke-linecap="round" opacity="0.85" />
-            <!-- Tip Ball -->
-            <circle cx="0" cy="-24" r="3.2" fill="#f8fafc" stroke="#6b7280" stroke-width="0.7" />
-          </g>
-        </g>
-
-        <!-- McCurdy Vintage Shield Cartouche Logo (cx=1785, cy=220) -->
-        <g id="mccurdy-vintage-shield-badge" filter="url(#mc_badge_shadow)">
-          <svg x="1743" y="198" width="84" height="42" viewBox="100 85 800 370" aria-hidden="true">
-            <!-- Symmetrical Shield Border & Metallic Blue Field -->
-            <path d="M 140,185 Q 132,160 165,155 L 475,112 Q 500,108 525,112 L 835,155 Q 868,160 860,185 L 785,375 Q 775,398 748,402 L 525,442 Q 500,446 475,442 L 252,402 Q 225,398 215,375 Z"
-                  fill="url(#mc_shield_blue_ca)" stroke="#f8fafc" stroke-width="24" stroke-linejoin="round"/>
-            <!-- Lowercase 'm' with extended crossbar -->
-            <path d="M 248,175 L 322,175 L 322,200 C 342,178 368,170 394,173 C 418,176 434,188 444,206 C 464,180 494,170 524,173 C 564,177 586,206 586,250 L 586,322 L 782,322 L 770,350 L 586,350 L 586,362 L 608,362 L 608,385 L 498,385 L 498,362 L 520,362 L 520,350 L 452,350 L 452,322 L 520,322 L 520,255 C 520,230 508,218 488,218 C 468,218 454,232 454,258 L 454,305 L 390,305 L 390,255 C 390,230 378,218 358,218 C 338,218 324,232 324,258 L 324,362 L 346,362 L 346,385 L 248,385 L 248,362 L 268,362 L 268,200 L 248,200 Z"
-                  fill="#f8fafc"/>
-            <!-- CCURDY Lettering -->
-            <g fill="#f8fafc" font-family="'Helvetica Neue', Helvetica, Arial, sans-serif" font-weight="800" letter-spacing="1.5">
-              <text x="598" y="258" font-size="32">C</text>
-              <text x="622" y="272" font-size="44">CURDY</text>
-            </g>
-          </svg>
-        </g>
-
-        <!-- Silkscreen Designation Below Shield -->
-        <text x="1785" y="272" font-size="11.5" font-weight="800" fill="#f8fafc" text-anchor="middle" letter-spacing="1.5">EXTENDED RANGE</text>
-        <text x="1785" y="288" font-size="10" font-weight="700" fill="#cbd5e1" text-anchor="middle" letter-spacing="1">AUDIO LEVEL METER</text>
       </g>
+
+      <!-- 4 Interlocking Selector Switches Across the Side Labeled 1 2 3 4 -->
+      <!-- Snap up when another is pushed -->
+      ${[1, 2, 3, 4].map(i => {
+        const by = 168 + (i - 1) * 62;
+        return `
+      <g class="xtm-btn mc-selector-btn ${i === 1 ? 'mc-btn-latched' : ''}" id="mc_input_btn_${i}" data-btn="INPUT_${i}" data-input="${i}" style="cursor:pointer" transform="translate(1802, ${by})" role="button" tabindex="0" aria-label="Input ${i}">
+        <title>Input ${i} Selector Switch (Push to select, snaps up when another is pushed)</title>
+        <text x="0" y="-19" ${font} font-size="8.5" font-weight="700" fill="#cbd5e1" text-anchor="middle" letter-spacing="0.5">INPUT ${i}</text>
+        <!-- Outer Bezel & Well -->
+        <circle cx="0" cy="0" r="17" fill="url(#chromeMetalGrad)" stroke="#152636" stroke-width="1.3"/>
+        <circle cx="0" cy="0" r="13" fill="#0d141c" stroke="#080e14" stroke-width="1"/>
+        <!-- Pushbutton Cap (Latches down / snaps up) -->
+        <circle class="mc-btn-cap" cx="0" cy="0" r="10.5" fill="#1e293b" stroke="#475569" stroke-width="1"/>
+        <text class="mc-btn-label" x="0" y="4" ${font} font-size="11.5" font-weight="900" fill="#f8fafc" text-anchor="middle">${i}</text>
+      </g>`;
+      }).join('')}
     </g>`;
 }
 

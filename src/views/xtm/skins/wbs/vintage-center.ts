@@ -1,19 +1,15 @@
 /*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.ca). All rights reserved. */
 /**
  * Ward-Beck Systems Vintage Centre Console (Ward-Beck.ca):
- * - Upper 4-gang interlocking Wink Switch Selector cluster (butted against one another, push downward when selected).
- * - Below: Centered DR Differential Decade / Vernier Dial Scale with fluted Bakelite instrument knob.
- * - AC jeweled pilot indicator lamp assembly with chrome collar and warm incandescent filament glow.
- * - No text or bar below switches; clean, uncluttered layout.
+ * - Upper: Centered DR Differential Decade / Vernier Dial Scale with fluted Bakelite instrument knob.
+ * - Upper Right Margin: AC jeweled pilot indicator lamp assembly with chrome collar and warm incandescent filament glow.
+ * - Lower Across Bottom: 4-gang interlocking Wink Switch Selector cluster (Input 1 2 3 4, snaps up when another is pushed).
  */
 
 export function renderVintageWbsCenter(isPowered = true): string {
   return `<g class="wbs-ca-only" id="vintage-wbs-center">
-    <!-- 1. Upper Input 1 2 3 4 Wink Switch Selector Assembly Across the Top -->
-    ${renderWinkSwitchCluster(isPowered)}
-
-    <!-- 2. Centered DR Vernier Dial Scale + Fluted Instrument Knob (Centered at x=1600, y=265, Scale=0.98) -->
-    <g transform="translate(1600, 265) scale(0.98)">
+    <!-- 1. Centered DR Vernier Dial Scale + Fluted Instrument Knob (Centered at x=1600, y=154, Scale=0.94) -->
+    <g transform="translate(1600, 154) scale(0.94)">
       <!-- DR Differential Decade / Vernier Dial Scale & Markings (Origin at 0, 0) -->
       <g id="dr-dial-scale" font-family="'Helvetica Neue', Helvetica, Arial, sans-serif" fill="#2A2B2A" stroke="#2A2B2A">
         <!-- Top Header "DR" and "- 0 +" -->
@@ -157,8 +153,8 @@ export function renderVintageWbsCenter(isPowered = true): string {
       </g>
     </g>
 
-    <!-- 3. AC Pilot Indicator Lamp Assembly (Placed in Right Margin at cx=1785, cy=265) -->
-    <g id="ac-pilot-lamp" class="wbs-ac-pilot-lamp" transform="translate(1785, 265)" filter="url(#lampDropShadow)">
+    <!-- 2. AC Pilot Indicator Lamp Assembly (Placed in Right Margin at cx=1785, cy=154) -->
+    <g id="ac-pilot-lamp" class="wbs-ac-pilot-lamp" transform="translate(1785, 154)" filter="url(#lampDropShadow)">
       <title>AC Mains Pilot Lamp ${isPowered ? '(Energized)' : '(Off)'}</title>
       <!-- Outer Chrome Mounting Collar / Nut -->
       <ellipse cx="-4" cy="-1" rx="17.5" ry="18.5" fill="url(#chromeBezelGrad)" stroke="#383c42" stroke-width="0.9" />
@@ -174,6 +170,9 @@ export function renderVintageWbsCenter(isPowered = true): string {
       <!-- "AC" Panel Silkscreen Label -->
       <text x="0" y="38" font-family="'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="12.5" font-weight="700" fill="#2A2B2A" text-anchor="middle" letter-spacing="0.8">AC</text>
     </g>
+
+    <!-- 4. Lower Input 1 2 3 4 Wink Switch Selector Assembly Across the Bottom -->
+    ${renderWinkSwitchCluster(isPowered)}
   </g>`;
 }
 
@@ -186,7 +185,7 @@ export function renderWinkSwitchCluster(isPowered = true): string {
     { num: 4, sub: 'TEST GEN' }
   ];
 
-  const y = 80;
+  const y = 295;
   const bw = 90;
   const bh = 54;
   const totalW = bw * 4; // 360px wide, centered at 1600
@@ -195,9 +194,9 @@ export function renderWinkSwitchCluster(isPowered = true): string {
   let out = `
     <!-- INPUT SELECTOR Header & Hairline Rules (Above switches) -->
     <g ${font}>
-      <line x1="1380" y1="56" x2="1515" y2="56" stroke="#8C897B" stroke-width="1.2" stroke-opacity="0.8" />
-      <text x="1600" y="59.5" font-size="10.5" font-weight="700" fill="#2A2B2A" text-anchor="middle" letter-spacing="2.5">INPUT SELECTOR</text>
-      <line x1="1685" y1="56" x2="1820" y2="56" stroke="#8C897B" stroke-width="1.2" stroke-opacity="0.8" />
+      <line x1="1380" y1="272" x2="1515" y2="272" stroke="#8C897B" stroke-width="1.2" stroke-opacity="0.8" />
+      <text x="1600" y="275.5" font-size="10.5" font-weight="700" fill="#2A2B2A" text-anchor="middle" letter-spacing="2.5">INPUT SELECTOR</text>
+      <line x1="1685" y1="272" x2="1820" y2="272" stroke="#8C897B" stroke-width="1.2" stroke-opacity="0.8" />
     </g>
 
     <!-- Continuous Outer Recessed Bezel Housing for 4 Butted Switches -->

@@ -82,6 +82,13 @@ export class XtmView {
   modeTitleEl: SVGElement | null = null;
   btnEls: Record<string, ButtonElementBundle> = {};
   winkEls: (SVGElement | null)[] = [null, null, null, null, null];
+  mcInputEls: (SVGElement | null)[] = [null, null, null, null, null];
+  vuShatterEls: (SVGElement | null)[] = [null, null, null, null];
+
+  // VU Meter Overload Glass Shatter State
+  isGlassShattered: boolean = false;
+  vuRedStartTime: number = 0;
+  lastSensKey: string = '';
 
   // Change detection caches
   lastAngles: [number, number, number, number] = [-999, -999, -999, -999];
@@ -170,9 +177,18 @@ export class XtmView {
     queryButtonEls(this.container, this.btnEls);
 
     this.winkEls = [null];
+    this.mcInputEls = [null];
     for (let i = 1; i <= 4; i++) {
       this.winkEls.push(this.container.querySelector<SVGElement>(`#wink_btn_${i}`));
+      this.mcInputEls.push(this.container.querySelector<SVGElement>(`#mc_input_btn_${i}`));
     }
+
+    this.vuShatterEls = [
+      this.container.querySelector<SVGElement>('#vu_shatter_0'),
+      null,
+      this.container.querySelector<SVGElement>('#vu_shatter_2'),
+      null
+    ];
 
     this.attachEvents();
   }
@@ -246,21 +262,58 @@ export class XtmView {
       paintButtons(this.btnEls, this.heldButton);
     }
 
-    // 6. Ward-Beck.ca Wink Switch Selector Animation & State
+    // 6. Selector Switch Interlocking Snap-Up State (WBS Wink Switches & McCurdy Side Switches)
     const activeInput = on ? model.getSelectedInput() : 0;
     if (activeInput !== this.lastActiveInput) {
       this.lastActiveInput = activeInput;
       for (let i = 1; i <= 4; i++) {
-        const el = this.winkEls[i];
-        if (el) {
+        // WBS Wink Switches across the bottom
+        const wEl = this.winkEls[i];
+        if (wEl) {
           const isOpen = (i === activeInput);
-          el.classList.toggle('wink-open', isOpen);
-          el.setAttribute('aria-pressed', isOpen ? 'true' : 'false');
+          wEl.classList.toggle('wink-open', isOpen);
+          wEl.setAttribute('aria-pressed', isOpen ? 'true' : 'false');
+        }
+        // McCurdy 4 switches across the side
+        const mEl = this.mcInputEls[i];
+        if (mEl) {
+          const isLatched = (i === activeInput);
+          mEl.classList.toggle('mc-btn-latched', isLatched);
+          mEl.setAttribute('aria-pressed', isLatched ? 'true' : 'false');
         }
       }
     }
 
-    // 7. McCurdy Range Selector Switch & 31-Step Attenuator Sync
+    // 7. VU Meter Glass Shatter & Sensitivity Reset Handling
+    // Resets whenever sensitivity changes (range, level, input, attenuator step)
+    const sensKey = `${model.mode}_${model.a.lvl}_${model.d.lvl}_${activeInput}_${model.mcAttenuatorStep}_${model.mcRangeMode}`;
+    if (this.lastSensKey !== sensKey) {
+      this.lastSensKey = sensKey;
+      if (this.isGlassShattered) {
+        this.isGlassShattered = false;
+        this.updateShatterState(false);
+      }
+      this.vuRedStartTime = 0;
+    }
+
+    // VU In-The-Red Overload Detection (>= 0 dB VU is red zone, shatter if in red >= 2.5 seconds)
+    const inRed = on && levels.hasAudio && (
+      (levels.vuDb && (levels.vuDb[0] >= 0 || levels.vuDb[1] >= 0)) ||
+      (levels.vu && (levels.vu[0] >= 1.0 || levels.vu[1] >= 1.0))
+    );
+
+    if (inRed) {
+      if (this.vuRedStartTime === 0) {
+        this.vuRedStartTime = now;
+      } else if (!this.isGlassShattered && (now - this.vuRedStartTime >= 2500)) {
+        this.isGlassShattered = true;
+        this.updateShatterState(true);
+      }
+    } else {
+      this.vuRedStartTime = 0;
+    }
+
+    // 8. McCurdy Range Selector Switch & 31-Step Attenuator Sync
     const mcMode = model.mcRangeMode || 'outer';
     const mcStep = model.mcAttenuatorStep ?? 15;
     if (mcMode !== this.lastMcRangeMode || mcStep !== this.lastMcAttenuatorStep) {
@@ -316,6 +369,15 @@ export class XtmView {
         const cy = rotor.getAttribute('data-cy') || '215';
         const angle = (mcStep - 15) * 9;
         rotor.setAttribute('transform', `translate(${cx}, ${cy}) rotate(${angle.toFixed(1)})`);
+      }
+    }
+  }
+
+  /* ---------------- VU Meter Shattered Glass Fracture Control ---------------- */
+  private updateShatterState(shattered: boolean): void {
+    for (const el of this.vuShatterEls) {
+      if (el) {
+        el.style.display = shattered ? 'inline' : 'none';
       }
     }
   }
