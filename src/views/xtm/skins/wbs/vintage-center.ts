@@ -8,8 +8,8 @@
 
 export function renderVintageWbsCenter(isPowered = true): string {
   return `<g class="wbs-ca-only" id="vintage-wbs-center">
-    <!-- 1. Centered DR Vernier Dial Scale + Fluted Instrument Knob (Centered at x=1600, y=154, Scale=0.94) -->
-    <g transform="translate(1600, 154) scale(0.94)">
+    <!-- 1. Centered DR Vernier Dial Scale + Fluted Instrument Knob (Centered at x=1600, y=146, Scale=1.10 - Taller Knob) -->
+    <g transform="translate(1600, 146) scale(1.10)">
       <!-- DR Differential Decade / Vernier Dial Scale & Markings (Origin at 0, 0) -->
       <g id="dr-dial-scale" font-family="'Helvetica Neue', Helvetica, Arial, sans-serif" fill="#2A2B2A" stroke="#2A2B2A">
         <!-- Top Header "DR" and "- 0 +" -->
@@ -153,8 +153,8 @@ export function renderVintageWbsCenter(isPowered = true): string {
       </g>
     </g>
 
-    <!-- 2. AC Pilot Indicator Lamp Assembly (Placed in Right Margin at cx=1785, cy=154) -->
-    <g id="ac-pilot-lamp" class="wbs-ac-pilot-lamp" transform="translate(1785, 154)" filter="url(#lampDropShadow)">
+    <!-- 2. AC Pilot Indicator Lamp Assembly (Placed in Right Margin at cx=1785, cy=146) -->
+    <g id="ac-pilot-lamp" class="wbs-ac-pilot-lamp" transform="translate(1785, 146)" filter="url(#lampDropShadow)">
       <title>AC Mains Pilot Lamp ${isPowered ? '(Energized)' : '(Off)'}</title>
       <!-- Outer Chrome Mounting Collar / Nut -->
       <ellipse cx="-4" cy="-1" rx="17.5" ry="18.5" fill="url(#chromeBezelGrad)" stroke="#383c42" stroke-width="0.9" />
@@ -185,18 +185,18 @@ export function renderWinkSwitchCluster(isPowered = true): string {
     { num: 4, sub: 'TEST GEN' }
   ];
 
-  const y = 295;
+  const y = 308;
   const bw = 90;
-  const bh = 54;
+  const bh = 38; // Shorter buttons per specification
   const totalW = bw * 4; // 360px wide, centered at 1600
   const startX = 1420;
 
   let out = `
     <!-- INPUT SELECTOR Header & Hairline Rules (Above switches) -->
     <g ${font}>
-      <line x1="1380" y1="272" x2="1515" y2="272" stroke="#8C897B" stroke-width="1.2" stroke-opacity="0.8" />
-      <text x="1600" y="275.5" font-size="10.5" font-weight="700" fill="#2A2B2A" text-anchor="middle" letter-spacing="2.5">INPUT SELECTOR</text>
-      <line x1="1685" y1="272" x2="1820" y2="272" stroke="#8C897B" stroke-width="1.2" stroke-opacity="0.8" />
+      <line x1="1380" y1="284" x2="1515" y2="284" stroke="#8C897B" stroke-width="1.2" stroke-opacity="0.8" />
+      <text x="1600" y="287.5" font-size="10.5" font-weight="700" fill="#2A2B2A" text-anchor="middle" letter-spacing="2.5">INPUT SELECTOR</text>
+      <line x1="1685" y1="284" x2="1820" y2="284" stroke="#8C897B" stroke-width="1.2" stroke-opacity="0.8" />
     </g>
 
     <!-- Continuous Outer Recessed Bezel Housing for 4 Butted Switches -->
@@ -212,7 +212,7 @@ export function renderWinkSwitchCluster(isPowered = true): string {
 
     out += `
       <!-- Silkscreen Header Above Button ${i} -->
-      <text x="${x + bw / 2}" y="${y - 6}" ${font} font-size="9.5" font-weight="800" fill="#2A2B2A" text-anchor="middle" letter-spacing="1">INPUT ${i}</text>
+      <text x="${x + bw / 2}" y="${y - 6}" ${font} font-size="9" font-weight="800" fill="#2A2B2A" text-anchor="middle" letter-spacing="1">INPUT ${i}</text>
 
       <!-- WINK SWITCH: INPUT ${i} -->
       <g class="xtm-btn wink-switch ${i === 1 ? 'wink-open' : ''}" id="wink_btn_${i}" data-btn="INPUT_${i}" data-input="${i}" style="cursor:pointer" role="button" tabindex="0" aria-label="Input ${i} (${sw.sub})">
@@ -227,7 +227,7 @@ export function renderWinkSwitchCluster(isPowered = true): string {
         </clipPath>
 
         <!-- Top Inset Shadow (Visible when switch depresses / pushes downward into aperture) -->
-        <rect class="wink-depressed-shadow" x="${x}" y="${y}" width="${bw}" height="8" fill="url(#depressedShadowGrad)" opacity="0" pointer-events="none" />
+        <rect class="wink-depressed-shadow" x="${x}" y="${y}" width="${bw}" height="6" fill="url(#depressedShadowGrad)" opacity="0" pointer-events="none" />
 
         <!-- Button Cap Body (Pushes downward when selected) -->
         <g class="wink-button-cap" clip-path="url(#wink_clip_${i})">
@@ -236,8 +236,8 @@ export function renderWinkSwitchCluster(isPowered = true): string {
           <rect x="${x}" y="${y}" width="${bw}" height="${bh}" fill="none" stroke="#86efac" stroke-width="1" opacity="0.6" />
 
           <!-- Inside Illuminated Numeral & Label -->
-          <text class="wink-text-inside" x="${x + bw / 2}" y="${y + 28}" ${font} font-size="20" font-weight="900" fill="#ffffff" text-anchor="middle" letter-spacing="1" filter="drop-shadow(0 1px 2px rgba(0,0,0,0.7))">${i}</text>
-          <text class="wink-subtext-inside" x="${x + bw / 2}" y="${y + 42}" ${font} font-size="8.5" font-weight="800" fill="#dcfce7" text-anchor="middle" letter-spacing="1">${sw.sub}</text>
+          <text class="wink-text-inside" x="${x + bw / 2}" y="${y + 22}" ${font} font-size="18" font-weight="900" fill="#ffffff" text-anchor="middle" letter-spacing="1" filter="drop-shadow(0 1px 2px rgba(0,0,0,0.7))">${i}</text>
+          <text class="wink-subtext-inside" x="${x + bw / 2}" y="${y + 32}" ${font} font-size="7.5" font-weight="800" fill="#dcfce7" text-anchor="middle" letter-spacing="1">${sw.sub}</text>
 
           <!-- 2. Mechanical Eyelids / Shutters (Slide open vertically when active) -->
           <!-- Top Shutter Blade -->
@@ -256,7 +256,7 @@ export function renderWinkSwitchCluster(isPowered = true): string {
           <line class="wink-slit-line" x1="${x}" y1="${midY}" x2="${x + bw}" y2="${midY}" stroke="#0a0c0f" stroke-width="1.2" />
 
           <!-- Inactive / Closed Numeral Etched on Shutter Surface -->
-          <text class="wink-text-closed" x="${x + bw / 2}" y="${y + 34}" ${font} font-size="20" font-weight="800" fill="#64748b" text-anchor="middle" letter-spacing="1">${i}</text>
+          <text class="wink-text-closed" x="${x + bw / 2}" y="${y + 25}" ${font} font-size="18" font-weight="800" fill="#64748b" text-anchor="middle" letter-spacing="1">${i}</text>
 
           <!-- 3. Convex Glass Lens Overlay with Specular Glint & Bezel Rim -->
           <rect class="wink-lens" x="${x}" y="${y}" width="${bw}" height="${bh}" fill="url(#winkGlassLens)" pointer-events="none" />
