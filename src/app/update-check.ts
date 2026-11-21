@@ -16,9 +16,11 @@ export function notifyUpdateAvailable(newVersion?: string): void {
   const lbl = document.querySelector('.drawer-gear-label');
   const toggleLeft = document.getElementById('drawerToggleLeft');
 
+  const verLabel = newVersion ? (newVersion.startsWith('v') ? newVersion : `v${newVersion}`) : '';
+
   if (btn) {
     btn.classList.add('has-update');
-    btn.setAttribute('title', `New version available${newVersion ? ' (' + newVersion + ')' : ''}! Click Settings to update`);
+    btn.setAttribute('title', `New version available${verLabel ? ' (' + verLabel + ')' : ''}! Click Settings to update`);
   }
 
   if (lbl) {
@@ -42,7 +44,7 @@ export function notifyUpdateAvailable(newVersion?: string): void {
     banner.id = 'updateAvailableBanner';
     banner.className = 'update-available-banner';
     banner.innerHTML = `
-      <span>⚡ New version available${newVersion ? ' (' + newVersion + ')' : ''}</span>
+      <span>⚡ New version available${verLabel ? ' (' + verLabel + ')' : ''}</span>
       <button type="button" id="btnReloadNewVersion">Reload &amp; Update Now</button>
     `;
     drawerGrid.parentElement?.insertBefore(banner, drawerGrid);
@@ -54,14 +56,14 @@ export function notifyUpdateAvailable(newVersion?: string): void {
   // Update footer build-stamp if present
   const stamp = document.querySelector('.build-stamp');
   if (stamp) {
-    stamp.innerHTML = `<span style="color:#f97316;cursor:pointer;font-weight:bold" title="Click to reload with new version">Update: ${newVersion || 'Available'} ⟳</span>`;
+    stamp.innerHTML = `<span style="color:#f97316;cursor:pointer;font-weight:bold" title="Click to reload with new version">Update: ${verLabel || 'Available'} ⟳</span>`;
     stamp.addEventListener('click', () => window.location.reload());
   }
 }
 
 export function initUpdateCheck(): void {
   // Expose global test trigger so user/dev can verify the orange pulse at any time
-  (window as any).testUpdatePulse = (ver = '2026.11.20') => notifyUpdateAvailable(ver);
+  (window as any).testUpdatePulse = (ver = '1.0.99') => notifyUpdateAvailable(ver);
 
   async function checkForUpdates() {
     try {
@@ -85,12 +87,11 @@ export function initUpdateCheck(): void {
     }
   });
 
-  const footer = document.querySelector('footer');
-  if (footer) {
-    const ver = document.createElement('div');
-    ver.textContent = __BUILD_STAMP__;
-    ver.style.fontSize = '10px';
-    ver.style.color = '#777';
-    footer.appendChild(ver);
+  // Display active version stamp in drawer footer
+  const stamp = document.querySelector('.build-stamp');
+  if (stamp) {
+    const curVer = __BUILD_STAMP__.startsWith('v') ? __BUILD_STAMP__ : `v${__BUILD_STAMP__}`;
+    stamp.textContent = curVer;
+    stamp.setAttribute('title', `Ward-Beck Systems XTM-4 ${curVer}`);
   }
 }

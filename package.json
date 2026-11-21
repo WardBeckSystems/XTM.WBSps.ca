@@ -1,6 +1,6 @@
 {
   "name": "xtm.wbsps.ca",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A standalone, broadcast-accurate implementation of the **Ward-Beck Systems XTM-4 Extended Range Test Meter** paired with the **POD-22 Stereo Loudness Meter** in a unified equipment rack.",
   "main": "sw.js",
   "type": "module",
@@ -8,7 +8,8 @@
     "build:wasm": "asc assembly/index.ts --config asconfig.json && node tools/stamp-copyright.mjs",
     "build": "npm run build:wasm && vite build",
     "dev": "vite",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "deploy": "./deploy.sh"
   },
   "devDependencies": {
     "@types/js-yaml": "^4.0.9",

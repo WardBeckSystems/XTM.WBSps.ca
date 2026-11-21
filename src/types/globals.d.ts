@@ -4,7 +4,9 @@
 export {};
 
 declare global {
-  /** Build time YYYY.MM.DD.HH.MM, injected by vite.config.ts. */
+  /** Application semver version, injected by vite.config.ts from package.json. */
+  const __APP_VERSION__: string;
+  /** Build / version stamp, injected by vite.config.ts. */
   const __BUILD_STAMP__: string;
 
   interface Window {

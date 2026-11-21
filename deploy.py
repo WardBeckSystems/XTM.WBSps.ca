@@ -22,6 +22,10 @@ import argparse
 import time
 import urllib.request
 import ssl
+import json
+import re
+import subprocess
+import shutil
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
@@ -154,6 +158,90 @@ def verify_site(url, expected_str="Ward-Beck Systems"):
         print(f"  ⚠ Verification note: {e}")
         return False
 
+def get_current_version(repo_dir: Path) -> str:
+    """Read current version from package.json."""
+    pkg_path = repo_dir / 'package.json'
+    if pkg_path.is_file():
+        try:
+            with open(pkg_path, 'r', encoding='utf-8') as f:
+                data = json.load(f)
+            return data.get('version', '1.0.0')
+        except Exception:
+            pass
+    return '1.0.0'
+
+def bump_version(repo_dir: Path, bump_type: str = 'patch', set_version: str = None) -> tuple[str, str]:
+    """Increments the version in package.json (and package-lock.json if available).
+    Returns (old_version, new_version).
+    """
+    old_version = get_current_version(repo_dir)
+
+    if set_version:
+        new_version = set_version.lstrip('v').strip()
+    else:
+        match = re.match(r'^(\d+)\.(\d+)\.(\d+)(.*)$', old_version)
+        if match:
+            major, minor, patch, suffix = match.groups()
+            if bump_type == 'major':
+                new_version = f"{int(major) + 1}.0.0"
+            elif bump_type == 'minor':
+                new_version = f"{major}.{int(minor) + 1}.0"
+            else:  # patch
+                new_version = f"{major}.{minor}.{int(patch) + 1}"
+        else:
+            parts = old_version.split('.')
+            if parts and parts[-1].isdigit():
+                parts[-1] = str(int(parts[-1]) + 1)
+                new_version = '.'.join(parts)
+            else:
+                new_version = f"{old_version}.1"
+
+    # Attempt to update via npm version to keep package-lock.json in sync
+    npm_ok = False
+    try:
+        res = subprocess.run(
+            ['npm', 'version', new_version, '--no-git-tag-version', '--allow-same-version'],
+            cwd=str(repo_dir),
+            capture_output=True,
+            text=True
+        )
+        if res.returncode == 0:
+            npm_ok = True
+    except Exception:
+        pass
+
+    if not npm_ok:
+        pkg_path = repo_dir / 'package.json'
+        try:
+            with open(pkg_path, 'r', encoding='utf-8') as f:
+                data = json.load(f)
+            data['version'] = new_version
+            with open(pkg_path, 'w', encoding='utf-8') as f:
+                json.dump(data, f, indent=2)
+                f.write('\n')
+        except Exception as e:
+            print(f"  ⚠ Warning: Could not write package.json: {e}", file=sys.stderr)
+
+    return old_version, new_version
+
+def update_index_html_version(repo_dir: Path, version: str):
+    """Synchronize the build-stamp span in index.html to match the current version."""
+    index_path = repo_dir / 'index.html'
+    if not index_path.is_file():
+        return
+    ver_tag = version if version.startswith('v') else f"v{version}"
+    try:
+        content = index_path.read_text(encoding='utf-8')
+        updated = re.sub(
+            r'(<span class="build-stamp"[^>]*>)[^<]*(</span>)',
+            rf'\g<1>{ver_tag}\g<2>',
+            content
+        )
+        if updated != content:
+            index_path.write_text(updated, encoding='utf-8')
+    except Exception:
+        pass
+
 def main():
     creds = load_env_credentials()
 
@@ -165,16 +253,61 @@ def main():
     parser.add_argument("--remote-dir", default=None,
                         help="Target remote directory (auto-detects 'XTM/' vs root)")
     parser.add_argument("--no-verify", action="store_true", help="Skip post-deployment HTTP verification")
+    parser.add_argument("--bump", choices=['patch', 'minor', 'major'], default='patch',
+                        help="Increment version type: patch (default), minor, or major")
+    parser.add_argument("--no-bump", action="store_true",
+                        help="Skip version increment for this deploy")
+    parser.add_argument("--set-version", default=None,
+                        help="Explicitly set a version (e.g. 1.2.0) instead of auto-incrementing")
+    parser.add_argument("--dry-run", action="store_true",
+                        help="Bump version and build dist/ without connecting to FTP")
 
     args = parser.parse_args()
+
+    # 1. Version Increment Step
+    if args.no_bump:
+        active_version = get_current_version(HERE)
+        ver_info = f"v{active_version} (bump skipped via --no-bump)"
+    else:
+        old_ver, new_ver = bump_version(HERE, bump_type=args.bump, set_version=args.set_version)
+        update_index_html_version(HERE, new_ver)
+        active_version = new_ver
+        bump_desc = f"set to v{new_ver}" if args.set_version else f"{args.bump} bump"
+        ver_info = f"v{old_ver} -> v{new_ver} ({bump_desc})"
 
     print("=" * 68)
     print(" Ward-Beck Systems — XTM.WBSps.ca Deployment")
     print("=" * 68)
+    print(f" Version       : {ver_info}")
     print(f" Target Server : {args.host}:{args.port}")
     print(f" FTP Account   : {args.user}")
     print(f" Local Source  : {HERE}")
     print("-" * 68)
+
+    # 2. Build TypeScript & WebAssembly before deployment
+    print(f"\nExecuting TypeScript + WebAssembly build (npm run build) for v{active_version}...")
+    res = subprocess.run(["npm", "run", "build"], cwd=str(HERE), capture_output=True, text=True)
+    if res.returncode != 0:
+        print(f"Build failed:\n{res.stderr}\n{res.stdout}", file=sys.stderr)
+        sys.exit(1)
+    print(f"✔ Build successful: dist/ ready for deployment (v{active_version}).")
+
+    print("Copying assets to dist/assets...")
+    assets_dir = HERE / "assets"
+    dist_assets_dir = HERE / "dist" / "assets"
+    if assets_dir.is_dir():
+        dist_assets_dir.mkdir(parents=True, exist_ok=True)
+        for item in os.listdir(assets_dir):
+            src_item = assets_dir / item
+            if src_item.is_file():
+                shutil.copy(src_item, dist_assets_dir / item)
+    else:
+        print("  ⚠ Warning: 'assets' folder not found, skipping asset copy.")
+
+    if args.dry_run:
+        print("\n✔ [DRY RUN] Build verified. Skipping FTP upload and remote verification.")
+        print(f" Active version in package.json and dist/version.json: v{active_version}")
+        return
 
     t0 = time.time()
 
@@ -182,7 +315,7 @@ def main():
         print("❌ Error: No FTP password provided. Set FTP_USER_PASS in docker/.env or pass --password.", file=sys.stderr)
         sys.exit(1)
 
-    print(f"Connecting to {args.host}:{args.port}...")
+    print(f"\nConnecting to {args.host}:{args.port}...")
     ftp = ftplib.FTP()
     try:
         ftp.connect(args.host, args.port, timeout=15)
@@ -209,26 +342,6 @@ def main():
             else:
                 remote_target = '/'
                 print("Auto-detected target folder: '/' (already inside XTM)")
-
-        # Build TypeScript & WebAssembly before deployment
-        import subprocess
-        print("\nExecuting TypeScript + WebAssembly build (npm run build)...")
-        res = subprocess.run(["npm", "run", "build"], cwd=str(HERE), capture_output=True, text=True)
-        if res.returncode != 0:
-            print(f"Build failed:\n{res.stderr}\n{res.stdout}", file=sys.stderr)
-            sys.exit(1)
-        print("✔ Build successful: dist/ ready for deployment.")
-        import shutil
-        print("Copying assets to dist/assets...")
-        # Check if assets exist before trying to copy
-        if os.path.exists("assets"):
-            os.makedirs("dist/assets", exist_ok=True)
-            for item in os.listdir("assets"):
-                src_item = os.path.join("assets", item)
-                if os.path.isfile(src_item):
-                    shutil.copy(src_item, os.path.join("dist/assets", item))
-        else:
-            print("  ⚠ Warning: 'assets' folder not found, skipping asset copy.")
 
         dist_dir = HERE / "dist"
         upload_source = str(dist_dir) if dist_dir.is_dir() else str(HERE)
