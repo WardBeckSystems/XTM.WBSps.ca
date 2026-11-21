@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OS Audio Loopback & Bridge Setup - Ward-Beck Systems XTM</title>
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <style>
+    :root {
+      --bg: #090b0e;
+      --card-bg: #11141a;
+      --border: #222936;
+      --text: #cbd5e1;
+      --text-dim: #94a3b8;
+      --heading: #f8fafc;
+      --accent: #22c55e;
+      --cyan: #38bdf8;
+      --amber: #f59e0b;
+      --code-bg: #050608;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      line-height: 1.6;
+      padding: 32px 24px;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+    header {
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 24px;
+      margin-bottom: 32px;
+    }
+    h1 {
+      font-size: 26px;
+      color: var(--heading);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 8px;
+    }
+    .badge {
+      font-size: 11px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      padding: 3px 8px;
+      border-radius: 4px;
+      background: rgba(34, 197, 94, 0.15);
+      border: 1px solid var(--accent);
+      color: var(--accent);
+    }
+    .subtitle {
+      color: var(--text-dim);
+      font-size: 14px;
+    }
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 24px;
+      margin-bottom: 24px;
+    }
+    .card h2 {
+      font-size: 18px;
+      color: var(--heading);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 16px;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      padding-bottom: 10px;
+    }
+    .os-badge {
+      font-size: 11px;
+      font-weight: 700;
+      padding: 2px 7px;
+      border-radius: 4px;
+      background: #1e293b;
+      color: var(--cyan);
+      border: 1px solid #334155;
+    }
+    ol, ul {
+      padding-left: 20px;
+      margin-bottom: 16px;
+    }
+    li {
+      margin-bottom: 10px;
+    }
+    code {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: 12.5px;
+      background: var(--code-bg);
+      border: 1px solid #1e2530;
+      color: #38bdf8;
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+    pre {
+      background: var(--code-bg);
+      border: 1px solid #1e2530;
+      border-radius: 6px;
+      padding: 14px;
+      font-family: ui-monospace, monospace;
+      font-size: 13px;
+      color: #86efac;
+      overflow-x: auto;
+      margin: 12px 0 16px 0;
+    }
+    .tip {
+      background: rgba(56, 189, 248, 0.08);
+      border-left: 4px solid var(--cyan);
+      padding: 12px 16px;
+      border-radius: 0 6px 6px 0;
+      font-size: 13px;
+      margin-top: 14px;
+    }
+    .tip strong { color: var(--cyan); }
+    .warning {
+      background: rgba(245, 158, 11, 0.08);
+      border-left: 4px solid var(--amber);
+      padding: 12px 16px;
+      border-radius: 0 6px 6px 0;
+      font-size: 13px;
+      margin-top: 14px;
+    }
+    .warning strong { color: var(--amber); }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>
+      <span>🎧 OS Audio Loopback &amp; System Bridge</span>
+      <span class="badge">100% Banner-Free</span>
+    </h1>
+    <p class="subtitle">How to route system audio, YouTube Music, DAWs, and desktop sound into XTM without Chrome's "Sharing to this tab" banner.</p>
+  </header>
+
+  <!-- QUICK BROWSER METHOD -->
+  <div class="card">
+    <h2><span>🖥️ Method 1: Entire Screen Capture</span> <span class="os-badge">All Platforms · No Setup Needed</span></h2>
+    <p>If you prefer using the browser without configuring OS virtual audio cables:</p>
+    <ol>
+      <li>In the XTM Settings Drawer (top-left gear icon), set <strong>System Audio Capture Mode</strong> to <strong>Entire Screen (Recommended)</strong>.</li>
+      <li>When Chrome opens the share picker, make sure <strong>Entire Screen</strong> is selected and check <strong>"Also share system audio"</strong>.</li>
+      <li><strong>To hide the sharing indicator:</strong> Chrome places a small floating pill at the bottom of the screen instead of pinning a permanent top banner. Click the <strong>"Hide"</strong> button on that bar. It immediately disappears completely, even in Fullscreen mode!</li>
+    </ol>
+  </div>
+
+  <!-- LINUX PIPEWIRE / PULSEAUDIO -->
+  <div class="card">
+    <h2><span>🐧 Method 2: Linux PipeWire &amp; PulseAudio Loopback</span> <span class="os-badge">Linux</span></h2>
+    <p>Linux features native kernel-level and server-level audio monitoring. You can stream YouTube Music or desktop audio directly to XTM as an audio input device (<code>getUserMedia</code>), completely bypassing screen capture.</p>
+    
+    <ol>
+      <li><strong>Check Built-in Monitor Devices:</strong>
+        <p>In XTM's Settings Drawer under <strong>Audio Input Device</strong>, look for devices tagged with <code>🎧 [OS Loopback · Banner-Free]</code> (e.g. <code>Monitor of Built-in Audio Analog Stereo</code> or <code>Monitor of ALSA</code>). If present, select it and you are done!</p>
+      </li>
+      <li><strong>Create an Instant PipeWire Loopback Bridge:</strong>
+        <p>Run the following command in a terminal to create an instant audio loopback sink in PipeWire:</p>
+        <pre>pw-loopback --capture-props='media.class=Audio/Sink' &</pre>
+      </li>
+      <li><strong>Or with PulseAudio (Ubuntu / Debian / Fedora / Arch):</strong>
+        <pre>pactl load-module module-loopback latency_msec=1</pre>
+      </li>
+      <li><strong>Using pavucontrol (GUI Volume Control):</strong>
+        <p>Install and open <code>pavucontrol</code>. Go to the <strong>Recording</strong> tab while XTM is listening, find <strong>Google Chrome</strong>, and change its dropdown from "Built-in Audio Microphone" to <strong>"Monitor of Built-in Audio Analog Stereo"</strong>.</p>
+      </li>
+    </ol>
+    <div class="tip">
+      <strong>Pro Tip:</strong> Audio monitor sinks stream raw PCM with 0% CPU overhead, zero browser banners, and perfect 60 FPS meter synchronization.
+    </div>
+  </div>
+
+  <!-- WINDOWS STEREO MIX / VB-CABLE -->
+  <div class="card">
+    <h2><span>🪟 Method 3: Windows Stereo Mix or Virtual Cable</span> <span class="os-badge">Windows 10 / 11</span></h2>
+    <p>Windows has a built-in "Stereo Mix" feature on most soundcards, or you can use a free virtual cable:</p>
+    <ol>
+      <li><strong>Enable Built-in "Stereo Mix":</strong>
+        <ul>
+          <li>Press <kbd>Win + R</kbd>, type <code>mmsys.cpl</code> and press Enter to open the Sound Control Panel.</li>
+          <li>Click the <strong>Recording</strong> tab.</li>
+          <li>Right-click anywhere in the white space and ensure <strong>"Show Disabled Devices"</strong> is checked.</li>
+          <li>Right-click <strong>Stereo Mix</strong> (or "What U Hear") and click <strong>Enable</strong>.</li>
+        </ul>
+      </li>
+      <li><strong>In XTM:</strong> Open the Settings Drawer, click <strong>"Bridge OS System Audio"</strong> or select <strong>Stereo Mix</strong> in the Audio Input Device dropdown.</li>
+      <li><strong>If your soundcard lacks Stereo Mix:</strong> Install the free <a href="https://vb-audio.com/Cable/" target="_blank" style="color:#38bdf8;font-weight:bold;">VB-Audio Virtual Cable</a>. Set Windows playback to CABLE Input, and select CABLE Output in XTM.</li>
+    </ol>
+  </div>
+
+  <!-- MACOS BLACKHOLE -->
+  <div class="card">
+    <h2><span>🍎 Method 4: macOS BlackHole Virtual Audio Bridge</span> <span class="os-badge">macOS</span></h2>
+    <p>macOS does not allow direct system loopback without a virtual driver:</p>
+    <ol>
+      <li>Install the free open-source <a href="https://github.com/ExistentialAudio/BlackHole" target="_blank" style="color:#38bdf8;font-weight:bold;">BlackHole (2ch)</a> audio loopback driver:
+        <pre>brew install blackhole-2ch</pre>
+      </li>
+      <li>Open <strong>Audio MIDI Setup</strong> (in Applications > Utilities).</li>
+      <li>Click the <strong>+</strong> button at the bottom left and select <strong>Create Multi-Output Device</strong>.</li>
+      <li>Check both your <strong>Built-in Output / Headphones</strong> and <strong>BlackHole 2ch</strong>.</li>
+      <li>In macOS System Settings > Sound, set output to the <strong>Multi-Output Device</strong>.</li>
+      <li>In XTM, select <strong>BlackHole 2ch</strong> under Audio Input Device. You will hear audio normally while XTM visualizes it banner-free!</li>
+    </ol>
+  </div>
+</body>
+</html>

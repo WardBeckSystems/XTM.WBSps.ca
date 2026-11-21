@@ -4,6 +4,8 @@
 export interface DrawerControls {
   drawerSourceBadge: HTMLElement | null;
   selectDevice: HTMLSelectElement | null;
+  selectSysAudioMode: HTMLSelectElement | null;
+  btnBridgeOsAudio: HTMLElement | null;
   inputGainSlider: HTMLInputElement | null;
   inputGainVal: HTMLElement | null;
   chkMonitor: HTMLInputElement | null;
@@ -25,6 +27,8 @@ export function queryDrawerControls(): DrawerControls {
   return {
     drawerSourceBadge: document.getElementById('drawerSourceBadge'),
     selectDevice: document.getElementById('selectDevice') as HTMLSelectElement | null,
+    selectSysAudioMode: document.getElementById('selectSysAudioMode') as HTMLSelectElement | null,
+    btnBridgeOsAudio: document.getElementById('btnBridgeOsAudio'),
     inputGainSlider: document.getElementById('inputGainSlider') as HTMLInputElement | null,
     inputGainVal: document.getElementById('inputGainVal'),
     chkMonitor: document.getElementById('chkMonitor') as HTMLInputElement | null,

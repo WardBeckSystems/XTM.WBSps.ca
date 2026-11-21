@@ -172,7 +172,7 @@ export class XtmAudioEngine {
   }
 
   /** Connect to System Audio Output ("Listen to whatever is playing") via getDisplayMedia */
-  connectSystemAudio(): Promise<boolean> { return connectSystemAudio(this); }
+  connectSystemAudio(preferredSurface: 'monitor' | 'browser' | 'window' = 'monitor'): Promise<boolean> { return connectSystemAudio(this, preferredSurface); }
 
   /** Built-in Signal Generator for testing and calibration */
   startTestGenerator(type = 'sine1k'): void { testGen.startTestGenerator(this, type); }

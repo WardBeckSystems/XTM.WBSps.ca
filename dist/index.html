@@ -16,7 +16,7 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Ward-Beck Systems">
-  <script type="module" crossorigin src="./assets/index-CyXyOuhW.js"></script>
+  <script type="module" crossorigin src="./assets/index-BDe9iU25.js"></script>
   <link rel="stylesheet" crossorigin href="./assets/index-CmlUA_vT.css">
 </head>
 <body class="">
@@ -165,7 +165,7 @@
             </svg>
             <span class="footer-btn-text mc-com-text">McCurdyRadio.com</span>
           </button>
-          <span class="build-stamp" style="font-size: 0.7em; opacity: 0.6; margin-left: 12px;">v1.0.54</span>
+          <span class="build-stamp" style="font-size: 0.7em; opacity: 0.6; margin-left: 12px;">v1.0.57</span>
         </div>
       </summary>
 
@@ -198,6 +198,18 @@
             <label for="selectDevice">Audio Input Device</label>
             <select id="selectDevice" class="ctrl-select">
               <option value="">Default Soundcard Input</option>
+            </select>
+          </div>
+          <div class="drawer-row" style="margin-top:-2px;margin-bottom:10px;">
+            <button type="button" id="btnBridgeOsAudio" class="scope-clear-btn" style="background:#132338;border-color:#38bdf8;color:#bae6fd;padding:5px 12px;font-size:11px;font-weight:700;display:inline-flex;align-items:center;gap:6px;cursor:pointer;width:100%;justify-content:center;">
+              <span>🎧</span> <span>Bridge OS System Audio (100% Banner-Free)</span>
+            </button>
+          </div>
+          <div class="drawer-row">
+            <label for="selectSysAudioMode">System Audio Mode</label>
+            <select id="selectSysAudioMode" class="ctrl-select">
+              <option value="monitor" selected>Entire Screen Audio (Banner Can Be Hidden - Recommended)</option>
+              <option value="browser">Chrome Tab Audio (Pins "Sharing to tab" Banner)</option>
             </select>
           </div>
           <div class="drawer-row">
@@ -976,6 +988,7 @@
         <button type="button" class="guide-tab-btn" data-url="styleguide-dr-knob.html" data-title="WBS DR Rotary Control &amp; Vernier Attenuator Styleguide" style="background:transparent;color:#94a3b8;border:none;padding:4px 9px;border-radius:4px;font-size:11px;font-weight:700;cursor:pointer;">DR Knob</button>
         <button type="button" class="guide-tab-btn" data-url="styleguide-mccurdy-meter-logo.html" data-title="McCurdy Meter Dial Cartouche Logo Styleguide" style="background:transparent;color:#94a3b8;border:none;padding:4px 9px;border-radius:4px;font-size:11px;font-weight:700;cursor:pointer;">McCurdy Logo</button>
         <button type="button" class="guide-tab-btn" data-url="mccurdy_ats_dual_meters.html" data-title="McCurdy ATS-100 Dual Analog Meters Specification" style="background:transparent;color:#94a3b8;border:none;padding:4px 9px;border-radius:4px;font-size:11px;font-weight:700;cursor:pointer;">ATS-100 Meters</button>
+        <button type="button" class="guide-tab-btn" data-url="os-audio-bridge.html" data-title="OS Audio Loopback &amp; System Bridge Setup" style="background:transparent;color:#94a3b8;border:none;padding:4px 9px;border-radius:4px;font-size:11px;font-weight:700;cursor:pointer;">OS Audio Bridge</button>
       </div>
 
       <div style="display:flex;gap:12px;align-items:center;">

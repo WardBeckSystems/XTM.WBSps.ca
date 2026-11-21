@@ -109,7 +109,8 @@ export function createAudioSync(ctx: AppContext, refs: DrawerControls): AudioSyn
         if (drawerSourceBadge) {
           drawerSourceBadge.textContent = 'Source: Computer Audio Output';
         }
-        const ok = await audio.connectSystemAudio();
+        const surface = (typeof localStorage !== 'undefined' && (localStorage.getItem('xtm.sysaudio.surface') as any)) || 'monitor';
+        const ok = await audio.connectSystemAudio(surface);
         if (!ok) {
           // Gracefully fallback to Reference Tone generator if user cancels or permission denied
           m.d.src = 0;

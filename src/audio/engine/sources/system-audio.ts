@@ -9,16 +9,19 @@ import type { XtmAudioEngine } from '../../audio-engine';
  * Connect to System Audio Output
  * Uses getDisplayMedia to capture computer audio
  */
-export async function connectSystemAudio(engine: XtmAudioEngine): Promise<boolean> {
+export async function connectSystemAudio(engine: XtmAudioEngine, preferredSurface: 'monitor' | 'browser' | 'window' = 'monitor'): Promise<boolean> {
   if (engine.sourceType === 'system' && engine.stream && engine.stream.active) {
     return true;
   }
 
   try {
+    const savedSurface = (typeof localStorage !== 'undefined' && localStorage.getItem('xtm.sysaudio.surface')) || preferredSurface || 'monitor';
     // Must prompt for display media IMMEDIATELY while user activation gesture is valid!
     // Any preceding 'await' (like await ensureContext()) would discard transient user activation.
     const displayPromise = (navigator.mediaDevices as any).getDisplayMedia({
-      video: true,
+      video: {
+        displaySurface: savedSurface
+      },
       audio: {
         echoCancellation: false,
         noiseSuppression: false,
