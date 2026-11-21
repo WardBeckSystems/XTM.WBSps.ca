@@ -22,6 +22,7 @@ export class XtmModel {
   public a: XtmModeStateA = { src: 0, lvl: 64 }; // lvl 64 = +4 dBu (0 VU Standard Reference)
   public d: XtmModeStateD = { src: 1, lvl: 42 }; // lvl 42 = -18 dBFS (0 VU Standard Reference)
   public s: XtmModeStateS = { pair: [1] };       // S1..S4 (1kHz, Pink Noise, 400Hz, Sweep)
+  public selectedInput: number = 1;             // 1..4 (Hardware Selector Switch)
 
   public hp: number = 0;   // 0 = HP OUT, 1 = HP IN (80Hz rumble cut)
   public term: number = 0; // 0 = TERM HZ, 1 = TERM LZ (600 Ohm load)
@@ -201,6 +202,40 @@ export class XtmModel {
       const tn = testNames[p];
       if (tn) this.flash(tn);
     }
+    this.selectedInput = this.getSelectedInput();
+    this.saveEEPROM();
+    this.notify();
+  }
+
+  public getSelectedInput(): number {
+    if (this.mode === 'A') {
+      return this.a.src === 0 ? 1 : 2;
+    }
+    if (this.mode === 'D') return 3;
+    if (this.mode === 'S') return 4;
+    return this.selectedInput || 1;
+  }
+
+  public setInput(inputNum: number): void {
+    if (!this.power) return;
+    this.selectedInput = inputNum;
+    if (inputNum === 1) {
+      this.mode = 'A';
+      this.a.src = 0;
+      this.flash('INPUT 1');
+    } else if (inputNum === 2) {
+      this.mode = 'A';
+      this.a.src = 1;
+      this.flash('INPUT 2');
+    } else if (inputNum === 3) {
+      this.mode = 'D';
+      this.d.src = 1;
+      this.flash('INPUT 3');
+    } else if (inputNum === 4) {
+      this.mode = 'S';
+      this.s.pair[0] = 1;
+      this.flash('INPUT 4');
+    }
     this.saveEEPROM();
     this.notify();
   }
@@ -280,6 +315,7 @@ export class XtmModel {
         meterStyle: this.meterStyle,
         dialLamp: this.dialLamp,
         ppmStyle: this.ppmStyle,
+        selectedInput: this.getSelectedInput(),
         toneCalIdx: this.toneCalIdx,
         toneCalLevel: this.toneCalLevels[this.toneCalIdx] ?? 0,
         vfdMetric: this.vfdMetric
@@ -300,6 +336,7 @@ export class XtmModel {
         if (obj.hp !== undefined) this.hp = obj.hp;
         if (obj.term !== undefined) this.term = obj.term;
         if (obj.meterStyle) this.meterStyle = obj.meterStyle;
+        if (obj.selectedInput) this.selectedInput = obj.selectedInput;
         if (obj.dialLamp) this.dialLamp = obj.dialLamp;
         if (obj.ppmStyle) this.ppmStyle = obj.ppmStyle;
         if (typeof localStorage !== 'undefined' && localStorage.getItem('wbs_xtm4_tone_cal_dbfs_v3') !== 'true') {

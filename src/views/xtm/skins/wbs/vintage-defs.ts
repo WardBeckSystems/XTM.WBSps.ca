@@ -167,4 +167,42 @@ export const WBS_VINTAGE_DEFS = `
   <filter id="lampDropShadow" x="-40%" y="-30%" width="180%" height="180%">
     <feDropShadow dx="-7" dy="8" stdDeviation="3.5" flood-color="#1b1c1e" flood-opacity="0.32" />
   </filter>
+
+  <!-- WBS Wink Switch Shutter, Aperture & Glass Lens Gradients -->
+  <linearGradient id="winkNeonGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+    <stop offset="0%" stop-color="#4ade80" />
+    <stop offset="35%" stop-color="#22c55e" />
+    <stop offset="100%" stop-color="#15803d" />
+  </linearGradient>
+
+  <linearGradient id="winkShutterGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+    <stop offset="0%" stop-color="#2c3038" />
+    <stop offset="50%" stop-color="#1e2229" />
+    <stop offset="100%" stop-color="#14171d" />
+  </linearGradient>
+
+  <linearGradient id="winkBezelGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+    <stop offset="0%" stop-color="#646b77" />
+    <stop offset="45%" stop-color="#383d47" />
+    <stop offset="100%" stop-color="#1c2026" />
+  </linearGradient>
+
+  <linearGradient id="winkGlassLens" x1="0%" y1="0%" x2="0%" y2="100%">
+    <stop offset="0%" stop-color="#ffffff" stop-opacity="0.30" />
+    <stop offset="25%" stop-color="#ffffff" stop-opacity="0.08" />
+    <stop offset="60%" stop-color="#ffffff" stop-opacity="0.0" />
+    <stop offset="100%" stop-color="#000000" stop-opacity="0.22" />
+  </linearGradient>
+
+  <filter id="winkGlow" x="-30%" y="-30%" width="160%" height="160%">
+    <feGaussianBlur stdDeviation="3" result="b" />
+    <feMerge>
+      <feMergeNode in="b" />
+      <feMergeNode in="SourceGraphic" />
+    </feMerge>
+  </filter>
+
+  <filter id="winkButtonShadow" x="-20%" y="-20%" width="140%" height="140%">
+    <feDropShadow dx="0" dy="3" stdDeviation="2.5" flood-color="#000000" flood-opacity="0.45" />
+  </filter>
 `;

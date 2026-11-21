@@ -56,6 +56,11 @@ export function bindFrontPanel(ctx: AppContext, sync: AudioSync): void {
       model.pressDown();
     } else if (btnName === 'UP') {
       model.pressUp();
+    } else if (btnName.startsWith('INPUT_')) {
+      const inputNum = parseInt(btnName.replace('INPUT_', ''), 10);
+      if (inputNum >= 1 && inputNum <= 4) {
+        model.setInput(inputNum);
+      }
     }
     sync.syncAudioWithHardwareMode(model);
   };

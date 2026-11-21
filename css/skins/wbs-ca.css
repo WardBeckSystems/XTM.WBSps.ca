@@ -146,3 +146,58 @@ body:not(.theme-wbs-ca):not(.theme-mccurdy):not(.theme-mccurdy-dark) .wbs-modern
 .trim-screw:hover {
   filter: brightness(1.2);
 }
+
+/* ---------------------------------------------------------------
+   WBS Wink Switch Selector Cluster (Ward-Beck.ca)
+   - Shutter aperture mechanics from https://like.audio/20260116/winkbutton-widget-documentation/
+   - Responsive peek on hover
+   - Latching animated shutter retraction revealing radiant neon green aperture
+   --------------------------------------------------------------- */
+.wink-switch {
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.wink-switch .wink-shutter-top,
+.wink-switch .wink-shutter-bot {
+  transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+  transform-box: fill-box;
+}
+
+/* Hover peek effect when inactive */
+.wink-switch:not(.wink-open):hover .wink-shutter-top {
+  transform: translateY(-22%);
+}
+.wink-switch:not(.wink-open):hover .wink-shutter-bot {
+  transform: translateY(22%);
+}
+.wink-switch:not(.wink-open):hover .wink-text-closed {
+  opacity: 0.35;
+}
+
+/* Active open eye state (shutter blades retract) */
+.wink-switch.wink-open .wink-shutter-top {
+  transform: translateY(-110%);
+}
+.wink-switch.wink-open .wink-shutter-bot {
+  transform: translateY(110%);
+}
+.wink-switch.wink-open .wink-slit-line {
+  opacity: 0;
+}
+.wink-switch .wink-text-closed {
+  transition: opacity 0.16s ease;
+}
+.wink-switch.wink-open .wink-text-closed {
+  opacity: 0;
+  pointer-events: none;
+}
+.wink-switch.wink-open .wink-bezel {
+  stroke: #86efac;
+  stroke-width: 1.8;
+}
+.wink-switch:active {
+  filter: brightness(0.92);
+}
+

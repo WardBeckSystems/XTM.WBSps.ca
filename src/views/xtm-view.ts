@@ -81,6 +81,7 @@ export class XtmView {
   vfdEl: SVGElement | null = null;
   modeTitleEl: SVGElement | null = null;
   btnEls: Record<string, ButtonElementBundle> = {};
+  winkEls: (SVGElement | null)[] = [null, null, null, null, null];
 
   // Change detection caches
   lastAngles: [number, number, number, number] = [-999, -999, -999, -999];
@@ -88,6 +89,7 @@ export class XtmView {
   lastDisplayText: string = '';
   lastModeTitle: string = '';
   lastHeldButton: string | null = null;
+  lastActiveInput: number = -999;
 
   /* 2-digit red 7-segment RANGE readout for McCurdy mode */
   readonly MC_WIN = MC_WIN;
@@ -144,6 +146,7 @@ export class XtmView {
     this.initDom();
     this.lastMcDigits = '';
     this.lastPhaseLed = -999;
+    this.lastActiveInput = -999;
     this.isBuilt = true;
   }
 
@@ -161,6 +164,11 @@ export class XtmView {
     this.vfdEl = this.container.querySelector<SVGElement>('#xvfd_group');
     this.modeTitleEl = this.container.querySelector<SVGElement>('#xtm_mode_title');
     queryButtonEls(this.container, this.btnEls);
+
+    this.winkEls = [null];
+    for (let i = 1; i <= 4; i++) {
+      this.winkEls.push(this.container.querySelector<SVGElement>(`#wink_btn_${i}`));
+    }
 
     this.attachEvents();
   }
@@ -232,6 +240,20 @@ export class XtmView {
     if (this.heldButton !== this.lastHeldButton) {
       this.lastHeldButton = this.heldButton;
       paintButtons(this.btnEls, this.heldButton);
+    }
+
+    // 6. Ward-Beck.ca Wink Switch Selector Animation & State
+    const activeInput = on ? model.getSelectedInput() : 0;
+    if (activeInput !== this.lastActiveInput) {
+      this.lastActiveInput = activeInput;
+      for (let i = 1; i <= 4; i++) {
+        const el = this.winkEls[i];
+        if (el) {
+          const isOpen = (i === activeInput);
+          el.classList.toggle('wink-open', isOpen);
+          el.setAttribute('aria-pressed', isOpen ? 'true' : 'false');
+        }
+      }
     }
   }
 

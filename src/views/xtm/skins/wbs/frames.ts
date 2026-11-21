@@ -3,7 +3,7 @@
  * WBS skin: canvas background and signature channel frames:
  * - Modern dark canvas and signature green frames for Ward-Beck.com.
  * - Broadcast petrol / slate-blue baked enamel chassis (#436478 to #2c4454) for Ward-Beck.ca,
- *   with top/bottom ventilation strips, 19" EIA rack flanges, and INPUT 1 / INPUT 2 hairline rules.
+ *   with top/bottom ventilation strips and 19" EIA rack flanges.
  */
 import { VW, VH } from '../../layout/wbs-layout';
 
@@ -33,20 +33,6 @@ export function renderWbsCanvas(): string {
       <line x1="0" y1="410.5" x2="${VW}" y2="410.5" stroke="#8C897B" stroke-width="1.2"/>
       <rect x="0" y="412" width="${VW}" height="18" fill="url(#extrusionBevel)" stroke="#5C5A50" stroke-width="1"/>
       <line x1="0" y1="412" x2="${VW}" y2="412" stroke="#D4D2C5" stroke-width="1.2"/>
-
-      <!-- Dark Engraved Ink "INPUT 1" Channel Label with Hairline Rules (#2A2B2A) -->
-      <g font-family="'Helvetica Neue', Helvetica, Arial, sans-serif">
-        <line x1="100" y1="418" x2="620" y2="418" stroke="#2A2B2A" stroke-width="1.2" stroke-opacity="0.85"/>
-        <text x="687.5" y="422" font-size="15" font-weight="700" fill="#2A2B2A" text-anchor="middle" letter-spacing="2">INPUT 1</text>
-        <line x1="755" y1="418" x2="1275" y2="418" stroke="#2A2B2A" stroke-width="1.2" stroke-opacity="0.85"/>
-      </g>
-
-      <!-- Dark Engraved Ink "INPUT 2" Channel Label with Hairline Rules (#2A2B2A) -->
-      <g font-family="'Helvetica Neue', Helvetica, Arial, sans-serif">
-        <line x1="1925" y1="418" x2="2445" y2="418" stroke="#2A2B2A" stroke-width="1.2" stroke-opacity="0.85"/>
-        <text x="2512.5" y="422" font-size="15" font-weight="700" fill="#2A2B2A" text-anchor="middle" letter-spacing="2">INPUT 2</text>
-        <line x1="2580" y1="418" x2="3100" y2="418" stroke="#2A2B2A" stroke-width="1.2" stroke-opacity="0.85"/>
-      </g>
     </g>`;
 }
 
