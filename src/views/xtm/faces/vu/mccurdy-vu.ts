@@ -72,15 +72,14 @@ export function renderMcCurdyScale(ctx: FaceCtx): string {
 }
 
 export function renderMcCurdyFaceLogo(cx: number, cy: number, ink: string): string {
-  return `<g id="mccurdy-dial-logo" transform="translate(${(cx - 46).toFixed(1)}, ${(cy + 30).toFixed(1)})">
-      <!-- Authentic McCurdy Faceted 6-Point Hexagonal Meter Cartouche -->
-      <path d="M 1.8,6.2 L 46.0,1.8 L 90.2,6.2 L 86.1,23.2 L 46.0,27.6 L 5.9,23.2 Z"
-            fill="none" stroke="${ink}" stroke-width="1.8" stroke-linejoin="round" opacity="0.85" />
-      <text x="46.0" y="18.8"
-            font-family="'Helvetica Neue', Helvetica, Arial, sans-serif"
-            font-size="12" font-weight="700" fill="${ink}" opacity="0.9" text-anchor="middle" letter-spacing="0.5">
-        M<tspan font-size="9.4" dy="-0.3">c</tspan><tspan font-size="12" dy="0.3">CURDY</tspan>
-      </text>
+  return `<g id="mccurdy-dial-logo" transform="translate(${(cx - 42).toFixed(1)}, ${(cy + 34).toFixed(1)})">
+      <!-- Authentic McCurdy Cartouche Box & Wordmark -->
+      <rect x="0" y="0" width="84" height="28" rx="2.5"
+            fill="none" stroke="${ink}" stroke-width="1.5" stroke-opacity="0.85" />
+      <text x="42" y="19"
+            font-family="'Arial Black', Helvetica, Arial, sans-serif"
+            font-size="13.5" font-weight="900" letter-spacing="-0.6" text-anchor="middle"
+            fill="none" stroke="${ink}" stroke-width="1.2" stroke-opacity="0.9">McCurdy</text>
     </g>`;
 }
 

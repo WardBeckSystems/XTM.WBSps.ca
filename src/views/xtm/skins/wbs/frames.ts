@@ -29,17 +29,6 @@ export function renderWbsCanvas(): string {
       <line x1="0" y1="17.5" x2="${VW}" y2="17.5" stroke="#182832" stroke-width="1.5"/>
       <line x1="0" y1="19" x2="${VW}" y2="19" stroke="#628aa1" stroke-width="0.8" stroke-opacity="0.5"/>
 
-      <!-- EIA Standard 19" Rack Mounting Flanges (Left & Right) -->
-      <rect x="0" y="0" width="36" height="${VH}" fill="#19232b"/>
-      <rect x="${VW - 36}" y="0" width="36" height="${VH}" fill="#19232b"/>
-      <line x1="36" y1="0" x2="36" y2="${VH}" stroke="#53778c" stroke-width="0.9" stroke-opacity="0.5"/>
-      <line x1="${VW - 36}" y1="0" x2="${VW - 36}" y2="${VH}" stroke="#53778c" stroke-width="0.9" stroke-opacity="0.5"/>
-      <!-- Rackmount Oval Slots -->
-      <rect x="10" y="38" width="16" height="24" rx="8" fill="#0d1014" stroke="#334654" stroke-width="1"/>
-      <rect x="10" y="${VH - 62}" width="16" height="24" rx="8" fill="#0d1014" stroke="#334654" stroke-width="1"/>
-      <rect x="${VW - 26}" y="38" width="16" height="24" rx="8" fill="#0d1014" stroke="#334654" stroke-width="1"/>
-      <rect x="${VW - 26}" y="${VH - 62}" width="16" height="24" rx="8" fill="#0d1014" stroke="#334654" stroke-width="1"/>
-
       <!-- Bottom Ventilation Strip -->
       <line x1="0" y1="411" x2="${VW}" y2="411" stroke="#1b2b36" stroke-width="1.5"/>
       <rect x="0" y="412" width="${VW}" height="18" fill="#233744"/>
