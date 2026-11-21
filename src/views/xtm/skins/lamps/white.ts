@@ -6,7 +6,7 @@ export const WHITE_LAMP: LampVariant = {
   id: 'white',
   gradientId: 'xwhite',
   bloom: false,
-  gradient: `<radialGradient id="xwhite" cx="50%" cy="38%" r="68%">
+  gradient: `<radialGradient id="xwhite" cx="50%" cy="96%" r="88%">
           <stop offset="0%" stop-color="#ffffff"/>
           <stop offset="25%" stop-color="#f8fafc"/>
           <stop offset="65%" stop-color="#e2e8f0"/>

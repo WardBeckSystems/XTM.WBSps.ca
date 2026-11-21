@@ -11,11 +11,11 @@ import { PARCHMENT_LAMP } from './parchment';
 export type { LampVariant } from './lamp-types';
 export { AMBER_LAMP, WHITE_LAMP, PARCHMENT_LAMP };
 
-/** Warm incandescent filament halo drawn behind non-white VU scales */
-export const INCAND_BLOOM_GRADIENT = `<radialGradient id="xincand_bloom" cx="50%" cy="35%" r="60%">
-          <stop offset="0%" stop-color="#fff8db" stop-opacity="0.55"/>
-          <stop offset="35%" stop-color="#fed766" stop-opacity="0.32"/>
-          <stop offset="70%" stop-color="#f59e0b" stop-opacity="0.10"/>
+/** Warm incandescent filament halo drawn from the bottom rim behind non-white VU scales */
+export const INCAND_BLOOM_GRADIENT = `<radialGradient id="xincand_bloom" cx="50%" cy="98%" r="85%">
+          <stop offset="0%" stop-color="#fff8db" stop-opacity="0.68"/>
+          <stop offset="28%" stop-color="#fed766" stop-opacity="0.42"/>
+          <stop offset="65%" stop-color="#f59e0b" stop-opacity="0.16"/>
           <stop offset="100%" stop-color="#d97706" stop-opacity="0"/>
         </radialGradient>`;
 

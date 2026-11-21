@@ -25,6 +25,7 @@ import { renderDotMatrix } from './xtm/lib/dot-matrix';
 import { renderSevenSeg } from './xtm/lib/seven-seg';
 import { renderAltPpmFace, altPpmFace } from './xtm/faces/ppm/index';
 import { renderMeterShell } from './xtm/meter/meter-shell';
+import { updateRandomShatter } from './xtm/meter/shatter';
 import { getCenterPlatePath } from './xtm/skins/wbs/center-plate';
 import { renderMcCurdyPanel } from './xtm/skins/mccurdy/panel';
 import { renderMcCurdyCenter } from './xtm/skins/mccurdy/center';
@@ -88,6 +89,8 @@ export class XtmView {
   // VU Meter Overload Glass Shatter State
   isGlassShattered: boolean = false;
   vuRedStartTime: number = 0;
+  vuCleanStartTime: number = 0;
+  isHealing: boolean = false;
   lastSensKey: string = '';
 
   // Change detection caches
@@ -289,11 +292,13 @@ export class XtmView {
     const sensKey = `${model.mode}_${model.a.lvl}_${model.d.lvl}_${activeInput}_${model.mcAttenuatorStep}_${model.mcRangeMode}`;
     if (this.lastSensKey !== sensKey) {
       this.lastSensKey = sensKey;
-      if (this.isGlassShattered) {
+      if (this.isGlassShattered || this.isHealing) {
         this.isGlassShattered = false;
-        this.updateShatterState(false);
+        this.isHealing = false;
+        this.updateShatterState(false, true);
       }
       this.vuRedStartTime = 0;
+      this.vuCleanStartTime = 0;
     }
 
     // VU In-The-Red Overload Detection (>= 0 dB VU is red zone, shatter if in red >= 2.5 seconds)
@@ -303,14 +308,32 @@ export class XtmView {
     );
 
     if (inRed) {
+      this.vuCleanStartTime = 0;
+      this.isHealing = false;
       if (this.vuRedStartTime === 0) {
         this.vuRedStartTime = now;
       } else if (!this.isGlassShattered && (now - this.vuRedStartTime >= 2500)) {
         this.isGlassShattered = true;
-        this.updateShatterState(true);
+        this.triggerRandomShatter();
       }
     } else {
       this.vuRedStartTime = 0;
+      // Procedural Self-Healing: when out of the red, the glass fractures heal and dissolve away
+      if (this.isGlassShattered) {
+        if (this.vuCleanStartTime === 0) {
+          this.vuCleanStartTime = now;
+        } else if (!this.isHealing && (now - this.vuCleanStartTime >= 2000)) {
+          // Out of red for 2.0s -> start smooth self-healing fade
+          this.isHealing = true;
+          this.updateShatterState(false, false);
+        } else if (this.isHealing && (now - this.vuCleanStartTime >= 3900)) {
+          // Self-healing complete: hide overlay and reset state
+          this.isGlassShattered = false;
+          this.isHealing = false;
+          this.vuCleanStartTime = 0;
+          this.updateShatterState(false, true);
+        }
+      }
     }
 
     // 8. McCurdy Range Selector Switch & 31-Step Attenuator Sync
@@ -374,10 +397,35 @@ export class XtmView {
   }
 
   /* ---------------- VU Meter Shattered Glass Fracture Control ---------------- */
-  private updateShatterState(shattered: boolean): void {
+  private triggerRandomShatter(): void {
+    const vus = [0, 2];
+    for (const id of vus) {
+      const el = this.vuShatterEls[id];
+      if (el) {
+        const cx = parseFloat(el.getAttribute('data-cx') || String(id === 0 ? 373 : 2198));
+        const cy = parseFloat(el.getAttribute('data-cy') || '210');
+        updateRandomShatter(el, cx, cy, id);
+        el.style.display = 'inline';
+        // Trigger opacity fade-in
+        void el.getBoundingClientRect();
+        el.style.opacity = '1';
+      }
+    }
+  }
+
+  private updateShatterState(shattered: boolean, immediate: boolean = false): void {
     for (const el of this.vuShatterEls) {
       if (el) {
-        el.style.display = shattered ? 'inline' : 'none';
+        if (shattered) {
+          el.style.display = 'inline';
+          el.style.opacity = '1';
+        } else if (immediate) {
+          el.style.display = 'none';
+          el.style.opacity = '0';
+        } else {
+          // Self-healing fade
+          el.style.opacity = '0';
+        }
       }
     }
   }
