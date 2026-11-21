@@ -24,14 +24,15 @@ export function renderWbsCanvas(): string {
       <!-- Baked Enamel Faceplate -->
       <rect width="${VW}" height="${VH}" fill="url(#wbsSlateBlueGrad)"/>
 
-      <!-- Top Perforated Ventilation Cover Rim -->
-      <rect x="0" y="0" width="${VW}" height="18" fill="url(#topRimSlateBlue)"/>
-      <line x1="0" y1="17.5" x2="${VW}" y2="17.5" stroke="#182832" stroke-width="1.5"/>
-      <line x1="0" y1="19" x2="${VW}" y2="19" stroke="#628aa1" stroke-width="0.8" stroke-opacity="0.5"/>
+      <!-- M600 Anodized Extruded Aluminum Top Rail Lip (MF-6B Standard) -->
+      <rect x="0" y="0" width="${VW}" height="18" fill="url(#extrusionBevel)" stroke="#5C5A50" stroke-width="1"/>
+      <line x1="0" y1="18" x2="${VW}" y2="18" stroke="#9C998B" stroke-width="1.2"/>
+      <line x1="0" y1="19.5" x2="${VW}" y2="19.5" stroke="#FFFFFF" stroke-opacity="0.6" stroke-width="0.8"/>
 
-      <!-- Bottom Ventilation Strip -->
-      <line x1="0" y1="411" x2="${VW}" y2="411" stroke="#1b2b36" stroke-width="1.5"/>
-      <rect x="0" y="412" width="${VW}" height="18" fill="#233744"/>
+      <!-- M600 Anodized Extruded Aluminum Bottom Rail Lip -->
+      <line x1="0" y1="410.5" x2="${VW}" y2="410.5" stroke="#1b2b36" stroke-width="1.2"/>
+      <rect x="0" y="412" width="${VW}" height="18" fill="url(#extrusionBevel)" stroke="#5C5A50" stroke-width="1"/>
+      <line x1="0" y1="412" x2="${VW}" y2="412" stroke="#E8E6DC" stroke-width="1.2"/>
 
       <!-- Off-White Silkscreened "INPUT 1" Channel Label with Hairline Rules -->
       <g font-family="'Helvetica Neue', Helvetica, Arial, sans-serif">
