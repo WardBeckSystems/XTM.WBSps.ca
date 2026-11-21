@@ -72,17 +72,6 @@ export const CHAMBER_GRADIENTS = `<linearGradient id="xch_top" x1="0" y1="0" x2=
           <stop offset="55%" stop-color="#70624d" />
           <stop offset="100%" stop-color="#bfb095" />
         </linearGradient>
-        <linearGradient id="metalCap" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stop-color="#b4bcc2" />
-          <stop offset="35%" stop-color="#edf3f7" />
-          <stop offset="58%" stop-color="#9ca5ab" />
-          <stop offset="100%" stop-color="#6d757a" />
-        </linearGradient>
-        <linearGradient id="metalBase" x1="0" y1="0" x2="1" y2="0">
-          <stop offset="0%" stop-color="#787f82" />
-          <stop offset="50%" stop-color="#acb3b8" />
-          <stop offset="100%" stop-color="#656b6e" />
-        </linearGradient>
         <radialGradient id="screwGrad" cx="35%" cy="35%" r="65%">
           <stop offset="0%" stop-color="#5d6163" />
           <stop offset="60%" stop-color="#27292b" />
@@ -262,14 +251,6 @@ export function bezelRim(x0: number, y0: number, cx: number = x0 + MW / 2): stri
         </g>
       </g>
 
-      <!-- Machined Brushed Metal Pivot Shield Bridge (gemini-svg (14).svg) -->
-      <g class="mc-pivot-shield" transform="translate(${cx}, ${winBot - 12})">
-        <rect x="-65" y="0" width="130" height="26" rx="3" fill="url(#metalBase)" stroke="#4c5254" stroke-width="1.2" />
-        <rect x="-10" y="2" width="20" height="18" rx="1.5" fill="#2c3235" />
-        <circle cx="0" cy="11" r="3.5" fill="#8999a1" />
-        <rect x="-70" y="-12" width="140" height="14" rx="2" fill="url(#metalCap)" stroke="#5c6366" stroke-width="1.1" />
-        <line x1="-68" y1="-10" x2="68" y2="-10" stroke="#ffffff" stroke-width="1.2" stroke-opacity="0.8" />
-      </g>
     </g>
 
     <!-- Ward-Beck.ca Vintage 3D Molded Bakelite Bezel Housing (1/2 Thickness of McCurdy) -->

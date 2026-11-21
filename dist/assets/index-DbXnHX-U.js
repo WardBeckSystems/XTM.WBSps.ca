@@ -351,17 +351,6 @@
           <stop offset="55%" stop-color="#70624d" />
           <stop offset="100%" stop-color="#bfb095" />
         </linearGradient>
-        <linearGradient id="metalCap" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stop-color="#b4bcc2" />
-          <stop offset="35%" stop-color="#edf3f7" />
-          <stop offset="58%" stop-color="#9ca5ab" />
-          <stop offset="100%" stop-color="#6d757a" />
-        </linearGradient>
-        <linearGradient id="metalBase" x1="0" y1="0" x2="1" y2="0">
-          <stop offset="0%" stop-color="#787f82" />
-          <stop offset="50%" stop-color="#acb3b8" />
-          <stop offset="100%" stop-color="#656b6e" />
-        </linearGradient>
         <radialGradient id="screwGrad" cx="35%" cy="35%" r="65%">
           <stop offset="0%" stop-color="#5d6163" />
           <stop offset="60%" stop-color="#27292b" />
@@ -486,14 +475,6 @@
         </g>
       </g>
 
-      <!-- Machined Brushed Metal Pivot Shield Bridge (gemini-svg (14).svg) -->
-      <g class="mc-pivot-shield" transform="translate(${n}, 265)">
-        <rect x="-65" y="0" width="130" height="26" rx="3" fill="url(#metalBase)" stroke="#4c5254" stroke-width="1.2" />
-        <rect x="-10" y="2" width="20" height="18" rx="1.5" fill="#2c3235" />
-        <circle cx="0" cy="11" r="3.5" fill="#8999a1" />
-        <rect x="-70" y="-12" width="140" height="14" rx="2" fill="url(#metalCap)" stroke="#5c6366" stroke-width="1.1" />
-        <line x1="-68" y1="-10" x2="68" y2="-10" stroke="#ffffff" stroke-width="1.2" stroke-opacity="0.8" />
-      </g>
     </g>
 
     <!-- Ward-Beck.ca Vintage 3D Molded Bakelite Bezel Housing (1/2 Thickness of McCurdy) -->
@@ -1639,4 +1620,4 @@
     `,a.parentElement?.insertBefore(e,a),document.getElementById(`btnReloadNewVersion`)?.addEventListener(`click`,()=>{window.location.reload()})}let o=document.querySelector(`.build-stamp`);o&&(o.innerHTML=`<span style="color:#f97316;cursor:pointer;font-weight:bold" title="Click to reload with new version">Update: ${i||`Available`} ⟳</span>`,o.addEventListener(`click`,()=>window.location.reload()))}function Ed(){window.testUpdatePulse=(e=`1.0.99`)=>Td(e);async function e(){try{let e=await fetch(`./version.json?cache=`+Date.now(),{cache:`no-store`});if(!e.ok)return;let{version:t}=await e.json();t&&t!==`1.0.80`&&Td(t)}catch{}}setTimeout(e,3e3),setInterval(e,6e4),document.addEventListener(`visibilitychange`,()=>{document.visibilityState===`visible`&&e()});let t=document.querySelector(`.build-stamp`);if(t){let e=`v1.0.80`;t.textContent=e,t.setAttribute(`title`,`Ward-Beck Systems XTM-4 ${e}`)}}function Dd(){`serviceWorker`in navigator&&(navigator.serviceWorker.addEventListener(`message`,e=>{e.data?.type===`xtm-update-ready`&&(console.info(`XTM: new version stored; update ready.`),Td())}),navigator.serviceWorker.register(`sw.js`,{updateViaCache:`none`}).then(e=>{e.waiting&&Td(),e.addEventListener(`updatefound`,()=>{let t=e.installing;t&&t.addEventListener(`statechange`,()=>{t.state===`installed`&&navigator.serviceWorker.controller&&Td()})})}).catch(e=>{console.warn(`Service worker registration failed:`,e)}))}function Od(){let e=document.getElementById(`pwaInstallBanner`),t=document.getElementById(`btnPwaInstall`),n=document.getElementById(`btnPwaDismiss`),r=document.getElementById(`pwaSubText`),i=null,a=/iPad|iPhone|iPod/.test(navigator.userAgent)&&!window.MSStream,o=/Android|iPhone|iPad|iPod|Opera Mini|IEMobile|WPDesktop/i.test(navigator.userAgent)||window.innerWidth<=840,s=window.matchMedia(`(display-mode: standalone)`).matches||window.navigator.standalone===!0;e&&!s&&(window.addEventListener(`beforeinstallprompt`,t=>{t.preventDefault(),i=t,e.style.display=`block`}),o&&a&&(r&&(r.innerHTML=`Tap the Share icon <strong>[⎋]</strong> in Safari and choose <strong>Add to Home Screen</strong>`),t&&(t.textContent=`How to Install`,t.addEventListener(`click`,()=>{alert(`To install this app on iOS:
 1. Tap the Share button in Safari (box with up arrow).
 2. Scroll down and tap "Add to Home Screen".`)})),e.style.display=`block`),window.addEventListener(`appinstalled`,()=>{e.style.display=`none`,i=null}),t&&!a&&t.addEventListener(`click`,async()=>{if(i){i.prompt();let{outcome:t}=await i.userChoice;t===`accepted`&&(e.style.display=`none`),i=null}else e.style.display=`none`}),n&&n.addEventListener(`click`,()=>{e.style.display=`none`}))}function kd(e,t){let{model:n,audio:r,view:i,podView:a,dbfsView:o}=e,s=document.querySelector(`.console-viewport`),c=0,l=performance.now(),u=document.getElementById(`fpsDisplay`);function d(e){let f=r&&r.getLevels?r.getLevels():r?.currentLevels||{vu:[0,0],ppm:[-.12,-.12],vuDb:[-1/0,-1/0],ppmDb:[-1/0,-1/0],phaseCorrelation:1,phaseLed:-1,peak:[!1,!1],hasAudio:!1};if(i.updateNeedles(f,n.power,n.meterStyle===`sifam`),n.isIdle=!f.hasAudio,i.renderSecondary(n,f),a.render(n,f),o&&o.render(n,f),t.recordTelemetry(f,e),t.recordTransientEvent(f),s){let e=f&&f.lufs&&typeof f.lufs.m==`number`?f.lufs.m:-60;isFinite(e)&&e>-24?e>=-12?s.className=`console-viewport lufs-glow-red`:e>=-18?s.className=`console-viewport lufs-glow-orange`:s.className=`console-viewport lufs-glow-green`:s.className=`console-viewport`}if(c++,e-l>=500){let t=c*1e3/(e-l);u&&(u.textContent=t.toFixed(1)+` FPS`),c=0,l=e}requestAnimationFrame(d)}requestAnimationFrame(d)}async function Ad(){let t=document.getElementById(`visualizerStage`),n=document.getElementById(`pod22Stage`),r=document.getElementById(`dbfsStage`),i=new Fr(t);i.build(e);let a={model:e,audio:rt,view:i,podView:new si(n),dbfsView:r?new Oa(r):null};window.xtmModel=e,window.xtmAudio=rt,window.xtmView=i,window.xtmCtx=a,Aa(),ja(),Ma(a),qu(a);let o=Qu(),s=ka();ed(a);let c=$u(a,s);td(a,s,c),id(a,c),ad(a,c),sd(a,s),await cd(a,s),ld(a,s,c),ud(a,s),dd(a,s),fd(a,s),hd(a,s),gd(a,s),Ju(a,s),_d(a,s),Yu(a,s),vd(a),yd(a),bd(a),xd(a,c),Sd(a,s),Cd(a,c),Ed(),Dd(),Od(),kd(a,o)}window.audioReady=!0,Ad(),window.audioContext&&window.audioContext.state===`suspended`&&window.audioContext.resume();
-//# sourceMappingURL=index-Brk08eBc.js.map
+//# sourceMappingURL=index-DbXnHX-U.js.map
