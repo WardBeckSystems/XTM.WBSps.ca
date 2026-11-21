@@ -39,7 +39,7 @@ export function frameDt(now: number, lastTime: number): number {
 
 /** Target level for a channel according to the scale mode. */
 function targetDbFor(st: Pod22RuntimeState, levels: MeterFrameTelemetry, ch: number): number {
-  let targetDb = levels.vuDb[ch] ?? -90;
+  let targetDb = -90;
   if (st.scaleMode === 'log') {
     if (levels.lufs && levels.lufs.mL !== undefined) {
       const lufsCh = ch === 0 ? levels.lufs.mL : levels.lufs.mR;
@@ -48,7 +48,10 @@ function targetDbFor(st: Pod22RuntimeState, levels: MeterFrameTelemetry, ch: num
       }
     }
   } else if (st.scaleMode === 'vu') {
-    targetDb = levels.vuDb[ch] ?? -90;
+    // LED bargraph (POD-22) calibrated broadcast level (-18 dBFS = 0 VU)
+    // unaffected by front-panel analog VU sensitivity knobs
+    const dbfs = levels.dbfs ? (levels.dbfs[ch] ?? -90) : -90;
+    targetDb = Number.isFinite(dbfs) ? dbfs + 18 : -90;
   } else if (st.scaleMode === 'peak') {
     targetDb = levels.ppmDb[ch] ?? -90;
   }

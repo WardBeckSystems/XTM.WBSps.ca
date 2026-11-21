@@ -56,7 +56,7 @@ export function renderMeterShell(id: number, cx: number, cy: number, kind: 'vu' 
         </g>`;
   s += `<g class="mc-only xtm-btn dial-logo-interactive" data-btn="CYCLE_STYLE" style="cursor: pointer;">
           <title>Click to cycle meter styles (McCurdy)</title>
-          ${renderMcCurdyVuBadge(cx, cy, ink)}
+          ${renderMcCurdyVuBadge(cx, cy, ink, isPpm)}
         </g>`;
 
   // Hardware-accelerated rotating needle assembly

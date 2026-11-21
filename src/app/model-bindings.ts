@@ -20,7 +20,6 @@ export function bindModelChange(ctx: AppContext, refs: DrawerControls, sync: Aud
   model.onChange = (m: any) => {
     const isDigital = (m.mode === 'D');
     audio.setReferenceLevel(m.getActiveReferenceLevel(), isDigital);
-    audio.setInputTrim(m.a.lvl - 64);
     audio.setHighPass(m.hp === 1);
     audio.setVuStyle(m.meterStyle);
     const cal = m.toneCalLevels[m.toneCalIdx];

@@ -98,17 +98,24 @@ export function bezelRim(x0: number, y0: number, cx: number = x0 + MW / 2): stri
 
   const housingPathMc = `M ${bx_mc + br_mc} ${by_mc} h ${bw_mc - 2 * br_mc} a ${br_mc} ${br_mc} 0 0 1 ${br_mc} ${br_mc} v ${bh_mc - 2 * br_mc} a ${br_mc} ${br_mc} 0 0 1 -${br_mc} ${br_mc} h -${bw_mc - 2 * br_mc} a ${br_mc} ${br_mc} 0 0 1 -${br_mc} -${br_mc} v -${bh_mc - 2 * br_mc} a ${br_mc} ${br_mc} 0 0 1 ${br_mc} -${br_mc} Z M ${wx + wr} ${wy} h ${ww - 2 * wr} a ${wr} ${wr} 0 0 1 ${wr} ${wr} v ${wh - 2 * wr} a ${wr} ${wr} 0 0 1 -${wr} ${wr} h -${ww - 2 * wr} a ${wr} ${wr} 0 0 1 -${wr} -${wr} v -${wh - 2 * wr} a ${wr} ${wr} 0 0 1 ${wr} -${wr} Z`;
 
-  // 2. Ward-Beck.ca: 1/2 Border & Skirt Thickness Bezel (Side border = 15px, Top border = 9px, Skirt = 65px)
-  const bx_wbs = cx - 289; // 578 wide (leaves 15px side borders, 1/2 of 30px)
-  const by_wbs = 56;       // 9px top border (1/2 of 18px)
-  const bw_wbs = 578;
-  const bh_wbs = 286;      // ends at y=342 (skirt height = 65px, 1/2 of 130px)
-  const br_wbs = 8;
+  // 2. Ward-Beck.ca: 1/2 Border & Skirt Thickness Bezel (Expanded ~10% to completely cover meter face, with thin borders)
+  const bw_wbs = 612;
+  const bx_wbs = cx - 306;
+  const by_wbs = 48;
+  const bh_wbs = 320;      // ends at y=368, completely covering y=355 meter plate base
+  const br_wbs = 10;
 
-  const seamY_wbs = 285;
-  const screwY_wbs = 314;
+  const ww_wbs = 576;      // thin 18px side border
+  const wx_wbs = cx - 288;
+  const wy_wbs = 58;       // thin 10px top border
+  const wh_wbs = 218;      // ends at y=276
+  const wr_wbs = 7;
+  const winBot_wbs = wy_wbs + wh_wbs; // 276
 
-  const housingPathWbs = `M ${bx_wbs + br_wbs} ${by_wbs} h ${bw_wbs - 2 * br_wbs} a ${br_wbs} ${br_wbs} 0 0 1 ${br_wbs} ${br_wbs} v ${bh_wbs - 2 * br_wbs} a ${br_wbs} ${br_wbs} 0 0 1 -${br_wbs} ${br_wbs} h -${bw_wbs - 2 * br_wbs} a ${br_wbs} ${br_wbs} 0 0 1 -${br_wbs} -${br_wbs} v -${bh_wbs - 2 * br_wbs} a ${br_wbs} ${br_wbs} 0 0 1 ${br_wbs} -${br_wbs} Z M ${wx + wr} ${wy} h ${ww - 2 * wr} a ${wr} ${wr} 0 0 1 ${wr} ${wr} v ${wh - 2 * wr} a ${wr} ${wr} 0 0 1 -${wr} ${wr} h -${ww - 2 * wr} a ${wr} ${wr} 0 0 1 -${wr} -${wr} v -${wh - 2 * wr} a ${wr} ${wr} 0 0 1 ${wr} -${wr} Z`;
+  const seamY_wbs = 288;
+  const screwY_wbs = 326;
+
+  const housingPathWbs = `M ${bx_wbs + br_wbs} ${by_wbs} h ${bw_wbs - 2 * br_wbs} a ${br_wbs} ${br_wbs} 0 0 1 ${br_wbs} ${br_wbs} v ${bh_wbs - 2 * br_wbs} a ${br_wbs} ${br_wbs} 0 0 1 -${br_wbs} ${br_wbs} h -${bw_wbs - 2 * br_wbs} a ${br_wbs} ${br_wbs} 0 0 1 -${br_wbs} -${br_wbs} v -${bh_wbs - 2 * br_wbs} a ${br_wbs} ${br_wbs} 0 0 1 ${br_wbs} -${br_wbs} Z M ${wx_wbs + wr_wbs} ${wy_wbs} h ${ww_wbs - 2 * wr_wbs} a ${wr_wbs} ${wr_wbs} 0 0 1 ${wr_wbs} ${wr_wbs} v ${wh_wbs - 2 * wr_wbs} a ${wr_wbs} ${wr_wbs} 0 0 1 -${wr_wbs} ${wr_wbs} h -${ww_wbs - 2 * wr_wbs} a ${wr_wbs} ${wr_wbs} 0 0 1 -${wr_wbs} -${wr_wbs} v -${wh_wbs - 2 * wr_wbs} a ${wr_wbs} ${wr_wbs} 0 0 1 ${wr_wbs} -${wr_wbs} Z`;
 
   return `
     <!-- Modern Sleek Bezel (Ward-Beck.com / McCurdyRadio.com) -->
@@ -169,16 +176,16 @@ export function bezelRim(x0: number, y0: number, cx: number = x0 + MW / 2): stri
       <rect x="${bx_wbs + 4}" y="${by_wbs + 4}" width="${bw_wbs - 8}" height="${bh_wbs - 8}" rx="${br_wbs - 2}" fill="none" stroke="#25272c" stroke-width="0.8" pointer-events="none"/>
 
       <!-- Inner Stepped Recessed Window Frame Rim -->
-      <rect x="${wx - 1.5}" y="${wy - 1.5}" width="${ww + 3}" height="${wh + 3}" rx="${wr + 1}" fill="none" stroke="#08090b" stroke-width="1.6" pointer-events="none"/>
-      <rect x="${wx}" y="${wy}" width="${ww}" height="${wh}" rx="${wr}" fill="none" stroke="#2b2e34" stroke-width="1.0" stroke-opacity="0.85" pointer-events="none"/>
+      <rect x="${wx_wbs - 1.5}" y="${wy_wbs - 1.5}" width="${ww_wbs + 3}" height="${wh_wbs + 3}" rx="${wr_wbs + 1}" fill="none" stroke="#08090b" stroke-width="1.6" pointer-events="none"/>
+      <rect x="${wx_wbs}" y="${wy_wbs}" width="${ww_wbs}" height="${wh_wbs}" rx="${wr_wbs}" fill="none" stroke="#2b2e34" stroke-width="1.0" stroke-opacity="0.85" pointer-events="none"/>
 
       <!-- Window Inner Shadows & Specular Glass Reflection Sheen -->
-      <rect x="${wx}" y="${wy}" width="${ww}" height="18" fill="url(#xch_top)" pointer-events="none"/>
-      <rect x="${wx}" y="${winBot - 14}" width="${ww}" height="14" fill="url(#xch_bot)" pointer-events="none"/>
-      <rect x="${wx}" y="${wy}" width="12" height="${wh}" fill="url(#xch_left)" pointer-events="none"/>
-      <rect x="${wx + ww - 12}" y="${wy}" width="12" height="${wh}" fill="url(#xch_right)" pointer-events="none"/>
-      <path d="M ${wx + 6} ${wy + 6} L ${wx + ww * 0.65} ${wy + 6} L ${wx + 6} ${winBot - 12} Z" fill="url(#meterGlassSheenGrad)" pointer-events="none"/>
-      <rect x="${wx + 6}" y="${(wy + wh * 0.42).toFixed(1)}" width="${ww - 12}" height="1.6" fill="#ffffff" opacity="0.03" pointer-events="none"/>
+      <rect x="${wx_wbs}" y="${wy_wbs}" width="${ww_wbs}" height="18" fill="url(#xch_top)" pointer-events="none"/>
+      <rect x="${wx_wbs}" y="${winBot_wbs - 14}" width="${ww_wbs}" height="14" fill="url(#xch_bot)" pointer-events="none"/>
+      <rect x="${wx_wbs}" y="${wy_wbs}" width="12" height="${wh_wbs}" fill="url(#xch_left)" pointer-events="none"/>
+      <rect x="${wx_wbs + ww_wbs - 12}" y="${wy_wbs}" width="12" height="${wh_wbs}" fill="url(#xch_right)" pointer-events="none"/>
+      <path d="M ${wx_wbs + 6} ${wy_wbs + 6} L ${wx_wbs + ww_wbs * 0.65} ${wy_wbs + 6} L ${wx_wbs + 6} ${winBot_wbs - 12} Z" fill="url(#meterGlassSheenGrad)" pointer-events="none"/>
+      <rect x="${wx_wbs + 6}" y="${(wy_wbs + wh_wbs * 0.42).toFixed(1)}" width="${ww_wbs - 12}" height="1.6" fill="#ffffff" opacity="0.03" pointer-events="none"/>
 
       <!-- Lower Skirt Molded Horizontal Seam Line -->
       <line x1="${bx_wbs + 2}" y1="${seamY_wbs}" x2="${bx_wbs + bw_wbs - 2}" y2="${seamY_wbs}" stroke="#0c0d0f" stroke-width="1.4" pointer-events="none"/>

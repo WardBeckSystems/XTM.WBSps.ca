@@ -88,7 +88,6 @@ export function createAudioSync(ctx: AppContext, refs: DrawerControls): AudioSyn
 
       try {
         await audio.connectSoundCard(targetId);
-        audio.setInputTrim(m.a.lvl - 64);
       } catch (err: any) {
         const isNotFound = err?.name === 'NotFoundError' || err?.message?.includes('not found') || err?.message?.includes('detected');
         if (!isNotFound) {
