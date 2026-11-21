@@ -14,7 +14,7 @@ export function renderVintageWbsCenter(isPowered = true): string {
   // From gemini-svg (8).svg origin (262, 184): dx = 1268, dy = 31
   return `<g class="wbs-ca-only" id="vintage-wbs-center">
     <!-- Main Cassette Panel Housing in Ward-Beck M600 Anodized Brushed Aluminum -->
-    <rect x="1350" y="16" width="500" height="428" rx="8" fill="url(#aluPlate)" stroke="#8C897B" stroke-width="2.5" />
+    <rect x="1350" y="16" width="500" height="398" rx="8" fill="url(#aluPlate)" stroke="#8C897B" stroke-width="2.5" />
     
     <!-- Top Brushed / Anodized Chassis Lip -->
     <path d="M 1350 24 A 8 8 0 0 1 1358 16 H 1842 A 8 8 0 0 1 1850 24 V 48 H 1350 Z" fill="url(#extrusionBevel)" stroke="#5C5A50" stroke-width="1" />
@@ -31,15 +31,15 @@ export function renderVintageWbsCenter(isPowered = true): string {
     </g>
 
     <!-- Lower Panel Edge Highlight & Rim -->
-    <line x1="1350" y1="412" x2="1850" y2="412" stroke="#8C897B" stroke-width="1.2" />
-    <path d="M 1350 412 H 1850 V 436 A 8 8 0 0 1 1842 444 H 1358 A 8 8 0 0 1 1350 436 Z" fill="url(#extrusionBevel)" stroke="#5C5A50" stroke-width="1" />
+    <line x1="1350" y1="382" x2="1850" y2="382" stroke="#8C897B" stroke-width="1.2" />
+    <path d="M 1350 382 H 1850 V 406 A 8 8 0 0 1 1842 414 H 1358 A 8 8 0 0 1 1350 406 Z" fill="url(#extrusionBevel)" stroke="#5C5A50" stroke-width="1" />
 
     <!-- Corner Slotted Screws (Bottom Lip) -->
-    <g transform="translate(1372, 428)">
+    <g transform="translate(1372, 398)">
       <ellipse cx="0" cy="0" rx="4.5" ry="2.2" fill="#525559" stroke="#383a3d" stroke-width="0.6" />
       <line x1="-2.5" y1="-1.5" x2="2.5" y2="1.5" stroke="#222426" stroke-width="0.8" />
     </g>
-    <g transform="translate(1828, 428)">
+    <g transform="translate(1828, 398)">
       <ellipse cx="0" cy="0" rx="4.5" ry="2.2" fill="#525559" stroke="#383a3d" stroke-width="0.6" />
       <line x1="-1.5" y1="-2.5" x2="1.5" y2="2.5" stroke="#222426" stroke-width="0.8" />
     </g>

@@ -15,7 +15,7 @@ import { dialPalette } from '../skins/dial-palette';
 import { lampHasBloom } from '../skins/lamps/index';
 import { renderWbsFaceLogo } from '../skins/wbs/face-logo';
 import { renderMcCurdyVuBadge } from '../skins/mccurdy/vu-badge';
-import { chamberShadows, bezelBase, bezelOpeningRim } from './chamber';
+import { chamberShadows, bezelRim } from './chamber';
 
 export function renderMeterShell(id: number, cx: number, cy: number, kind: 'vu' | 'ppm', isPowered: boolean,
                                  dialLamp: string, isBlackPpm: boolean, meterStyle: string, ppmStandard: string): string {
@@ -30,11 +30,7 @@ export function renderMeterShell(id: number, cx: number, cy: number, kind: 'vu' 
   const { fill: fillGrad, ink } = dialPalette(isPpm, isPowered, dialLamp);
   const ctx: FaceCtx = { P, arc, ink, isSifam, x0, y0 };
 
-  // 1. Outer 3D molded bezel housing, seam line and trimmer screw (rendered underneath the meter well)
-  let s = bezelBase(x0, y0, cx);
-
-  // 2. Clipped dial window
-  s += `<clipPath id="xmc${id}"><rect x="${x0}" y="${y0}" width="${MW}" height="${MH}" rx="5"/></clipPath>
+  let s = `<clipPath id="xmc${id}"><rect x="${x0}" y="${y0}" width="${MW}" height="${MH}" rx="5"/></clipPath>
     <g clip-path="url(#xmc${id})">
       <!-- Base Dial Plate Background with Rich Radiance Gradient -->
       <rect class="xt-face xt-lamp-${kind === 'vu' && !isBlackPpm ? dialLamp : 'ppm'}" x="${x0}" y="${y0}" width="${MW}" height="${MH}" rx="5" fill="${fillGrad}"/>`;
@@ -66,6 +62,6 @@ export function renderMeterShell(id: number, cx: number, cy: number, kind: 'vu' 
   s += renderNeedleGroup(id, restAngle(isSifam), px, py, needle);
 
   s += chamberShadows(x0, y0);
-  s += bezelOpeningRim(x0, y0);
+  s += bezelRim(x0, y0, cx);
   return s;
 }

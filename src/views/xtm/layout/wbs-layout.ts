@@ -6,7 +6,7 @@
 
 /** Canvas geometry */
 export const VW = 3200;
-export const VH = 460;
+export const VH = 430;
 
 /** Meter window dimensions (broadcast aspect ratio, window mask) */
 export const MW = 580;
