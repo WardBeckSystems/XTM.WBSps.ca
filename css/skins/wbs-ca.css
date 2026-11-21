@@ -53,6 +53,17 @@ body.theme-wbs-ca .wbs-modern-only {
   display: none !important;
 }
 
+body.theme-wbs-ca #xtm_btn_MODE,
+body.theme-wbs-ca #xtm_btn_SOURCE,
+body.theme-wbs-ca #xtm_btn_DOWN,
+body.theme-wbs-ca #xtm_btn_UP,
+body.theme-wbs-ca #xtm_btn_lbl_MODE,
+body.theme-wbs-ca #xtm_btn_lbl_SOURCE,
+body.theme-wbs-ca #xtm_btn_lbl_DOWN,
+body.theme-wbs-ca #xtm_btn_lbl_UP {
+  display: none !important;
+}
+
 body.theme-wbs-ca .wbs-frame-green {
   display: none !important;
 }

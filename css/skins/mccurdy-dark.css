@@ -99,14 +99,14 @@ body.theme-mccurdy-dark .scope-meta-badge {
   border-color: #384e61;
 }
 
-body.theme-mccurdy-dark #xtm_btn_UP { transform: translate(681.5px, 78px) scale(0.5); }
-body.theme-mccurdy-dark #xtm_btn_DOWN { transform: translate(801.5px, 78px) scale(0.5); }
+body.theme-mccurdy-dark #xtm_btn_UP,
+body.theme-mccurdy-dark #xtm_btn_DOWN,
 body.theme-mccurdy-dark #xtm_btn_lbl_UP,
 body.theme-mccurdy-dark #xtm_btn_lbl_DOWN,
 body.theme-mccurdy-dark #xtm_btn_lbl_MODE,
-body.theme-mccurdy-dark #xtm_btn_lbl_SOURCE { display: none; }
+body.theme-mccurdy-dark #xtm_btn_lbl_SOURCE,
 body.theme-mccurdy-dark #xtm_btn_MODE,
-body.theme-mccurdy-dark #xtm_btn_SOURCE { display: none; }
+body.theme-mccurdy-dark #xtm_btn_SOURCE { display: none !important; }
 
 /* McCurdy Panel SVG Classic Broadcast Slate-Blue Background */
 body.theme-mccurdy-dark .mc-panel-bg {

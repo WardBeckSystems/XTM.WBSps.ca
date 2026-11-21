@@ -386,6 +386,8 @@ export class XtmModel {
         dialLamp: this.dialLamp,
         ppmStyle: this.ppmStyle,
         selectedInput: this.getSelectedInput(),
+        mcRangeMode: this.mcRangeMode,
+        mcAttenuatorStep: this.mcAttenuatorStep,
         toneCalIdx: this.toneCalIdx,
         toneCalLevel: this.toneCalLevels[this.toneCalIdx] ?? 0,
         vfdMetric: this.vfdMetric
@@ -407,6 +409,8 @@ export class XtmModel {
         if (obj.term !== undefined) this.term = obj.term;
         if (obj.meterStyle) this.meterStyle = obj.meterStyle;
         if (obj.selectedInput) this.selectedInput = obj.selectedInput;
+        if (obj.mcRangeMode) this.mcRangeMode = obj.mcRangeMode;
+        if (typeof obj.mcAttenuatorStep === 'number') this.mcAttenuatorStep = obj.mcAttenuatorStep;
         if (obj.dialLamp) this.dialLamp = obj.dialLamp;
         if (obj.ppmStyle) this.ppmStyle = obj.ppmStyle;
         if (typeof localStorage !== 'undefined' && localStorage.getItem('wbs_xtm4_tone_cal_dbfs_v3') !== 'true') {

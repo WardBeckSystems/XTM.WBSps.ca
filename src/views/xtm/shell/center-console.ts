@@ -24,9 +24,6 @@ export function renderCenterConsole(on: boolean): string {
           <!-- Center VFD Dot-Matrix Display Cutout Window -->
           <rect class="wbs-only" x="${DISP.x}" y="${DISP.y}" width="${DISP.w}" height="${DISP.h}" rx="6" fill="#040605" stroke="#052e16" stroke-width="2.5"/>
           <g class="wbs-only" id="xvfd_group" ${on ? 'filter="url(#xglow)"' : ''}></g>
-
-          <!-- Mode & Source Front-Panel Buttons (Rectangular pushbutton switches with white labels above) -->
-          ${renderButtons()}
         </g>
 
         <!-- McCurdy Centre Console Section (McCurdyRadio.ca / .com) -->
@@ -34,5 +31,8 @@ export function renderCenterConsole(on: boolean): string {
 
         <!-- Vintage Ward-Beck Console Section (Ward-Beck.ca - DR Vernier Dial, Skirted Knob, AC Lamp) -->
         ${renderVintageWbsCenter(on)}
+
+        <!-- Mode & Source / Up & Down Front-Panel Buttons -->
+        ${renderButtons()}
       </g>`;
 }
