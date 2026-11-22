@@ -15,10 +15,13 @@ export function initLowerUnitSwitcher(): void {
   const dbfsStageEl = document.getElementById('dbfsStage');
   const routingStageEl = document.getElementById('routingStage');
 
-  const setMode = (mode: LowerUnitMode) => {
-    try {
-      localStorage.setItem('xtm.lower_unit', mode);
-    } catch {}
+  const setMode = (mode: LowerUnitMode, persist = true) => {
+    if (persist) {
+      try {
+        localStorage.setItem('xtm.lower_unit_pref', mode);
+        localStorage.setItem('xtm.lower_unit', mode);
+      } catch {}
+    }
 
     const isLoudness = mode === 'loudness';
 
@@ -51,23 +54,26 @@ export function initLowerUnitSwitcher(): void {
 
   btnLoudness?.addEventListener('click', (e) => {
     e.stopPropagation();
-    setMode('loudness');
+    setMode('loudness', true);
   });
 
   btnStream?.addEventListener('click', (e) => {
     e.stopPropagation();
-    setMode('stream');
+    setMode('stream', true);
   });
 
-  // Default mode: 'stream' (as currently visible in routing console) or persisted preference
-  let initialMode: LowerUnitMode = 'stream';
+  // Default mode: 'loudness' (as requested) or user preference if explicitly set
+  let initialMode: LowerUnitMode = 'loudness';
   try {
-    const saved = localStorage.getItem('xtm.lower_unit');
+    const saved = localStorage.getItem('xtm.lower_unit_pref');
     if (saved === 'loudness' || saved === 'stream') {
       initialMode = saved;
+    } else {
+      // Clear legacy auto-saved 'stream' default from previous release
+      localStorage.removeItem('xtm.lower_unit');
     }
   } catch {}
 
-  setMode(initialMode);
-  (window as any).setLowerUnitMode = setMode;
+  setMode(initialMode, false);
+  (window as any).setLowerUnitMode = (m: LowerUnitMode) => setMode(m, true);
 }

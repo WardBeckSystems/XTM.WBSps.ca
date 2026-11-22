@@ -61,7 +61,7 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Ward-Beck Systems">
-  <script type="module" crossorigin src="./assets/index-Za-bBs02.js"></script>
+  <script type="module" crossorigin src="./assets/index-Cm8o9HeI.js"></script>
   <link rel="stylesheet" crossorigin href="./assets/index-BheyMO3T.css">
 </head>
 <body class="">
@@ -129,10 +129,10 @@
       </div>
 
       <!-- Unit 3: WBS Broadcast Routing Console Canvas & POD-33 / Bit Buddy Matrix -->
-      <div class="meter-unit routing-unit" id="routingStage"></div>
+      <div class="meter-unit routing-unit" id="routingStage" style="display: none;"></div>
 
       <!-- Unit 4: dBFS Over Time Real-Time Scope (APK.softapp.TEST.AUDIO.DbfsMeters) -->
-      <div class="meter-unit dbfs-unit" id="dbfsStage"></div>
+      <div class="meter-unit dbfs-unit" id="dbfsStage" style="display: flex;"></div>
     </div>
 
     <!-- Minimalist Bottom Controls Drawer (Auxiliary Settings) -->
@@ -157,13 +157,13 @@
 
         <!-- Center: Loudness vs Data Stream View Switcher -->
         <div class="footer-view-switcher" id="footerViewSwitcher" onclick="event.stopPropagation();" role="tablist" aria-label="loudness vs data stream">
-          <button type="button" class="footer-view-btn" id="btnViewLoudness" role="tab" aria-selected="false" title="Switch lower bay to Loudness Scope (dBFS &amp; ITU-R BS.1770 LUFS over time)">
-            <span class="footer-view-led" id="ledViewLoudness"></span>
+          <button type="button" class="footer-view-btn active" id="btnViewLoudness" role="tab" aria-selected="true" title="Switch lower bay to Loudness Scope (dBFS &amp; ITU-R BS.1770 LUFS over time)">
+            <span class="footer-view-led lit-green" id="ledViewLoudness"></span>
             <span class="footer-view-name">loudness</span>
           </button>
           <span class="footer-view-vs">vs</span>
-          <button type="button" class="footer-view-btn active" id="btnViewStream" role="tab" aria-selected="true" title="Switch lower bay to Data Stream View (EBU DMF / MXL Continuous Circular Ring Buffer &amp; Routing Matrix)">
-            <span class="footer-view-led lit-green" id="ledViewStream"></span>
+          <button type="button" class="footer-view-btn" id="btnViewStream" role="tab" aria-selected="false" title="Switch lower bay to Data Stream View (EBU DMF / MXL Continuous Circular Ring Buffer &amp; Routing Matrix)">
+            <span class="footer-view-led" id="ledViewStream"></span>
             <span class="footer-view-name">data stream</span>
           </button>
         </div>
@@ -217,7 +217,7 @@
             </svg>
             <span class="footer-btn-text mc-com-text">McCurdyRadio.com</span>
           </button>
-          <span class="build-stamp" style="font-size: 0.7em; opacity: 0.6; margin-left: 12px;">v2.0.60</span>
+          <span class="build-stamp" style="font-size: 0.7em; opacity: 0.6; margin-left: 12px;">v2.0.61</span>
         </div>
       </summary>
 
