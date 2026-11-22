@@ -18,13 +18,13 @@ export function renderMcCurdyVuBadge(cx: number, cy: number, ink: string, isPpm 
 
   return `
     <!-- McCurdyRadio.com ATS-100 Cream Console: Authentic Rectangle Cartouche Box & Wordmark (Monochrome) -->
-    <g class="mc-only mc-com-only" transform="translate(${(cx - 42).toFixed(1)}, ${(cy + 22).toFixed(1)})">
-      <rect x="0" y="0" width="84" height="28" rx="2.5"
-            fill="none" stroke="${badgeStroke}" stroke-width="1.5" stroke-opacity="0.85" />
-      <text x="42" y="19"
+    <g class="mc-only mc-com-only" transform="translate(${(cx - 84).toFixed(1)}, ${(cy + 8).toFixed(1)})">
+      <rect x="0" y="0" width="168" height="56" rx="5"
+            fill="none" stroke="${badgeStroke}" stroke-width="3" stroke-opacity="0.85" />
+      <text x="84" y="38"
             font-family="'Arial Black', Helvetica, Arial, sans-serif"
-            font-size="13.5" font-weight="900" letter-spacing="-0.6" text-anchor="middle"
-            fill="none" stroke="${badgeStroke}" stroke-width="1.2" stroke-opacity="0.9">McCurdy</text>
+            font-size="27" font-weight="900" letter-spacing="-1.2" text-anchor="middle"
+            fill="none" stroke="${badgeStroke}" stroke-width="2.4" stroke-opacity="0.9">McCurdy</text>
     </g>
 
     <!-- McCurdyRadio.ca Studio Broadcast Mode: Authentic Vintage Crest Dial Badge (gemini-svg (13).svg) -->
