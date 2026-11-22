@@ -17,7 +17,7 @@ export function getMeterKey(): string {
 export function getDefaultMeterForMode(): string {
   if (document.body.classList.contains('theme-mccurdy-dark')) return 'mccurdy_vu'; // mccurdy.ca: authentic McCurdy broadcast console VU meter
   if (document.body.classList.contains('theme-mccurdy')) return 'fisam';       // Mccurdy.com: the sifam with minimal lighting
-  if (document.body.classList.contains('theme-wbs-ca')) return 'mccurdy_vu';   // wardbeck.ca: the spade VU
+  if (document.body.classList.contains('theme-wbs-ca')) return 'wbs_m405';     // wardbeck.ca: authentic Ward-Beck M405 extended range VU
   return 'fisam';                                                              // Wardbeck.com: the sifam
 }
 

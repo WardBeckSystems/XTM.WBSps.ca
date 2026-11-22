@@ -79,23 +79,23 @@ export function renderMcCurdyScale(ctx: FaceCtx): string {
 }
 
 export function mccurdyVuNeedle(px: number, py: number, R: number): NeedleParts {
-  const topY = py - (R + 24);
+  const topY = py - (R + 17);
   const sx = 2;
   const sy = 2;
   return {
     shadow: `
       <!-- McCurdy Authentic Vintage Needle Drop Shadow -->
-      <polygon points="${px - 2.8 + sx},${py + sy} ${px - 0.8 + sx},${topY + 14 + sy} ${px + 0.8 + sx},${topY + 14 + sy} ${px + 2.8 + sx},${py + sy}" fill="rgba(0,0,0,0.30)" />
-      <polygon points="${px + sx},${topY + 2 + sy} ${px - 9 + sx},${topY + 18 + sy} ${px + sx},${topY + 14 + sy} ${px + 9 + sx},${topY + 18 + sy}" fill="rgba(0,0,0,0.30)" />
+      <polygon points="${px - 2.8 + sx},${py + sy} ${px - 0.8 + sx},${topY + 19 + sy} ${px + 0.8 + sx},${topY + 19 + sy} ${px + 2.8 + sx},${py + sy}" fill="rgba(0,0,0,0.30)" />
+      <polygon points="${px + sx},${topY + 2 + sy} ${px - 13 + sx},${topY + 25 + sy} ${px + sx},${topY + 19 + sy} ${px + 13 + sx},${topY + 25 + sy}" fill="rgba(0,0,0,0.30)" />
       <circle cx="${px + sx}" cy="${py + sy}" r="11" fill="rgba(0,0,0,0.25)"/>
     `,
     body: `
       <!-- McCurdy Authentic Vintage Needle (per gemini-svg (14).svg) -->
       <!-- Main Tapered Needle Shaft -->
-      <polygon points="${px - 2.8},${py} ${px - 0.8},${topY + 14} ${px + 0.8},${topY + 14} ${px + 2.8},${py}" fill="#26231f" />
+      <polygon points="${px - 2.8},${py} ${px - 0.8},${topY + 19} ${px + 0.8},${topY + 19} ${px + 2.8},${py}" fill="#26231f" />
       
-      <!-- Arrowhead Spade Tip (2x width = 18px total) -->
-      <polygon points="${px},${topY + 2} ${px - 9},${topY + 18} ${px},${topY + 14} ${px + 9},${topY + 18}" fill="#1e1b18" />
+      <!-- Arrowhead Spade Tip (26px wide, 23px long) -->
+      <polygon points="${px},${topY + 2} ${px - 13},${topY + 25} ${px},${topY + 19} ${px + 13},${topY + 25}" fill="#1e1b18" />
       
       <!-- Center Pivot Hub & Concentric Screws -->
       <circle cx="${px}" cy="${py}" r="11" fill="#141517" stroke="#2a2d33" stroke-width="1.2"/>
