@@ -6,6 +6,8 @@
 body.theme-mccurdy-dark .mc-only { display: inline; }
 body.theme-mccurdy-dark .mc-ca-only { display: inline !important; }
 body.theme-mccurdy-dark .mc-com-only { display: none !important; }
+body.theme-mccurdy-dark #xtm_phase_row_assembly .mc-only,
+body.theme-mccurdy-dark .mc-phase-seg { display: none !important; }
 body.theme-mccurdy-dark .wbs-only { display: none; }
 body.theme-mccurdy-dark .vintage-bezel-3d.bezel-mc { display: inline !important; }
 body.theme-mccurdy-dark .vintage-bezel-3d.bezel-wbs { display: none !important; }

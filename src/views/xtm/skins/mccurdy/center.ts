@@ -157,33 +157,12 @@ export function renderMcCurdyCaCenter(): string {
         </linearGradient>
       </defs>
 
-      <!-- Authentic McCurdy Beveled Diamond Wordmark Emblem (PE1000-A, gemini-code-1795317269161.html) -->
-      <g transform="translate(1600, 48)" pointer-events="none">
-        <polygon points="-46,0 -35,-14 35,-14 46,0 35,14 -35,14" fill="#16191d" stroke="url(#chromeMetalGrad)" stroke-width="2.4" />
-        <polygon points="-41,0 -32,-10 32,-10 41,0 32,10 -32,10" fill="none" stroke="#8c95a0" stroke-width="0.7" />
-        <text x="0" y="4" text-anchor="middle" fill="#e5ebf0" font-family="Georgia, serif" font-style="italic" font-weight="700" font-size="13">McCurdy</text>
-      </g>
-      <!-- Sapphire Blue Pilot Jewel Indicator Light -->
-      <g transform="translate(1785, 48)" pointer-events="none">
-        <circle r="8.5" fill="url(#chromeMetalGrad)" stroke="#1a2530" stroke-width="1"/>
-        <circle r="6" fill="#1e4e79"/>
-        <circle cx="-1.8" cy="-1.8" r="2.2" fill="#a8d8f8" opacity="0.85"/>
-      </g>
-
-      <!-- ================================================================= -->
-      <!-- MODEL DESIGNATION SILKSCREEN (LOWER LEFT)                         -->
-      <!-- ================================================================= -->
-      <g id="mc-model-label" ${font}>
-        <!-- Model Designation Silkscreen (Lower Left) -->
-        <text x="1382" y="378" font-size="12" font-weight="900" fill="#94a3b8" text-anchor="middle" letter-spacing="1.5">SA14023</text>
-      </g>
-
       <!-- ================================================================= -->
       <!-- CENTERPIECE: CENTERED MCCURDY ATTENUATOR KNOB & DUAL SCALE       -->
       <!-- (30% larger, engraved directly on blue panel with no disc shadow) -->
       <!-- ================================================================= -->
       <g id="mccurdy-vintage-knob-assembly" class="xtm-btn mccurdy-knob" style="cursor:grab; touch-action:none; user-select:none;">
-        <title>McCurdy SA14023 Dual-Concentric Attenuator (-50 to +10 dB / -30 to +30 dB)</title>
+        <title>McCurdy Dual-Concentric Attenuator (-50 to +10 dB / -30 to +30 dB)</title>
 
         <!-- Silkscreen Scales Group (Inner -30 to +30, Outer -50 to +10) -->
         <g id="mc-knob-scales" ${font}>

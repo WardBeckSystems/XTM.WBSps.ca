@@ -22,8 +22,5 @@ export function renderMcCurdyJacks(cx = 120, cy = 200, color = '#edeae0'): strin
       ${renderJackSocket(cx, cy - 52, 'INPUT', color, font)}
       ${renderJackSocket(cx, cy, '', color, font)}
       ${renderJackSocket(cx, cy + 52, 'MON. OUTPUT', color, font)}
-
-      <!-- Model Designation -->
-      <text x="${cx - 80}" y="${cy + 112}" font-size="13" font-weight="800" fill="${color}" letter-spacing="1">SA14023</text>
     </g>`;
 }
