@@ -7,6 +7,7 @@ import { computeLayout } from './layout';
 import { drawGraph } from './graph';
 import { drawZoomOverlay } from './zoom-overlay';
 import { drawCursorTrace, drawLeadingDots } from './leading-edge';
+import { drawMinuteMarkers } from './minute-markers';
 import { drawNtpDots } from './ntp-dots';
 import { updateHudReadout, drawSignalLossWarning } from './hud-readout';
 
@@ -52,6 +53,7 @@ export function renderFrame(v: DbfsView, _model: XtmModel, levels: MeterFrameTel
   v.ctx.drawImage(v.graphCanvas, 0, 0);
   const ctx = v.ctx;
 
+  drawMinuteMarkers(v, ctx, L, Date.now());
   drawZoomOverlay(v, ctx, L);
   drawCursorTrace(v, ctx, L);
   drawLeadingDots(v, ctx, L);

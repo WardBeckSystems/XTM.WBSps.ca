@@ -49,6 +49,7 @@ export class DbfsView {
   captureLength: number = 60;
   captureSpeed: number = 60;
   lastPushTime: number = 0;
+  pushAccumulator: number = 0;
 
   bufferSize: number;
 

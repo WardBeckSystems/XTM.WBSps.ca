@@ -123,31 +123,16 @@ export function drawNtpDots(v: DbfsView, ctx: CanvasRenderingContext2D, L: Scope
 
     ctx.save();
 
-    // 2. Vertical Event Hairline
-    ctx.beginPath();
-    ctx.setLineDash([3 * dpr, 3 * dpr]);
-    ctx.strokeStyle = isHovered 
-      ? (isMcCurdy ? 'rgba(220, 38, 38, 0.9)' : 'rgba(56, 189, 248, 0.85)')
-      : (isMcCurdy ? 'rgba(185, 28, 28, 0.35)' : 'rgba(56, 189, 248, 0.35)');
-    ctx.lineWidth = (isHovered ? 1.8 : 1.0) * dpr;
-    ctx.moveTo(x, padT);
-    ctx.lineTo(x, padT + plotH);
-    ctx.stroke();
-    ctx.setLineDash([]);
-
-    // 3. Sparkles of Clocking along the Vertical Time Hairline
-    const hairSparkleCount = isHovered ? 5 : 3;
-    for (let h = 0; h < hairSparkleCount; h++) {
-      const seedH = h * 73 + (receipt.timestamp % 1000);
-      const progress = ((nowMs * 0.0005 + seedH * 0.12) % 1.0);
-      const hy = padT + plotH * (1 - progress);
-      const flickerH = Math.sin(nowMs * 0.007 + seedH);
-      if (flickerH > -0.1) {
-        const hSize = (1.8 + (flickerH + 0.1) * 1.5) * dpr;
-        const hCol = (h % 3 === 0) ? '#38bdf8' : ((h % 3 === 1) ? '#facc15' : '#ffffff');
-        const hRot = nowMs * 0.002 * (h % 2 === 0 ? 1 : -1) + seedH;
-        drawSparkle(ctx, x, hy, hSize, (flickerH + 0.2) * 0.7, hCol, hRot);
-      }
+    // 2. Vertical Event Hairline (shown only when hovered)
+    if (isHovered) {
+      ctx.beginPath();
+      ctx.setLineDash([3 * dpr, 3 * dpr]);
+      ctx.strokeStyle = isMcCurdy ? 'rgba(220, 38, 38, 0.85)' : 'rgba(56, 189, 248, 0.85)';
+      ctx.lineWidth = 1.5 * dpr;
+      ctx.moveTo(x, padT);
+      ctx.lineTo(x, padT + plotH);
+      ctx.stroke();
+      ctx.setLineDash([]);
     }
 
     // 4. Animated Pulse Wave for New or Hovered Events

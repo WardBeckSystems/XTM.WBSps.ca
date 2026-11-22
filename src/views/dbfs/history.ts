@@ -26,12 +26,16 @@ export function resizeBuffer(v: DbfsView, newSize: number): void {
   allocHistories(v, newSize);
   v.head = 0;
   v.count = 0;
+  v.lastPushTime = 0;
+  v.pushAccumulator = 0;
   v.graphDirty = true;
 }
 
 export function clearHistory(v: DbfsView): void {
   v.head = 0;
   v.count = 0;
+  v.lastPushTime = 0;
+  v.pushAccumulator = 0;
   v.histL.fill(-60);
   v.histR.fill(-60);
   v.histSum.fill(-60);
@@ -62,12 +66,21 @@ export function clearHistory(v: DbfsView): void {
 }
 
 export function pushSample(v: DbfsView, dbL: number, dbR: number, lufsM: number, lufsS: number, phase: number, dbSum: number, dbDiff: number, lufsI: number): void {
-  // Throttle capture speed according to slider (15 to 240 FPS)
   const now = performance.now();
-  const minInterval = (1000 / v.captureSpeed) - 1.5;
-  if (v.lastPushTime && (now - v.lastPushTime < minInterval)) return;
-  const dt = v.lastPushTime ? Math.max(0.001, Math.min(0.1, (now - v.lastPushTime) / 1000)) : (1 / v.captureSpeed);
+  if (!v.lastPushTime) {
+    v.lastPushTime = now;
+    v.pushAccumulator = 0;
+  }
+  const dt = Math.max(0.0005, Math.min(0.25, (now - v.lastPushTime) / 1000));
   v.lastPushTime = now;
+  v.pushAccumulator = (v.pushAccumulator || 0) + dt;
+
+  const sampleDt = 1 / v.captureSpeed;
+  const steps = Math.floor(v.pushAccumulator / sampleDt);
+  if (steps <= 0) return;
+  v.pushAccumulator -= steps * sampleDt;
+  if (v.pushAccumulator > sampleDt * 24) v.pushAccumulator = 0;
+  const runSteps = Math.min(steps, 24);
 
   const vL = isFinite(dbL) ? Math.max(-60, Math.min(0, dbL)) : -60;
   const vR = isFinite(dbR) ? Math.max(-60, Math.min(0, dbR)) : -60;
@@ -79,49 +92,45 @@ export function pushSample(v: DbfsView, dbL: number, dbR: number, lufsM: number,
   const vP = isFinite(phase) ? Math.max(-1, Math.min(1, phase)) : 1.0;
 
   // Peak Envelope Follower with Instant Attack & Musical Release (~75 dB/sec):
-  // Instantaneous attack (0 ms) captures 100% true transient peaks on the right uncompressed area.
-  const decay = 75 * dt;
-  v.envL = (vL >= v.envL) ? vL : Math.max(-60, v.envL - decay);
-  v.envR = (vR >= v.envR) ? vR : Math.max(-60, v.envR - decay);
-  v.envSum = (vSum >= v.envSum) ? vSum : Math.max(-60, v.envSum - decay);
-  v.envDiff = (vDiff >= v.envDiff) ? vDiff : Math.max(-60, v.envDiff - decay);
+  const decay = 75 * sampleDt;
+  const alphaNorm = 1.0 - Math.exp(-sampleDt / 0.400);
+  const decayM = 30 * sampleDt;
+  const decayS = 10 * sampleDt;
 
-  // Time-Normalized Streams (Matching the 400ms ITU-R BS.1770 M Loudness window):
-  // Symmetrical 400ms time constant on both attack and release eliminates aliasing, jiggle and jumping
-  // in the compressed log tight zone, exactly matching the stability and smoothness of the orange line.
-  const alphaNorm = 1.0 - Math.exp(-dt / 0.400);
+  for (let s = 0; s < runSteps; s++) {
+    v.envL = (vL >= v.envL) ? vL : Math.max(-60, v.envL - decay);
+    v.envR = (vR >= v.envR) ? vR : Math.max(-60, v.envR - decay);
+    v.envSum = (vSum >= v.envSum) ? vSum : Math.max(-60, v.envSum - decay);
+    v.envDiff = (vDiff >= v.envDiff) ? vDiff : Math.max(-60, v.envDiff - decay);
 
-  v.normL += alphaNorm * (v.envL - v.normL);
-  v.normR += alphaNorm * (v.envR - v.normR);
-  v.normSum += alphaNorm * (v.envSum - v.normSum);
-  v.normDiff += alphaNorm * (v.envDiff - v.normDiff);
+    // Time-Normalized Streams (Matching the 400ms ITU-R BS.1770 M Loudness window):
+    v.normL += alphaNorm * (v.envL - v.normL);
+    v.normR += alphaNorm * (v.envR - v.normR);
+    v.normSum += alphaNorm * (v.envSum - v.normSum);
+    v.normDiff += alphaNorm * (v.envDiff - v.normDiff);
 
-  // Loudness Envelope Follower with Instant Attack & Physically-Bounded Release:
-  // BS.1770 momentary loudness (400ms) has a physical decay bound of ~15-25 dB/sec.
-  // Instantaneous attack captures immediate upward jumps; decay limit eliminates 1-frame
-  // disconnect notches, buffer dropouts, and artificial flickering.
-  const decayM = 30 * dt;
-  const decayS = 10 * dt;
-  v.envLufsM = (v.envLufsM === undefined || v.count === 0) ? vM : ((vM >= v.envLufsM) ? vM : Math.max(-60, v.envLufsM - decayM));
-  v.envLufsS = (v.envLufsS === undefined || v.count === 0) ? vS : ((vS >= v.envLufsS) ? vS : Math.max(-60, v.envLufsS - decayS));
+    // Loudness Envelope Follower
+    v.envLufsM = (v.envLufsM === undefined || v.count === 0) ? vM : ((vM >= v.envLufsM) ? vM : Math.max(-60, v.envLufsM - decayM));
+    v.envLufsS = (v.envLufsS === undefined || v.count === 0) ? vS : ((vS >= v.envLufsS) ? vS : Math.max(-60, v.envLufsS - decayS));
 
-  v.histL[v.head] = v.envL;
-  v.histR[v.head] = v.envR;
-  v.histSum[v.head] = v.envSum;
-  v.histDiff[v.head] = v.envDiff;
-  v.histNormL[v.head] = v.normL;
-  v.histNormR[v.head] = v.normR;
-  v.histNormSum[v.head] = v.normSum;
-  v.histNormDiff[v.head] = v.normDiff;
-  v.histLufsM[v.head] = v.envLufsM;
-  v.histLufsS[v.head] = v.envLufsS;
-  v.histLufsI[v.head] = vI;
-  v.histPhase[v.head] = vP;
+    v.histL[v.head] = v.envL;
+    v.histR[v.head] = v.envR;
+    v.histSum[v.head] = v.envSum;
+    v.histDiff[v.head] = v.envDiff;
+    v.histNormL[v.head] = v.normL;
+    v.histNormR[v.head] = v.normR;
+    v.histNormSum[v.head] = v.normSum;
+    v.histNormDiff[v.head] = v.normDiff;
+    v.histLufsM[v.head] = v.envLufsM;
+    v.histLufsS[v.head] = v.envLufsS;
+    v.histLufsI[v.head] = vI;
+    v.histPhase[v.head] = vP;
 
-  pyrPush(v);
+    pyrPush(v);
 
-  v.head = (v.head + 1) % v.bufferSize;
-  if (v.count < v.bufferSize) v.count++;
+    v.head = (v.head + 1) % v.bufferSize;
+    if (v.count < v.bufferSize) v.count++;
+  }
 
   if (vL >= 0) v.clipCountL++;
   if (vR >= 0) v.clipCountR++;
