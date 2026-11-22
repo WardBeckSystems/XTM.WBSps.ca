@@ -123,7 +123,6 @@ export function chamberShadows(x0: number, y0: number): string {
       <rect x="${x0 + 1}" y="${y0 + 1}" width="${MW - 2}" height="${MH - 2}" rx="5" fill="none" stroke="rgba(0,0,0,0.35)" stroke-width="2" pointer-events="none"/>
       <!-- Diagonal Specular Glass Reflection Sheen -->
       <path d="M ${x0 + 6} ${y0 + 6} L ${x0 + MW * 0.72} ${y0 + 6} L ${x0 + 6} ${y0 + MH * 0.82} Z" fill="url(#meterGlassSheenGrad)" pointer-events="none"/>
-      <rect x="${x0 + 6}" y="${(y0 + MH * 0.44).toFixed(1)}" width="${MW - 12}" height="1.6" fill="#ffffff" opacity="0.03" pointer-events="none"/>
     </g>`;
 }
 
@@ -206,7 +205,6 @@ export function bezelRim(x0: number, y0: number, cx: number = x0 + MW / 2): stri
       <rect x="${wx + ww - 165}" y="${wy}" width="165" height="155" fill="url(#xch_corner_tr)" pointer-events="none"/>
       <rect x="${wx}" y="${wy}" width="140" height="130" fill="url(#xch_corner_tl)" pointer-events="none"/>
       <path d="M ${wx + 6} ${wy + 6} L ${wx + ww * 0.65} ${wy + 6} L ${wx + 6} ${winBot - 12} Z" fill="url(#meterGlassSheenGrad)" pointer-events="none"/>
-      <rect x="${wx + 6}" y="${(wy + wh * 0.42).toFixed(1)}" width="${ww - 12}" height="1.6" fill="#ffffff" opacity="0.03" pointer-events="none"/>
 
       <!-- Lower Skirt Molded Horizontal Seam Line -->
       <line x1="${bx_mc + 2}" y1="${seamY_mc}" x2="${bx_mc + bw_mc - 2}" y2="${seamY_mc}" stroke="#0c0d0f" stroke-width="2.0" pointer-events="none"/>
@@ -270,7 +268,6 @@ export function bezelRim(x0: number, y0: number, cx: number = x0 + MW / 2): stri
 
       <!-- Window Specular Glass Reflection Sheen -->
       <path d="M ${wx_wbs + 6} ${wy_wbs + 6} L ${wx_wbs + ww_wbs * 0.65} ${wy_wbs + 6} L ${wx_wbs + 6} ${winBot_wbs - 12} Z" fill="url(#meterGlassSheenGrad)" pointer-events="none"/>
-      <rect x="${wx_wbs + 6}" y="${(wy_wbs + wh_wbs * 0.42).toFixed(1)}" width="${ww_wbs - 12}" height="1.6" fill="#ffffff" opacity="0.03" pointer-events="none"/>
 
       <!-- Lower Skirt Molded Horizontal Seam Line -->
       <line x1="${bx_wbs + 2}" y1="${seamY_wbs}" x2="${bx_wbs + bw_wbs - 2}" y2="${seamY_wbs}" stroke="#0c0d0f" stroke-width="1.4" pointer-events="none"/>

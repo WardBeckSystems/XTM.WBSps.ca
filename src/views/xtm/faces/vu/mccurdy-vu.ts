@@ -10,6 +10,7 @@
  * - Authentic McCurdy brand badge with small-scale legibility optimization
  */
 import type { FaceCtx, VuFaceStyle } from '../face-types';
+import type { NeedleParts } from '../../lib/needle';
 import { R, MW } from '../../layout/wbs-layout';
 import { vuAngle, vuFrac } from '../../lib/scale-math';
 import { tickLine } from '../../lib/svg';
@@ -37,17 +38,14 @@ function legend(ctx: FaceCtx): string {
 }
 
 export function renderMcCurdyScale(ctx: FaceCtx): string {
-  const { P, arc, isSifam, x0, y0 } = ctx;
+  const { P, arc, isSifam } = ctx;
   let s = '';
 
-  // 1. Top glass shadow overlay (from gemini-svg (14).svg)
-  s += `<rect x="${x0 + 6}" y="${y0 + 6}" width="${MW - 12}" height="140" fill="url(#glassShadowTop)" pointer-events="none" />`;
-
-  // 2. Upper VU Scale Arcs: -20 to 0 VU in black ink (#2d2924), 0 to +3 VU in red (#c83728)
+  // 1. Upper VU Scale Arcs: -20 to 0 VU in black ink (#2d2924), 0 to +3 VU in red (#c83728)
   s += arc(vuAngle(vuFrac(-20), isSifam), vuAngle(vuFrac(0), isSifam), R, 2.0, MCCURDY_INK);
   s += arc(vuAngle(vuFrac(0), isSifam), vuAngle(vuFrac(3), isSifam), R + 1, 3.2, MCCURDY_RED);
 
-  // 3. Intermediate ticks (-15 to +2.5 VU)
+  // 2. Intermediate ticks (-15 to +2.5 VU)
   INTERMEDIATE_TICKS.forEach(d => {
     const a = vuAngle(vuFrac(d), isSifam);
     const tickLen = Math.abs(d) <= 3 ? 12 : 14;
@@ -55,7 +53,7 @@ export function renderMcCurdyScale(ctx: FaceCtx): string {
     s += tickLine(P, a, R, R + tickLen, col, Math.abs(d) <= 3 ? '2.2' : '2.6');
   });
 
-  // 4. Major ticks + numerals (-20 to +3 VU)
+  // 3. Major ticks + numerals (-20 to +3 VU)
   MAJOR_TICKS.forEach(d => {
     const a = vuAngle(vuFrac(d), isSifam);
     const [tx, ty] = P(a, R + 44);
@@ -64,10 +62,10 @@ export function renderMcCurdyScale(ctx: FaceCtx): string {
       <text x="${tx.toFixed(1)}" y="${(ty + 8).toFixed(1)}" font-family="Arial, Helvetica, sans-serif" font-size="22" font-weight="bold" text-anchor="middle" fill="${col}">${d > 0 ? '+' + d : d}</text>`;
   });
 
-  // 5. Lower Modulation Arc under Percentage scale (0 to 100%)
+  // 4. Lower Modulation Arc under Percentage scale (0 to 100%)
   s += arc(vuAngle(vuFrac(-20), isSifam), vuAngle(vuFrac(0), isSifam), R - 10, 1.8, MCCURDY_INK);
 
-  // 6. Percentage sub-scale dots & numbers (0, 20, 40, 60, 80, 100%)
+  // 5. Percentage sub-scale dots & numbers (0, 20, 40, 60, 80, 100%)
   PERCENT_POINTS.forEach(({ pc, d }) => {
     const a = vuAngle(vuFrac(d), isSifam);
     const [x1, y1] = P(a, R - 10), [tx, ty] = P(a, R - 32);
@@ -79,23 +77,31 @@ export function renderMcCurdyScale(ctx: FaceCtx): string {
   return s;
 }
 
-export function mccurdyVuNeedle(px: number, py: number, R: number): string {
-  const topY = py - R;
-  return `
-    <!-- McCurdy Authentic Vintage Needle (per gemini-svg (14).svg) -->
-    <g class="mccurdy-vintage-needle" filter="url(#needleDropShadow)">
+export function mccurdyVuNeedle(px: number, py: number, R: number): NeedleParts {
+  const topY = py - (R + 24);
+  const sx = 2;
+  const sy = 2;
+  return {
+    shadow: `
+      <!-- McCurdy Authentic Vintage Needle Drop Shadow -->
+      <polygon points="${px - 2.8 + sx},${py + sy} ${px - 0.8 + sx},${topY + 14 + sy} ${px + 0.8 + sx},${topY + 14 + sy} ${px + 2.8 + sx},${py + sy}" fill="rgba(0,0,0,0.30)" />
+      <polygon points="${px + sx},${topY + 2 + sy} ${px - 4.5 + sx},${topY + 18 + sy} ${px + sx},${topY + 14 + sy} ${px + 4.5 + sx},${topY + 18 + sy}" fill="rgba(0,0,0,0.30)" />
+      <circle cx="${px + sx}" cy="${py + sy}" r="11" fill="rgba(0,0,0,0.25)"/>
+    `,
+    body: `
+      <!-- McCurdy Authentic Vintage Needle (per gemini-svg (14).svg) -->
       <!-- Main Tapered Needle Shaft -->
       <polygon points="${px - 2.8},${py} ${px - 0.8},${topY + 14} ${px + 0.8},${topY + 14} ${px + 2.8},${py}" fill="#26231f" />
       
       <!-- Arrowhead Spade Tip -->
       <polygon points="${px},${topY + 2} ${px - 4.5},${topY + 18} ${px},${topY + 14} ${px + 4.5},${topY + 18}" fill="#1e1b18" />
       
-      <!-- Pivot Hub Center Screw -->
+      <!-- Center Pivot Hub & Concentric Screws -->
       <circle cx="${px}" cy="${py}" r="11" fill="#141517" stroke="#2a2d33" stroke-width="1.2"/>
       <circle cx="${px}" cy="${py}" r="5.5" fill="#090a0c"/>
       <circle cx="${px}" cy="${py}" r="2" fill="#4b5059"/>
-    </g>
-  `;
+    `
+  };
 }
 
 export function renderMcCurdyFaceLogo(cx: number, cy: number, ink: string): string {

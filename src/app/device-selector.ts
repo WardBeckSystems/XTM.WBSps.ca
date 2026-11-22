@@ -145,7 +145,6 @@ export function initDeviceSelector(ctx: AppContext, refs: DrawerControls, sync: 
       }
       model.flash('CARD IN');
       audio.setReferenceLevel(model.getActiveReferenceLevel(), (model.mode as string) === 'D');
-      sync.nudgeSens(model);
     } catch (err: any) {
       const isNotFound = err?.name === 'NotFoundError' || err?.message?.includes('not found') || err?.message?.includes('detected');
       if (!isNotFound) {

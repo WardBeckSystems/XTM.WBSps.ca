@@ -154,7 +154,7 @@ export class XtmAudioEngine {
   // --- VU ballistics ----------------------------------------------------
 
   /** Set VU Movement Style: 'simpson' (classic amber 300ms) or 'sifam' (crisp 200ms) */
-  setVuStyle(style: "simpson" | "sifam"): void { vu.setVuStyle(this, style); }
+  setVuStyle(style: string): void { vu.setVuStyle(this, style as any); }
 
   /** Set VU Ballistics Preset (sourced from LikeDotAudio / APK.softapp.TEST.AUDIO.VuAnalog) */
   setVuBallisticPreset(presetKey: string): void { vu.setVuBallisticPreset(this, presetKey); }

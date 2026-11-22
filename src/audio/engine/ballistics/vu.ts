@@ -57,7 +57,7 @@ export function vuDbOf(p: number): number {
 /**
  * Set VU Movement Style: 'simpson' (classic amber 300ms) or 'sifam' (crisp 200ms)
  */
-export function setVuStyle(engine: XtmAudioEngine, style: 'simpson' | 'sifam'): void {
+export function setVuStyle(engine: XtmAudioEngine, style: 'simpson' | 'sifam' | string): void {
   if (style !== 'simpson' && style !== 'sifam') return;
   engine.vuStyle = style;
   engine.calculateCoefficients();
