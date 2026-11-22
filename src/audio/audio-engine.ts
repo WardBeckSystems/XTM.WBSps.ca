@@ -33,6 +33,8 @@ import type { PpmTypeInput } from './engine/ballistics/ppm-standards';
 import * as soundcard from './engine/sources/soundcard';
 import { connectSystemAudio } from './engine/sources/system-audio';
 import * as testGen from './engine/sources/test-generator';
+import * as pod33Gen from './engine/sources/pod33-generator';
+import type { Pod33Config, BitBuddyConfig } from './engine/sources/pod33-generator';
 import * as graph from './engine/graph';
 import * as chain from './engine/signal-chain';
 import * as reference from './engine/reference';
@@ -176,6 +178,12 @@ export class XtmAudioEngine {
 
   /** Built-in Signal Generator for testing and calibration */
   startTestGenerator(type = 'sine1k'): void { testGen.startTestGenerator(this, type); }
+
+  /** WBS POD-33 Digital Audio Reference & Precision Tone Generator */
+  startPod33Generator(config?: Pod33Config): void { pod33Gen.startPod33Generator(this, config); }
+
+  /** WBS ABB-1 Audio Bit Buddy / ABP-1 Bit Spitter Generator */
+  startBitBuddyGenerator(config?: BitBuddyConfig): void { pod33Gen.startBitBuddyGenerator(this, config); }
 
   /** Set 1 kHz Test Tone Calibration Level (-24, -20, -18, -14, -12, -6, 0 dBFS) */
   setToneCalibration(calDb: number): void { testGen.setToneCalibration(this, calDb); }

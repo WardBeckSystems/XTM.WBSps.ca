@@ -521,32 +521,143 @@ HTML_UI = """<!DOCTYPE html>
   }
   .section-subtitle { font-size: 0.75rem; color: var(--text-dim); font-weight: 400; text-transform: none; }
 
-  /* MXL Circular Ring Visualizer */
+  /* MXL 10-Second Continuous Polar Ring Visualizer (Scanalyzer Audio Eye Style) */
   .mxl-card {
     background: var(--wbs-bezel); border: 1px solid #23486a; border-radius: 6px;
     padding: 18px; margin-bottom: 20px; box-shadow: inset 0 2px 8px rgba(0,0,0,0.6);
   }
-  .mxl-rings-container {
-    display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-    gap: 20px; align-items: center; justify-items: center;
+  .eye-player-main-grid {
+    display: grid;
+    grid-template-columns: minmax(360px, 480px) 1fr;
+    gap: 24px;
+    align-items: center;
   }
-  .ring-box {
-    background: #09141f; border: 1px solid #1c3b5e; border-radius: 6px;
-    padding: 14px; text-align: center; width: 100%; max-width: 440px;
+  @media (max-width: 900px) {
+    .eye-player-main-grid { grid-template-columns: 1fr; }
   }
-  .ring-title {
-    font-size: 0.85rem; font-weight: 700; color: var(--accent-cyan); margin-bottom: 10px;
-    display: flex; justify-content: space-between; align-items: center;
+  .eye-player-col {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
   }
-  canvas.ring-canvas {
-    width: 280px; height: 280px; background: transparent; display: block; margin: 0 auto;
-  }
-  .ring-telemetry {
-    display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 12px;
-    font-size: 0.72rem; text-align: left; background: #050b11; padding: 10px; border-radius: 4px;
+  .eye-canvas-container {
+    position: relative;
+    width: 440px;
+    height: 440px;
+    margin: 0 auto;
+    background: #060e17;
     border: 1px solid #162d47;
+    border-radius: 8px;
+    box-shadow: inset 0 0 20px rgba(0,0,0,0.8);
   }
-  .ring-telemetry span.val { color: #fff; font-weight: bold; }
+  #eye-player-canvas {
+    width: 440px;
+    height: 440px;
+    display: block;
+    cursor: crosshair;
+  }
+  .scanalyzer-phase-bar-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    max-width: 420px;
+    margin-top: 14px;
+    font-family: monospace;
+    font-size: 0.72rem;
+  }
+  .phase-lbl { font-weight: 800; color: #94a3b8; }
+  .phase-track {
+    position: relative;
+    flex: 1;
+    height: 16px;
+    background: #09141f;
+    border: 1px solid #1c3b5e;
+    border-radius: 3px;
+    overflow: hidden;
+  }
+  .phase-marker-scale {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 6px;
+    font-size: 0.62rem;
+    color: #64748b;
+    z-index: 1;
+  }
+  .phase-needle {
+    position: absolute;
+    top: 0; bottom: 0;
+    width: 6px;
+    margin-left: -3px;
+    background: #22c55e;
+    box-shadow: 0 0 8px #22c55e;
+    transition: left 0.08s ease-out;
+  }
+  .eye-info-col {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+  .eye-flow-switcher {
+    background: #09141f;
+    border: 1px solid #1c3b5e;
+    border-radius: 6px;
+    padding: 10px 14px;
+  }
+  .eye-hud-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+  .eye-hud-card {
+    background: #050b11;
+    border: 1px solid #162d47;
+    border-radius: 6px;
+    padding: 10px 12px;
+  }
+  .eye-hud-label {
+    font-size: 0.66rem;
+    color: #64748b;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+  }
+  .eye-hud-val {
+    font-family: monospace;
+    font-size: 1.05rem;
+    font-weight: 800;
+    color: #fff;
+    margin: 4px 0 2px 0;
+  }
+  .eye-hud-sub {
+    font-size: 0.68rem;
+    color: #94a3b8;
+  }
+  .eye-legend-box {
+    background: #09141f;
+    border: 1px solid #1c3b5e;
+    border-radius: 6px;
+    padding: 10px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    font-size: 0.72rem;
+    color: #cbd5e1;
+  }
+  .eye-legend-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .legend-swatch {
+    width: 10px;
+    height: 10px;
+    border-radius: 2px;
+    flex-shrink: 0;
+  }
 
   /* Linear Unwrap Visualizer */
   .slice-view-box {
@@ -700,44 +811,90 @@ HTML_UI = """<!DOCTYPE html>
     ROUTER OFFLINE: Hardware audio sink has been cleanly restored. WBS virtual null-sinks unloaded.
   </div>
 
-  <!-- SECTION 1: EBU DMF / MXL Continuous Circular Ring Buffer Visualizer -->
+  <!-- SECTION 1: EBU DMF / MXL Continuous 10-Second Circular Ring Buffer Visualizer (Scanalyzer Audio Eye Style) -->
   <div class="section-title">
-    <span>EBU DMF / MXL Shared-Memory Continuous Ring Buffers</span>
+    <span>EBU DMF / MXL 10-Second Continuous Circular Ring Buffer (Float32 Stereo)</span>
     <div class="section-subtitle">
       <button class="ctrl-btn" style="padding: 4px 10px; font-size: 0.7rem;" onclick="toggleSliceView()">Toggle Memory Slice View</button>
-      <button class="ctrl-btn" style="padding: 4px 10px; font-size: 0.7rem;" onclick="testSliceWrap()">Test Wrap-Around Slice</button>
+      <button class="ctrl-btn" style="padding: 4px 10px; font-size: 0.7rem;" onclick="testSliceWrap()">Test Wrap-Around Slice (480k)</button>
     </div>
   </div>
 
   <div class="mxl-card">
-    <div class="mxl-rings-container">
-      <!-- Channel 0: Left Ring Buffer -->
-      <div class="ring-box">
-        <div class="ring-title">
-          <span>CH 0: LEFT (Float32)</span>
-          <span style="font-size: 0.7rem; color: var(--accent-orange);" id="ch0-head-tag">HEAD: 0</span>
+    <div class="eye-player-main-grid">
+      <!-- Left Column: Scanalyzer Eye Player Canvas & Correlation Bar -->
+      <div class="eye-player-col">
+        <div class="eye-canvas-container">
+          <canvas id="eye-player-canvas" width="440" height="440"></canvas>
         </div>
-        <canvas id="ring-canvas-0" class="ring-canvas" width="280" height="280"></canvas>
-        <div class="ring-telemetry">
-          <div>Capacity: <span class="val">48,000 frames (192 KB)</span></div>
-          <div>Quantum: <span class="val">256 frames (5.33 ms)</span></div>
-          <div>Headroom: <span class="val" id="ch0-headroom">99.5%</span></div>
-          <div>Overruns: <span class="val" style="color: #4ade80;">0 (Wait-Free)</span></div>
+        <!-- Scanalyzer Style Correlation & Phase Bar -->
+        <div class="scanalyzer-phase-bar-wrapper">
+          <span class="phase-lbl">L</span>
+          <div class="phase-track">
+            <div class="phase-marker-scale">
+              <span>-1 out of phase</span>
+              <span id="corr-val-readout">corr +0.00</span>
+              <span>mono +1</span>
+            </div>
+            <div class="phase-needle" id="phase-needle" style="left: 50%;"></div>
+          </div>
+          <span class="phase-lbl">R</span>
         </div>
       </div>
 
-      <!-- Channel 1: Right Ring Buffer -->
-      <div class="ring-box">
-        <div class="ring-title">
-          <span>CH 1: RIGHT (Float32)</span>
-          <span style="font-size: 0.7rem; color: var(--accent-orange);" id="ch1-head-tag">HEAD: 0</span>
+      <!-- Right Column: Real-time Telemetry, NTP Clock & Flow Inspector -->
+      <div class="eye-info-col">
+        <!-- Flow Selector -->
+        <div class="eye-flow-switcher">
+          <div style="font-size: 0.75rem; color: var(--text-dim); margin-bottom: 6px; text-transform: uppercase; font-weight: 700;">Monitored MXL Shared-Memory Flow:</div>
+          <div class="badge-row">
+            <button id="btn-flow-master" class="ctrl-btn active" style="font-size: 0.75rem; padding: 4px 12px;" onclick="switchEyeFlow('wbs-flow-master-stereo')">Master Bus (Live Audio)</button>
+            <button id="btn-flow-tone" class="ctrl-btn" style="font-size: 0.75rem; padding: 4px 12px;" onclick="switchEyeFlow('wbs-flow-ref-tone')">Calibrated 1kHz Ref Tone</button>
+          </div>
         </div>
-        <canvas id="ring-canvas-1" class="ring-canvas" width="280" height="280"></canvas>
-        <div class="ring-telemetry">
-          <div>Capacity: <span class="val">48,000 frames (192 KB)</span></div>
-          <div>Quantum: <span class="val">256 frames (5.33 ms)</span></div>
-          <div>Headroom: <span class="val" id="ch1-headroom">99.5%</span></div>
-          <div>Overruns: <span class="val" style="color: #4ade80;">0 (Wait-Free)</span></div>
+
+        <!-- Telemetry Cards -->
+        <div class="eye-hud-grid">
+          <div class="eye-hud-card">
+            <div class="eye-hud-label">NTP TIME (UTC / SMPTE 2059-1)</div>
+            <div class="eye-hud-val accent-cyan" id="eye-ntp-clock">00:00:00.000</div>
+            <div class="eye-hud-sub" id="eye-tai-ns">TAI: 0 ns</div>
+          </div>
+          <div class="eye-hud-card">
+            <div class="eye-hud-label">10-SECOND BUFFER PHASE</div>
+            <div class="eye-hud-val accent-orange" id="eye-sec-10">0.000 s / 10.000 s</div>
+            <div class="eye-hud-sub">0s @ Far Right (3 o'clock) · Clockwise</div>
+          </div>
+          <div class="eye-hud-card">
+            <div class="eye-hud-label">ACTIVE WRITE HEAD</div>
+            <div class="eye-hud-val" id="eye-head-index">HEAD: 0</div>
+            <div class="eye-hud-sub" id="eye-head-sec">0.000s / 480,000 frames</div>
+          </div>
+          <div class="eye-hud-card">
+            <div class="eye-hud-label">BUFFER CAPACITY &amp; SHM</div>
+            <div class="eye-hud-val" style="color: #4ade80;">480,000 FRAMES (10.0s)</div>
+            <div class="eye-hud-sub">Float32 Stereo · 3.84 MB POSIX Shm</div>
+          </div>
+        </div>
+
+        <!-- Channel Legend & Spec -->
+        <div class="eye-legend-box">
+          <div class="eye-legend-item">
+            <span class="legend-swatch" style="background: #22c55e;"></span>
+            <span>CH 0: LEFT (Outer Radial Band, Float32 @ 48 kHz)</span>
+          </div>
+          <div class="eye-legend-item">
+            <span class="legend-swatch" style="background: #38bdf8;"></span>
+            <span>CH 1: RIGHT (Inner Radial Band, Float32 @ 48 kHz)</span>
+          </div>
+          <div class="eye-legend-item">
+            <span class="legend-swatch" style="background: #d946ef;"></span>
+            <span>Center Pointer &amp; NTP Sweep Playhead (Scanalyzer Style)</span>
+          </div>
+          <div class="eye-legend-item">
+            <span class="legend-swatch" style="background: #ef4444;"></span>
+            <span>0.0s Marker @ Far Right (3 O'clock) &amp; Top-of-Second Ticks</span>
+          </div>
         </div>
       </div>
     </div>
@@ -745,12 +902,12 @@ HTML_UI = """<!DOCTYPE html>
     <!-- Memory Slice Unwrap View -->
     <div id="slice-view-box" class="slice-view-box">
       <div style="font-weight: 700; color: var(--accent-cyan); margin-bottom: 6px;">
-        mxlFlowReaderGetSamples() Contiguous Memory Layout (wrappedMultiBufferSlice)
+        mxlFlowReaderGetSamples() 10-Second Contiguous Memory Layout (wrappedMultiBufferSlice)
       </div>
       <div class="memory-bar">
         <div class="slice-block slice2-block" id="slice2-visual">Part 2: Seam Wrap (Frames 0..156)</div>
-        <div class="slice-block headroom-block">Contiguous Unread Memory Buffer (Headroom)</div>
-        <div class="slice-block slice1-block" id="slice1-visual">Part 1: Tail Boundary (Frames 47900..47999)</div>
+        <div class="slice-block headroom-block">Contiguous Unread Memory Buffer (480,000 Frames Headroom)</div>
+        <div class="slice-block slice1-block" id="slice1-visual">Part 1: Tail Boundary (Frames 479900..479999)</div>
       </div>
       <div id="slice-json-details" style="font-family: monospace; font-size: 0.7rem; color: #cbd5e1; background: #000; padding: 8px; border-radius: 4px;">
         Awaiting slice test...
@@ -919,11 +1076,15 @@ let lastSourcesJson = "";
 let currentToneActive = false;
 let sliceViewVisible = false;
 
-// Audio Ring Visualizer State
-const RING_BUFFER_LENGTH = 48000;
+// Audio Ring Visualizer State - 10 Second Circular Buffer
+const RING_BUFFER_LENGTH = 480000;  // 10.000s @ 48,000 Hz Float32
 let mxlTelemetry = null;
 let ch0Head = 0;
 let ch1Head = 0;
+let activeMonitoredFlow = 'wbs-flow-master-stereo';
+let cachedWaveform = null;
+let currentPhaseCorr = 0.0;
+let lastWaveformFetch = 0;
 
 function vuToAngle(vu) {
   const clamped = Math.max(-20, Math.min(3, vu));
@@ -939,11 +1100,23 @@ function toggleSliceView() {
   document.getElementById('slice-view-box').style.display = sliceViewVisible ? 'block' : 'none';
 }
 
+function switchEyeFlow(flowId) {
+  activeMonitoredFlow = flowId;
+  const btnMaster = document.getElementById('btn-flow-master');
+  const btnTone = document.getElementById('btn-flow-tone');
+  if (btnMaster && btnTone) {
+    btnMaster.className = (flowId === 'wbs-flow-master-stereo') ? 'ctrl-btn active' : 'ctrl-btn';
+    btnTone.className = (flowId === 'wbs-flow-ref-tone') ? 'ctrl-btn active' : 'ctrl-btn';
+  }
+  cachedWaveform = null;
+  fetchWaveform();
+}
+
 async function testSliceWrap() {
   sliceViewVisible = true;
   document.getElementById('slice-view-box').style.display = 'block';
   try {
-    const res = await fetch('/api/mxl/flow/wbs-flow-master-stereo/slice?tail=47900&count=256');
+    const res = await fetch(`/api/mxl/flow/${activeMonitoredFlow}/slice?tail=479900&count=256`);
     const data = await res.json();
     document.getElementById('slice-json-details').textContent = JSON.stringify(data, null, 2);
     if (data.is_wrapped) {
@@ -955,99 +1128,186 @@ async function testSliceWrap() {
   }
 }
 
-// Draw continuous circular ring buffer on HTML5 Canvas
-function drawRingBuffer(canvasId, headIndex, quantum, label, color) {
-  const canvas = document.getElementById(canvasId);
+async function fetchWaveform() {
+  const now = Date.now();
+  if (now - lastWaveformFetch < 140) return;
+  lastWaveformFetch = now;
+  try {
+    const res = await fetch(`/api/mxl/flow/${activeMonitoredFlow}/waveform`);
+    if (res.ok) {
+      cachedWaveform = await res.json();
+    }
+  } catch (e) {
+    // Silent network retry
+  }
+}
+
+// Draw Scanalyzer Audio Eye 10-Second Continuous Ring Buffer
+// 0 seconds is at Far Right (3 o'clock / 0 rad in Cartesian geometry)
+// Top of each second aligned to NTP wall-clock seconds
+function drawScanalyzerEye(canvas, waveform, ntpSecOf10, headIndex, quantum, flowLabel) {
   if (!canvas) return;
   const ctx = canvas.getContext('2d');
   const w = canvas.width;
   const h = canvas.height;
   const cx = w / 2;
   const cy = h / 2;
-  const rOuter = 118;
-  const rInner = 88;
+
+  // Geometry: outer band (Left channel), inner band (Right channel)
+  const rOuter = 188;
+  const rMid = 140;
+  const rInner = 82;
+  const rCenterPlayhead = 28;
 
   ctx.clearRect(0, 0, w, h);
 
-  // 1. Background Ring Track
-  ctx.beginPath();
-  ctx.arc(cx, cy, (rOuter + rInner) / 2, 0, Math.PI * 2);
-  ctx.strokeStyle = '#0d1f33';
-  ctx.lineWidth = (rOuter - rInner);
-  ctx.stroke();
-
-  // 2. Wrap-Around Seam Indicator (at 12 o'clock, 0 rad)
-  ctx.beginPath();
-  ctx.moveTo(cx, cy - rOuter - 6);
-  ctx.lineTo(cx, cy - rInner + 6);
-  ctx.strokeStyle = '#ef4444';
-  ctx.lineWidth = 3;
-  ctx.stroke();
-
-  // Seam Label
-  ctx.fillStyle = '#ef4444';
-  ctx.font = 'bold 8px monospace';
-  ctx.textAlign = 'center';
-  ctx.fillText('SEAM [0]', cx, cy - rOuter - 10);
-
-  // 3. Scale Ticks (0ms, 250ms, 500ms, 750ms)
-  const ticks = [
-    { frac: 0.0, label: '0ms' },
-    { frac: 0.25, label: '250ms' },
-    { frac: 0.50, label: '500ms' },
-    { frac: 0.75, label: '750ms' }
-  ];
-  for (const t of ticks) {
-    const angle = t.frac * Math.PI * 2 - Math.PI / 2;
-    const x1 = cx + (rOuter + 2) * Math.cos(angle);
-    const y1 = cy + (rOuter + 2) * Math.sin(angle);
-    const x2 = cx + (rOuter + 7) * Math.cos(angle);
-    const y2 = cy + (rOuter + 7) * Math.sin(angle);
+  // 1. Background Tracks & Radial Grid
+  ctx.save();
+  ctx.lineWidth = 1;
+  ctx.strokeStyle = '#0e2338';
+  for (const r of [rInner, rMid, rOuter]) {
     ctx.beginPath();
-    ctx.moveTo(x1, y1);
-    ctx.lineTo(x2, y2);
-    ctx.strokeStyle = '#38bdf8';
-    ctx.lineWidth = 1.5;
+    ctx.arc(cx, cy, r, 0, Math.PI * 2);
     ctx.stroke();
   }
 
-  // 4. Active Reader Quantum Arc (trailing tail to head)
-  const headFrac = (headIndex % RING_BUFFER_LENGTH) / RING_BUFFER_LENGTH;
-  const headAngle = headFrac * Math.PI * 2 - Math.PI / 2;
-  const qFrac = quantum / RING_BUFFER_LENGTH;
-  const tailAngle = headAngle - (qFrac * Math.PI * 2);
+  // Radial spokes for each second (0s through 9s)
+  for (let s = 0; s < 10; s++) {
+    const a = (s / 10.0) * Math.PI * 2; // 0 rad at 3 o'clock (far right)
+    ctx.beginPath();
+    ctx.moveTo(cx + Math.cos(a) * (rInner - 4), cy + Math.sin(a) * (rInner - 4));
+    ctx.lineTo(cx + Math.cos(a) * (rOuter + 6), cy + Math.sin(a) * (rOuter + 6));
+    ctx.strokeStyle = (s === 0) ? 'rgba(239, 68, 68, 0.45)' : '#112942';
+    ctx.lineWidth = (s === 0) ? 2 : 1;
+    ctx.stroke();
+  }
+  ctx.restore();
 
+  // 2. Radial Waveform Spokes (CH0 Left in Emerald #22c55e, CH1 Right in Cyan #38bdf8)
+  const bins = (waveform && waveform.ch0_max && waveform.ch0_max.length) ? waveform.ch0_max.length : 720;
+  const reachL = (rOuter - rMid) * 0.48;
+  const baseRL = (rOuter + rMid) / 2;
+  const reachR = (rMid - rInner) * 0.48;
+  const baseRR = (rMid + rInner) / 2;
+
+  // Draw Channel 0: Left (Outer Band, Emerald #22c55e)
+  ctx.save();
+  ctx.strokeStyle = 'rgba(34, 197, 94, 0.88)';
+  ctx.lineWidth = 1.25;
   ctx.beginPath();
-  ctx.arc(cx, cy, (rOuter + rInner) / 2, tailAngle, headAngle);
-  ctx.strokeStyle = '#38bdf8';
-  ctx.lineWidth = (rOuter - rInner);
+  for (let b = 0; b < bins; b++) {
+    const frac = b / bins;
+    const a = frac * Math.PI * 2; // 0 rad = 3 o'clock, clockwise sweep
+    const minVal = (waveform && waveform.ch0_min) ? (waveform.ch0_min[b] || 0) : 0;
+    const maxVal = (waveform && waveform.ch0_max) ? (waveform.ch0_max[b] || 0) : 0;
+    const rIn = baseRL + (minVal * reachL * 0.96);
+    const rOut = baseRL + Math.max(0.04, maxVal * reachL * 0.96);
+    ctx.moveTo(cx + Math.cos(a) * rIn, cy + Math.sin(a) * rIn);
+    ctx.lineTo(cx + Math.cos(a) * rOut, cy + Math.sin(a) * rOut);
+  }
   ctx.stroke();
 
-  // 5. Producer Write Head Pointer (Amber / Orange Glowing Arrow)
-  const ptrX = cx + (rOuter + 8) * Math.cos(headAngle);
-  const ptrY = cy + (rOuter + 8) * Math.sin(headAngle);
-  const inX = cx + (rInner - 8) * Math.cos(headAngle);
-  const inY = cy + (rInner - 8) * Math.sin(headAngle);
-
+  // Draw Channel 1: Right (Inner Band, Cyan #38bdf8)
+  ctx.strokeStyle = 'rgba(56, 189, 248, 0.88)';
+  ctx.lineWidth = 1.25;
   ctx.beginPath();
-  ctx.moveTo(inX, inY);
-  ctx.lineTo(ptrX, ptrY);
+  for (let b = 0; b < bins; b++) {
+    const frac = b / bins;
+    const a = frac * Math.PI * 2;
+    const minVal = (waveform && waveform.ch1_min) ? (waveform.ch1_min[b] || 0) : 0;
+    const maxVal = (waveform && waveform.ch1_max) ? (waveform.ch1_max[b] || 0) : 0;
+    const rIn = baseRR + (minVal * reachR * 0.96);
+    const rOut = baseRR + Math.max(0.04, maxVal * reachR * 0.96);
+    ctx.moveTo(cx + Math.cos(a) * rIn, cy + Math.sin(a) * rIn);
+    ctx.lineTo(cx + Math.cos(a) * rOut, cy + Math.sin(a) * rOut);
+  }
+  ctx.stroke();
+  ctx.restore();
+
+  // 3. NTP Second Ticks (10 Seconds: 0s at Far Right, Top of Second Aligned)
+  ctx.save();
+  for (let s = 0; s < 10; s++) {
+    const a = (s / 10.0) * Math.PI * 2;
+    const cos = Math.cos(a);
+    const sin = Math.sin(a);
+    const isZero = (s === 0);
+    const isTopPulse = Math.abs(ntpSecOf10 - s) < 0.12;
+
+    const tLen = isZero ? 16 : 10;
+    const p1X = cx + cos * (rOuter + 3);
+    const p1Y = cy + sin * (rOuter + 3);
+    const p2X = cx + cos * (rOuter + 3 + tLen);
+    const p2Y = cy + sin * (rOuter + 3 + tLen);
+
+    ctx.beginPath();
+    ctx.moveTo(p1X, p1Y);
+    ctx.lineTo(p2X, p2Y);
+    ctx.strokeStyle = isTopPulse ? '#ffffff' : (isZero ? '#ef4444' : '#38bdf8');
+    ctx.lineWidth = (isZero || isTopPulse) ? 3 : 1.5;
+    if (isTopPulse) {
+      ctx.shadowColor = '#38bdf8';
+      ctx.shadowBlur = 10;
+    }
+    ctx.stroke();
+    ctx.shadowBlur = 0;
+
+    // Second Tick Label
+    const lblDist = rOuter + (isZero ? 27 : 20);
+    const lblX = cx + cos * lblDist;
+    const lblY = cy + sin * lblDist;
+    ctx.font = isZero ? 'bold 11px monospace' : '9px monospace';
+    ctx.fillStyle = isTopPulse ? '#ffffff' : (isZero ? '#ef4444' : '#94a3b8');
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    const txt = isZero ? '0.0s [NTP]' : `${s}.0s`;
+    ctx.fillText(txt, lblX, lblY);
+  }
+  ctx.restore();
+
+  // 4. Center Playhead Triangle (Scanalyzer Style Magenta #d946ef)
+  const currentAngle = (ntpSecOf10 / 10.0) * Math.PI * 2;
+  const ca = Math.cos(currentAngle);
+  const sa = Math.sin(currentAngle);
+
+  ctx.save();
+  ctx.translate(cx, cy);
+  ctx.rotate(currentAngle);
+
+  // Magenta pointer triangle pointing towards the sweep angle
+  ctx.beginPath();
+  ctx.moveTo(rCenterPlayhead, 0);
+  ctx.lineTo(-rCenterPlayhead * 0.65, -rCenterPlayhead * 0.65);
+  ctx.lineTo(-rCenterPlayhead * 0.38, 0);
+  ctx.lineTo(-rCenterPlayhead * 0.65, rCenterPlayhead * 0.65);
+  ctx.closePath();
+  ctx.fillStyle = '#d946ef';
+  ctx.shadowColor = '#d946ef';
+  ctx.shadowBlur = 14;
+  ctx.fill();
+  ctx.restore();
+
+  // 5. Rotating NTP Write-Head Needle Arm with Red-Hot Glowing Tip
+  ctx.save();
+  ctx.lineCap = 'round';
   ctx.strokeStyle = '#f97316';
-  ctx.lineWidth = 3.5;
+  ctx.lineWidth = 3.2;
   ctx.shadowColor = '#f97316';
-  ctx.shadowBlur = 8;
+  ctx.shadowBlur = 9;
+  ctx.beginPath();
+  ctx.moveTo(cx + ca * (rInner - 6), cy + sa * (rInner - 6));
+  ctx.lineTo(cx + ca * (rOuter + 6), cy + sa * (rOuter + 6));
   ctx.stroke();
-  ctx.shadowBlur = 0;
 
-  // 6. Center Ring Telemetry
-  ctx.fillStyle = '#fff';
-  ctx.font = 'bold 15px monospace';
-  ctx.textAlign = 'center';
-  ctx.fillText(`#${headIndex}`, cx, cy - 4);
-
-  ctx.fillStyle = '#94a3b8';
-  ctx.font = '9px monospace';
-  ctx.fillText('FLOAT32 RING', cx, cy + 12);
+  // Red-hot Glowing Tip Ball at Perimeter
+  const tipX = cx + ca * (rOuter + 6);
+  const tipY = cy + sa * (rOuter + 6);
+  ctx.beginPath();
+  ctx.arc(tipX, tipY, 5.2, 0, Math.PI * 2);
+  ctx.fillStyle = '#ff2810';
+  ctx.shadowColor = '#ff2810';
+  ctx.shadowBlur = 15;
+  ctx.fill();
+  ctx.restore();
 }
 
 function renderSourceCards(sources, selected) {
@@ -1147,20 +1407,31 @@ async function pollStatus() {
       }
     }
 
-    // 5. Update MXL Continuous Ring Buffers
+    // 5. Update MXL Continuous 10-Second Ring Buffer Telemetry
     if (data.mxl && data.mxl.flows) {
-      const masterFlow = data.mxl.flows.find(f => f.flow_id === 'wbs-flow-master-stereo');
-      if (masterFlow) {
-        ch0Head = masterFlow.write_head;
-        ch1Head = masterFlow.write_head;
-        document.getElementById('ch0-head-tag').textContent = `HEAD: ${ch0Head}`;
-        document.getElementById('ch1-head-tag').textContent = `HEAD: ${ch1Head}`;
-
-        drawRingBuffer('ring-canvas-0', ch0Head, masterFlow.quantum || 256, 'LEFT', '#38bdf8');
-        drawRingBuffer('ring-canvas-1', ch1Head, masterFlow.quantum || 256, 'RIGHT', '#38bdf8');
+      const activeFlow = data.mxl.flows.find(f => f.flow_id === activeMonitoredFlow) || data.mxl.flows[0];
+      if (activeFlow) {
+        ch0Head = activeFlow.write_head;
+        ch1Head = activeFlow.write_head;
+        const headSec = (ch0Head / (activeFlow.sample_rate || 48000)).toFixed(3);
+        const headEl = document.getElementById('eye-head-index');
+        const headSecEl = document.getElementById('eye-head-sec');
+        if (headEl) headEl.textContent = `HEAD: ${ch0Head}`;
+        if (headSecEl) headSecEl.textContent = `${headSec}s / 480,000 frames`;
       }
       if (data.mxl.tai_epoch_ns) {
         document.getElementById('badge-tai').textContent = `TAI: ${data.mxl.tai_epoch_ns.toString().slice(-9)} ns`;
+        const taiEl = document.getElementById('eye-tai-ns');
+        if (taiEl) taiEl.textContent = `TAI: ${data.mxl.tai_epoch_ns} ns`;
+      }
+      // Compute Phase Correlation from stereo meter difference
+      if (data.meters) {
+        const diff = Math.abs((data.meters.left_vu || 0) - (data.meters.right_vu || 0));
+        currentPhaseCorr = Math.max(-0.95, Math.min(0.98, 1.0 - (diff / 16.0)));
+        const corrEl = document.getElementById('corr-val-readout');
+        const needleEl = document.getElementById('phase-needle');
+        if (corrEl) corrEl.textContent = `corr ${currentPhaseCorr >= 0 ? '+' : ''}${currentPhaseCorr.toFixed(2)}`;
+        if (needleEl) needleEl.style.left = `${((currentPhaseCorr + 1.0) / 2.0) * 100}%`;
       }
     }
 
@@ -1242,7 +1513,54 @@ async function abandonShip() {
   } catch (e) {}
 }
 
-// High-speed polling (70ms) with fallback to native SSE stream if supported
+// Interactive Canvas Scrub & Slice Inspector on Click
+const eyeCanvas = document.getElementById('eye-player-canvas');
+if (eyeCanvas) {
+  eyeCanvas.addEventListener('click', (e) => {
+    const rect = eyeCanvas.getBoundingClientRect();
+    const dx = e.clientX - rect.left - (rect.width / 2);
+    const dy = e.clientY - rect.top - (rect.height / 2);
+    let a = Math.atan2(dy, dx);
+    if (a < 0) a += Math.PI * 2;
+    const frac = a / (Math.PI * 2);
+    const targetFrame = Math.floor(frac * RING_BUFFER_LENGTH);
+    sliceViewVisible = true;
+    document.getElementById('slice-view-box').style.display = 'block';
+    fetch(`/api/mxl/flow/${activeMonitoredFlow}/slice?tail=${targetFrame}&count=256`)
+      .then(r => r.json())
+      .then(data => {
+        document.getElementById('slice-json-details').textContent = JSON.stringify(data, null, 2);
+        if (data.is_wrapped) {
+          document.getElementById('slice1-visual').textContent = `Slice 1: Frames ${data.slice1.start}..${data.slice1.start + data.slice1.length - 1} (${data.slice1.length} f)`;
+          document.getElementById('slice2-visual').textContent = `Slice 2 (Wrapped Seam): Frames 0..${data.slice2.length - 1} (${data.slice2.length} f)`;
+        } else {
+          document.getElementById('slice1-visual').textContent = `Contiguous: Frames ${data.slice1.start}..${data.slice1.start + data.slice1.length - 1} (${data.slice1.length} f)`;
+          document.getElementById('slice2-visual').textContent = `Part 2: Headroom (No Wrap)`;
+        }
+      })
+      .catch(() => {});
+  });
+}
+
+// 60 FPS Smooth Radial Eye Player Rendering Loop (NTP-Aligned)
+function renderEyeFrame() {
+  const canvas = document.getElementById('eye-player-canvas');
+  if (canvas) {
+    const nowMs = Date.now();
+    const secOf10 = (nowMs / 1000.0) % 10.0;
+    drawScanalyzerEye(canvas, cachedWaveform, secOf10, ch0Head, 256, activeMonitoredFlow);
+    const clkEl = document.getElementById('eye-ntp-clock');
+    const secEl = document.getElementById('eye-sec-10');
+    if (clkEl) clkEl.textContent = new Date().toISOString().slice(11, 23);
+    if (secEl) secEl.textContent = `${secOf10.toFixed(3)} s / 10.000 s`;
+  }
+  requestAnimationFrame(renderEyeFrame);
+}
+requestAnimationFrame(renderEyeFrame);
+
+// Periodic Waveform Fetching & Fast Polling
+setInterval(fetchWaveform, 150);
+fetchWaveform();
 setInterval(pollStatus, 70);
 pollStatus();
 </script>
@@ -1258,7 +1576,8 @@ class WBSHandler(http.server.BaseHTTPRequestHandler):
     def end_headers(self):
         self.send_header("Access-Control-Allow-Origin", "*")
         self.send_header("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
-        self.send_header("Access-Control-Allow-Headers", "Content-Type, Cache-Control")
+        self.send_header("Access-Control-Allow-Headers", "Content-Type, Cache-Control, Access-Control-Request-Private-Network, Authorization")
+        self.send_header("Access-Control-Allow-Private-Network", "true")
         super().end_headers()
 
     def do_OPTIONS(self):
@@ -1322,12 +1641,22 @@ class WBSHandler(http.server.BaseHTTPRequestHandler):
             self.end_headers()
             self.wfile.write(json.dumps(rep).encode("utf-8"))
 
+        elif path == "/api/mxl/waveform" or (path.startswith("/api/mxl/flow/") and "/waveform" in path):
+            parts = path.split("/")
+            flow_id = parts[4] if len(parts) >= 5 and parts[4] != "waveform" else "wbs-flow-master-stereo"
+            flow = MXL_ENGINE.flows.get(flow_id, MXL_ENGINE.master_flow)
+            waveform_data = flow.get_waveform_bins()
+            self.send_response(200)
+            self.send_header("Content-Type", "application/json")
+            self.end_headers()
+            self.wfile.write(json.dumps(waveform_data).encode("utf-8"))
+
         elif path.startswith("/api/mxl/flow/") and "/slice" in path:
-            # Query slice: /api/mxl/flow/<flow_id>/slice?tail=47900&count=256
+            # Query slice: /api/mxl/flow/<flow_id>/slice?tail=479900&count=256
             parts = path.split("/")
             flow_id = parts[4] if len(parts) >= 5 else "wbs-flow-master-stereo"
             qs = parse_qs(parsed.query)
-            tail = int(qs.get("tail", ["47900"])[0])
+            tail = int(qs.get("tail", ["479900"])[0])
             count = int(qs.get("count", ["256"])[0])
 
             flow = MXL_ENGINE.flows.get(flow_id, MXL_ENGINE.master_flow)
@@ -1358,6 +1687,7 @@ class WBSHandler(http.server.BaseHTTPRequestHandler):
                         mxl_head = MXL_ENGINE.master_flow.write_head
                         mxl_seq = MXL_ENGINE.master_flow.write_seq
                         tai_ns = current_tai_ns()
+                        ntp_time = time.time()
 
                     event_data = {
                         "left_db": cur_meters.get("left_db", -60.0),
@@ -1367,6 +1697,8 @@ class WBSHandler(http.server.BaseHTTPRequestHandler):
                         "mxl_write_head": mxl_head,
                         "mxl_write_seq": mxl_seq,
                         "tai_ns": tai_ns,
+                        "ntp_sec": ntp_time,
+                        "second_of_10": round(ntp_time % 10.0, 4),
                         "selected_source": SELECTED_SOURCE,
                     }
                     self.wfile.write(f"data: {json.dumps(event_data)}\n\n".encode("utf-8"))
@@ -1487,7 +1819,7 @@ if __name__ == "__main__":
         assert len(HTML_UI) > 1000, "HTML template empty"
         assert "Ward-Beck Audio Tab" in HTML_UI, "HTML header missing"
         assert "needle-l" in HTML_UI and "needle-r" in HTML_UI, "VU needle elements missing"
-        assert "ring-canvas-0" in HTML_UI, "MXL ring buffer canvas missing"
+        assert "eye-player-canvas" in HTML_UI or "ring-canvas" in HTML_UI, "MXL ring buffer canvas missing"
         srcs = list_sources()
         print(f"[Ward-Beck Audio Tab] Detected audio subsystem ({len(srcs)} available audio sources).")
         pipe = inspect_full_pipeline(MXL_ENGINE)

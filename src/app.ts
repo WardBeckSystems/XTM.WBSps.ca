@@ -11,6 +11,7 @@ import { audio } from './audio/audio-engine';
 import { XtmView } from './views/xtm-view';
 import { Pod22View } from './views/pod22-view';
 import { DbfsView } from './views/dbfs-view';
+import { RoutingCanvasView } from './views/routing-view';
 import type { AppContext } from './app/app-context';
 import { queryDrawerControls } from './app/dom-refs';
 import { initSettingsDrawer } from './app/settings-drawer';
@@ -35,7 +36,9 @@ import { initUpdateCheck } from './app/update-check';
 import { registerServiceWorker } from './app/service-worker';
 import { initPwaInstall } from './app/pwa-install';
 import { initTimeModule } from './time';
+import { initLowerUnitSwitcher } from './app/lower-unit-switcher';
 import { startFrameLoop } from './app/frame-loop';
+import { startXmxlDiscoveryLoop, onXmxlInstancesChanged } from './audio/engine/sources/xmxl-discovery';
 
 export async function initApp(): Promise<void> {
   const stageEl = document.getElementById('visualizerStage');
@@ -45,10 +48,14 @@ export async function initApp(): Promise<void> {
   view.build(model);
   const podView = new Pod22View(podStageEl);
   const dbfsView = dbfsStageEl ? new DbfsView(dbfsStageEl) : null;
-  const ctx: AppContext = { model, audio, view, podView, dbfsView };
+  const routingStageEl = document.getElementById('routingStage');
+  const routingView = routingStageEl ? new RoutingCanvasView(routingStageEl) : null;
+  const ctx: AppContext = { model, audio, view, podView, dbfsView, routingView };
+  if (routingView) routingView.build(ctx);
   (window as any).xtmModel = model;
   (window as any).xtmAudio = audio;
   (window as any).xtmView = view;
+  (window as any).xtmRoutingView = routingView;
   (window as any).xtmCtx = ctx;
 
   initSettingsDrawer();
@@ -91,6 +98,20 @@ export async function initApp(): Promise<void> {
   registerServiceWorker();
   initPwaInstall();
   initTimeModule(ctx);
+  initLowerUnitSwitcher();
+
+  // Auto-detect local XMXL (EBU DMF shared-memory) instances across loopback
+  startXmxlDiscoveryLoop(4000);
+  let hasFlashedXmxl = false;
+  onXmxlInstancesChanged((instances) => {
+    if (instances.length > 0 && !hasFlashedXmxl) {
+      hasFlashedXmxl = true;
+      const isWbsCa = /(^|\.)(ward-beck|wardbeck)\.ca$/i.test(window.location.hostname);
+      if (isWbsCa || window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+        model.flash(`XMXL :${instances[0].port}`);
+      }
+    }
+  });
 
   startFrameLoop(ctx, recorder);
 }

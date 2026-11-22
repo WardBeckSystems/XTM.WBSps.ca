@@ -1,0 +1,862 @@
+/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.ca). All rights reserved. */
+/**
+ * Ward-Beck Systems Broadcast Console Routing Matrix & Signal Bus Styling
+ * Authentic WBS Industrial Design: Anodized aluminum panels, dark bezels,
+ * illuminated square crosspoint buttons, VFD cyan telemetry, and tactile controls.
+ */
+
+.routing-unit {
+  width: 100%;
+  margin-top: 14px;
+}
+
+.routing-console-rack {
+  width: 100%;
+  background: #09131d;
+  border: 2px solid #1e3d5f;
+  border-radius: 8px;
+  padding: 16px;
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.75), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  color: #e2e8f0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, monospace;
+}
+
+/* Header */
+.routing-rack-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 2px solid #1a3654;
+  padding-bottom: 12px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.routing-header-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.routing-wbs-badge {
+  background: #0f2338;
+  border: 1px solid #f97316;
+  border-radius: 4px;
+  padding: 4px 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.wbs-mark {
+  font-weight: 900;
+  font-size: 0.85rem;
+  letter-spacing: 1px;
+  color: #f97316;
+}
+
+.wbs-rack-code {
+  font-size: 0.62rem;
+  font-family: monospace;
+  color: #94a3b8;
+}
+
+.routing-header-title {
+  font-size: 1.05rem;
+  font-weight: 800;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  color: #ffffff;
+}
+
+.routing-header-sub {
+  font-size: 0.72rem;
+  color: #94a3b8;
+  margin-top: 2px;
+}
+
+.routing-header-badges {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.rc-badge {
+  background: #0a1827;
+  padding: 4px 10px;
+  border-radius: 4px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  border: 1px solid #23486e;
+  color: #cbd5e1;
+}
+
+.rc-badge-active { border-color: #22c55e; color: #22c55e; }
+.rc-badge-cyan { border-color: #38bdf8; color: #38bdf8; }
+.rc-badge-orange { border-color: #f97316; color: #f97316; }
+
+/* 3-Bay Console Layout */
+.routing-console-bays {
+  display: grid;
+  grid-template-columns: 240px 1fr 240px;
+  gap: 16px;
+  align-items: stretch;
+}
+
+@media (max-width: 1024px) {
+  .routing-console-bays {
+    grid-template-columns: 1fr;
+  }
+}
+
+.rc-bay {
+  background: #060e16;
+  border: 1px solid #183350;
+  border-radius: 6px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+}
+
+.rc-bay-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 1px;
+  color: #38bdf8;
+  border-bottom: 1px solid #142c44;
+  padding-bottom: 6px;
+  margin-bottom: 10px;
+}
+
+.rc-bay-sub {
+  font-size: 0.65rem;
+  color: #64748b;
+}
+
+/* Channel Strips (Inputs & Outputs) */
+.rc-channel-strips {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 1;
+}
+
+.rc-strip {
+  background: #0a1624;
+  border: 1px solid #1a385a;
+  border-radius: 5px;
+  padding: 8px;
+  transition: all 0.15s ease;
+}
+
+.rc-strip.selected {
+  border-color: #f97316;
+  background: #0f2237;
+  box-shadow: 0 0 10px rgba(249, 115, 22, 0.25);
+}
+
+.rc-strip-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 4px;
+}
+
+.rc-strip-tag {
+  font-size: 0.65rem;
+  font-weight: 800;
+  color: #64748b;
+  font-family: monospace;
+}
+
+.rc-strip-pill {
+  font-size: 0.62rem;
+  padding: 1px 5px;
+  border-radius: 3px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.pill-mic { background: #b45309; color: #fff; }
+.pill-sys { background: #0284c7; color: #fff; }
+.pill-pod { background: #15803d; color: #fff; }
+.pill-abb { background: #7c3aed; color: #fff; }
+.pill-noise { background: #be185d; color: #fff; }
+.pill-out { background: #334155; color: #94a3b8; }
+
+.rc-strip-name {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.rc-strip-sub {
+  font-size: 0.68rem;
+  color: #94a3b8;
+  margin-bottom: 6px;
+}
+
+/* Mini Stereo Meters */
+.rc-mini-meters {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  margin: 6px 0 4px 0;
+}
+
+.rc-meter-bar-track {
+  width: 100%;
+  height: 6px;
+  background: #04080d;
+  border-radius: 2px;
+  overflow: hidden;
+  border: 1px solid #14293f;
+}
+
+.rc-meter-bar-fill {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, #22c55e 65%, #eab308 85%, #ef4444 100%);
+  transition: width 0.06s linear;
+}
+
+.rc-strip-digits {
+  font-size: 0.65rem;
+  font-family: monospace;
+  color: #64748b;
+  text-align: right;
+  margin-bottom: 6px;
+}
+
+.rc-btn-engage {
+  width: 100%;
+  padding: 5px;
+  background: #142a42;
+  border: 1px solid #234c75;
+  color: #cbd5e1;
+  border-radius: 4px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.rc-btn-engage:hover {
+  background: #1c3b5d;
+  color: #fff;
+}
+
+.rc-btn-engage.engaged {
+  background: #f97316;
+  border-color: #fb923c;
+  color: #000;
+  box-shadow: 0 0 8px rgba(249, 115, 22, 0.4);
+}
+
+.rc-out-btns {
+  display: flex;
+  gap: 6px;
+}
+
+.rc-btn-out-tool {
+  flex: 1;
+  padding: 4px;
+  background: #102133;
+  border: 1px solid #1c3b5d;
+  color: #94a3b8;
+  border-radius: 3px;
+  font-size: 0.65rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.rc-btn-out-tool:hover { background: #1a3857; color: #fff; }
+
+/* Center Bay: Ring Buffer Card */
+.rc-buffer-card {
+  background: #07121c;
+  border: 1px solid #1a3a5e;
+  border-radius: 6px;
+  padding: 12px;
+  margin-bottom: 14px;
+}
+
+.rc-buffer-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.78rem;
+  font-weight: 800;
+  color: #f97316;
+  letter-spacing: 0.8px;
+  margin-bottom: 10px;
+}
+
+.rc-telemetry-pill {
+  font-size: 0.68rem;
+  font-family: monospace;
+  background: #02070c;
+  padding: 2px 8px;
+  border-radius: 3px;
+  border: 1px solid #16324e;
+  color: #38bdf8;
+}
+
+.rc-rings-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  overflow: hidden;
+}
+
+.rc-ring-widget {
+  text-align: center;
+  flex: 0 0 180px;
+  width: 180px;
+}
+
+.rc-ring-title {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: #94a3b8;
+  margin-bottom: 4px;
+}
+
+.rc-ring-head {
+  color: #f97316;
+  font-family: monospace;
+}
+
+.rc-canvas {
+  width: 180px;
+  height: 180px;
+  display: block;
+  background: transparent;
+  margin: 0 auto;
+}
+
+.rc-buffer-bridge {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  flex: 1;
+  min-width: 0;
+}
+
+.rc-stat-box {
+  background: #03080e;
+  border: 1px solid #142a42;
+  border-radius: 4px;
+  padding: 6px 8px;
+  text-align: center;
+}
+
+.rc-stat-label {
+  font-size: 0.6rem;
+  color: #64748b;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+.rc-stat-val {
+  font-size: 0.85rem;
+  font-weight: 800;
+  color: #fff;
+  font-family: monospace;
+  margin: 2px 0;
+}
+
+.rc-stat-sub {
+  font-size: 0.6rem;
+  color: #94a3b8;
+}
+
+/* Linear Unwrap Bar */
+.rc-linear-unwrap {
+  margin-top: 10px;
+  background: #03080e;
+  border: 1px solid #142a42;
+  border-radius: 4px;
+  padding: 8px;
+}
+
+.rc-unwrap-label {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.65rem;
+  color: #94a3b8;
+  font-family: monospace;
+  margin-bottom: 6px;
+}
+
+.rc-unwrap-bar {
+  display: flex;
+  height: 20px;
+  border-radius: 3px;
+  overflow: hidden;
+  border: 1px solid #1e3d5f;
+}
+
+.rc-bar-slice {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.6rem;
+  font-weight: 700;
+  color: #fff;
+}
+
+.rc-slice-past { background: #0369a1; }
+.rc-slice-headroom { background: #0f1e2f; color: #64748b; }
+.rc-slice-active { background: #f97316; }
+
+/* Crosspoint Matrix Grid (Zero Spaghetti) */
+.rc-matrix-card {
+  background: #07121c;
+  border: 1px solid #1a3a5e;
+  border-radius: 6px;
+  padding: 12px;
+}
+
+.rc-matrix-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.78rem;
+  font-weight: 800;
+  color: #38bdf8;
+  letter-spacing: 0.8px;
+  margin-bottom: 10px;
+}
+
+.rc-matrix-presets {
+  display: flex;
+  gap: 6px;
+}
+
+.rc-btn-preset {
+  padding: 3px 8px;
+  background: #0d1e30;
+  border: 1px solid #224c75;
+  color: #cbd5e1;
+  border-radius: 3px;
+  font-size: 0.68rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.rc-btn-preset:hover { background: #173759; color: #fff; }
+
+.rc-matrix-table-wrap {
+  overflow-x: auto;
+}
+
+.rc-matrix-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.72rem;
+}
+
+.rc-matrix-table th {
+  padding: 6px 8px;
+  text-align: center;
+  color: #94a3b8;
+  border-bottom: 1px solid #183350;
+  font-weight: 700;
+}
+
+.rc-th-blank { text-align: left !important; }
+.rc-th-sub { font-size: 0.6rem; color: #64748b; font-weight: normal; }
+
+.rc-th-row {
+  text-align: left;
+  padding: 6px 8px;
+  color: #cbd5e1;
+  font-weight: 700;
+  white-space: nowrap;
+  border-bottom: 1px solid #11253a;
+}
+
+.rc-td-crosspoint {
+  text-align: center;
+  padding: 4px;
+  border-bottom: 1px solid #11253a;
+}
+
+/* Authentic Illuminated Square Broadcast Crosspoint Button */
+.rc-matrix-btn {
+  width: 32px;
+  height: 32px;
+  background: #0c1724;
+  border: 2px solid #1a3654;
+  border-radius: 4px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.12s ease;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.6);
+}
+
+.rc-matrix-btn:hover {
+  border-color: #38bdf8;
+  background: #14263a;
+}
+
+.rc-matrix-led {
+  width: 10px;
+  height: 10px;
+  background: #1e3a5a;
+  border-radius: 2px;
+  display: block;
+  transition: all 0.12s ease;
+}
+
+.rc-matrix-btn.connected {
+  background: #064e3b;
+  border-color: #10b981;
+  box-shadow: 0 0 8px rgba(16, 185, 129, 0.4);
+}
+
+.rc-matrix-btn.connected .rc-matrix-led {
+  background: #34d399;
+  box-shadow: 0 0 6px #34d399;
+}
+
+/* Lower Bay: POD-33 & ABB-1 Panels */
+.routing-aux-panels {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-top: 16px;
+  border-top: 2px solid #1a3654;
+  padding-top: 16px;
+}
+
+@media (max-width: 900px) {
+  .routing-aux-panels {
+    grid-template-columns: 1fr;
+  }
+}
+
+.rc-pod-panel, .rc-abb-panel {
+  background: #07121c;
+  border: 1px solid #1c3b5d;
+  border-radius: 6px;
+  padding: 14px;
+}
+
+.rc-panel-title {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  border-bottom: 1px solid #162f4a;
+  padding-bottom: 8px;
+}
+
+.rc-panel-title-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.85rem;
+  color: #fff;
+}
+
+.rc-panel-badge {
+  background: #15803d;
+  color: #fff;
+  font-size: 0.65rem;
+  font-weight: 800;
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-family: monospace;
+}
+
+.rc-power-btn {
+  padding: 6px 14px;
+  background: #132a42;
+  border: 1px solid #234c75;
+  color: #cbd5e1;
+  border-radius: 4px;
+  font-size: 0.72rem;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.rc-power-btn:hover { background: #1c3d61; color: #fff; }
+
+.rc-power-btn.active {
+  background: #22c55e;
+  border-color: #4ade80;
+  color: #000;
+  box-shadow: 0 0 12px rgba(34, 197, 94, 0.4);
+}
+
+.rc-pod-grid, .rc-abb-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.rc-pod-col {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.rc-control-group-title {
+  font-size: 0.65rem;
+  font-weight: 800;
+  color: #94a3b8;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.rc-btn-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.rc-btn-sel {
+  padding: 4px 8px;
+  background: #0d1e30;
+  border: 1px solid #224870;
+  color: #cbd5e1;
+  border-radius: 3px;
+  font-size: 0.68rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  transition: all 0.1s ease;
+}
+
+.rc-btn-sel:hover { background: #183859; color: #fff; }
+
+.rc-btn-sel.active {
+  background: #0284c7;
+  border-color: #38bdf8;
+  color: #fff;
+  box-shadow: 0 0 6px rgba(56, 189, 248, 0.4);
+}
+
+.rc-led-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #334155;
+  display: inline-block;
+}
+
+.rc-led-dot.lit-green {
+  background: #22c55e;
+  box-shadow: 0 0 6px #22c55e;
+}
+
+/* ABB LED Rack */
+.rc-led-rack {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  background: #04090f;
+  border: 1px solid #142a42;
+  border-radius: 4px;
+  padding: 8px;
+}
+
+.rc-led-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.rc-led-indicator {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #1e293b;
+  display: inline-block;
+}
+
+.rc-led-indicator.lit-green { background: #22c55e; box-shadow: 0 0 6px #22c55e; }
+.rc-led-indicator.lit-red { background: #ef4444; box-shadow: 0 0 6px #ef4444; }
+.rc-led-indicator.lit-amber { background: #eab308; box-shadow: 0 0 6px #eab308; }
+.rc-led-indicator.lit-cyan { background: #38bdf8; box-shadow: 0 0 6px #38bdf8; }
+.rc-led-indicator.lit-pulse {
+  background: #f97316;
+  box-shadow: 0 0 8px #f97316;
+  animation: rcPulse 0.5s infinite alternate;
+}
+
+@keyframes rcPulse {
+  from { opacity: 0.4; }
+  to { opacity: 1; }
+}
+
+.rc-led-label {
+  font-size: 0.65rem;
+  font-weight: 700;
+  font-family: monospace;
+  color: #94a3b8;
+}
+
+/* XMXL Discovery Bar & Instance Selectors */
+.rc-xmxl-bar {
+  background: #06111a;
+  border: 1px solid #1a3c60;
+  border-radius: 6px;
+  padding: 8px 12px;
+  margin-bottom: 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.rc-xmxl-bar-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.rc-xmxl-label {
+  font-size: 0.72rem;
+  font-weight: 800;
+  color: #38bdf8;
+  letter-spacing: 0.8px;
+  font-family: monospace;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.rc-xmxl-instances {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.rc-xmxl-pill {
+  background: #091724;
+  border: 1px solid #234d7a;
+  border-radius: 4px;
+  padding: 3px 8px;
+  font-size: 0.68rem;
+  font-weight: 700;
+  font-family: monospace;
+  color: #94a3b8;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.rc-xmxl-pill:hover {
+  background: #11283e;
+  border-color: #38bdf8;
+  color: #f8fafc;
+}
+
+.rc-xmxl-pill.active {
+  background: #0f2d48;
+  border-color: #22c55e;
+  color: #86efac;
+  box-shadow: 0 0 8px rgba(34, 197, 94, 0.3);
+}
+
+.rc-xmxl-bar-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.rc-xmxl-flows-label {
+  font-size: 0.68rem;
+  font-weight: 800;
+  color: #f97316;
+  font-family: monospace;
+}
+
+.rc-xmxl-flows {
+  display: flex;
+  gap: 5px;
+  flex-wrap: wrap;
+}
+
+.rc-xmxl-flow-btn {
+  background: #0a1827;
+  border: 1px solid #1e3a5f;
+  border-radius: 3px;
+  padding: 2px 7px;
+  font-size: 0.65rem;
+  font-weight: 700;
+  font-family: monospace;
+  color: #cbd5e1;
+  cursor: pointer;
+}
+
+.rc-xmxl-flow-btn:hover {
+  border-color: #f97316;
+  color: #fff;
+}
+
+.rc-xmxl-flow-btn.active {
+  background: #7c2d12;
+  border-color: #f97316;
+  color: #fed7aa;
+  box-shadow: 0 0 6px rgba(249, 115, 22, 0.4);
+}
+
+/* Loudness Metering Bar in Console */
+.rc-loudness-strip {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #050d15;
+  border: 1px solid #14283c;
+  border-radius: 4px;
+  padding: 4px 10px;
+  margin-top: 8px;
+  font-family: monospace;
+}
+
+.rc-loudness-metric {
+  font-size: 0.72rem;
+  color: #cbd5e1;
+  display: flex;
+  gap: 12px;
+}
+
+.rc-loudness-val {
+  font-weight: 800;
+  color: #22c55e;
+}
+
+.rc-badge-pulse-green {
+  background: #064e3b;
+  border-color: #22c55e;
+  color: #86efac;
+  animation: rcGlowGreen 1.5s infinite alternate;
+}
+
+@keyframes rcGlowGreen {
+  from { box-shadow: 0 0 4px #22c55e; }
+  to { box-shadow: 0 0 12px #22c55e; }
+}
+

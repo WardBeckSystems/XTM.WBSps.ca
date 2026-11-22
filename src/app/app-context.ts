@@ -17,6 +17,7 @@ export interface AppContext {
   view: XtmView;
   podView: Pod22View;
   dbfsView: DbfsView | null;
+  routingView?: any;
 }
 
 /** Persist the current configuration (only when the scope view exists). */
