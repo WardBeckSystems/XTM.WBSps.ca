@@ -70,16 +70,16 @@ export function dialPalette(isPpm: boolean, isPowered: boolean, dialLamp: string
         if (activeLamp === 'dark_night') ink = '#f8fafc';
       }
     } else if (isMcCurdyDark) {
-      fill = 'url(#dialOchre)';
-      ink = '#201c15';
+      fill = 'url(#xmccurdy_vintage_dial)';
+      ink = '#2d2924';
     } else {
       fill = lampFill(activeLamp);
       if (activeLamp === 'dark_night') ink = '#f8fafc';
     }
   } else {
     if (isMcCurdyDark) {
-      fill = '#685426';
-      ink = '#15130f';
+      fill = '#7c6d52';
+      ink = '#14120e';
     } else {
       ink = '#0c0a06';
     }

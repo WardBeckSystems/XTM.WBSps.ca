@@ -10,25 +10,39 @@ const PANEL_DEFS = `<defs>
         <linearGradient id="mc_panel" x1="0" y1="0" x2="0" y2="1">
           <stop offset="0%" stop-color="#e5e1d5"/><stop offset="50%" stop-color="#dedad0"/><stop offset="100%" stop-color="#d2cec2"/>
         </linearGradient>
-        <filter id="mc_hammered_filter" x="0" y="0" width="100%" height="100%" color-interpolation-filters="sRGB">
-          <feTurbulence type="turbulence" baseFrequency="0.28" numOctaves="3" seed="14" result="cells"/>
-          <feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="2" seed="5" result="grain"/>
-          <feGaussianBlur in="cells" stdDeviation="0.35" result="cSmooth"/>
-          <feBlend in="cSmooth" in2="grain" mode="overlay" result="hMap"/>
-          <feDiffuseLighting in="hMap" surfaceScale="4.8" diffuseConstant="1.08" lighting-color="#ffffff" result="diff">
-            <feDistantLight azimuth="230" elevation="54"/>
+        <!-- Authentic McCurdy PE1000-A Smooth Hammered Enamel (gemini-code-1795317269161.html) -->
+        <filter id="mccurdyEnamel" x="0%" y="0%" width="100%" height="100%" color-interpolation-filters="sRGB">
+          <feTurbulence type="turbulence" baseFrequency="0.16" numOctaves="2" seed="19" result="cells" />
+          <feGaussianBlur in="cells" stdDeviation="0.9" result="softCells" />
+          <feDiffuseLighting in="softCells" surfaceScale="1.15" diffuseConstant="1.03" lighting-color="#ffffff" result="diff">
+            <feDistantLight azimuth="225" elevation="64" />
           </feDiffuseLighting>
-          <feSpecularLighting in="hMap" surfaceScale="3.8" specularConstant="0.55" specularExponent="18" lighting-color="#dceeff" result="spec">
-            <feDistantLight azimuth="230" elevation="48"/>
+          <feSpecularLighting in="softCells" surfaceScale="0.9" specularConstant="0.22" specularExponent="28" lighting-color="#e3f2fd" result="spec">
+            <feDistantLight azimuth="225" elevation="60" />
           </feSpecularLighting>
-          <feColorMatrix in="cSmooth" type="matrix" values="0 0 0 0 0.06  0 0 0 0 0.14  0 0 0 0 0.20  0 0 0 0.42 0" result="rings"/>
-          <feBlend in="SourceGraphic" in2="diff" mode="multiply" result="b1"/>
-          <feComposite in="rings" in2="b1" operator="over" result="b2"/>
-          <feComposite in="spec" in2="b2" operator="arithmetic" k1="0" k2="0.55" k3="1" k4="0"/>
+          <feColorMatrix in="softCells" type="matrix"
+            values="0 0 0 0 0.12
+                    0 0 0 0 0.24
+                    0 0 0 0 0.32
+                    0 0 0 0 0.16 0" result="rings" />
+          <feBlend in="SourceGraphic" in2="diff" mode="multiply" result="shaded" />
+          <feComposite in="rings" in2="shaded" operator="over" result="ringed" />
+          <feComposite in="spec" in2="ringed" operator="arithmetic" k1="0" k2="0.45" k3="1" k4="0" />
         </filter>
-        <pattern id="mc_panel_blue" width="200" height="200" patternUnits="userSpaceOnUse">
-          <rect width="200" height="200" fill="#567b93" filter="url(#mc_hammered_filter)"/>
+        <pattern id="mc_panel_blue" width="280" height="280" patternUnits="userSpaceOnUse">
+          <rect width="280" height="280" fill="#59829b" filter="url(#mccurdyEnamel)"/>
         </pattern>
+        <!-- Authentic McCurdy Solid Walnut / Teak Bridge Overhang Trim (from uploaded_media_0) -->
+        <linearGradient id="mc_wood_top" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#7a4624"/>
+          <stop offset="25%" stop-color="#5e3419"/>
+          <stop offset="60%" stop-color="#462510"/>
+          <stop offset="100%" stop-color="#2c1608"/>
+        </linearGradient>
+        <linearGradient id="mc_wood_shadow" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#000000" stop-opacity="0.6"/>
+          <stop offset="100%" stop-color="#000000" stop-opacity="0"/>
+        </linearGradient>
         <linearGradient id="mc_bezel" x1="0" y1="0" x2="0" y2="1">
           <stop offset="0%" stop-color="#2a2a2c"/><stop offset="100%" stop-color="#141416"/>
         </linearGradient>
@@ -79,6 +93,16 @@ export function renderMcCurdyPanel(): string {
   for (const cx of MX) s += bezel(cx);
 
   s += legend(MC_LEGENDS.input1X, 'INPUT 1', null) + legend(MC_LEGENDS.input2X, 'INPUT 2', MC_LEGENDS.input2LineX0);
+
+  // Solid Walnut / Teak Meter Bridge Overhang Trim (from uploaded_media_0 photo)
+  s += `
+      <!-- Authentic McCurdy Solid Walnut / Teak Bridge Overhang Trim (from uploaded_media_0) -->
+      <g class="mc-only mc-ca-only" pointer-events="none">
+        <rect x="0" y="0" width="${W}" height="20" fill="url(#mc_wood_top)"/>
+        <line x1="0" y1="1" x2="${W}" y2="1" stroke="rgba(255,255,255,0.22)" stroke-width="1.2"/>
+        <line x1="0" y1="20" x2="${W}" y2="20" stroke="#2a1405" stroke-width="1.5"/>
+        <rect x="0" y="20" width="${W}" height="10" fill="url(#mc_wood_shadow)"/>
+      </g>`;
 
   s += `</g>`;
   return s;

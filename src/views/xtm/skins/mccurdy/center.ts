@@ -160,6 +160,19 @@ export function renderMcCurdyCaCenter(): string {
       <!-- Center Console Bay in McCurdy Slate Finish (Seamless, No Border) -->
       <rect x="1350" y="16" width="500" height="398" rx="8" fill="url(#mc_panel_blue)"/>
 
+      <!-- Authentic McCurdy Beveled Diamond Wordmark Emblem (PE1000-A, gemini-code-1795317269161.html) -->
+      <g transform="translate(1600, 48)" pointer-events="none">
+        <polygon points="-46,0 -35,-14 35,-14 46,0 35,14 -35,14" fill="#16191d" stroke="url(#chromeMetalGrad)" stroke-width="2.4" />
+        <polygon points="-41,0 -32,-10 32,-10 41,0 32,10 -32,10" fill="none" stroke="#8c95a0" stroke-width="0.7" />
+        <text x="0" y="4" text-anchor="middle" fill="#e5ebf0" font-family="Georgia, serif" font-style="italic" font-weight="700" font-size="13">McCurdy</text>
+      </g>
+      <!-- Sapphire Blue Pilot Jewel Indicator Light -->
+      <g transform="translate(1785, 48)" pointer-events="none">
+        <circle r="8.5" fill="url(#chromeMetalGrad)" stroke="#1a2530" stroke-width="1"/>
+        <circle r="6" fill="#1e4e79"/>
+        <circle cx="-1.8" cy="-1.8" r="2.2" fill="#a8d8f8" opacity="0.85"/>
+      </g>
+
       <!-- ================================================================= -->
       <!-- MODEL DESIGNATION SILKSCREEN (LOWER LEFT)                         -->
       <!-- ================================================================= -->
