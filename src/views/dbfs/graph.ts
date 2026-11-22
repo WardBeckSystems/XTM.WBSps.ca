@@ -21,12 +21,9 @@ export function drawGraph(v: DbfsView, L: ScopeLayout): boolean {
   // Palette follows the page mode (McCurdy = cream paper)
   const mc = applyThemePalette(v);
 
-  // Clear canvas before drawing (enables translucent / transparent scope background over hammered chassis)
-  ctx.clearRect(0, 0, L.W, L.H);
-  if (v.PAL.bg && v.PAL.bg !== 'transparent') {
-    ctx.fillStyle = v.PAL.bg;
-    ctx.fillRect(0, 0, L.W, L.H);
-  }
+  // Background
+  ctx.fillStyle = v.PAL.bg;
+  ctx.fillRect(0, 0, L.W, L.H);
 
   const grid = activeGridDbs(v);
 
