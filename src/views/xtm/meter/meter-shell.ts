@@ -33,7 +33,7 @@ export function renderMeterShell(id: number, cx: number, cy: number, kind: 'vu' 
   const { fill: fillGrad, ink } = dialPalette(isPpm, isPowered, activeLamp, dialBg);
   const ctx: FaceCtx = { P, arc, ink, isFisam, isSifam: isFisam, x0, y0 };
 
-  let s = `<g id="xtm_meter_group_${id}" class="xtm-meter-group xtm-meter-${id}">
+  let s = `<g id="xtm_meter_group_${id}" class="xtm-meter-group xtm-meter-${id} meter-style-${meterStyle}">
     <clipPath id="xmc${id}"><rect x="${x0}" y="${y0}" width="${MW}" height="${MH}" rx="5"/></clipPath>
     <!-- Strict glass-only aperture clip ensuring fractures never spill onto metal chassis or bezel -->
     <clipPath id="xshatter_clip_${id}"><rect x="${x0 + 6}" y="${y0 + 6}" width="${MW - 12}" height="${MH - 12}" rx="18"/></clipPath>

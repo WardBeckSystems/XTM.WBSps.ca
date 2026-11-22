@@ -10,9 +10,25 @@ const PANEL_DEFS = `<defs>
         <linearGradient id="mc_panel" x1="0" y1="0" x2="0" y2="1">
           <stop offset="0%" stop-color="#e5e1d5"/><stop offset="50%" stop-color="#dedad0"/><stop offset="100%" stop-color="#d2cec2"/>
         </linearGradient>
-        <linearGradient id="mc_panel_blue" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stop-color="#3d566c"/><stop offset="50%" stop-color="#2e4354"/><stop offset="100%" stop-color="#243543"/>
-        </linearGradient>
+        <filter id="mc_hammered_filter" x="0" y="0" width="100%" height="100%" color-interpolation-filters="sRGB">
+          <feTurbulence type="turbulence" baseFrequency="0.28" numOctaves="3" seed="14" result="cells"/>
+          <feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="2" seed="5" result="grain"/>
+          <feGaussianBlur in="cells" stdDeviation="0.35" result="cSmooth"/>
+          <feBlend in="cSmooth" in2="grain" mode="overlay" result="hMap"/>
+          <feDiffuseLighting in="hMap" surfaceScale="4.8" diffuseConstant="1.08" lighting-color="#ffffff" result="diff">
+            <feDistantLight azimuth="230" elevation="54"/>
+          </feDiffuseLighting>
+          <feSpecularLighting in="hMap" surfaceScale="3.8" specularConstant="0.55" specularExponent="18" lighting-color="#dceeff" result="spec">
+            <feDistantLight azimuth="230" elevation="48"/>
+          </feSpecularLighting>
+          <feColorMatrix in="cSmooth" type="matrix" values="0 0 0 0 0.06  0 0 0 0 0.14  0 0 0 0 0.20  0 0 0 0.42 0" result="rings"/>
+          <feBlend in="SourceGraphic" in2="diff" mode="multiply" result="b1"/>
+          <feComposite in="rings" in2="b1" operator="over" result="b2"/>
+          <feComposite in="spec" in2="b2" operator="arithmetic" k1="0" k2="0.55" k3="1" k4="0"/>
+        </filter>
+        <pattern id="mc_panel_blue" width="200" height="200" patternUnits="userSpaceOnUse">
+          <rect width="200" height="200" fill="#567b93" filter="url(#mc_hammered_filter)"/>
+        </pattern>
         <linearGradient id="mc_bezel" x1="0" y1="0" x2="0" y2="1">
           <stop offset="0%" stop-color="#2a2a2c"/><stop offset="100%" stop-color="#141416"/>
         </linearGradient>

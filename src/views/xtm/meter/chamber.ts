@@ -40,6 +40,62 @@ export const CHAMBER_GRADIENTS = `<linearGradient id="xch_top" x1="0" y1="0" x2=
           <stop offset="70%" stop-color="#000000" stop-opacity="0.15"/>
           <stop offset="100%" stop-color="#000000" stop-opacity="0"/>
         </radialGradient>
+        <!-- Photorealistic Simpson / McCurdy Bakelite Body -->
+        <linearGradient id="bakeliteBody" x1="0" y1="0" x2="0.15" y2="1">
+          <stop offset="0%" stop-color="#2b2d30" />
+          <stop offset="4%" stop-color="#111214" />
+          <stop offset="50%" stop-color="#18191c" />
+          <stop offset="94%" stop-color="#0b0c0e" />
+          <stop offset="100%" stop-color="#27292c" />
+        </linearGradient>
+        <!-- Outer Bezel Rim Highlight -->
+        <linearGradient id="bezelRim" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stop-color="#7c828a" />
+          <stop offset="18%" stop-color="#25272b" />
+          <stop offset="82%" stop-color="#141517" />
+          <stop offset="100%" stop-color="#585d63" />
+        </linearGradient>
+        <!-- Inner Window Chrome/Aluminum Bevel Frame -->
+        <linearGradient id="windowBevel" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#3c3f44" />
+          <stop offset="15%" stop-color="#b5b9be" />
+          <stop offset="85%" stop-color="#8b9096" />
+          <stop offset="100%" stop-color="#d2d6dc" />
+        </linearGradient>
+        <!-- Warm Aged Amber/Ochre Dial Face (Vintage Simpson/McCurdy) -->
+        <radialGradient id="dialOchre" cx="50%" cy="62%" r="65%" fx="50%" fy="58%">
+          <stop offset="0%" stop-color="#dfc06f" />
+          <stop offset="68%" stop-color="#cca852" />
+          <stop offset="92%" stop-color="#b7913d" />
+          <stop offset="100%" stop-color="#9c782d" />
+        </radialGradient>
+        <!-- Top Shadow Cast by Upper Bezel Lip onto Dial -->
+        <linearGradient id="dialTopShadow" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#261c08" stop-opacity="0.48" />
+          <stop offset="12%" stop-color="#261c08" stop-opacity="0.12" />
+          <stop offset="28%" stop-color="#261c08" stop-opacity="0" />
+        </linearGradient>
+        <!-- Glass Curved Specular Sheen -->
+        <linearGradient id="glassSheen" x1="0" y1="0" x2="0.25" y2="1">
+          <stop offset="0%" stop-color="#ffffff" stop-opacity="0.16" />
+          <stop offset="35%" stop-color="#ffffff" stop-opacity="0.03" />
+          <stop offset="75%" stop-color="#ffffff" stop-opacity="0" />
+          <stop offset="100%" stop-color="#ffffff" stop-opacity="0.08" />
+        </linearGradient>
+        <!-- Vertical Ribbed Fluting Metallic Ridge Gradient -->
+        <linearGradient id="ribRidge" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0%" stop-color="#101113" />
+          <stop offset="45%" stop-color="#6b7078" />
+          <stop offset="70%" stop-color="#232529" />
+          <stop offset="100%" stop-color="#090a0b" />
+        </linearGradient>
+        <!-- Screw Head Metallic Radial Gradient -->
+        <radialGradient id="screwMetal" cx="38%" cy="35%" r="65%">
+          <stop offset="0%" stop-color="#d4d8de" />
+          <stop offset="55%" stop-color="#7c8189" />
+          <stop offset="85%" stop-color="#3a3d42" />
+          <stop offset="100%" stop-color="#18191c" />
+        </radialGradient>
         <!-- McCurdy Authentic Vintage Parchment Radial Dial Gradient (from gemini-svg (14).svg & photo) -->
         <radialGradient id="xmccurdy_vintage_dial" cx="50%" cy="62%" r="62%">
           <stop offset="0%" stop-color="#f7eed7" />
@@ -135,25 +191,27 @@ export function chamberShadows(x0: number, y0: number): string {
  * Half-moon needle hub cowl removed per specification.
  */
 export function bezelRim(x0: number, y0: number, cx: number = x0 + MW / 2): string {
-  // 1. McCurdyRadio.ca: Full-Thickness Molded Bakelite Bezel with authentic upward-arched bottom window cutout
-  const bx_mc = cx - 304; // 608 wide
-  const by_mc = 47;
-  const bw_mc = 608;
-  const bh_mc = 360; // ends at y=407
-  const br_mc = 14;
+  // 1. McCurdyRadio.ca: Photorealistic Vintage Simpson Art Deco Molded Bakelite Bezel (uploaded_media_0 & gemini-code-1795316540817.html)
+  const bw_mc = 496;
+  const bh_mc = 370; // ends at y=410
+  const bx_mc = cx - 248;
+  const by_mc = 40;
+  const br_mc = 20;
 
-  const wx = cx - 274; // 548 wide, 30px side borders
+  const ww = 444;
+  const wh = 210; // ends at y=275
+  const wx = cx - 222;
   const wy = 65;
-  const ww = 548;
-  const wh = 212; // ends at y=277
-  const wr = 7;
-  const winBot = wy + wh; // 277
+  const wr = 16;
+  const winBot = wy + wh; // 275
 
-  const seamY_mc = 292;
-  const screwY_mc = 344;
+  const mountScrewY = 320;
+  const mountScrewX_L = cx - 146;
+  const mountScrewX_R = cx + 146;
+  const zeroScrewY = 340;
 
-  // Outer housing rectangle with authentic upward-arched lower window cutout (matching gemini-svg (11).svg & photo)
-  const housingPathMc = `M ${bx_mc + br_mc} ${by_mc} h ${bw_mc - 2 * br_mc} a ${br_mc} ${br_mc} 0 0 1 ${br_mc} ${br_mc} v ${bh_mc - 2 * br_mc} a ${br_mc} ${br_mc} 0 0 1 -${br_mc} ${br_mc} h -${bw_mc - 2 * br_mc} a ${br_mc} ${br_mc} 0 0 1 -${br_mc} -${br_mc} v -${bh_mc - 2 * br_mc} a ${br_mc} ${br_mc} 0 0 1 ${br_mc} -${br_mc} Z M ${wx + wr} ${wy} Q ${cx} ${wy - 6} ${wx + ww - wr} ${wy} a ${wr} ${wr} 0 0 1 ${wr} ${wr} L ${wx + ww} ${winBot} Q ${cx} ${winBot - 28} ${wx} ${winBot} L ${wx} ${wy + wr} a ${wr} ${wr} 0 0 1 ${wr} -${wr} Z`;
+  // Outer housing rectangle with window cutout (evenodd rule leaves dial open)
+  const housingPathMc = `M ${bx_mc + br_mc} ${by_mc} h ${bw_mc - 2 * br_mc} a ${br_mc} ${br_mc} 0 0 1 ${br_mc} ${br_mc} v ${bh_mc - 2 * br_mc} a ${br_mc} ${br_mc} 0 0 1 -${br_mc} ${br_mc} h -${bw_mc - 2 * br_mc} a ${br_mc} ${br_mc} 0 0 1 -${br_mc} -${br_mc} v -${bh_mc - 2 * br_mc} a ${br_mc} ${br_mc} 0 0 1 ${br_mc} -${br_mc} Z M ${wx + wr} ${wy} h ${ww - 2 * wr} a ${wr} ${wr} 0 0 1 ${wr} ${wr} v ${wh - 2 * wr} a ${wr} ${wr} 0 0 1 -${wr} ${wr} h -${ww - 2 * wr} a ${wr} ${wr} 0 0 1 -${wr} -${wr} v -${wh - 2 * wr} a ${wr} ${wr} 0 0 1 ${wr} -${wr} Z`;
 
   // 2. Ward-Beck.ca: 1/2 Border & Taller Lower Skirt Bezel (Proportional vintage lower bezel bar)
   const bw_wbs = 612;
@@ -182,70 +240,96 @@ export function bezelRim(x0: number, y0: number, cx: number = x0 + MW / 2): stri
       <rect x="${x0}" y="${y0}" width="${MW}" height="${MH}" rx="28" fill="none" stroke="#0a0c0f" stroke-width="2.5"/>
     </g>
 
-    <!-- McCurdyRadio.ca Vintage 3D Molded Bakelite Bezel Housing (Full Thickness) -->
+    <!-- McCurdyRadio.ca Vintage 3D Molded Bakelite Bezel Housing (Photorealistic Simpson Art Deco) -->
     <g class="vintage-bezel-3d bezel-mc">
-      <!-- Molded Housing Body -->
-      <path fill-rule="evenodd" fill="url(#bezelMoldedGrad)" stroke="#090a0c" stroke-width="1.8" d="${housingPathMc}"/>
+      <!-- Molded Bakelite Housing Body with Window Aperture Cutout -->
+      <path fill-rule="evenodd" fill="url(#bakeliteBody)" stroke="url(#bezelRim)" stroke-width="2.5" d="${housingPathMc}"/>
 
-      <!-- Top Edge Specular Highlight Line -->
-      <path d="M ${bx_mc + 16} ${by_mc + 2} L ${bx_mc + bw_mc - 16} ${by_mc + 2}" stroke="#484d56" stroke-width="1.4" stroke-linecap="round" pointer-events="none"/>
+      <!-- Inner Subtle Chamfer Line -->
+      <rect x="${bx_mc + 5}" y="${by_mc + 5}" width="${bw_mc - 10}" height="${bh_mc - 10}" rx="16" fill="none" stroke="#484d56" stroke-width="0.8" opacity="0.65" pointer-events="none"/>
 
-      <!-- Molded Flange Perimeter Groove -->
-      <rect x="${bx_mc + 6}" y="${by_mc + 6}" width="${bw_mc - 12}" height="${bh_mc - 12}" rx="${br_mc - 3}" fill="none" stroke="#25272c" stroke-width="1.0" pointer-events="none"/>
+      <!-- Window Chrome/Aluminum Bevel Frame & Rim -->
+      <rect x="${wx - 3}" y="${wy - 3}" width="${ww + 6}" height="${wh + 6}" rx="18" fill="url(#windowBevel)" pointer-events="none"/>
+      <rect x="${wx}" y="${wy}" width="${ww}" height="${wh}" rx="15" fill="none" stroke="#18191b" stroke-width="1.5" pointer-events="none"/>
 
-      <!-- Inner Stepped Recessed Window Frame Rim with arched bottom contour -->
-      <path d="M ${wx - 2 + wr} ${wy - 2} Q ${cx} ${wy - 8} ${wx + ww + 2 - wr} ${wy - 2} a ${wr + 2} ${wr + 2} 0 0 1 ${wr + 2} ${wr + 2} L ${wx + ww + 2} ${winBot + 2} Q ${cx} ${winBot - 26} ${wx - 2} ${winBot + 2} L ${wx - 2} ${wy - 2 + wr} a ${wr + 2} ${wr + 2} 0 0 1 ${wr + 2} -${wr + 2} Z" fill="none" stroke="#08090b" stroke-width="2.5" pointer-events="none"/>
-      <path d="M ${wx + wr} ${wy} Q ${cx} ${wy - 6} ${wx + ww - wr} ${wy} a ${wr} ${wr} 0 0 1 ${wr} ${wr} L ${wx + ww} ${winBot} Q ${cx} ${winBot - 28} ${wx} ${winBot} L ${wx} ${wy + wr} a ${wr} ${wr} 0 0 1 ${wr} -${wr} Z" fill="none" stroke="#2b2e34" stroke-width="1.4" stroke-opacity="0.85" pointer-events="none"/>
-
-      <!-- Window Inner Shadows & Specular Glass Reflection Sheen (Casts deep corner shadow over red lettering) -->
-      <rect x="${wx}" y="${wy}" width="${ww}" height="22" fill="url(#xch_top)" pointer-events="none"/>
-      <rect x="${wx}" y="${winBot - 18}" width="${ww}" height="18" fill="url(#xch_bot)" pointer-events="none"/>
-      <rect x="${wx}" y="${wy}" width="20" height="${wh}" fill="url(#xch_left)" pointer-events="none"/>
-      <rect x="${wx + ww - 70}" y="${wy}" width="70" height="${wh}" fill="url(#xch_right_wbs)" pointer-events="none"/>
-      <rect x="${wx + ww - 165}" y="${wy}" width="165" height="155" fill="url(#xch_corner_tr)" pointer-events="none"/>
-      <rect x="${wx}" y="${wy}" width="140" height="130" fill="url(#xch_corner_tl)" pointer-events="none"/>
-      <path d="M ${wx + 6} ${wy + 6} L ${wx + ww * 0.65} ${wy + 6} L ${wx + 6} ${winBot - 12} Z" fill="url(#meterGlassSheenGrad)" pointer-events="none"/>
-
-      <!-- Lower Skirt Molded Horizontal Seam Line -->
-      <line x1="${bx_mc + 2}" y1="${seamY_mc}" x2="${bx_mc + bw_mc - 2}" y2="${seamY_mc}" stroke="#0c0d0f" stroke-width="2.0" pointer-events="none"/>
-      <line x1="${bx_mc + 2}" y1="${seamY_mc + 1.8}" x2="${bx_mc + bw_mc - 2}" y2="${seamY_mc + 1.8}" stroke="#2c2f36" stroke-width="1.1" pointer-events="none"/>
-
-      <!-- Authentic Fluted Lower Skirt Vent Grooves (gemini-svg (14).svg) -->
-      <g stroke="#121316" stroke-width="2.4" pointer-events="none">
-        <line x1="${bx_mc + 38}" y1="${seamY_mc + 10}" x2="${bx_mc + 38}" y2="${bh_mc + by_mc - 16}" />
-        <line x1="${bx_mc + 52}" y1="${seamY_mc + 12}" x2="${bx_mc + 52}" y2="${bh_mc + by_mc - 14}" />
-        <line x1="${bx_mc + bw_mc - 52}" y1="${seamY_mc + 12}" x2="${bx_mc + bw_mc - 52}" y2="${bh_mc + by_mc - 14}" />
-        <line x1="${bx_mc + bw_mc - 38}" y1="${seamY_mc + 10}" x2="${bx_mc + bw_mc - 38}" y2="${bh_mc + by_mc - 16}" />
+      <!-- Top Dial Plate Mounting Rivets (Securing Ochre Dial Plate Inside Window) -->
+      <g transform="translate(${cx - 128}, ${wy + 13})" pointer-events="none">
+        <circle cx="0" cy="1.2" r="4.8" fill="#4f3d17" opacity="0.55"/>
+        <circle cx="0" cy="0" r="4.2" fill="url(#screwMetal)" stroke="#3e3116" stroke-width="0.7"/>
+        <line x1="-3" y1="-0.8" x2="3" y2="0.8" stroke="#222428" stroke-width="1.1"/>
       </g>
-      <g stroke="#484d56" stroke-width="1.0" pointer-events="none">
-        <line x1="${bx_mc + 39.5}" y1="${seamY_mc + 10}" x2="${bx_mc + 39.5}" y2="${bh_mc + by_mc - 16}" />
-        <line x1="${bx_mc + 53.5}" y1="${seamY_mc + 12}" x2="${bx_mc + 53.5}" y2="${bh_mc + by_mc - 14}" />
-        <line x1="${bx_mc + bw_mc - 50.5}" y1="${seamY_mc + 12}" x2="${bx_mc + bw_mc - 50.5}" y2="${bh_mc + by_mc - 14}" />
-        <line x1="${bx_mc + bw_mc - 36.5}" y1="${seamY_mc + 10}" x2="${bx_mc + bw_mc - 36.5}" y2="${bh_mc + by_mc - 16}" />
+      <g transform="translate(${cx + 128}, ${wy + 13})" pointer-events="none">
+        <circle cx="0" cy="1.2" r="4.8" fill="#4f3d17" opacity="0.55"/>
+        <circle cx="0" cy="0" r="4.2" fill="url(#screwMetal)" stroke="#3e3116" stroke-width="0.7"/>
+        <line x1="-2.6" y1="1.7" x2="2.6" y2="-1.7" stroke="#222428" stroke-width="1.1"/>
       </g>
 
-      <!-- Corner Mounting Screws (gemini-svg (14).svg) -->
-      <g transform="translate(${cx - 208}, ${screwY_mc})">
-        <circle cx="0" cy="0" r="14" fill="#121314"/>
-        <circle cx="0" cy="0" r="11" fill="url(#screwGrad)"/>
-        <line x1="-8" y1="-5" x2="8" y2="5" stroke="#111213" stroke-width="2.6"/>
-        <line x1="-7.5" y1="-4" x2="8.5" y2="6" stroke="#525658" stroke-width="1.0"/>
-      </g>
-      <g transform="translate(${cx + 208}, ${screwY_mc})">
-        <circle cx="0" cy="0" r="14" fill="#121314"/>
-        <circle cx="0" cy="0" r="11" fill="url(#screwGrad)"/>
-        <line x1="7" y1="-7" x2="-7" y2="7" stroke="#111213" stroke-width="2.6"/>
-        <line x1="7.8" y1="-6.2" x2="-6.2" y2="7.8" stroke="#525658" stroke-width="1.0"/>
+      <!-- Window Glass Top Shadow & Specular Curved Sheen -->
+      <rect x="${wx}" y="${wy}" width="${ww}" height="${wh}" rx="15" fill="url(#dialTopShadow)" pointer-events="none"/>
+      <rect x="${wx}" y="${wy}" width="${ww}" height="${wh}" rx="15" fill="url(#glassSheen)" pointer-events="none"/>
+
+      <!-- Stepped Art Deco Corner Flutes (Left Lower Corner) -->
+      <g pointer-events="none">
+        <!-- Outer Flute (tallest) -->
+        <rect x="${bx_mc + 15.5}" y="280" width="5.2" height="124" rx="2" fill="#090a0c"/>
+        <rect x="${bx_mc + 16}" y="280" width="4.2" height="124" rx="1.5" fill="url(#ribRidge)"/>
+        <!-- Middle Flute -->
+        <rect x="${bx_mc + 23.5}" y="310" width="5.2" height="94" rx="2" fill="#090a0c"/>
+        <rect x="${bx_mc + 24}" y="310" width="4.2" height="94" rx="1.5" fill="url(#ribRidge)"/>
+        <!-- Inner Flute (shortest) -->
+        <rect x="${bx_mc + 31.5}" y="338" width="5.2" height="66" rx="2" fill="#090a0c"/>
+        <rect x="${bx_mc + 32}" y="338" width="4.2" height="66" rx="1.5" fill="url(#ribRidge)"/>
       </g>
 
-      <!-- Mechanical Zero-Adjust Trimmer Screw Assembly in Center of Skirt -->
-      <g class="trim-screw-interactive" transform="translate(${cx}, ${screwY_mc})">
-        <circle cx="0" cy="0" r="18" fill="#0d0e10" stroke="#2c2f36" stroke-width="1.3"/>
-        <circle cx="0" cy="0" r="16.5" fill="none" stroke="#08090a" stroke-width="0.9"/>
-        <g transform="rotate(-38)">
-          <circle cx="0" cy="0" r="14.2" fill="url(#trimScrewHeadGrad)" stroke="#111214" stroke-width="1.1"/>
-          <rect x="-12.5" y="-2.0" width="25" height="4.0" rx="0.9" fill="#090a0c"/>
-          <line x1="-11.8" y1="2.1" x2="11.8" y2="2.1" stroke="#4e525b" stroke-width="0.8"/>
+      <!-- Stepped Art Deco Corner Flutes (Right Lower Corner) -->
+      <g pointer-events="none">
+        <!-- Inner Flute (shortest) -->
+        <rect x="${bx_mc + bw_mc - 36.5}" y="338" width="5.2" height="66" rx="2" fill="#090a0c"/>
+        <rect x="${bx_mc + bw_mc - 36}" y="338" width="4.2" height="66" rx="1.5" fill="url(#ribRidge)"/>
+        <!-- Middle Flute -->
+        <rect x="${bx_mc + bw_mc - 28.5}" y="310" width="5.2" height="94" rx="2" fill="#090a0c"/>
+        <rect x="${bx_mc + bw_mc - 28}" y="310" width="4.2" height="94" rx="1.5" fill="url(#ribRidge)"/>
+        <!-- Outer Flute (tallest) -->
+        <rect x="${bx_mc + bw_mc - 20.5}" y="280" width="5.2" height="124" rx="2" fill="#090a0c"/>
+        <rect x="${bx_mc + bw_mc - 20}" y="280" width="4.2" height="124" rx="1.5" fill="url(#ribRidge)"/>
+      </g>
+
+      <!-- Center Fluted Zero-Adjust Pedestal with Vertical Ridges -->
+      <g pointer-events="none">
+        <rect x="${cx - 22}" y="275" width="44" height="131" rx="2" fill="#0d0e10" stroke="#090a0c" stroke-width="1"/>
+        <rect x="${cx - 19}" y="275" width="3.8" height="130" rx="1.5" fill="url(#ribRidge)"/>
+        <rect x="${cx - 12}" y="275" width="3.8" height="130" rx="1.5" fill="url(#ribRidge)"/>
+        <rect x="${cx - 5}" y="275" width="3.8" height="130" rx="1.5" fill="url(#ribRidge)"/>
+        <rect x="${cx + 2}" y="275" width="3.8" height="130" rx="1.5" fill="url(#ribRidge)"/>
+        <rect x="${cx + 9}" y="275" width="3.8" height="130" rx="1.5" fill="url(#ribRidge)"/>
+        <rect x="${cx + 16}" y="275" width="3.8" height="130" rx="1.5" fill="url(#ribRidge)"/>
+      </g>
+
+      <!-- Left Lower Mounting Screw -->
+      <g transform="translate(${mountScrewX_L}, ${mountScrewY})" pointer-events="none">
+        <circle cx="0" cy="0" r="13" fill="#090a0c" stroke="#3b3e44" stroke-width="1.2"/>
+        <circle cx="0" cy="0" r="10.2" fill="url(#screwMetal)"/>
+        <rect x="-1.4" y="-8.5" width="2.8" height="17" fill="#16181b" transform="rotate(-15)"/>
+        <line x1="1.2" y1="-8" x2="1.2" y2="8" stroke="#7c8189" stroke-width="0.7" transform="rotate(-15)"/>
+      </g>
+
+      <!-- Right Lower Mounting Screw -->
+      <g transform="translate(${mountScrewX_R}, ${mountScrewY})" pointer-events="none">
+        <circle cx="0" cy="0" r="13" fill="#090a0c" stroke="#3b3e44" stroke-width="1.2"/>
+        <circle cx="0" cy="0" r="10.2" fill="url(#screwMetal)"/>
+        <rect x="-1.4" y="-8.5" width="2.8" height="17" fill="#16181b" transform="rotate(25)"/>
+        <line x1="1.2" y1="-8" x2="1.2" y2="8" stroke="#7c8189" stroke-width="0.7" transform="rotate(25)"/>
+      </g>
+
+      <!-- Recessed Mechanical Zero-Adjust Trimmer Screw Assembly in Center Pedestal -->
+      <g class="trim-screw-interactive" transform="translate(${cx}, ${zeroScrewY})" style="cursor: pointer;">
+        <title>Mechanical Zero-Adjust Trimmer</title>
+        <circle cx="0" cy="0" r="16.5" fill="#090a0c" stroke="#4a4e56" stroke-width="1.4"/>
+        <circle cx="0" cy="0" r="14.8" fill="#121316"/>
+        <g transform="rotate(-6)">
+          <circle cx="0" cy="0" r="12.5" fill="url(#screwMetal)" stroke="#1a1c20" stroke-width="0.8"/>
+          <rect x="-10" y="-1.6" width="20" height="3.2" rx="0.5" fill="#16181b"/>
+          <line x1="-9" y1="1.8" x2="9" y2="1.8" stroke="#7c8189" stroke-width="0.7"/>
         </g>
       </g>
 

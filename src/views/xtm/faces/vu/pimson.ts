@@ -11,8 +11,16 @@ import { VU_RED } from './vu-scale';
 
 function legend(ctx: FaceCtx): string {
   const { ink, x0, y0 } = ctx;
-  return `<text x="${(x0 + 56).toFixed(0)}" y="${y0 + 58}" font-size="26" font-weight="800" fill="${ink}">VU</text>
-              <text x="${(x0 + MW - 56).toFixed(0)}" y="${y0 + 58}" font-size="26" font-weight="800" fill="${VU_RED}" text-anchor="end">VU</text>`;
+  const cx = x0 + MW / 2;
+  return `<text x="${(cx - 165).toFixed(0)}" y="${y0 + 58}" font-size="26" font-weight="800" fill="${ink}">VU</text>
+              <text x="${(cx + 165).toFixed(0)}" y="${y0 + 58}" font-size="26" font-weight="800" fill="${VU_RED}" text-anchor="end">VU</text>
+              <!-- Vintage Simpson Script Logo & Flourish Underline -->
+              <g transform="translate(${cx.toFixed(0)}, ${y0 + 120})" fill="none" stroke="${ink}" stroke-linecap="round" stroke-linejoin="round">
+                <text x="0" y="0" text-anchor="middle" fill="${ink}" stroke="none"
+                      font-family="'Brush Script MT', 'Snell Roundhand', 'Segoe Script', Georgia, serif"
+                      font-style="italic" font-size="25" letter-spacing="0.2">Simpson</text>
+                <path d="M -26,4 C -14,3 16,3 28,4" stroke="${ink}" stroke-width="1.3" />
+              </g>`;
 }
 
 /** Slender shaft swelling into a teardrop bulb, tapering to a knife-edge tip */

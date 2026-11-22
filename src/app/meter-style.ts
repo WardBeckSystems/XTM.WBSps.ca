@@ -15,7 +15,7 @@ export function getMeterKey(): string {
 }
 
 export function getDefaultMeterForMode(): string {
-  if (document.body.classList.contains('theme-mccurdy-dark')) return 'wbs_m405'; // mccurdy.ca: the orange needle
+  if (document.body.classList.contains('theme-mccurdy-dark')) return 'pimson'; // mccurdy.ca: vintage Simpson VU meter
   if (document.body.classList.contains('theme-mccurdy')) return 'fisam';       // Mccurdy.com: the sifam with minimal lighting
   if (document.body.classList.contains('theme-wbs-ca')) return 'mccurdy_vu';   // wardbeck.ca: the spade VU
   return 'fisam';                                                              // Wardbeck.com: the sifam

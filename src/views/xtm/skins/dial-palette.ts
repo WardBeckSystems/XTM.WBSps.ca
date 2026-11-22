@@ -16,6 +16,7 @@ export function dialPalette(isPpm: boolean, isPowered: boolean, dialLamp: string
   let fill = '#171512';
   let ink = '#141008';
   const isWbsCa = typeof document !== 'undefined' && document.body?.classList.contains('theme-wbs-ca');
+  const isMcCurdyDark = typeof document !== 'undefined' && document.body?.classList.contains('theme-mccurdy-dark');
   const activeLamp = (isWbsCa && dialLamp === 'amber') ? 'amber_bottom' : dialLamp;
   if (isPpm) {
     if (!isPowered) {
@@ -68,12 +69,20 @@ export function dialPalette(isPpm: boolean, isPowered: boolean, dialLamp: string
         fill = lampFill(activeLamp);
         if (activeLamp === 'dark_night') ink = '#f8fafc';
       }
+    } else if (isMcCurdyDark) {
+      fill = 'url(#dialOchre)';
+      ink = '#201c15';
     } else {
       fill = lampFill(activeLamp);
       if (activeLamp === 'dark_night') ink = '#f8fafc';
     }
   } else {
-    ink = '#0c0a06';
+    if (isMcCurdyDark) {
+      fill = '#685426';
+      ink = '#15130f';
+    } else {
+      ink = '#0c0a06';
+    }
   }
   return { fill, ink };
 }

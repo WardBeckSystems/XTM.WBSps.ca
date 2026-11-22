@@ -13,12 +13,19 @@ body.theme-mccurdy-dark .modern-bezel { display: none !important; }
 
 body.theme-mccurdy-dark {
   --bg-deep: #16222c;
-  --bg-panel: #263847;
+  --bg-panel: #567b93;
   --border-subtle: #3d566c;
   --ink-primary: #f8fafc;
   --ink-secondary: #cbd5e1;
   --ink-muted: #94a3b8;
   --accent: #3892d4;
+}
+
+body.theme-mccurdy-dark .console-viewport,
+body.theme-mccurdy-dark .meter-stack {
+  background-color: #567b93;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cdefs%3E%3Cfilter id='h' x='0' y='0' width='100%25' height='100%25' color-interpolation-filters='sRGB'%3E%3CfeTurbulence type='turbulence' baseFrequency='0.28' numOctaves='3' seed='14' result='cells'/%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' seed='5' result='grain'/%3E%3CfeGaussianBlur in='cells' stdDeviation='0.35' result='cSmooth'/%3E%3CfeBlend in='cSmooth' in2='grain' mode='overlay' result='hMap'/%3E%3CfeDiffuseLighting in='hMap' surfaceScale='4.8' diffuseConstant='1.08' lighting-color='%23ffffff' result='diff'%3E%3CfeDistantLight azimuth='230' elevation='54'/%3E%3C/feDiffuseLighting%3E%3CfeSpecularLighting in='hMap' surfaceScale='3.8' specularConstant='0.55' specularExponent='18' lighting-color='%23dceeff' result='spec'%3E%3CfeDistantLight azimuth='230' elevation='48'/%3E%3C/feSpecularLighting%3E%3CfeColorMatrix in='cSmooth' type='matrix' values='0 0 0 0 0.06  0 0 0 0 0.14  0 0 0 0 0.20  0 0 0 0.42 0' result='rings'/%3E%3CfeBlend in='SourceGraphic' in2='diff' mode='multiply' result='b1'/%3E%3CfeComposite in='rings' in2='b1' operator='over' result='b2'/%3E%3CfeComposite in='spec' in2='b2' operator='arithmetic' k1='0' k2='0.55' k3='1' k4='0'/%3E%3C/filter%3E%3C/defs%3E%3Crect width='200' height='200' fill='%23567b93' filter='url(%23h)'/%3E%3C/svg%3E");
+  background-size: 200px 200px;
 }
 
 html:has(body.theme-mccurdy-dark) { background-color: #16222c; }
@@ -156,4 +163,10 @@ body.theme-mccurdy-dark .mc-rack-flange {
 .mc-selector-btn.mc-btn-latched .mc-btn-label {
   fill: #ffffff !important;
   font-weight: 900 !important;
+}
+
+/* When Simpson meter is active, Simpson script logo is part of dial, suppress overlay brand badge */
+.meter-style-pimson .mc-vu-brand-badge,
+.meter-style-simpson .mc-vu-brand-badge {
+  display: none !important;
 }
