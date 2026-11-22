@@ -1063,7 +1063,7 @@ HTML_UI = """<!DOCTYPE html>
     align-items: start;
     margin-bottom: 10px;
   }
-  @media (max-width: 1480px) {
+  @media (max-width: 1280px) {
     .console-layout { grid-template-columns: 460px 1fr; }
     .console-right-flank { grid-column: 1 / -1; }
   }
@@ -1459,6 +1459,60 @@ HTML_UI = """<!DOCTYPE html>
   .abb-led-pill.lit-cyan { background: #082f49; border-color: #38bdf8; color: #7dd3fc; box-shadow: 0 0 8px rgba(56, 189, 248, 0.4); }
   .abb-led-pill.lit-orange { background: #431407; border-color: #f97316; color: #fdba74; box-shadow: 0 0 8px rgba(249, 115, 22, 0.4); }
   .abb-led-pill.lit-red { background: #450a0a; border-color: #ef4444; color: #fca5a5; box-shadow: 0 0 8px rgba(239, 68, 68, 0.4); }
+
+  /* Authentic Specular Reflective Aluminum Console Finishes */
+  body.theme-wbs-ca .console-tab {
+    background: linear-gradient(180deg, #fbf9f2 0%, #eeebe1 50%, #dedad0 100%);
+    border: 1px solid #9e9a89;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.7), 0 1px 2px rgba(0, 0, 0, 0.08);
+    color: #475569;
+  }
+  body.theme-wbs-ca .console-tab:hover {
+    background: linear-gradient(180deg, #ffffff 0%, #f4f1e7 50%, #e6e2d4 100%);
+    color: #1e293b;
+    border-color: #ea580c;
+  }
+  body.theme-wbs-ca .console-tab.active {
+    background: linear-gradient(180deg, #ffffff 0%, #f6f3eb 50%, #eae5d7 100%);
+    border-color: #ea580c;
+    color: #1e293b;
+    box-shadow: inset 0 2px 0 #ea580c, inset 0 1px 0 rgba(255,255,255,0.9), 0 2px 6px rgba(0,0,0,0.12);
+    font-weight: 800;
+  }
+  body.theme-wbs-ca .ctrl-btn {
+    background: linear-gradient(180deg, #fbf9f2 0%, #eeebe1 50%, #dedad0 100%);
+    border: 1px solid #9e9a89;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.7), 0 1px 2px rgba(0, 0, 0, 0.08);
+    color: #1e293b;
+  }
+  body.theme-wbs-ca .ctrl-btn:hover {
+    background: linear-gradient(180deg, #ffffff 0%, #f4f1e7 50%, #e6e2d4 100%);
+    border-color: #ea580c;
+  }
+  body.theme-wbs-ca .ctrl-btn.active {
+    background: linear-gradient(180deg, #ea580c 0%, #c2410c 100%);
+    color: #ffffff;
+    border-color: #9a3412;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4), 0 2px 4px rgba(234, 88, 12, 0.35);
+  }
+  body.theme-wbs-ca .mxl-eye-card,
+  body.theme-wbs-ca .right-flank-card,
+  body.theme-wbs-ca .pipeline-card,
+  body.theme-wbs-ca .abb-card,
+  body.theme-wbs-ca .source-card {
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.8), 0 2px 6px rgba(0, 0, 0, 0.08);
+  }
+  body.theme-wbs-ca .vu-bezel-side {
+    background: linear-gradient(135deg, #f5f2e6 0%, #dedad0 30%, #c4bead 70%, #9e9a89 100%);
+    border: 2px solid #8c897b;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9), 0 4px 12px rgba(0, 0, 0, 0.2);
+  }
+  body.theme-wbs-ca .vu-dial-side {
+    background: #faf8ed;
+    border: 1px solid #b8b4a4;
+    box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.15);
+  }
+
 </style>
 </head>
 <body>
@@ -3128,6 +3182,26 @@ setInterval(fetchWaveform, 150);
 fetchWaveform();
 setInterval(pollStatus, 70);
 pollStatus();
+
+// Restore remembered preferences across browser sessions
+try {
+  const savedTab = localStorage.getItem('wbs_active_tab');
+  if (savedTab) switchTab(savedTab);
+  
+  const savedEyeFlow = localStorage.getItem('wbs_eye_flow');
+  if (savedEyeFlow) switchEyeFlow(savedEyeFlow);
+  
+  const savedFilter = localStorage.getItem('wbs_matrix_filter');
+  if (savedFilter) filterMatrixType(savedFilter);
+
+  const savedAbbPat = localStorage.getItem('wbs_abb_pattern');
+  if (savedAbbPat) {
+    ['tone', 'walk1s', 'prbs', 'minmax'].forEach(p => {
+      const b = document.getElementById(`btn-abb-${p}`);
+      if (b) b.className = (p === savedAbbPat) ? 'ctrl-btn active' : 'ctrl-btn';
+    });
+  }
+} catch(e) {}
 </script>
 </body>
 </html>
