@@ -32,7 +32,7 @@ export interface XmxlFlowInfo {
 export interface XmxlInstance {
   id: string;
   name: string;
-  type: 'wbs-router' | 'mxl-generator' | 'mxl-receiver' | 'mxl-player' | 'mxl-gui' | 'wbs-dsp' | 'apk-node';
+  type: 'wbs-router' | 'mxl-generator' | 'mxl-receiver' | 'mxl-player' | 'mxl-gui' | 'wbs-dsp' | 'apk-node' | 'nmos-node';
   port: number;
   baseUrl: string;
   domainId?: string;
@@ -247,6 +247,112 @@ async function probeTarget(target: ProbeTarget): Promise<XmxlInstance | null> {
   return null;
 }
 
+interface NmosProbeTarget {
+  host: string;
+  port: number;
+  type: 'nmos-node';
+  defaultName: string;
+}
+
+const NMOS_TARGETS: NmosProbeTarget[] = [
+  { host: '44.44.44.158', port: 80, type: 'nmos-node', defaultName: 'WBS-32me (uNet2500)' },
+  { host: 'WBS-32me.local', port: 80, type: 'nmos-node', defaultName: 'WBS-32me' },
+];
+
+/** Probes local daemon (port 8467 /api/nmos) for discovered NMOS announcements */
+async function probeNmosFromHost(): Promise<XmxlInstance[]> {
+  const hosts = ['127.0.0.1', 'localhost'];
+  for (const host of hosts) {
+    try {
+      const res = await fetchWithTimeout(`http://${host}:8467/api/nmos`, { method: 'GET' }, 600);
+      if (!res.ok) continue;
+      const data = await res.json();
+      if (!data.nodes || !Array.isArray(data.nodes) || data.nodes.length === 0) continue;
+
+      return data.nodes.map((n: any) => {
+        const nodeLbl = n.node?.hostname || n.node?.label || n.ip;
+        return {
+          id: `nmos-${n.ip.replace(/\./g, '-')}`,
+          name: `NMOS IS-04: ${nodeLbl} (${n.node?.label || 'AES67 / ST 2110-30'})`,
+          type: 'nmos-node' as const,
+          port: n.port || 80,
+          baseUrl: `http://${n.ip}:${n.port}`,
+          domainId: 'nmos-is04',
+          domainLabel: 'NMOS IS-04 Broadcast Network',
+          status: 'online' as const,
+          latencyMs: 6,
+          lastSeen: Date.now(),
+          flows: (n.flows || []).map((flw: any) => {
+            const channels = parseInt(flw.tags?.channels?.[0] || '8', 10);
+            const rate = parseInt(flw.tags?.clockRate?.[0] || '48000', 10);
+            const fmt = flw.tags?.encodingName?.[0] || 'L24';
+            return {
+              flowId: flw.id,
+              label: `${flw.label || flw.id.substring(0, 8)} (${channels}ch ${fmt} @ ${rate}Hz)`,
+              mediaType: `audio/${fmt}`,
+              sampleRate: rate,
+              channelCount: channels,
+              bufferLength: 480000,
+              quantum: 256,
+            };
+          }),
+        };
+      });
+    } catch (_) {}
+  }
+  return [];
+}
+
+/** Directly probes hardware NMOS node on the broadcast subnet (e.g. 44.44.44.158) */
+async function probeDirectNmos(target: NmosProbeTarget): Promise<XmxlInstance | null> {
+  const url = `http://${target.host}:${target.port}/x-nmos/v1.0/node/self`;
+  try {
+    const res = await fetchWithTimeout(url, { method: 'GET' }, 700);
+    if (!res.ok) return null;
+    const self = await res.json();
+    let flows: XmxlFlowInfo[] = [];
+
+    try {
+      const fRes = await fetchWithTimeout(`http://${target.host}:${target.port}/x-nmos/v1.0/node/flows`, { method: 'GET' }, 700);
+      if (fRes.ok) {
+        const fData = await fRes.json();
+        if (Array.isArray(fData)) {
+          flows = fData.map((flw: any) => {
+            const channels = parseInt(flw.tags?.channels?.[0] || '8', 10);
+            const rate = parseInt(flw.tags?.clockRate?.[0] || '48000', 10);
+            const fmt = flw.tags?.encodingName?.[0] || 'L24';
+            return {
+              flowId: flw.id,
+              label: `${flw.label || flw.id.substring(0, 8)} (${channels}ch ${fmt} @ ${rate}Hz)`,
+              mediaType: `audio/${fmt}`,
+              sampleRate: rate,
+              channelCount: channels,
+              bufferLength: 480000,
+              quantum: 256,
+            };
+          });
+        }
+      }
+    } catch (_) {}
+
+    return {
+      id: `nmos-${target.host.replace(/[\.:]/g, '-')}`,
+      name: `NMOS IS-04: ${self.hostname || self.label || target.defaultName}`,
+      type: 'nmos-node' as const,
+      port: target.port,
+      baseUrl: `http://${target.host}:${target.port}`,
+      domainId: 'nmos-is04',
+      domainLabel: 'NMOS IS-04 Broadcast Network',
+      flows,
+      status: 'online' as const,
+      latencyMs: 10,
+      lastSeen: Date.now(),
+    };
+  } catch (_) {
+    return null;
+  }
+}
+
 /** Executes an active scan across all candidate ports */
 export async function scanXmxlInstances(): Promise<XmxlInstance[]> {
   if (isScanning) return discoveredInstances;
@@ -254,8 +360,19 @@ export async function scanXmxlInstances(): Promise<XmxlInstance[]> {
 
   try {
     const probePromises = CANDIDATE_TARGETS.map((t) => probeTarget(t));
-    const results = await Promise.all(probePromises);
-    const validInstances = results.filter((r): r is XmxlInstance => r !== null);
+    const [probeResults, hostNmos, directNmos] = await Promise.all([
+      Promise.all(probePromises),
+      probeNmosFromHost(),
+      probeDirectNmos(NMOS_TARGETS[0]),
+    ]);
+
+    const validInstances = probeResults.filter((r): r is XmxlInstance => r !== null);
+    const nmosNodes = hostNmos.length > 0 ? hostNmos : (directNmos ? [directNmos] : []);
+    for (const n of nmosNodes) {
+      if (!validInstances.some((inst) => inst.id === n.id)) {
+        validInstances.push(n);
+      }
+    }
 
     // Merge or update instances
     discoveredInstances = validInstances;

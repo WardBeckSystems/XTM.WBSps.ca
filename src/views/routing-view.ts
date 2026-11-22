@@ -37,12 +37,15 @@ export class RoutingCanvasView {
   // Rows: 0: Soundcard, 1: System Audio, 2: POD-33 Tone, 3: Bit Buddy, 4: Pink Noise
   // Cols: 0: XTM-4 Master, 1: POD-22 Loudness, 2: Speakers, 3: Headphones, 4: Test Point
   matrix: boolean[][] = [
-    [false, false, false, false, false], // In 0: Soundcard
-    [true,  true,  true,  false, false], // In 1: System Audio (Default active)
-    [false, false, false, false, false], // In 2: POD-33 Tone
-    [false, false, false, false, false], // In 3: Bit Buddy
-    [false, false, false, false, false], // In 4: Pink Noise
+    [true,  true,  false, false, false], // In 0: Soundcard (safe from speaker feedback)
+    [true,  true,  true,  false, false], // In 1: System Audio (Default active -> Speakers ON)
+    [true,  true,  true,  false, false], // In 2: POD-33 Tone (Speakers ON)
+    [true,  true,  true,  false, false], // In 3: Bit Buddy (Speakers ON)
+    [true,  true,  true,  false, false], // In 4: Pink Noise (Speakers ON)
   ];
+
+  outMutes: boolean[] = [false, false, false, false, false];
+  outDims: boolean[] = [false, false, false, false, false];
 
   activeInput: number = 1; // 1 = System Audio default
 
@@ -630,11 +633,46 @@ export class RoutingCanvasView {
         this.updateBitBuddyState();
       });
     });
+
+    // 6. Output Strip Mute & Dim Controls
+    this.container.querySelectorAll('[data-out-mute]').forEach((btn) => {
+      btn.addEventListener('click', (e) => {
+        const target = e.currentTarget as HTMLElement;
+        const idx = parseInt(target.getAttribute('data-out-mute') || '0', 10);
+        this.outMutes[idx] = !this.outMutes[idx];
+        target.classList.toggle('active', this.outMutes[idx]);
+        target.textContent = this.outMutes[idx] ? 'MUTED' : 'MUTE';
+        if ((idx === 2 || idx === 3) && this.ctx && this.ctx.audio) {
+          const isConnected = this.matrix[this.activeInput][2] || this.matrix[this.activeInput][3];
+          this.ctx.audio.setMonitor(isConnected && !this.outMutes[2], this.outDims[2] ? 0.1 : 0.8);
+        }
+      });
+    });
+
+    this.container.querySelectorAll('[data-out-dim]').forEach((btn) => {
+      btn.addEventListener('click', (e) => {
+        const target = e.currentTarget as HTMLElement;
+        const idx = parseInt(target.getAttribute('data-out-dim') || '0', 10);
+        this.outDims[idx] = !this.outDims[idx];
+        target.classList.toggle('active', this.outDims[idx]);
+        if ((idx === 2 || idx === 3) && this.ctx && this.ctx.audio) {
+          this.ctx.audio.setMonitorVolume(this.outDims[2] ? 0.1 : 0.8);
+        }
+      });
+    });
   }
 
   private toggleCrosspoint(row: number, col: number): void {
     this.matrix[row][col] = !this.matrix[row][col];
     this.updateMatrixVisuals();
+
+    // If speaker or cue output was toggled for active source, update soundcard monitor output
+    if (row === this.activeInput && (col === 2 || col === 3)) {
+      if (this.ctx && this.ctx.audio) {
+        const isConnected = this.matrix[row][2] || this.matrix[row][3];
+        this.ctx.audio.setMonitor(isConnected && !this.outMutes[2], this.outDims[2] ? 0.1 : 0.8);
+      }
+    }
 
     // If row is activated and connected to Master (col 0), engage source
     if (this.matrix[row][0]) {
@@ -646,6 +684,10 @@ export class RoutingCanvasView {
     this.activeInput = idx;
     if (!this.ctx || !this.ctx.audio) return;
     const audio = this.ctx.audio;
+
+    if (audio.ctx && audio.ctx.state === 'suspended') {
+      audio.ctx.resume().catch(() => {});
+    }
 
     if (idx === 0) {
       // Soundcard
@@ -672,6 +714,14 @@ export class RoutingCanvasView {
       this.pod33Engaged = false;
       this.bitBuddyEngaged = false;
       audio.startTestGenerator('pink');
+    }
+
+    // Always output audio to the soundcard / physical speakers unless explicitly muted
+    const isSpeakersConnected = this.matrix[idx][2] || this.matrix[idx][3];
+    const isMuted = this.outMutes[2];
+    const isDim = this.outDims[2];
+    if (audio.setMonitor) {
+      audio.setMonitor(isSpeakersConnected && !isMuted, isDim ? 0.1 : 0.8);
     }
 
     this.updateStripVisuals();
@@ -747,29 +797,29 @@ export class RoutingCanvasView {
   private applyPreset(preset: string | null): void {
     if (preset === 'broadcast') {
       this.matrix = [
-        [false, false, false, false, false],
+        [true,  true,  false, false, false],
         [true,  true,  true,  false, false],
-        [false, false, false, false, false],
-        [false, false, false, false, false],
-        [false, false, false, false, false],
+        [true,  true,  true,  false, false],
+        [true,  true,  true,  false, false],
+        [true,  true,  true,  false, false],
       ];
       this.selectInputSource(1);
     } else if (preset === 'pod33') {
       this.matrix = [
-        [false, false, false, false, false],
-        [false, false, false, false, false],
+        [true,  true,  false, false, false],
+        [true,  true,  true,  false, false],
         [true,  true,  true,  true,  true],
-        [false, false, false, false, false],
-        [false, false, false, false, false],
+        [true,  true,  true,  false, false],
+        [true,  true,  true,  false, false],
       ];
       this.selectInputSource(2);
     } else if (preset === 'bitbuddy') {
       this.matrix = [
-        [false, false, false, false, false],
-        [false, false, false, false, false],
-        [false, false, false, false, false],
-        [true,  true,  true,  false, true],
-        [false, false, false, false, false],
+        [true,  true,  false, false, false],
+        [true,  true,  true,  false, false],
+        [true,  true,  true,  false, false],
+        [true,  true,  true,  true,  true],
+        [true,  true,  true,  false, false],
       ];
       this.selectInputSource(3);
     } else if (preset === 'all') {
@@ -907,24 +957,29 @@ export class RoutingCanvasView {
 
     if (badgeEl) {
       if (this.detectedInstances.length > 0) {
-        badgeEl.textContent = `● XMXL: ${this.detectedInstances.length} ACTIVE (${this.detectedInstances.map(i => i.port).join(', ')})`;
+        const nmosCount = this.detectedInstances.filter((i) => i.type === 'nmos-node').length;
+        const xmxlCount = this.detectedInstances.length - nmosCount;
+        const summary = nmosCount > 0 ? `${xmxlCount} XMXL + ${nmosCount} NMOS IS-04` : `${this.detectedInstances.length} ACTIVE`;
+        badgeEl.textContent = `● NETWORK: ${summary}`;
         badgeEl.className = 'rc-badge rc-badge-pulse-green';
       } else {
-        badgeEl.textContent = '○ XMXL: SCANNING 127.0.0.1...';
+        badgeEl.textContent = '○ NETWORK: SCANNING...';
         badgeEl.className = 'rc-badge rc-badge-orange';
       }
     }
 
     if (instancesEl) {
       if (this.detectedInstances.length === 0) {
-        instancesEl.innerHTML = '<span class="rc-xmxl-pill active">SCANNING 127.0.0.1...</span>';
+        instancesEl.innerHTML = '<span class="rc-xmxl-pill active">SCANNING...</span>';
       } else {
         instancesEl.innerHTML = this.detectedInstances
           .map((inst) => {
+            const isNmos = inst.type === 'nmos-node';
             const isActive = inst.port === this.selectedPort;
+            const portTag = isNmos ? '📡 NMOS' : `:${inst.port}`;
             return `<button type="button" class="rc-xmxl-pill ${isActive ? 'active' : ''}" data-xmxl-port="${inst.port}">
-              <span class="rc-led-dot ${isActive ? 'lit-green' : ''}"></span>
-              :${inst.port} ${inst.name.replace(/^(Ward-Beck|CBC\/Radio-Canada)\s*/, '')} (${inst.latencyMs}ms)
+              <span class="rc-led-dot ${isActive ? (isNmos ? 'lit-cyan' : 'lit-green') : ''}"></span>
+              ${portTag} ${inst.name.replace(/^(Ward-Beck|CBC\/Radio-Canada|NMOS IS-04:\s*)\s*/, '')} (${inst.latencyMs}ms)
             </button>`;
           })
           .join('');

@@ -3,11 +3,13 @@
  * Lower Console Bay View Switcher:
  * Switches between Loudness Scope (dBFS & BS.1770 LUFS) and Data Stream Buffer & Matrix (EBU DMF / MXL).
  * Displays "loudness vs data stream" on the footer drawer bar.
+ * Clicking toggles seamlessly between loudness mode and data stream.
  */
 
 export type LowerUnitMode = 'loudness' | 'stream';
 
 export function initLowerUnitSwitcher(): void {
+  const switcherEl = document.getElementById('footerViewSwitcher');
   const btnLoudness = document.getElementById('btnViewLoudness');
   const btnStream = document.getElementById('btnViewStream');
   const ledLoudness = document.getElementById('ledViewLoudness');
@@ -15,7 +17,10 @@ export function initLowerUnitSwitcher(): void {
   const dbfsStageEl = document.getElementById('dbfsStage');
   const routingStageEl = document.getElementById('routingStage');
 
+  let currentMode: LowerUnitMode = 'loudness';
+
   const setMode = (mode: LowerUnitMode, persist = true) => {
+    currentMode = mode;
     if (persist) {
       try {
         localStorage.setItem('xtm.lower_unit_pref', mode);
@@ -52,17 +57,37 @@ export function initLowerUnitSwitcher(): void {
     window.dispatchEvent(new Event('resize'));
   };
 
+  const toggleMode = () => {
+    const next: LowerUnitMode = currentMode === 'loudness' ? 'stream' : 'loudness';
+    setMode(next, true);
+  };
+
+  // Clicking anywhere on the toggle switcher switches between Loudness and Data Stream
+  switcherEl?.addEventListener('click', (e) => {
+    e.stopPropagation();
+    toggleMode();
+  });
+
+  // Clicking specific buttons: clicking active button flips mode; clicking inactive switches to it
   btnLoudness?.addEventListener('click', (e) => {
     e.stopPropagation();
-    setMode('loudness', true);
+    if (currentMode === 'loudness') {
+      setMode('stream', true);
+    } else {
+      setMode('loudness', true);
+    }
   });
 
   btnStream?.addEventListener('click', (e) => {
     e.stopPropagation();
-    setMode('stream', true);
+    if (currentMode === 'stream') {
+      setMode('loudness', true);
+    } else {
+      setMode('stream', true);
+    }
   });
 
-  // Default mode: 'loudness' (as requested) or user preference if explicitly set
+  // Default mode: 'loudness' (as requested)
   let initialMode: LowerUnitMode = 'loudness';
   try {
     const saved = localStorage.getItem('xtm.lower_unit_pref');
@@ -76,4 +101,5 @@ export function initLowerUnitSwitcher(): void {
 
   setMode(initialMode, false);
   (window as any).setLowerUnitMode = (m: LowerUnitMode) => setMode(m, true);
+  (window as any).toggleLowerUnitMode = toggleMode;
 }

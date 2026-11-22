@@ -34,26 +34,33 @@ export function isLoopbackDevice(label: string): boolean {
   return /monitor|loopback|stereo mix|what u hear|blackhole|soundflower|cable output|virtual audio|stream monitor|pipewire.*sink/i.test(label);
 }
 
-/** Appends detected XMXL instances into the device selector select element */
+/** Appends detected XMXL and NMOS instances into the device selector select element */
 function appendXmxlOptions(selectDevice: HTMLSelectElement, currentVal: string | null): void {
   const instances = getActiveXmxlInstances();
   if (!instances.length) return;
 
   for (const inst of instances) {
+    const isNmos = inst.type === 'nmos-node' || inst.domainId === 'nmos-is04';
     if (inst.flows && inst.flows.length > 0) {
       for (const flow of inst.flows) {
         const opt = document.createElement('option');
-        opt.value = `__XMXL_${inst.port}_${flow.flowId}__`;
-        opt.textContent = `🎛️ [XMXL ${inst.port}] ${flow.label} (${inst.domainId || 'shm'})`;
-        opt.style.color = '#22c55e';
-        opt.style.fontWeight = 'bold';
+        opt.value = isNmos ? `__NMOS_${inst.id}_${flow.flowId}__` : `__XMXL_${inst.port}_${flow.flowId}__`;
+        if (isNmos) {
+          opt.textContent = `📡 [NMOS IS-04] ${flow.label} (${inst.name})`;
+          opt.style.color = '#38bdf8';
+          opt.style.fontWeight = 'bold';
+        } else {
+          opt.textContent = `🎛️ [XMXL ${inst.port}] ${flow.label} (${inst.domainId || 'shm'})`;
+          opt.style.color = '#22c55e';
+          opt.style.fontWeight = 'bold';
+        }
         if (currentVal === opt.value) opt.selected = true;
         selectDevice.appendChild(opt);
       }
     } else {
       const opt = document.createElement('option');
-      opt.value = `__XMXL_${inst.port}__`;
-      opt.textContent = `📡 [XMXL ${inst.port}] ${inst.name}`;
+      opt.value = isNmos ? `__NMOS_${inst.id}__` : `__XMXL_${inst.port}__`;
+      opt.textContent = isNmos ? `📡 [NMOS IS-04] ${inst.name}` : `📡 [XMXL ${inst.port}] ${inst.name}`;
       opt.style.color = '#38bdf8';
       opt.style.fontWeight = 'bold';
       if (currentVal === opt.value) opt.selected = true;
@@ -235,6 +242,55 @@ export function initDeviceSelector(ctx: AppContext, refs: DrawerControls, sync: 
     if (xmxlDisconnect) {
       xmxlDisconnect();
       xmxlDisconnect = null;
+    }
+
+    if (selectedId && selectedId.startsWith('__NMOS_')) {
+      audio.stopCurrentSource();
+      const allInsts = getActiveXmxlInstances();
+      const inst = allInsts.find((i) => selectedId.includes(i.id)) || allInsts.find((i) => i.type === 'nmos-node');
+      const flow = inst?.flows?.find((f) => selectedId.includes(f.flowId)) || inst?.flows?.[0];
+      const flowName = flow ? flow.label : 'AES67 / ST 2110-30';
+      const nodeName = inst ? inst.name : 'WBS-32me';
+
+      if (drawerSourceBadge) {
+        drawerSourceBadge.textContent = `Source: 📡 NMOS IS-04 · ${flowName} (${nodeName})`;
+        drawerSourceBadge.style.color = '#38bdf8';
+      }
+      if (model.mode !== 'A') {
+        model.mode = 'A';
+        model.a.src = 0;
+        model.saveEEPROM();
+      }
+      sync.lastModeKey = 'A:' + selectedId;
+      model.flash('NMOS IS-04');
+
+      // Connect to telemetry stream from host daemon if online
+      const routerInst = allInsts.find((i) => i.port === 8467);
+      if (routerInst) {
+        xmxlDisconnect = connectXmxlStream(routerInst, (d: any) => {
+          if (audio.currentLevels) {
+            const vuL = typeof d.left_vu === 'number' ? d.left_vu : -2;
+            const vuR = typeof d.right_vu === 'number' ? d.right_vu : -2;
+            const dbL = typeof d.left_db === 'number' ? d.left_db : -20;
+            const dbR = typeof d.right_db === 'number' ? d.right_db : -20;
+
+            audio.currentLevels.vu[0] = Math.pow(10, vuL / 20);
+            audio.currentLevels.vu[1] = Math.pow(10, vuR / 20);
+            audio.currentLevels.vuDb[0] = vuL;
+            audio.currentLevels.vuDb[1] = vuR;
+            audio.currentLevels.ppm[0] = Math.pow(10, dbL / 20);
+            audio.currentLevels.ppm[1] = Math.pow(10, dbR / 20);
+            audio.currentLevels.ppmDb[0] = dbL;
+            audio.currentLevels.ppmDb[1] = dbR;
+            audio.currentLevels.rmsDb[0] = dbL;
+            audio.currentLevels.rmsDb[1] = dbR;
+            audio.currentLevels.dbfs[0] = dbL;
+            audio.currentLevels.dbfs[1] = dbR;
+            audio.currentLevels.hasAudio = true;
+          }
+        });
+      }
+      return;
     }
 
     if (selectedId === '__WBS_LINUX_HOST__' || (selectedId && selectedId.startsWith('__XMXL_'))) {

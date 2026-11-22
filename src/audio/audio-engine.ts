@@ -68,8 +68,8 @@ export class XtmAudioEngine {
 
   // Monitor / Listen Through
   monitorGainNode: GainNode | null = null;
-  monitorEnabled: boolean = false;
-  monitorVolume: number = 0.7;
+  monitorEnabled: boolean = true;
+  monitorVolume: number = 0.8;
 
   // Splitter & Analyser / Processor
   splitterNode: ChannelSplitterNode | null = null;

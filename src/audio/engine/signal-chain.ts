@@ -45,6 +45,9 @@ export function updateHpfState(engine: XtmAudioEngine): void {
  * Monitor / Listen Through toggle & volume
  */
 export function setMonitor(engine: XtmAudioEngine, enabled: boolean, volume: number | null = null): void {
+  if (engine.ctx && engine.ctx.state === 'suspended' && enabled) {
+    engine.ctx.resume().catch(() => {});
+  }
   engine.monitorEnabled = enabled;
   if (volume !== null) engine.monitorVolume = volume;
   updateMonitorState(engine);

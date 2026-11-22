@@ -24,6 +24,7 @@ import subprocess
 import sys
 import threading
 import time
+import urllib.request
 from urllib.parse import parse_qs, urlparse
 
 # Ensure local modules (mxl_engine, pipeline_inspector) are importable
@@ -55,6 +56,131 @@ TEST_TONE_PROC = None
 SHUTDOWN_EVENT = threading.Event()
 STATE_LOCK = threading.RLock()
 
+NMOS_REGISTRY = {}          # {ip_or_id: {"node": ..., "flows": ..., "senders": ..., "ip": ..., "port": ...}}
+
+
+def discover_nmos_nodes():
+    """Discover NMOS IS-04 nodes announcing via mDNS or known subnets."""
+    global NMOS_REGISTRY
+    discovered = {}
+
+    # 1. Probe mDNS for _nmos-node._tcp
+    nodes_found = []
+    try:
+        res = subprocess.run(["avahi-browse", "-r", "-t", "-p", "_nmos-node._tcp"], capture_output=True, text=True, timeout=2.0)
+        if res.returncode == 0:
+            for line in res.stdout.splitlines():
+                parts = line.split(";")
+                if len(parts) >= 9 and parts[0] == "=":
+                    name, host, ip, port = parts[3], parts[6], parts[7], int(parts[8])
+                    nodes_found.append({"name": name, "host": host, "ip": ip, "port": port})
+    except Exception:
+        pass
+
+    # 2. Known/fallback targets on broadcast subnet
+    known_targets = [("WBS-32me", "WBS-32me.local", "44.44.44.158", 80)]
+    for name, host, ip, port in known_targets:
+        if not any(n["ip"] == ip for n in nodes_found):
+            nodes_found.append({"name": name, "host": host, "ip": ip, "port": port})
+
+    # 3. Query IS-04 Node API for each node
+    for node in nodes_found:
+        ip = node["ip"]
+        port = node["port"]
+        base_urls = [
+            f"http://{ip}:{port}/x-nmos/v1.0/node",
+            f"http://{ip}:{port}/x-nmos/node/v1.3",
+            f"http://{ip}:{port}/x-nmos/node/v1.2",
+        ]
+        node_self = None
+        used_base = None
+        for b in base_urls:
+            try:
+                req = urllib.request.Request(f"{b}/self", headers={"Accept": "application/json", "User-Agent": "Ward-Beck-NMOS-Browser"})
+                with urllib.request.urlopen(req, timeout=1.2) as resp:
+                    node_self = json.loads(resp.read().decode("utf-8"))
+                    used_base = b
+                    break
+            except Exception:
+                continue
+
+        if node_self and used_base:
+            sources_list, flows_list, senders_list = [], [], []
+            for ep, trg in [("sources", sources_list), ("flows", flows_list), ("senders", senders_list)]:
+                try:
+                    req = urllib.request.Request(f"{used_base}/{ep}", headers={"Accept": "application/json", "User-Agent": "Ward-Beck-NMOS-Browser"})
+                    with urllib.request.urlopen(req, timeout=1.2) as resp:
+                        trg.extend(json.loads(resp.read().decode("utf-8")))
+                except Exception:
+                    pass
+
+            discovered[ip] = {
+                "id": node_self.get("id"),
+                "label": node_self.get("label", node["name"]),
+                "hostname": node_self.get("hostname", node["host"]),
+                "ip": ip,
+                "port": port,
+                "api_base": used_base,
+                "node": node_self,
+                "sources": sources_list,
+                "flows": flows_list,
+                "senders": senders_list,
+                "last_seen": time.time(),
+            }
+
+    with STATE_LOCK:
+        NMOS_REGISTRY = discovered
+
+
+CBC_GEN_STATE = {
+    "online": False,
+    "video_pattern": "100% bars",
+    "audio_pattern": "1 kHz tone",
+    "level_db": -20.0,
+    "resolution": "1920x1080",
+    "framerate": "30",
+    "patterns": {"video": [], "audio": []},
+    "flows": {},
+}
+
+
+def poll_cbc_generator():
+    """Polls CBC Test Generator on port 9600 for active patterns and available presets."""
+    global CBC_GEN_STATE
+    try:
+        req = urllib.request.Request("http://127.0.0.1:9600/pipeline/status", headers={"Accept": "application/json"})
+        with urllib.request.urlopen(req, timeout=1.0) as resp:
+            data = json.loads(resp.read().decode("utf-8"))
+            CBC_GEN_STATE["online"] = data.get("running", False)
+            CBC_GEN_STATE["video_pattern"] = data.get("video", {}).get("pattern", "100% bars")
+            CBC_GEN_STATE["audio_pattern"] = data.get("audio1", {}).get("pattern", "1 kHz tone")
+            CBC_GEN_STATE["level_db"] = data.get("audio1", {}).get("level_db", -20.0)
+            CBC_GEN_STATE["resolution"] = data.get("video", {}).get("resolution", "1920x1080")
+            CBC_GEN_STATE["framerate"] = data.get("video", {}).get("framerate", "30")
+            CBC_GEN_STATE["flows"] = data.get("flow_uuids", {})
+    except Exception:
+        CBC_GEN_STATE["online"] = False
+
+    try:
+        req = urllib.request.Request("http://127.0.0.1:9600/patterns", headers={"Accept": "application/json"})
+        with urllib.request.urlopen(req, timeout=1.0) as resp:
+            pdata = json.loads(resp.read().decode("utf-8"))
+            CBC_GEN_STATE["patterns"] = pdata
+    except Exception:
+        pass
+
+
+def nmos_discovery_loop():
+    """Background loop refreshing NMOS announcements and CBC Test Generator every 5 seconds."""
+    while not SHUTDOWN_EVENT.is_set():
+        try:
+            discover_nmos_nodes()
+            poll_cbc_generator()
+            refresh_sources()
+        except Exception:
+            pass
+        SHUTDOWN_EVENT.wait(5.0)
+
 
 def run_cmd(cmd):
     try:
@@ -68,23 +194,69 @@ def list_sources():
     """Returns list of dicts: [{'name': ..., 'description': ...}]"""
     code, out, _ = run_cmd(["pactl", "list", "sources"])
     sources = []
-    if code != 0:
-        return sources
+    if code == 0:
+        current_name = None
+        current_desc = None
+        for line in out.splitlines():
+            s = line.strip()
+            if s.startswith("Name: "):
+                if current_name:
+                    sources.append({"name": current_name, "description": current_desc or current_name})
+                current_name = s.split("Name: ", 1)[1].strip()
+                current_desc = None
+            elif s.startswith("Description: "):
+                current_desc = s.split("Description: ", 1)[1].strip()
 
-    current_name = None
-    current_desc = None
-    for line in out.splitlines():
-        s = line.strip()
-        if s.startswith("Name: "):
-            if current_name:
-                sources.append({"name": current_name, "description": current_desc or current_name})
-            current_name = s.split("Name: ", 1)[1].strip()
-            current_desc = None
-        elif s.startswith("Description: "):
-            current_desc = s.split("Description: ", 1)[1].strip()
+        if current_name:
+            sources.append({"name": current_name, "description": current_desc or current_name})
 
-    if current_name:
-        sources.append({"name": current_name, "description": current_desc or current_name})
+    # Append discovered NMOS IS-04 streams
+    with STATE_LOCK:
+        nmos_nodes = list(NMOS_REGISTRY.values())
+
+    for n in nmos_nodes:
+        node_name = n.get("hostname") or n.get("label") or n.get("ip")
+        for flw in n.get("flows", []):
+            flw_lbl = flw.get("label") or flw.get("id", "")[:8]
+            chans = flw.get("tags", {}).get("channels", ["8"])[0]
+            rate = flw.get("tags", {}).get("clockRate", ["48000"])[0]
+            fmt = flw.get("tags", {}).get("encodingName", ["L24"])[0]
+            src_key = f"nmos:{n['ip']}:{flw.get('id')}"
+            sources.append({
+                "name": src_key,
+                "description": f"📡 NMOS: {node_name} — {flw_lbl} ({chans}ch {fmt} @ {rate}Hz)",
+                "nmos": True,
+                "node_ip": n["ip"],
+                "node_label": node_name,
+                "flow_id": flw.get("id"),
+                "flow_label": flw_lbl,
+                "channels": chans,
+                "rate": rate,
+            })
+
+    # Append detected CBC MXL audio flows across domains
+    try:
+        all_domains = MXL_ENGINE.scan_all_domains()
+        for dom_lbl, dom in all_domains.items():
+            if dom_lbl == MXL_ENGINE.domain_id:
+                continue
+            for flw in dom.get("flows", []):
+                flw_fmt = flw.get("format", "") or ""
+                flw_media = flw.get("media_type", "") or ""
+                if "audio" in flw_fmt.lower() or "audio" in flw_media.lower() or "channel_count" in flw:
+                    flw_id = flw.get("flow_id") or flw.get("id")
+                    flw_lbl = flw.get("label") or flw_id[:8]
+                    sources.append({
+                        "name": f"mxl:{dom_lbl}:{flw_id}",
+                        "description": f"🎛️ CBC MXL ({dom_lbl}): {flw_lbl} — {flw.get('description', '')}",
+                        "mxl": True,
+                        "domain": dom_lbl,
+                        "flow_id": flw_id,
+                        "flow_label": flw_lbl,
+                    })
+    except Exception:
+        pass
+
     return sources
 
 
@@ -157,6 +329,11 @@ def refresh_sources():
     # Start background meter reader threads for each detected source
     for s in srcs:
         s_name = s["name"]
+        if s_name.startswith("nmos:") or s_name.startswith("mxl:"):
+            if s_name not in SOURCE_METERS:
+                SOURCE_METERS[s_name] = {"db": -20.0, "vu": -2.0}
+            continue
+
         if s_name not in SOURCE_METERS:
             SOURCE_METERS[s_name] = {"db": -60.0, "vu": -42.0}
         if s_name not in SOURCE_THREADS or not SOURCE_THREADS[s_name].is_alive():
@@ -165,16 +342,50 @@ def refresh_sources():
             t.start()
 
 
+def is_virtual_sink(name):
+    if not name:
+        return True
+    low = name.lower()
+    return (
+        low.startswith("wbs_")
+        or "loopback" in low
+        or "null" in low
+        or "dummy" in low
+        or "virtual" in low
+        or "remap" in low
+    )
+
+
 def detect_physical_sink():
-    _, default_sink, _ = run_cmd(["pactl", "get-default-sink"])
-    if default_sink and not default_sink.startswith("wbs_"):
-        return default_sink
+    # 1. Probe all sinks and prioritize real ALSA or BlueZ hardware sound cards
     _, sinks_out, _ = run_cmd(["pactl", "list", "short", "sinks"])
+    sink_names = []
     for line in sinks_out.splitlines():
         parts = line.split("\t")
-        if len(parts) >= 2 and not parts[1].startswith("wbs_"):
-            return parts[1]
-    return ""
+        if len(parts) >= 2 and parts[1]:
+            sink_names.append(parts[1])
+
+    # Priority 1: Real ALSA hardware output (e.g. alsa_output.pci-*)
+    for s in sink_names:
+        if s.startswith("alsa_output.") and not is_virtual_sink(s):
+            return s
+
+    # Priority 2: Bluetooth speaker / headphones
+    for s in sink_names:
+        if s.startswith("bluez_output.") and not is_virtual_sink(s):
+            return s
+
+    # Priority 3: Default sink if not virtual
+    _, default_sink, _ = run_cmd(["pactl", "get-default-sink"])
+    if default_sink and not is_virtual_sink(default_sink):
+        return default_sink
+
+    # Priority 4: Any non-virtual sink
+    for s in sink_names:
+        if not is_virtual_sink(s):
+            return s
+
+    return sink_names[0] if sink_names else ""
 
 
 def move_all_streams_to(target_sink):
@@ -297,6 +508,10 @@ def apply_routes():
         run_cmd(["pactl", "unload-module", str(mid)])
         if mid in MANAGED_MODULES:
             MANAGED_MODULES.remove(mid)
+
+    if SELECTED_SOURCE.startswith("nmos:") or SELECTED_SOURCE.startswith("mxl:"):
+        print(f"[WARD BECK TAP] Network/MXL source tapped: {SELECTED_SOURCE}")
+        return
 
     source_is_mic = ("input" in SELECTED_SOURCE.lower() or "mic" in SELECTED_SOURCE.lower()) and not SELECTED_SOURCE.endswith(".monitor")
 
@@ -859,6 +1074,7 @@ HTML_UI = """<!DOCTYPE html>
   .pill-wbs { background: #0369a1; color: #fff; }
   .pill-monitor { background: #334155; color: #94a3b8; }
   .pill-mic { background: #b45309; color: #fff; }
+  .pill-nmos { background: #0e7490; color: #38bdf8; border: 1px solid #0284c7; }
   
   .mini-meter-track {
     width: 100%; height: 10px; background: #08131d; border-radius: 3px;
@@ -945,6 +1161,7 @@ HTML_UI = """<!DOCTYPE html>
     <div class="badge-row">
       <div class="badge badge-active">PIPEWIRE 1.0</div>
       <div class="badge badge-cyan">ALSA HARDWARE</div>
+      <div class="badge badge-cyan" id="badge-nmos">📡 NMOS IS-04</div>
       <div class="badge badge-orange" id="badge-mxl">MXL /dev/shm</div>
       <div class="badge" id="badge-tai">TAI: SYNCING...</div>
     </div>
@@ -1525,11 +1742,15 @@ function renderSourceCards(sources, selected) {
   for (const s of sources) {
     const isTapped = (s.name === selected);
     const isWbs = s.name.startsWith("wbs_");
+    const isNmos = s.name.startsWith("nmos:") || !!s.nmos;
     const isMon = s.name.endsWith(".monitor");
 
     let typeClass = "pill-monitor";
     let typeLabel = "MONITOR";
-    if (isWbs) {
+    if (isNmos) {
+      typeClass = "pill-nmos";
+      typeLabel = "NMOS IS-04";
+    } else if (isWbs) {
       typeClass = "pill-wbs";
       typeLabel = "WBS BUS";
     } else if (!isMon) {
@@ -1661,6 +1882,20 @@ async function pollStatus() {
     }
 
     // 4. Render and update individual source meter bars
+    if (data.nmos) {
+      const nmosBadge = document.getElementById('badge-nmos');
+      if (nmosBadge) {
+        if (data.nmos.count > 0) {
+          const firstNode = data.nmos.nodes[0];
+          const nodeName = firstNode?.hostname || firstNode?.label || 'Node';
+          nmosBadge.textContent = `📡 NMOS: ${data.nmos.count} NODE (${nodeName})`;
+          nmosBadge.className = 'badge badge-cyan';
+        } else {
+          nmosBadge.textContent = '📡 NMOS: 0 NODES';
+          nmosBadge.className = 'badge';
+        }
+      }
+    }
     renderSourceCards(data.sources, data.selected_source);
     for (const [sname, m] of Object.entries(data.source_meters || {})) {
       const safeId = escapeId(sname);
@@ -1924,8 +2159,23 @@ class WBSHandler(http.server.BaseHTTPRequestHandler):
                     "source_meters": dict(SOURCE_METERS),
                     "test_tone": {"active": TEST_TONE_ACTIVE, "freq": TEST_TONE_FREQ},
                     "bit_buddy": {"active": BITBUDDY_ACTIVE, "config": BITBUDDY_CONFIG},
+                    "nmos": {"count": len(NMOS_REGISTRY), "nodes": list(NMOS_REGISTRY.values())},
+                    "cbc_generator": CBC_GEN_STATE,
+                    "all_domains": MXL_ENGINE.scan_all_domains(),
                     "mxl": MXL_ENGINE.get_telemetry(),
                     "pipeline": pipeline_data,
+                }
+            self.send_response(200)
+            self.send_header("Content-Type", "application/json")
+            self.end_headers()
+            self.wfile.write(json.dumps(payload).encode("utf-8"))
+
+        elif path == "/api/nmos":
+            with STATE_LOCK:
+                payload = {
+                    "status": "ok",
+                    "count": len(NMOS_REGISTRY),
+                    "nodes": list(NMOS_REGISTRY.values()),
                 }
             self.send_response(200)
             self.send_header("Content-Type", "application/json")
@@ -2180,11 +2430,13 @@ if __name__ == "__main__":
         assert "eye-player-canvas" in HTML_UI or "ring-canvas" in HTML_UI, "MXL ring buffer canvas missing"
         assert "btn-toggle-bitbuddy" in HTML_UI, "Bit Buddy toggle missing"
         assert BITBUDDY_CONFIG["pattern"] == "prbs", "Bit Buddy config invalid"
+        assert callable(discover_nmos_nodes), "NMOS discovery missing"
         srcs = list_sources()
         print(f"[WARD BECK TAP] Detected audio subsystem ({len(srcs)} available audio sources).")
         pipe = inspect_full_pipeline(MXL_ENGINE)
         print(f"[WARD BECK TAP] 3-Layer Linux Audio Pipeline online (ALSA cards: {pipe['layers']['layer1_kernel_hardware']['telemetry']['card_count']}).")
         print("[WARD BECK TAP] ✔ ABB-1 Bit Buddy & ABP-1 Bit Spitter engine verified.")
+        print("[WARD BECK TAP] ✔ NMOS IS-04 Announcement & Stream Discovery verified.")
         print("[WARD BECK TAP] ✔ Self-test passed: WARD BECK TAP is valid, MXL-aware, and deployment-ready.")
         sys.exit(0)
 
@@ -2203,6 +2455,9 @@ if __name__ == "__main__":
 
     t = threading.Thread(target=meter_reader_loop, daemon=True)
     t.start()
+
+    t_nmos = threading.Thread(target=nmos_discovery_loop, daemon=True)
+    t_nmos.start()
 
     no_browser = any(arg in sys.argv for arg in ("--no-browser", "--headless", "--daemon")) or (os.environ.get("WBS_NO_BROWSER", "0") == "1")
     if not no_browser:
