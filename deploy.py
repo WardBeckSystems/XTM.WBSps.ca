@@ -292,21 +292,29 @@ def main():
         sys.exit(1)
     print(f"✔ Build successful: dist/ ready for deployment (v{active_version}).")
 
-    # 3. Validate & build WBS Audio Router Controller daemon
-    router_script = HERE / "tools" / "wbs-audio-router.py"
-    if router_script.is_file():
-        print(f"\nExecuting WBS Audio Router self-test ({router_script.name} --check)...")
-        res = subprocess.run([sys.executable, str(router_script), "--check"], capture_output=True, text=True)
-        if res.returncode != 0:
-            print(f"❌ Error validating {router_script.name}:\n{res.stderr}\n{res.stdout}", file=sys.stderr)
-            sys.exit(1)
-        print("✔ WBS Audio Router controller validated.")
+    # 3. Validate & build Ward-Beck Audio Tab controller daemon
+    for r_name in ("ward-beck-audio-tab.py", "wbs-audio-router.py"):
+        router_script = HERE / "tools" / r_name
+        if router_script.is_file():
+            print(f"\nExecuting Ward-Beck Audio Tab self-test ({r_name} --check)...")
+            res = subprocess.run([sys.executable, str(router_script), "--check"], capture_output=True, text=True)
+            if res.returncode != 0:
+                print(f"❌ Error validating {r_name}:\n{res.stderr}\n{res.stdout}", file=sys.stderr)
+                sys.exit(1)
+            print(f"✔ {r_name} validated.")
 
-        # Ensure present in dist/tools
-        dist_tools_dir = HERE / "dist" / "tools"
-        dist_tools_dir.mkdir(parents=True, exist_ok=True)
-        shutil.copy(router_script, dist_tools_dir / router_script.name)
-        os.chmod(dist_tools_dir / router_script.name, 0o755)
+            # Ensure present in dist/tools
+            dist_tools_dir = HERE / "dist" / "tools"
+            dist_tools_dir.mkdir(parents=True, exist_ok=True)
+            if router_script.is_symlink():
+                target = os.readlink(router_script)
+                dest = dist_tools_dir / r_name
+                if dest.exists() or dest.is_symlink():
+                    dest.unlink()
+                os.symlink(target, dest)
+            else:
+                shutil.copy(router_script, dist_tools_dir / r_name)
+                os.chmod(dist_tools_dir / r_name, 0o755)
 
     print("Copying assets to dist/assets...")
     assets_dir = HERE / "assets"

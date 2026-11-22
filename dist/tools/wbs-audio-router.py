@@ -1,8 +1,12 @@
 #!/usr/bin/env python3
 """
-WBS Test Point Inserter & Virtual Audio Patchbay (HTML Router + Live VU Bridge)
-Supports selecting ANY available PulseAudio/PipeWire source or monitor as input,
-plus Full Restart and Emergency 'Abandon Ship' teardown.
+Ward-Beck Audio Tab
+===================
+Virtual Audio Patchbay & Test Point Controller Daemon (HTML Router + Live VU Bridge)
+Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.ca). All rights reserved.
+
+Routes Linux desktop audio (YouTube, Spotify, DAWs, Media Players) into Ward-Beck XTM-4
+via isolated virtual null-sinks (100% feedback-free, banner-free, low-latency).
 """
 
 import http.server
@@ -276,7 +280,7 @@ HTML_UI = """<!DOCTYPE html>
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>WBS Test Point Inserter & Audio Router</title>
+<title>Ward-Beck Audio Tab // Virtual Audio Router &amp; VU Bridge</title>
 <style>
   :root {
     --wbs-blue: #1a3b5c;
@@ -380,7 +384,7 @@ HTML_UI = """<!DOCTYPE html>
   </div>
 
   <div class="header">
-    <h1>WBS Test Point Inserter // Virtual Audio Router</h1>
+    <h1>Ward-Beck Audio Tab // Virtual Audio Router</h1>
     <div class="badge" id="sink-info">OUT: Detecting...</div>
   </div>
 
@@ -691,13 +695,13 @@ if __name__ == "__main__":
     import sys
 
     if any(arg in sys.argv for arg in ("--check", "--test", "--self-test")):
-        print("[WBS] Validating WBS Audio Router configuration and self-test...")
+        print("[Ward-Beck Audio Tab] Validating configuration and self-test...")
         assert len(HTML_UI) > 1000, "HTML template empty"
-        assert "WBS Test Point Inserter" in HTML_UI, "HTML header missing"
+        assert "Ward-Beck Audio Tab" in HTML_UI, "HTML header missing"
         assert "needle-l" in HTML_UI and "needle-r" in HTML_UI, "VU needle elements missing"
         srcs = list_sources()
-        print(f"[WBS] Detected audio subsystem ({len(srcs)} available audio sources).")
-        print("[WBS] ✔ Self-test passed: wbs-audio-router.py is valid and deployment-ready.")
+        print(f"[Ward-Beck Audio Tab] Detected audio subsystem ({len(srcs)} available audio sources).")
+        print("[Ward-Beck Audio Tab] ✔ Self-test passed: Ward-Beck Audio Tab is valid and deployment-ready.")
         sys.exit(0)
 
     if any(arg in sys.argv for arg in ("--abandon", "--teardown", "--stop")):
