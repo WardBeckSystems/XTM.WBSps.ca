@@ -1156,6 +1156,12 @@ HTML_UI = """<!DOCTYPE html>
   .pill-nmos { background: #0e7490; color: #38bdf8; border: 1px solid #0284c7; }
   .pill-mxl { background: #c2410c; color: #ffedd5; border: 1px solid #ea580c; }
   
+  .card-mini-vu-wrap {
+    width: 100%; margin: 6px 0 4px 0;
+  }
+  .card-mini-vu-svg {
+    width: 100%; height: 44px; display: block;
+  }
   .mini-meter-track {
     width: 100%; height: 8px; background: #08131d; border-radius: 3px;
     overflow: hidden; margin: 8px 0 5px 0; border: 1px solid #162e47; position: relative;
@@ -1974,10 +1980,38 @@ function renderSourceCards(sources, selected) {
         </div>
         <span class="source-pill ${typeClass}">${typeLabel}</span>
       </div>
-      <div>
-        <div class="mini-meter-track">
-          <div class="mini-meter-fill" id="meter-fill-${safeId}" style="width: 0%;"></div>
-        </div>
+      <div class="card-mini-vu-wrap">
+        <svg viewBox="0 0 160 44" class="card-mini-vu-svg" width="100%" height="44" preserveAspectRatio="xMidYMid meet">
+          <rect x="2" y="2" width="156" height="40" rx="3" class="card-vu-bezel" fill="#08131d" stroke="#1e3d5f" stroke-width="1" />
+          <rect x="4" y="4" width="152" height="36" rx="2" class="card-vu-face" fill="#eed584" stroke="#c8b060" stroke-width="0.8" />
+          
+          <text x="8" y="13" font-size="7" font-weight="800" fill="#1a2228">VU</text>
+          <text x="80" y="37" font-size="6" font-weight="900" fill="#1a2228" text-anchor="middle" letter-spacing="0.8">WARD-BECK</text>
+          
+          <!-- Normal arc (-42° to +16°) and Overload arc (+16° to +42°) -->
+          <path d="M 60 21 A 30 30 0 0 1 88 14" fill="none" stroke="#1a2228" stroke-width="1.2" />
+          <path d="M 88 14 A 30 30 0 0 1 100 21" fill="none" stroke="#dc2626" stroke-width="1.4" />
+          
+          <!-- Ticks: -20, -10, -7, -3, 0, +3 -->
+          <line x1="63.5" y1="20.5" x2="61.5" y2="17.5" stroke="#1a2228" stroke-width="0.8" />
+          <line x1="68.5" y1="18.0" x2="67.0" y2="14.5" stroke="#1a2228" stroke-width="0.8" />
+          <line x1="72.5" y1="16.5" x2="71.5" y2="12.5" stroke="#1a2228" stroke-width="0.8" />
+          <line x1="80.0" y1="15.0" x2="80.0" y2="11.0" stroke="#1a2228" stroke-width="0.8" />
+          <line x1="87.5" y1="16.5" x2="88.5" y2="12.5" stroke="#dc2626" stroke-width="1.0" />
+          <line x1="98.5" y1="22.5" x2="101.0" y2="19.5" stroke="#dc2626" stroke-width="1.0" />
+          
+          <!-- Numerals -->
+          <text x="59" y="27" font-size="5" font-weight="bold" fill="#1a2228" text-anchor="middle">-20</text>
+          <text x="80" y="9.5" font-size="5" font-weight="bold" fill="#1a2228" text-anchor="middle">-3</text>
+          <text x="89.5" y="10.5" font-size="5.5" font-weight="900" fill="#dc2626" text-anchor="middle">0</text>
+          <text x="103" y="27" font-size="5.5" font-weight="900" fill="#dc2626" text-anchor="middle">+3</text>
+          
+          <!-- Needle -->
+          <g id="meter-needle-${safeId}" transform="rotate(-42 80 42)" style="transition: transform 0.04s ease-out;">
+            <line x1="80" y1="42" x2="80" y2="13" stroke="#0f172a" stroke-width="1.2" stroke-linecap="round" />
+            <circle cx="80" cy="42" r="2.5" fill="#1e293b" />
+          </g>
+        </svg>
         <div class="meter-digits">
           <span id="meter-db-${safeId}">-60.0 dBFS</span>
           <span id="meter-vu-${safeId}">-42.0 VU</span>
@@ -2162,15 +2196,19 @@ async function pollStatus() {
     renderSourceCards(data.sources, data.selected_source);
     for (const [sname, m] of Object.entries(data.source_meters || {})) {
       const safeId = escapeId(sname);
+      const needleEl = document.getElementById(`meter-needle-${safeId}`);
       const fillEl = document.getElementById(`meter-fill-${safeId}`);
       const dbEl = document.getElementById(`meter-db-${safeId}`);
       const vuEl = document.getElementById(`meter-vu-${safeId}`);
-      if (fillEl && dbEl && vuEl) {
+      if (needleEl) {
+        needleEl.setAttribute('transform', `rotate(${vuToAngle(m.vu)} 80 42)`);
+      }
+      if (fillEl) {
         const pct = Math.max(0, Math.min(100, ((m.db + 60) / 60) * 100));
         fillEl.style.width = `${pct}%`;
-        dbEl.textContent = `${m.db.toFixed(1)} dBFS`;
-        vuEl.textContent = `${m.vu.toFixed(1)} VU`;
       }
+      if (dbEl) dbEl.textContent = `${m.db.toFixed(1)} dBFS`;
+      if (vuEl) vuEl.textContent = `${m.vu.toFixed(1)} VU`;
     }
 
     // 5. Update MXL Continuous 10-Second Ring Buffer Telemetry
