@@ -10,7 +10,8 @@
  *      with outer scale (-50 to +10, yellow -20 at 9 o'clock), inner scale (-30 to +30),
  *      radial ticks, silver skirt with black pointer, 14 scalloped barrel flutes, and gold center cap
  *    - Bat-handle toggle switch (MTR / CAL / MON)
- *    - Blue 1 INPUT 2 phone jack block
+ *    - Push-button input selectors 1, 2, 3, 4 below
+ *    - Model SA14023 silkscreen marking
  *    - NO red digital RANGE digits (reserved strictly for .com ATS-100 look)
  */
 import { MC_WIN } from '../../layout/mccurdy-layout';
@@ -137,9 +138,6 @@ export function renderMcCurdyCaCenter(): string {
     grooves += `<line x1="${(55.9 * Math.cos(rad)).toFixed(2)}" y1="${(55.9 * Math.sin(rad)).toFixed(2)}" x2="${(63.7 * Math.cos(rad)).toFixed(2)}" y2="${(63.7 * Math.sin(rad)).toFixed(2)}"/>`;
   }
 
-  // Range switch small fluted knob
-  const swFluteD = buildFlutedPath(16, 1.6, 12);
-
   return `<g class="mc-ca-only">
       <defs>
         <linearGradient id="mc_skirt_silver" x1="0" y1="0" x2="1" y2="1">
@@ -157,51 +155,15 @@ export function renderMcCurdyCaCenter(): string {
           <stop offset="70%" stop-color="#eab308"/>
           <stop offset="100%" stop-color="#ca8a04"/>
         </linearGradient>
-        <linearGradient id="mc_jack_bezel" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0%" stop-color="#94a3b8"/><stop offset="50%" stop-color="#475569"/><stop offset="100%" stop-color="#1e293b"/>
-        </linearGradient>
       </defs>
 
       <!-- Center Console Bay in McCurdy Slate Finish (Seamless, No Border) -->
       <rect x="1350" y="16" width="500" height="398" rx="8" fill="url(#mc_panel_blue)"/>
 
       <!-- ================================================================= -->
-      <!-- LEFT SECTION: JACKS (INPUT 600Ω / 20K, MON OUTPUT 20K) & SA14023  -->
+      <!-- MODEL DESIGNATION SILKSCREEN (LOWER LEFT)                         -->
       <!-- ================================================================= -->
-      <g id="mc-left-jacks" ${font}>
-        <!-- INPUT Header & Bracket grouping Jack 1 and Jack 2 -->
-        <text x="1356" y="132" font-size="10" font-weight="800" fill="#f8fafc" text-anchor="end" letter-spacing="1">INPUT</text>
-        <path d="M 1366,92 H 1362 V 168 H 1366" fill="none" stroke="#f8fafc" stroke-width="1.3"/>
-
-        <!-- Jack 1 (INPUT 600Ω) - Interactive MODE button -->
-        <g class="xtm-btn mc-jack" data-btn="MODE" style="cursor:pointer" transform="translate(1382, 92)">
-          <title>Input 1 (600Ω - MODE)</title>
-          <circle cx="0" cy="0" r="13" fill="url(#mc_jack_bezel)" stroke="#0f172a" stroke-width="1.2"/>
-          <circle cx="0" cy="0" r="9" fill="#1b242e" stroke="#0a121a" stroke-width="0.8"/>
-          <circle cx="0" cy="0" r="4.8" fill="#06090c"/>
-        </g>
-        <text x="1400" y="96" font-size="10" font-weight="800" fill="#f8fafc" text-anchor="start">600Ω</text>
-
-        <!-- Jack 2 (INPUT 20K) - Interactive SOURCE button -->
-        <g class="xtm-btn mc-jack" data-btn="SOURCE" style="cursor:pointer" transform="translate(1382, 168)">
-          <title>Input 2 (20K Bridging - SOURCE)</title>
-          <circle cx="0" cy="0" r="13" fill="url(#mc_jack_bezel)" stroke="#0f172a" stroke-width="1.2"/>
-          <circle cx="0" cy="0" r="9" fill="#1b242e" stroke="#0a121a" stroke-width="0.8"/>
-          <circle cx="0" cy="0" r="4.8" fill="#06090c"/>
-        </g>
-        <text x="1400" y="172" font-size="10" font-weight="800" fill="#f8fafc" text-anchor="start">20K</text>
-
-        <!-- Jack 3 (MON. OUTPUT 20K) -->
-        <text x="1356" y="240" font-size="8.5" font-weight="800" fill="#cbd5e1" text-anchor="end" letter-spacing="0.6">MON.</text>
-        <text x="1356" y="252" font-size="8.5" font-weight="800" fill="#cbd5e1" text-anchor="end" letter-spacing="0.6">OUTPUT</text>
-        <g class="xtm-btn mc-jack" data-btn="DOWN" style="cursor:pointer" transform="translate(1382, 244)">
-          <title>Monitor Output (20K)</title>
-          <circle cx="0" cy="0" r="13" fill="url(#mc_jack_bezel)" stroke="#0f172a" stroke-width="1.2"/>
-          <circle cx="0" cy="0" r="9" fill="#1b242e" stroke="#0a121a" stroke-width="0.8"/>
-          <circle cx="0" cy="0" r="4.8" fill="#06090c"/>
-        </g>
-        <text x="1400" y="248" font-size="10" font-weight="800" fill="#f8fafc" text-anchor="start">20K</text>
-
+      <g id="mc-model-label" ${font}>
         <!-- Model Designation Silkscreen (Lower Left) -->
         <text x="1382" y="378" font-size="12" font-weight="900" fill="#94a3b8" text-anchor="middle" letter-spacing="1.5">SA14023</text>
       </g>
