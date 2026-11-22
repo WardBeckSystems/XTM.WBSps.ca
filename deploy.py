@@ -292,6 +292,22 @@ def main():
         sys.exit(1)
     print(f"✔ Build successful: dist/ ready for deployment (v{active_version}).")
 
+    # 3. Validate & build WBS Audio Router Controller daemon
+    router_script = HERE / "tools" / "wbs-audio-router.py"
+    if router_script.is_file():
+        print(f"\nExecuting WBS Audio Router self-test ({router_script.name} --check)...")
+        res = subprocess.run([sys.executable, str(router_script), "--check"], capture_output=True, text=True)
+        if res.returncode != 0:
+            print(f"❌ Error validating {router_script.name}:\n{res.stderr}\n{res.stdout}", file=sys.stderr)
+            sys.exit(1)
+        print("✔ WBS Audio Router controller validated.")
+
+        # Ensure present in dist/tools
+        dist_tools_dir = HERE / "dist" / "tools"
+        dist_tools_dir.mkdir(parents=True, exist_ok=True)
+        shutil.copy(router_script, dist_tools_dir / router_script.name)
+        os.chmod(dist_tools_dir / router_script.name, 0o755)
+
     print("Copying assets to dist/assets...")
     assets_dir = HERE / "assets"
     dist_assets_dir = HERE / "dist" / "assets"

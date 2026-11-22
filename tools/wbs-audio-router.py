@@ -688,6 +688,24 @@ def handle_sigterm(signum, frame):
 
 
 if __name__ == "__main__":
+    import sys
+
+    if any(arg in sys.argv for arg in ("--check", "--test", "--self-test")):
+        print("[WBS] Validating WBS Audio Router configuration and self-test...")
+        assert len(HTML_UI) > 1000, "HTML template empty"
+        assert "WBS Test Point Inserter" in HTML_UI, "HTML header missing"
+        assert "needle-l" in HTML_UI and "needle-r" in HTML_UI, "VU needle elements missing"
+        srcs = list_sources()
+        print(f"[WBS] Detected audio subsystem ({len(srcs)} available audio sources).")
+        print("[WBS] ✔ Self-test passed: wbs-audio-router.py is valid and deployment-ready.")
+        sys.exit(0)
+
+    if any(arg in sys.argv for arg in ("--abandon", "--teardown", "--stop")):
+        print("[WBS] Executing teardown / abandon ship...")
+        with STATE_LOCK:
+            abandon_ship()
+        sys.exit(0)
+
     signal.signal(signal.SIGTERM, handle_sigterm)
     signal.signal(signal.SIGINT, handle_sigterm)
 
