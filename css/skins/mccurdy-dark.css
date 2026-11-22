@@ -191,9 +191,3 @@ body.theme-mccurdy-dark .mc-rack-flange {
   fill: #ffffff !important;
   font-weight: 900 !important;
 }
-
-/* When Simpson meter is active, Simpson script logo is part of dial, suppress overlay brand badge */
-.meter-style-pimson .mc-vu-brand-badge,
-.meter-style-simpson .mc-vu-brand-badge {
-  display: none !important;
-}
