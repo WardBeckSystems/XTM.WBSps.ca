@@ -1,5 +1,6 @@
 /*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.ca). All rights reserved. */
 import type { DbfsView } from '../dbfs-view';
+import { smoothstep } from '../xtm/lib/scale-math';
 
 /* ---------------- Anti-shimmer pyramid (mip-mapped history) ----------------
    Level l holds, for each fixed 2^l-sample block anchored to the ABSOLUTE sample index,
@@ -87,13 +88,12 @@ export function levelAt(v: DbfsView, hist: Float32Array, l: number, a: number, u
  * history smooths out instead of moiré-ing.
  */
 export function pyrSample(v: DbfsView, hist: Float32Array, a: number, samplesPerPx: number, pos: number, meanOnly = false): number {
-  const sstep = (e0: number, e1: number, x: number) => { const t = Math.max(0, Math.min(1, (x - e0) / (e1 - e0))); return t * t * (3 - 2 * t); };
-  const blur = 2.5 * sstep(0.5, 1.0, pos);                 // up to ~2.5 extra octaves of smoothing at the far left
+  const blur = 2.5 * smoothstep(0.5, 1.0, pos);                 // up to ~2.5 extra octaves of smoothing at the far left
   const f = Math.max(0, Math.min(PYR_LEVELS - 1, Math.log2(Math.max(1, samplesPerPx)) + blur));
   const l0 = Math.floor(f), t = f - l0;
   const sample = (useMean: boolean) =>
     levelAt(v, hist, l0, a, useMean) * (1 - t) + levelAt(v, hist, l0 + 1, a, useMean) * t;
-  const wMean = meanOnly ? 1 : sstep(0.35, 0.6, pos);      // peak-hold right of centre, mean past 50%
+  const wMean = meanOnly ? 1 : smoothstep(0.35, 0.6, pos);      // peak-hold right of centre, mean past 50%
   const vMax = wMean < 1 ? sample(false) : 0;
   const vMean = wMean > 0 ? sample(true) : 0;
   return vMax * (1 - wMean) + vMean * wMean;

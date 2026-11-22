@@ -22,7 +22,7 @@ import { createAudioSync } from './app/audio-sync';
 import { applyInitialAudioState, bindModelChange, bindFrontPanel, bindAudioUnlock } from './app/model-bindings';
 import { bindAudioCallbacks, initDeviceScan, initDeviceSelector } from './app/device-selector';
 import { initInputMonitor } from './app/input-monitor';
-import { initMeterStyle } from './app/meter-style';
+import { initMeterStyle, applyModeMeter } from './app/meter-style';
 import { initToneCal } from './app/tone-cal';
 import { initLampMemory } from './app/lamp-memory';
 import { initFilterTerm } from './app/filter-term';
@@ -81,7 +81,7 @@ export async function initApp(): Promise<void> {
 
   initConsentBanner(ctx);
   restoreSavedConfig(ctx); // after every control is bound, as before
-  (window as any).applyModeMeter?.();
+  applyModeMeter(ctx);
   initWbsProfileFiles(ctx, sync);
   initAutoSave(ctx, refs);
 

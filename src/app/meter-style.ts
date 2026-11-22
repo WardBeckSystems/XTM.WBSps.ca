@@ -21,27 +21,29 @@ export function getDefaultMeterForMode(): string {
   return 'fisam';                                                              // Wardbeck.com: the sifam
 }
 
+export function applyModeMeter(ctx: AppContext, selectMeterStyle?: HTMLSelectElement | null): void {
+  const { model, audio, view } = ctx;
+  const key = getMeterKey();
+  const defaultMeter = getDefaultMeterForMode();
+  const stored = lsGet(key);
+  const meter = (stored === 'sifam') ? 'fisam' : (stored === 'simpson' || stored === 'pimsom') ? 'pimson' : (stored || defaultMeter);
+  if (meter !== model.meterStyle) {
+    model.meterStyle = meter as any;
+    audio.setVuStyle(meter);
+    view.isBuilt = false;
+    model.notify();
+  }
+  if (selectMeterStyle) selectMeterStyle.value = model.meterStyle;
+}
+
 export function initMeterStyle(ctx: AppContext, refs: DrawerControls): void {
   const { model, audio, view } = ctx;
   const { selectMeterStyle } = refs;
 
-  const applyModeMeter = () => {
-    const key = getMeterKey();
-    const defaultMeter = getDefaultMeterForMode();
-    const stored = lsGet(key);
-    const meter = (stored === 'sifam') ? 'fisam' : (stored === 'simpson' || stored === 'pimsom') ? 'pimson' : (stored || defaultMeter);
-    if (meter !== model.meterStyle) {
-      model.meterStyle = meter as any;
-      audio.setVuStyle(meter);
-      view.isBuilt = false;
-      model.notify();
-    }
-    if (selectMeterStyle) selectMeterStyle.value = model.meterStyle;
-  };
-
-  applyModeMeter();
-  (window as any).applyModeMeter = applyModeMeter;
-  new MutationObserver(applyModeMeter).observe(document.body, { attributes: true, attributeFilter: ['class'] });
+  const onModeChange = () => applyModeMeter(ctx, selectMeterStyle);
+  onModeChange();
+  (window as any).applyModeMeter = onModeChange;
+  new MutationObserver(onModeChange).observe(document.body, { attributes: true, attributeFilter: ['class'] });
 
   if (selectMeterStyle) {
     selectMeterStyle.value = model.meterStyle;

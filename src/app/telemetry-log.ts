@@ -1,12 +1,16 @@
 /*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.ca). All rights reserved. */
 /** Per-second telemetry log and fast-transient event log, recorded from the frame loop. */
 
+import { buildTelemetryEntry, buildTransientEntry } from './telemetry-entry';
+
 export interface TelemetryRecorder {
   telemetryLog: any[];
   transientLog: any[];
   recordTelemetry(levels: any, now: number): void;
   recordTransientEvent(levels: any): void;
 }
+
+export { buildTelemetryEntry, buildTransientEntry } from './telemetry-entry';
 
 export function createTelemetryRecorder(): TelemetryRecorder {
   const telemetryLog: any[] = [];
@@ -16,20 +20,7 @@ export function createTelemetryRecorder(): TelemetryRecorder {
   function recordTelemetry(levels: any, now: number) {
     if (now - lastLogSec < 1000) return;
     lastLogSec = now;
-    const dbfs = levels.dbfs || [-60, -60, -60, -60];
-    const lufs = levels.lufs || {};
-    telemetryLog.push({
-      time: new Date().toISOString(),
-      chA: levels.hasAudio ? dbfs[0].toFixed(2) : '-60.00',
-      chB: levels.hasAudio ? dbfs[1].toFixed(2) : '-60.00',
-      sum: levels.hasAudio && typeof dbfs[2] === 'number' ? dbfs[2].toFixed(2) : '-60.00',
-      diff: levels.hasAudio && typeof dbfs[3] === 'number' ? dbfs[3].toFixed(2) : '-60.00',
-      lufsM: isFinite(lufs.m) ? lufs.m.toFixed(2) : '-60.00',
-      lufsS: isFinite(lufs.s) ? lufs.s.toFixed(2) : '-60.00',
-      lufsI: isFinite(lufs.i) ? lufs.i.toFixed(2) : '-60.00',
-      lra: isFinite(lufs.lra) ? lufs.lra.toFixed(2) : '0.00',
-      phase: (typeof levels.phaseCorrelation === 'number') ? levels.phaseCorrelation.toFixed(3) : '1.000'
-    });
+    telemetryLog.push(buildTelemetryEntry(levels));
     if (telemetryLog.length > maxTelemetryEntries) telemetryLog.shift();
   }
 
@@ -52,16 +43,7 @@ export function createTelemetryRecorder(): TelemetryRecorder {
 
     // Fast transient trigger: sharp transient spike (delta >= 3.5 dB), high peak (>= -9 dBFS), or clipping
     if (deltaA >= 3.5 || deltaB >= 3.5 || curA >= -9.0 || curB >= -9.0) {
-      transientLog.push({
-        time: new Date().toISOString(),
-        chA: curA.toFixed(2),
-        chB: curB.toFixed(2),
-        sum: curSum.toFixed(2),
-        diff: curDiff.toFixed(2),
-        deltaA: deltaA.toFixed(2),
-        deltaB: deltaB.toFixed(2),
-        lufsM: (levels.lufs && isFinite(levels.lufs.m)) ? levels.lufs.m.toFixed(2) : '-60.00'
-      });
+      transientLog.push(buildTransientEntry(levels, curA, curB, curSum, curDiff, deltaA, deltaB));
       if (transientLog.length > maxTransientEntries) transientLog.shift();
     }
   }

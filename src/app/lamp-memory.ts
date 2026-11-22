@@ -1,45 +1,42 @@
 /*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.ca). All rights reserved. */
 /**
- * Per-mode VU lamp memory: dark (Ward-Beck) keeps the saved choice, McCurdy (light)
- * mode defaults to vintage parchment but may be switched to amber etc.
+ * Per-mode VU & PPM lamp memory & console background synchronization.
  */
 
 import type { AppContext } from './app-context';
 import type { DrawerControls } from './dom-refs';
+import {
+  lsGet,
+  lsSet,
+  getLampKey,
+  getPpmLampKey,
+  applyModeLamp,
+  applyModePpmLamp,
+  updateConsoleBg
+} from './lamp-mode';
 
-const lsGet = (k: string): string | null => { try { return localStorage.getItem(k); } catch { return null; } };
-const lsSet = (k: string, v: string) => { try { localStorage.setItem(k, v); } catch { /* storage blocked */ } };
+export {
+  getLampKey,
+  getPpmLampKey,
+  getDefaultLampForMode,
+  applyModeLamp,
+  applyModePpmLamp,
+  updateConsoleBg
+} from './lamp-mode';
 
 export function initLampMemory(ctx: AppContext, refs: DrawerControls): void {
   const { model, view } = ctx;
   const { selectLampColor, selectDialBg, selectPpmLampColor, selectPpmDialBg, selectConsoleBg } = refs;
 
-  const lampKey = () => {
-    if (document.body.classList.contains('theme-mccurdy-dark')) return 'xtm.lamp.v2.mccurdyDark';
-    if (document.body.classList.contains('theme-mccurdy')) return 'xtm.lamp.v2.mccurdyLight';
-    if (document.body.classList.contains('theme-wbs-ca')) return 'xtm.lamp.v2.wbsca';
-    return 'xtm.lamp.v2.wbsdark';
-  };
-  const applyModeLamp = () => {
-    const isMcLight = document.body.classList.contains('theme-mccurdy');
-    const isMcDark = document.body.classList.contains('theme-mccurdy-dark');
-    const wbsCa = document.body.classList.contains('theme-wbs-ca');
-    const defaultLamp = wbsCa ? 'amber_bottom' : (isMcLight ? 'unlit' : (isMcDark ? 'amber' : 'amber'));
-    const lamp = lsGet(lampKey()) || defaultLamp;
-    if (lamp !== model.dialLamp) {
-      model.dialLamp = lamp;
-      view.isBuilt = false;
-    }
-    if (selectLampColor) selectLampColor.value = model.dialLamp;
-  };
-  applyModeLamp();
-  new MutationObserver(applyModeLamp).observe(document.body, { attributes: true, attributeFilter: ['class'] });
+  const onModeLampChange = () => applyModeLamp(ctx, selectLampColor);
+  onModeLampChange();
+  new MutationObserver(onModeLampChange).observe(document.body, { attributes: true, attributeFilter: ['class'] });
 
   if (selectLampColor) {
     selectLampColor.value = model.dialLamp || 'amber';
     selectLampColor.addEventListener('change', (e: any) => {
       model.dialLamp = e.target.value;
-      lsSet(lampKey(), model.dialLamp);
+      lsSet(getLampKey(), model.dialLamp);
       model.saveEEPROM();
       view.isBuilt = false;
     });
@@ -62,29 +59,16 @@ export function initLampMemory(ctx: AppContext, refs: DrawerControls): void {
   }
 
   // PPM Lamp Memory & Selection
-  const ppmLampKey = () => {
-    if (document.body.classList.contains('theme-mccurdy-dark')) return 'xtm.ppmLamp.v2.mccurdyDark';
-    if (document.body.classList.contains('theme-mccurdy')) return 'xtm.ppmLamp.v2.mccurdyLight';
-    if (document.body.classList.contains('theme-wbs-ca')) return 'xtm.ppmLamp.v2.wbsca';
-    return 'xtm.ppmLamp.v2.wbsdark';
-  };
-  const applyModePpmLamp = () => {
-    const lamp = lsGet(ppmLampKey()) || 'unlit';
-    if (lamp !== model.ppmLamp) {
-      model.ppmLamp = lamp;
-      view.isBuilt = false;
-    }
-    if (selectPpmLampColor) selectPpmLampColor.value = model.ppmLamp;
-  };
+  const onModePpmLampChange = () => applyModePpmLamp(ctx, selectPpmLampColor);
   if (!lsGet('xtm.ppmLamp.dark')) lsSet('xtm.ppmLamp.dark', model.ppmLamp || 'unlit');
-  applyModePpmLamp();
-  new MutationObserver(applyModePpmLamp).observe(document.body, { attributes: true, attributeFilter: ['class'] });
+  onModePpmLampChange();
+  new MutationObserver(onModePpmLampChange).observe(document.body, { attributes: true, attributeFilter: ['class'] });
 
   if (selectPpmLampColor) {
     selectPpmLampColor.value = model.ppmLamp || 'unlit';
     selectPpmLampColor.addEventListener('change', (e: any) => {
       model.ppmLamp = e.target.value;
-      lsSet(ppmLampKey(), model.ppmLamp);
+      lsSet(getPpmLampKey(), model.ppmLamp);
       model.saveEEPROM();
       view.isBuilt = false;
     });
@@ -107,15 +91,9 @@ export function initLampMemory(ctx: AppContext, refs: DrawerControls): void {
   }
 
   // Console / Chassis Background Mode Selection
-  const updateConsoleBg = () => {
-    if (!selectConsoleBg) return;
-    if (document.body.classList.contains('theme-wbs-ca')) selectConsoleBg.value = 'wbs-ca';
-    else if (document.body.classList.contains('theme-mccurdy-dark')) selectConsoleBg.value = 'mccurdy-dark';
-    else if (document.body.classList.contains('theme-mccurdy')) selectConsoleBg.value = 'mccurdy-light';
-    else selectConsoleBg.value = 'wbs-dark';
-  };
-  updateConsoleBg();
-  new MutationObserver(updateConsoleBg).observe(document.body, { attributes: true, attributeFilter: ['class'] });
+  const onConsoleBgChange = () => updateConsoleBg(selectConsoleBg);
+  onConsoleBgChange();
+  new MutationObserver(onConsoleBgChange).observe(document.body, { attributes: true, attributeFilter: ['class'] });
 
   if (selectConsoleBg) {
     selectConsoleBg.addEventListener('change', (e: any) => {
