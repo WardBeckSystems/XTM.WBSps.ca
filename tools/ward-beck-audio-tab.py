@@ -409,24 +409,7 @@ def start_test_tone(freq=1000):
     TEST_TONE_FREQ = int(freq)
     TEST_TONE_ACTIVE = True
 
-    cmd = (
-        f"python3 -c \""
-        f"import sys, math, struct; "
-        f"rate=48000; f={TEST_TONE_FREQ}; amp=32767*0.12589; step=2*math.pi*f/rate; "
-        f"p=0.0; chunk=256; "
-        f"b = bytearray(); "
-        f"while True: "
-        f"    samples = []; "
-        f"    for _ in range(chunk): "
-        f"        v = int(amp * math.sin(p)); "
-        f"        samples.extend((v, v)); "
-        f"        p = (p + step) % (2 * math.pi); "
-        f"    sys.stdout.buffer.write(struct.pack('<' + str(chunk*2) + 'h', *samples)); "
-        f"    sys.stdout.buffer.flush(); "
-        f"\" | pacat --playback --device=wbs_input_bus --format=s16le --rate=48000 --channels=2"
-    )
-
-    t = threading.Thread(target=_tone_stream_worker, args=(cmd,), daemon=True)
+    t = threading.Thread(target=_tone_stream_worker, args=(TEST_TONE_FREQ,), daemon=True)
     t.start()
 
 
@@ -442,14 +425,50 @@ def stop_test_tone():
         TEST_TONE_PROC = None
 
 
-def _tone_stream_worker(cmd):
-    global TEST_TONE_PROC
+def _tone_stream_worker(freq):
+    global TEST_TONE_PROC, TEST_TONE_ACTIVE
     try:
-        proc = subprocess.Popen(cmd, shell=True, preexec_fn=os.setsid)
+        pacat_cmd = [
+            "pacat", "--playback", "--device=wbs_input_bus",
+            "--format=s16le", "--rate=48000", "--channels=2",
+            "--latency-msec=20", "--stream-name=Ward-Beck Test Tone"
+        ]
+        proc = subprocess.Popen(
+            pacat_cmd,
+            stdin=subprocess.PIPE,
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+            preexec_fn=os.setsid
+        )
         TEST_TONE_PROC = proc
-        proc.wait()
-    except Exception:
+        rate = 48000
+        amp = 32767 * 0.12589  # -18 dBFS reference level
+        step = 2 * math.pi * freq / rate
+        p = 0.0
+        chunk = 256
+        fmt = f"<{chunk * 2}h"
+
+        while TEST_TONE_ACTIVE and proc.poll() is None:
+            samples = []
+            for _ in range(chunk):
+                v = int(amp * math.sin(p))
+                samples.extend((v, v))
+                p = (p + step) % (2 * math.pi)
+            raw = struct.pack(fmt, *samples)
+            if proc.stdin:
+                proc.stdin.write(raw)
+                proc.stdin.flush()
+    except (BrokenPipeError, OSError):
         pass
+    except Exception as e:
+        print(f"[Ward-Beck Tone] Error: {e}", file=sys.stderr)
+    finally:
+        if TEST_TONE_PROC:
+            try:
+                TEST_TONE_PROC.terminate()
+            except Exception:
+                pass
+            TEST_TONE_PROC = None
 
 
 HTML_UI = """<!DOCTYPE html>
@@ -1447,6 +1466,12 @@ def launch_browser(url: str, delay: float = 0.4):
 
 class ThreadingHTTPServer(socketserver.ThreadingMixIn, http.server.HTTPServer):
     daemon_threads = True
+
+    def handle_error(self, request, client_address):
+        ex_type, _, _ = sys.exc_info()
+        if ex_type in (BrokenPipeError, ConnectionResetError):
+            return
+        super().handle_error(request, client_address)
 
 
 def handle_sigterm(signum, frame):
