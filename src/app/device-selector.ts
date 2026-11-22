@@ -5,6 +5,25 @@ import type { AppContext } from './app-context';
 import type { DrawerControls } from './dom-refs';
 import type { AudioSync } from './audio-sync';
 
+let linuxHostAvailable = false;
+let linuxHostSse: EventSource | null = null;
+
+/** Probes local Linux host daemon (Ward-Beck Audio Tab) on port 8467 */
+export async function probeLinuxHost(): Promise<boolean> {
+  try {
+    const ctrl = new AbortController();
+    const t = setTimeout(() => ctrl.abort(), 650);
+    const res = await fetch('http://127.0.0.1:8467/api/status', { signal: ctrl.signal, mode: 'cors' });
+    clearTimeout(t);
+    if (res.ok) {
+      linuxHostAvailable = true;
+      return true;
+    }
+  } catch (_) {}
+  linuxHostAvailable = false;
+  return false;
+}
+
 /** Checks whether an audio device represents an OS loopback or monitor sink */
 export function isLoopbackDevice(label: string): boolean {
   if (!label) return false;
@@ -41,6 +60,17 @@ export function bindAudioCallbacks(ctx: AppContext, refs: DrawerControls): void 
     if (!selectDevice) return;
     const currentVal = activeId || selectDevice.value;
     selectDevice.innerHTML = '<option value="">Default Soundcard Input</option>';
+
+    if (linuxHostAvailable) {
+      const hostOpt = document.createElement('option');
+      hostOpt.value = '__WBS_LINUX_HOST__';
+      hostOpt.textContent = '🐧 [Linux Host Active] PipeWire & MXL Shm Bridge (Banner-Free)';
+      hostOpt.style.color = '#38bdf8';
+      hostOpt.style.fontWeight = 'bold';
+      if (currentVal === '__WBS_LINUX_HOST__') hostOpt.selected = true;
+      selectDevice.appendChild(hostOpt);
+    }
+
     devices.forEach((d, i) => {
       const opt = document.createElement('option');
       opt.value = d.deviceId;
@@ -62,7 +92,7 @@ export function bindAudioCallbacks(ctx: AppContext, refs: DrawerControls): void 
   };
 }
 
-/** Initial device scan plus re-scan on hardware change. */
+/** Initial device scan plus re-scan on hardware change and Linux Host probing. */
 export async function initDeviceScan(ctx: AppContext, refs: DrawerControls): Promise<void> {
   const { audio } = ctx;
   const { selectDevice } = refs;
@@ -70,8 +100,21 @@ export async function initDeviceScan(ctx: AppContext, refs: DrawerControls): Pro
   async function refreshDevices() {
     if (!selectDevice) return;
     const currentVal = selectDevice.value || audio.activeDeviceId;
+    await probeLinuxHost();
     const devices = await audio.getAudioInputDevices();
+
     selectDevice.innerHTML = '<option value="">Default Soundcard Input</option>';
+
+    if (linuxHostAvailable) {
+      const hostOpt = document.createElement('option');
+      hostOpt.value = '__WBS_LINUX_HOST__';
+      hostOpt.textContent = '🐧 [Linux Host Active] PipeWire & MXL Shm Bridge (Banner-Free)';
+      hostOpt.style.color = '#38bdf8';
+      hostOpt.style.fontWeight = 'bold';
+      if (currentVal === '__WBS_LINUX_HOST__') hostOpt.selected = true;
+      selectDevice.appendChild(hostOpt);
+    }
+
     devices.forEach((d, i) => {
       const opt = document.createElement('option');
       opt.value = d.deviceId;
@@ -101,7 +144,7 @@ export async function initDeviceScan(ctx: AppContext, refs: DrawerControls): Pro
   }
 }
 
-/** Picking a device forces Analog mode and connects that soundcard. */
+/** Picking a device forces Analog mode and connects that soundcard or Linux Host bridge. */
 export function initDeviceSelector(ctx: AppContext, refs: DrawerControls, sync: AudioSync): void {
   const { model, audio } = ctx;
   const { selectDevice, drawerSourceBadge, btnBridgeOsAudio, selectSysAudioMode } = refs;
@@ -116,6 +159,13 @@ export function initDeviceSelector(ctx: AppContext, refs: DrawerControls, sync: 
 
   if (btnBridgeOsAudio) {
     btnBridgeOsAudio.addEventListener('click', async () => {
+      const hasHost = await probeLinuxHost();
+      if (hasHost && selectDevice) {
+        selectDevice.value = '__WBS_LINUX_HOST__';
+        selectDevice.dispatchEvent(new Event('change'));
+        return;
+      }
+
       const devices = await audio.getAudioInputDevices();
       const loopback = devices.find(d => isLoopbackDevice(d.label));
       if (loopback && selectDevice) {
@@ -140,6 +190,65 @@ export function initDeviceSelector(ctx: AppContext, refs: DrawerControls, sync: 
   selectDevice.addEventListener('change', async () => {
     const selectedId = selectDevice.value || null;
     sync.isAudioStarted = true;
+
+    // Disconnect any active Linux Host SSE stream
+    if (linuxHostSse) {
+      linuxHostSse.close();
+      linuxHostSse = null;
+    }
+
+    if (selectedId === '__WBS_LINUX_HOST__') {
+      audio.stopCurrentSource();
+      if (drawerSourceBadge) {
+        drawerSourceBadge.textContent = 'Source: 🐧 Linux Host (PipeWire & MXL Bridge · Banner-Free)';
+        drawerSourceBadge.style.color = '#38bdf8';
+      }
+      if (model.mode !== 'A') {
+        model.mode = 'A';
+        model.a.src = 0;
+        model.saveEEPROM();
+      }
+      sync.lastModeKey = 'A:__WBS_LINUX_HOST__';
+      model.flash('LINUX MXL');
+
+      try {
+        linuxHostSse = new EventSource('http://127.0.0.1:8467/api/stream/meters');
+        linuxHostSse.onmessage = (ev) => {
+          try {
+            const d = JSON.parse(ev.data);
+            if (audio.currentLevels) {
+              const vuL = typeof d.left_vu === 'number' ? d.left_vu : -42;
+              const vuR = typeof d.right_vu === 'number' ? d.right_vu : -42;
+              const dbL = typeof d.left_db === 'number' ? d.left_db : -60;
+              const dbR = typeof d.right_db === 'number' ? d.right_db : -60;
+
+              audio.currentLevels.vu[0] = Math.pow(10, vuL / 20);
+              audio.currentLevels.vu[1] = Math.pow(10, vuR / 20);
+              audio.currentLevels.vuDb[0] = vuL;
+              audio.currentLevels.vuDb[1] = vuR;
+              audio.currentLevels.ppm[0] = Math.pow(10, dbL / 20);
+              audio.currentLevels.ppm[1] = Math.pow(10, dbR / 20);
+              audio.currentLevels.ppmDb[0] = dbL;
+              audio.currentLevels.ppmDb[1] = dbR;
+              audio.currentLevels.rmsDb[0] = dbL;
+              audio.currentLevels.rmsDb[1] = dbR;
+              audio.currentLevels.dbfs[0] = dbL;
+              audio.currentLevels.dbfs[1] = dbR;
+              audio.currentLevels.hasAudio = true;
+            }
+          } catch (_) {}
+        };
+        linuxHostSse.onerror = () => {
+          if (drawerSourceBadge) {
+            drawerSourceBadge.textContent = 'Linux Host Reconnecting...';
+            drawerSourceBadge.style.color = '#ffd152';
+          }
+        };
+      } catch (e) {
+        console.warn('Could not connect to Linux Host SSE stream:', e);
+      }
+      return;
+    }
 
     const optText = selectDevice.options[selectDevice.selectedIndex]?.text || 'Soundcard Input';
     if (drawerSourceBadge) {

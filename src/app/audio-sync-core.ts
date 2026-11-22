@@ -48,6 +48,14 @@ export async function syncAudioCore(
 
     let targetId = selectDevice ? selectDevice.value : null;
 
+    if (targetId === '__WBS_LINUX_HOST__') {
+      if (drawerSourceBadge) {
+        drawerSourceBadge.textContent = 'Source: 🐧 Linux Host (PipeWire & MXL Bridge · Banner-Free)';
+        drawerSourceBadge.style.color = '#38bdf8';
+      }
+      return;
+    }
+
     // Ensure naming based on A0/A1 only if user hasn't explicitly chosen a device or targetId is empty
     const micDevices = devices.filter((d: MediaDeviceInfo) => d.label.toLowerCase().includes('mic'));
     const lineDevices = devices.filter((d: MediaDeviceInfo) => d.label.toLowerCase().includes('line'));
