@@ -74,8 +74,8 @@ export function renderMcCurdyCaCenter(): string {
   const font = `font-family="'Helvetica Neue', Helvetica, Arial, sans-serif"`;
 
   // Centered horizontally in center bay (x: 1350 to 1850 -> center 1600)
-  // Positioned in upper bay: ky = 162, leaving room for input selectors below (y = 362)
-  const kx = 1600, ky = 162;
+  // Scaled 30% larger, positioned with ky = 186 to leave clean clearance for input buttons below (by = 384)
+  const kx = 1600, ky = 186;
 
   let scaleTicks = '';
   let scaleInnerNums = '';
@@ -87,11 +87,12 @@ export function renderMcCurdyCaCenter(): string {
   // Step 15: 270° (9:00)  -> Outer: -20, Inner: 0 (Horizontal Left)
   // Step 25: 360° (12:00) -> Outer: 0,   Inner: +20 (Center Top)
   // Step 30: 405° (1:30)  -> Outer: +10, Inner: +30
-  const rOuterNum = 126;
-  const rTickOut = 115;
-  const rTickInMajor = 104;
-  const rTickInMinor = 107;
-  const rInnerNum = 92;
+  // All radii scaled 30% larger (1.30x)
+  const rOuterNum = 164;
+  const rTickOut = 150;
+  const rTickInMajor = 135;
+  const rTickInMinor = 139;
+  const rInnerNum = 120;
 
   for (let i = 0; i <= 30; i++) {
     const clockDeg = 135 + i * 9;
@@ -108,32 +109,32 @@ export function renderMcCurdyCaCenter(): string {
     const isMajor = (i % 5 === 0);
     const rIn = isMajor ? rTickInMajor : rTickInMinor;
 
-    // Radial Ticks (pointing from center outward)
+    // Radial Ticks (pointing from center outward directly on chassis panel)
     const x1 = (kx + rIn * sin).toFixed(1);
     const y1 = (ky - rIn * cos).toFixed(1);
     const x2 = (kx + rTickOut * sin).toFixed(1);
     const y2 = (ky - rTickOut * cos).toFixed(1);
 
-    scaleTicks += `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="#ffffff" stroke-width="${isMajor ? '1.8' : '1.1'}" stroke-opacity="${isMajor ? '0.95' : '0.8'}"/>`;
+    scaleTicks += `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="#ffffff" stroke-width="${isMajor ? '2.2' : '1.3'}" stroke-opacity="${isMajor ? '0.95' : '0.8'}"/>`;
 
-    // Inner Scale Numbers (r=92)
+    // Inner Scale Numbers (r=120)
     const inX = (kx + rInnerNum * sin).toFixed(1);
-    const inY = (ky - rInnerNum * cos + 3.2).toFixed(1);
-    scaleInnerNums += `<text x="${inX}" y="${inY}" font-size="${Math.abs(inVal) >= 10 ? '8.5' : '9.5'}" font-weight="700" fill="#cbd5e1" text-anchor="middle">${inStr}</text>`;
+    const inY = (ky - rInnerNum * cos + 3.5).toFixed(1);
+    scaleInnerNums += `<text x="${inX}" y="${inY}" font-size="${Math.abs(inVal) >= 10 ? '10' : '11'}" font-weight="700" fill="#cbd5e1" text-anchor="middle">${inStr}</text>`;
 
-    // Outer Scale Numbers (r=126)
+    // Outer Scale Numbers (r=164)
     const outX = (kx + rOuterNum * sin).toFixed(1);
-    const outY = (ky - rOuterNum * cos + 3.5).toFixed(1);
-    scaleOuterNums += `<text x="${outX}" y="${outY}" font-size="${Math.abs(outVal) >= 10 ? '9.5' : '10.5'}" font-weight="800" fill="#f8fafc" text-anchor="middle">${outStr}</text>`;
+    const outY = (ky - rOuterNum * cos + 4.0).toFixed(1);
+    scaleOuterNums += `<text x="${outX}" y="${outY}" font-size="${Math.abs(outVal) >= 10 ? '11' : '12'}" font-weight="800" fill="#f8fafc" text-anchor="middle">${outStr}</text>`;
   }
 
-  // 14 Flute barrel (baseRadius=49, fluteDepth=2.6, count=14)
-  const fluteD = buildFlutedPath(49, 2.6, 14);
+  // 14 Flute barrel (scaled 30%: baseRadius=63.7, fluteDepth=3.38, count=14)
+  const fluteD = buildFlutedPath(63.7, 3.38, 14);
   let grooves = '';
   for (let g = 0; g < 14; g++) {
     const angle = (g * 360) / 14 + 360 / 28;
     const rad = (angle * Math.PI) / 180;
-    grooves += `<line x1="${(43 * Math.cos(rad)).toFixed(2)}" y1="${(43 * Math.sin(rad)).toFixed(2)}" x2="${(49 * Math.cos(rad)).toFixed(2)}" y2="${(49 * Math.sin(rad)).toFixed(2)}"/>`;
+    grooves += `<line x1="${(55.9 * Math.cos(rad)).toFixed(2)}" y1="${(55.9 * Math.sin(rad)).toFixed(2)}" x2="${(63.7 * Math.cos(rad)).toFixed(2)}" y2="${(63.7 * Math.sin(rad)).toFixed(2)}"/>`;
   }
 
   // Range switch small fluted knob
@@ -141,9 +142,6 @@ export function renderMcCurdyCaCenter(): string {
 
   return `<g class="mc-ca-only">
       <defs>
-        <linearGradient id="mc_dial_slate" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stop-color="#3d5366"/><stop offset="50%" stop-color="#314353"/><stop offset="100%" stop-color="#24333f"/>
-        </linearGradient>
         <linearGradient id="mc_skirt_silver" x1="0" y1="0" x2="1" y2="1">
           <stop offset="0%" stop-color="#d8dce2"/><stop offset="45%" stop-color="#bfc4cd"/><stop offset="100%" stop-color="#9aa0ab"/>
         </linearGradient>
@@ -162,17 +160,6 @@ export function renderMcCurdyCaCenter(): string {
         <linearGradient id="mc_jack_bezel" x1="0" y1="0" x2="1" y2="1">
           <stop offset="0%" stop-color="#94a3b8"/><stop offset="50%" stop-color="#475569"/><stop offset="100%" stop-color="#1e293b"/>
         </linearGradient>
-        <linearGradient id="mc_shield_blue_ca" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stop-color="#1e3a5f"/>
-          <stop offset="50%" stop-color="#2a5280"/>
-          <stop offset="100%" stop-color="#142842"/>
-        </linearGradient>
-        <filter id="mc_knob_shadow" x="-20%" y="-20%" width="140%" height="140%">
-          <feDropShadow dx="0" dy="6" stdDeviation="6" flood-color="#000000" flood-opacity="0.65"/>
-        </filter>
-        <filter id="mc_badge_shadow" x="-20%" y="-20%" width="140%" height="140%">
-          <feDropShadow dx="0" dy="2" stdDeviation="2" flood-color="#000000" flood-opacity="0.4"/>
-        </filter>
       </defs>
 
       <!-- Center Console Bay in McCurdy Slate Finish (Seamless, No Border) -->
@@ -183,52 +170,48 @@ export function renderMcCurdyCaCenter(): string {
       <!-- ================================================================= -->
       <g id="mc-left-jacks" ${font}>
         <!-- INPUT Header & Bracket grouping Jack 1 and Jack 2 -->
-        <text x="1364" y="132" font-size="10" font-weight="800" fill="#f8fafc" text-anchor="end" letter-spacing="1">INPUT</text>
-        <path d="M 1374,92 H 1370 V 168 H 1374" fill="none" stroke="#f8fafc" stroke-width="1.3"/>
+        <text x="1356" y="132" font-size="10" font-weight="800" fill="#f8fafc" text-anchor="end" letter-spacing="1">INPUT</text>
+        <path d="M 1366,92 H 1362 V 168 H 1366" fill="none" stroke="#f8fafc" stroke-width="1.3"/>
 
         <!-- Jack 1 (INPUT 600Ω) - Interactive MODE button -->
-        <g class="xtm-btn mc-jack" data-btn="MODE" style="cursor:pointer" transform="translate(1390, 92)">
+        <g class="xtm-btn mc-jack" data-btn="MODE" style="cursor:pointer" transform="translate(1382, 92)">
           <title>Input 1 (600Ω - MODE)</title>
           <circle cx="0" cy="0" r="13" fill="url(#mc_jack_bezel)" stroke="#0f172a" stroke-width="1.2"/>
           <circle cx="0" cy="0" r="9" fill="#1b242e" stroke="#0a121a" stroke-width="0.8"/>
           <circle cx="0" cy="0" r="4.8" fill="#06090c"/>
         </g>
-        <text x="1408" y="96" font-size="10" font-weight="800" fill="#f8fafc" text-anchor="start">600Ω</text>
+        <text x="1400" y="96" font-size="10" font-weight="800" fill="#f8fafc" text-anchor="start">600Ω</text>
 
         <!-- Jack 2 (INPUT 20K) - Interactive SOURCE button -->
-        <g class="xtm-btn mc-jack" data-btn="SOURCE" style="cursor:pointer" transform="translate(1390, 168)">
+        <g class="xtm-btn mc-jack" data-btn="SOURCE" style="cursor:pointer" transform="translate(1382, 168)">
           <title>Input 2 (20K Bridging - SOURCE)</title>
           <circle cx="0" cy="0" r="13" fill="url(#mc_jack_bezel)" stroke="#0f172a" stroke-width="1.2"/>
           <circle cx="0" cy="0" r="9" fill="#1b242e" stroke="#0a121a" stroke-width="0.8"/>
           <circle cx="0" cy="0" r="4.8" fill="#06090c"/>
         </g>
-        <text x="1408" y="172" font-size="10" font-weight="800" fill="#f8fafc" text-anchor="start">20K</text>
+        <text x="1400" y="172" font-size="10" font-weight="800" fill="#f8fafc" text-anchor="start">20K</text>
 
         <!-- Jack 3 (MON. OUTPUT 20K) -->
-        <text x="1364" y="240" font-size="8.5" font-weight="800" fill="#cbd5e1" text-anchor="end" letter-spacing="0.6">MON.</text>
-        <text x="1364" y="252" font-size="8.5" font-weight="800" fill="#cbd5e1" text-anchor="end" letter-spacing="0.6">OUTPUT</text>
-        <g class="xtm-btn mc-jack" data-btn="DOWN" style="cursor:pointer" transform="translate(1390, 244)">
+        <text x="1356" y="240" font-size="8.5" font-weight="800" fill="#cbd5e1" text-anchor="end" letter-spacing="0.6">MON.</text>
+        <text x="1356" y="252" font-size="8.5" font-weight="800" fill="#cbd5e1" text-anchor="end" letter-spacing="0.6">OUTPUT</text>
+        <g class="xtm-btn mc-jack" data-btn="DOWN" style="cursor:pointer" transform="translate(1382, 244)">
           <title>Monitor Output (20K)</title>
           <circle cx="0" cy="0" r="13" fill="url(#mc_jack_bezel)" stroke="#0f172a" stroke-width="1.2"/>
           <circle cx="0" cy="0" r="9" fill="#1b242e" stroke="#0a121a" stroke-width="0.8"/>
           <circle cx="0" cy="0" r="4.8" fill="#06090c"/>
         </g>
-        <text x="1408" y="248" font-size="10" font-weight="800" fill="#f8fafc" text-anchor="start">20K</text>
+        <text x="1400" y="248" font-size="10" font-weight="800" fill="#f8fafc" text-anchor="start">20K</text>
 
         <!-- Model Designation Silkscreen (Lower Left) -->
-        <text x="1390" y="388" font-size="12" font-weight="900" fill="#94a3b8" text-anchor="middle" letter-spacing="1.5">SA14023</text>
+        <text x="1382" y="388" font-size="12" font-weight="900" fill="#94a3b8" text-anchor="middle" letter-spacing="1.5">SA14023</text>
       </g>
 
       <!-- ================================================================= -->
       <!-- CENTERPIECE: CENTERED MCCURDY ATTENUATOR KNOB & DUAL SCALE       -->
-      <!-- (Centered at x=1600, y=162; diameter 276px)                       -->
+      <!-- (30% larger, engraved directly on blue panel with no disc shadow) -->
       <!-- ================================================================= -->
-      <g id="mccurdy-vintage-knob-assembly" class="xtm-btn mccurdy-knob" filter="url(#mc_knob_shadow)" style="cursor:grab; touch-action:none; user-select:none;">
+      <g id="mccurdy-vintage-knob-assembly" class="xtm-btn mccurdy-knob" style="cursor:grab; touch-action:none; user-select:none;">
         <title>McCurdy SA14023 Dual-Concentric Attenuator (-50 to +10 dB / -30 to +30 dB)</title>
-
-        <!-- Circular Slate Blue Background Plate (r=138) -->
-        <circle cx="${kx}" cy="${ky}" r="138" fill="url(#mc_dial_slate)" stroke="#1a2530" stroke-width="2"/>
-        <circle cx="${kx}" cy="${ky}" r="135" fill="none" stroke="#5a7690" stroke-width="0.9" stroke-opacity="0.5"/>
 
         <!-- Silkscreen Scales Group (Inner -30 to +30, Outer -50 to +10) -->
         <g id="mc-knob-scales" ${font}>
@@ -237,35 +220,35 @@ export function renderMcCurdyCaCenter(): string {
           <g id="mc_scale_outer_group">${scaleOuterNums}</g>
         </g>
 
-        <!-- Silver Skirt Base Disc (r=71) with Inner Bevel Line -->
-        <circle cx="${kx}" cy="${ky}" r="71" fill="url(#mc_skirt_silver)" stroke="#555a64" stroke-width="1.3"/>
-        <circle cx="${kx}" cy="${ky}" r="55" fill="none" stroke="#8a909c" stroke-width="0.9"/>
+        <!-- Silver Skirt Base Disc (r=92, 30% larger) with Inner Bevel Line -->
+        <circle cx="${kx}" cy="${ky}" r="92" fill="url(#mc_skirt_silver)" stroke="#555a64" stroke-width="1.6"/>
+        <circle cx="${kx}" cy="${ky}" r="72" fill="none" stroke="#8a909c" stroke-width="1.1"/>
 
         <!-- Rotating 14-Flute Barrel Body with Solid Triangle Pointer and Yellow Cap -->
         <g id="mccurdy_vintage_knob_rotor" data-cx="${kx}" data-cy="${ky}" transform="translate(${kx}, ${ky})">
-          <!-- Solid Black Pointer Arrow at 9 o'clock (-70px to -55px from center on rotating skirt) -->
-          <polygon points="-70,0 -55,-7 -55,7" fill="#141517"/>
+          <!-- Solid Black Pointer Arrow at 9 o'clock (-91px to -72px on rotating skirt) -->
+          <polygon points="-91,0 -72,-9 -72,9" fill="#141517"/>
 
-          <!-- 14-Flute Barrel Body -->
-          <path d="${fluteD}" fill="url(#mc_barrel_grad)" stroke="#4b505a" stroke-width="1.1"/>
-          <g stroke="#666c77" stroke-width="1.0" stroke-linecap="round">
+          <!-- 14-Flute Barrel Body (30% larger) -->
+          <path d="${fluteD}" fill="url(#mc_barrel_grad)" stroke="#4b505a" stroke-width="1.4"/>
+          <g stroke="#666c77" stroke-width="1.2" stroke-linecap="round">
             ${grooves}
           </g>
 
-          <!-- Outer Raised Gold Bezel Ring (r=35.5) & Specular Highlight -->
-          <circle cx="0" cy="0" r="35.5" fill="none" stroke="url(#mc_gold_rim)" stroke-width="2.0"/>
-          <path d="M -25,-25 A 35.5,35.5 0 0 1 25,-25" fill="none" stroke="#fde68a" stroke-width="1.3" stroke-opacity="0.85"/>
+          <!-- Outer Raised Gold Bezel Ring (r=46) & Specular Highlight -->
+          <circle cx="0" cy="0" r="46" fill="none" stroke="url(#mc_gold_rim)" stroke-width="2.6"/>
+          <path d="M -32.5,-32.5 A 46,46 0 0 1 32.5,-32.5" fill="none" stroke="#fde68a" stroke-width="1.6" stroke-opacity="0.85"/>
 
-          <!-- Bright Cadmium Yellow Cap Face (r=33) matching authentic vintage hardware -->
-          <circle cx="0" cy="0" r="33" fill="url(#mc_yellow_cap)" stroke="#9c7a0b" stroke-width="0.8"/>
+          <!-- Bright Cadmium Yellow Cap Face (r=43) matching authentic vintage hardware -->
+          <circle cx="0" cy="0" r="43" fill="url(#mc_yellow_cap)" stroke="#9c7a0b" stroke-width="1.0"/>
 
           <!-- Solid Black Index Line pointing at 9 o'clock (aligned with skirt pointer) -->
-          <line x1="-3" y1="0" x2="-31" y2="0" stroke="#141517" stroke-width="2.5" stroke-linecap="round"/>
+          <line x1="-4" y1="0" x2="-40" y2="0" stroke="#141517" stroke-width="3" stroke-linecap="round"/>
         </g>
       </g>
 
       <!-- ================================================================= -->
-      <!-- RIGHT SECTION: TOGGLE SWITCH (UPPER) & MCCURDY BADGE             -->
+      <!-- RIGHT SECTION: TOGGLE SWITCH (UPPER)                              -->
       <!-- ================================================================= -->
       <!-- Chrome Bat-Handle Toggle Switch Assembly (Upper Right, cx=1805, cy=105) -->
       <g id="mc-toggle-assembly" class="xtm-btn" data-btn="MC_TOGGLE" style="cursor:pointer" transform="translate(1805, 105)">
@@ -285,40 +268,17 @@ export function renderMcCurdyCaCenter(): string {
         </g>
       </g>
 
-      <!-- McCurdy Vintage Shield Cartouche Logo & Badge (cx=1805, cy=205) -->
-      <g id="mccurdy-vintage-shield-badge" filter="url(#mc_badge_shadow)">
-        <svg x="1765" y="184" width="80" height="40" viewBox="100 85 800 370" aria-hidden="true">
-          <!-- Symmetrical Shield Border & Metallic Blue Field -->
-          <path d="M 140,185 Q 132,160 165,155 L 475,112 Q 500,108 525,112 L 835,155 Q 868,160 860,185 L 785,375 Q 775,398 748,402 L 525,442 Q 500,446 475,442 L 252,402 Q 225,398 215,375 Z"
-                fill="url(#mc_shield_blue_ca)" stroke="#f8fafc" stroke-width="24" stroke-linejoin="round"/>
-          <!-- Lowercase 'm' with extended crossbar -->
-          <path d="M 248,175 L 322,175 L 322,200 C 342,178 368,170 394,173 C 418,176 434,188 444,206 C 464,180 494,170 524,173 C 564,177 586,206 586,250 L 586,322 L 782,322 L 770,350 L 586,350 L 586,362 L 608,362 L 608,385 L 498,385 L 498,362 L 520,362 L 520,350 L 452,350 L 452,322 L 520,322 L 520,255 C 520,230 508,218 488,218 C 468,218 454,232 454,258 L 454,305 L 390,305 L 390,255 C 390,230 378,218 358,218 C 338,218 324,232 324,258 L 324,362 L 346,362 L 346,385 L 248,385 L 248,362 L 268,362 L 268,200 L 248,200 Z"
-                fill="#f8fafc"/>
-          <!-- CCURDY Lettering -->
-          <g fill="#f8fafc" font-family="'Helvetica Neue', Helvetica, Arial, sans-serif" font-weight="800" letter-spacing="1.5">
-            <text x="598" y="258" font-size="32">C</text>
-            <text x="622" y="272" font-size="44">CURDY</text>
-          </g>
-        </svg>
-      </g>
-      <text x="1805" y="244" ${font} font-size="9" font-weight="800" fill="#f8fafc" text-anchor="middle" letter-spacing="1.2">RADIO IND.</text>
-      <text x="1805" y="256" ${font} font-size="7.5" font-weight="700" fill="#94a3b8" text-anchor="middle" letter-spacing="0.8">TORONTO, CAN.</text>
-
       <!-- ================================================================= -->
-      <!-- BOTTOM SECTION: 4 INTERLOCKING INPUT SELECTORS (CENTERED BELOW)   -->
+      <!-- BOTTOM SECTION: INPUT 1 2 3 4 SELECTORS (CENTERED BELOW)          -->
       <!-- ================================================================= -->
       <g id="mc-bottom-selectors" ${font}>
-        <text x="1600" y="324" font-size="9.5" font-weight="800" fill="#94a3b8" text-anchor="middle" letter-spacing="1.5">INPUT SELECTOR</text>
-        <line x1="1470" y1="321" x2="1525" y2="321" stroke="#64748b" stroke-width="0.8" opacity="0.6"/>
-        <line x1="1675" y1="321" x2="1730" y2="321" stroke="#64748b" stroke-width="0.8" opacity="0.6"/>
-
         ${[1, 2, 3, 4].map(i => {
           const bx = 1600 + (i - 2.5) * 72;
-          const by = 364;
+          const by = 384;
           return `
         <g class="xtm-btn mc-selector-btn ${i === 1 ? 'mc-btn-latched' : ''}" id="mc_input_btn_${i}" data-btn="INPUT_${i}" data-input="${i}" style="cursor:pointer" transform="translate(${bx}, ${by})" role="button" tabindex="0" aria-label="Input ${i}">
           <title>Input ${i} Selector Switch (Push to select, snaps up when another is pushed)</title>
-          <text x="0" y="-21" font-size="9" font-weight="700" fill="#cbd5e1" text-anchor="middle" letter-spacing="0.5">INPUT ${i}</text>
+          <text x="0" y="-19" font-size="9.5" font-weight="700" fill="#cbd5e1" text-anchor="middle" letter-spacing="0.5">INPUT ${i}</text>
           <!-- Outer Bezel & Well -->
           <circle cx="0" cy="0" r="17" fill="url(#chromeMetalGrad)" stroke="#152636" stroke-width="1.3"/>
           <circle cx="0" cy="0" r="13" fill="#0d141c" stroke="#080e14" stroke-width="1"/>
