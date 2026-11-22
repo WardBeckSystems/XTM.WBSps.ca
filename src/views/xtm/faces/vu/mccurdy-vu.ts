@@ -6,7 +6,7 @@
  * - Numerals: -20..-1 in #2d2924, 0..+3 in #c83728
  * - Left "VU" in #524a3e, Right "VU" in #b83b2a
  * - Lower Subscale: 0 to 100% modulation scale (0..80 in #2d2924, 100 in #c83728)
- * - Authentic tapered needle shaft with arrowhead spade tip (gemini-svg (14).svg)
+ * - Authentic tapered needle shaft with teardrop spade tip
  * - Authentic McCurdy brand badge with small-scale legibility optimization
  */
 import type { FaceCtx, VuFaceStyle } from '../face-types';
@@ -85,18 +85,38 @@ export function mccurdyVuNeedle(px: number, py: number, R: number): NeedleParts 
   return {
     shadow: `
       <!-- McCurdy Authentic Vintage Needle Drop Shadow -->
-      <polygon points="${px - 2.8 + sx},${py + sy} ${px - 0.8 + sx},${topY + 19 + sy} ${px + 0.8 + sx},${topY + 19 + sy} ${px + 2.8 + sx},${py + sy}" fill="rgba(0,0,0,0.30)" />
-      <polygon points="${px + sx},${topY + 2 + sy} ${px - 13 + sx},${topY + 25 + sy} ${px + sx},${topY + 19 + sy} ${px + 13 + sx},${topY + 25 + sy}" fill="rgba(0,0,0,0.30)" />
+      <path d="
+        M ${px + sx} ${topY + 1.5 + sy}
+        C ${px + 1.2 + sx} ${topY + 6 + sy}, ${px + 4.8 + sx} ${topY + 12 + sy}, ${px + 7.0 + sx} ${topY + 16.5 + sy}
+        C ${px + 8.6 + sx} ${topY + 19.5 + sy}, ${px + 8.2 + sx} ${topY + 23.0 + sy}, ${px + 5.5 + sx} ${topY + 25.2 + sy}
+        C ${px + 3.4 + sx} ${topY + 26.6 + sy}, ${px + 1.5 + sx} ${topY + 25.8 + sy}, ${px + 0.8 + sx} ${topY + 24 + sy}
+        L ${px + 2.8 + sx} ${py + sy}
+        L ${px - 2.8 + sx} ${py + sy}
+        L ${px - 0.8 + sx} ${topY + 24 + sy}
+        C ${px - 1.5 + sx} ${topY + 25.8 + sy}, ${px - 3.4 + sx} ${topY + 26.6 + sy}, ${px - 5.5 + sx} ${topY + 25.2 + sy}
+        C ${px - 8.2 + sx} ${topY + 23.0 + sy}, ${px - 8.6 + sx} ${topY + 19.5 + sy}, ${px - 7.0 + sx} ${topY + 16.5 + sy}
+        C ${px - 4.8 + sx} ${topY + 12 + sy}, ${px - 1.2 + sx} ${topY + 6 + sy}, ${px + sx} ${topY + 1.5 + sy}
+        Z" fill="rgba(0,0,0,0.30)"/>
       <circle cx="${px + sx}" cy="${py + sy}" r="11" fill="rgba(0,0,0,0.25)"/>
     `,
     body: `
-      <!-- McCurdy Authentic Vintage Needle (per gemini-svg (14).svg) -->
-      <!-- Main Tapered Needle Shaft -->
-      <polygon points="${px - 2.8},${py} ${px - 0.8},${topY + 19} ${px + 0.8},${topY + 19} ${px + 2.8},${py}" fill="#26231f" />
+      <!-- McCurdy Authentic Vintage Needle with Classic Teardrop Pointer -->
+      <path d="
+        M ${px} ${topY + 1.5}
+        C ${px + 1.2} ${topY + 6}, ${px + 4.8} ${topY + 12}, ${px + 7.0} ${topY + 16.5}
+        C ${px + 8.6} ${topY + 19.5}, ${px + 8.2} ${topY + 23.0}, ${px + 5.5} ${topY + 25.2}
+        C ${px + 3.4} ${topY + 26.6}, ${px + 1.5} ${topY + 25.8}, ${px + 0.8} ${topY + 24}
+        L ${px + 2.8} ${py}
+        L ${px - 2.8} ${py}
+        L ${px - 0.8} ${topY + 24}
+        C ${px - 1.5} ${topY + 25.8}, ${px - 3.4} ${topY + 26.6}, ${px - 5.5} ${topY + 25.2}
+        C ${px - 8.2} ${topY + 23.0}, ${px - 8.6} ${topY + 19.5}, ${px - 7.0} ${topY + 16.5}
+        C ${px - 4.8} ${topY + 12}, ${px - 1.2} ${topY + 6}, ${px} ${topY + 1.5}
+        Z" fill="#1e1b18"/>
       
-      <!-- Arrowhead Spade Tip (26px wide, 23px long) -->
-      <polygon points="${px},${topY + 2} ${px - 13},${topY + 25} ${px},${topY + 19} ${px + 13},${topY + 25}" fill="#1e1b18" />
-      
+      <!-- Subtle needle spine ridge highlight -->
+      <line x1="${px - 0.4}" y1="${py - 8}" x2="${px - 0.4}" y2="${topY + 10}" stroke="rgba(255,255,255,0.22)" stroke-width="0.8"/>
+
       <!-- Center Pivot Hub & Concentric Screws -->
       <circle cx="${px}" cy="${py}" r="11" fill="#141517" stroke="#2a2d33" stroke-width="1.2"/>
       <circle cx="${px}" cy="${py}" r="5.5" fill="#090a0c"/>
