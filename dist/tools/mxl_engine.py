@@ -528,10 +528,117 @@ class MxlEngine:
             "shm_base_dir": SHM_BASE_DIR,
             "active_source": self.active_source,
             "flows": flows_info,
+            "domains": self.scan_all_domains(),
             "tai_epoch_ns": current_tai_ns(),
             "ntp_sec": ntp_now,
             "second_of_10": round(ntp_now % 10.0, 4),
             "buffer_duration_sec": 10.0,
+        }
+
+    def scan_all_domains(self) -> dict:
+        """Discovers all MXL domains and flows in SHM_BASE_DIR (/dev/shm/mxl)."""
+        domains = {}
+        if not os.path.isdir(SHM_BASE_DIR):
+            return domains
+
+        for entry in os.listdir(SHM_BASE_DIR):
+            dom_path = os.path.join(SHM_BASE_DIR, entry)
+            if not os.path.isdir(dom_path):
+                continue
+            dom_def_path = os.path.join(dom_path, "domain_def.json")
+            dom_meta = {"id": entry, "label": entry, "path": dom_path, "flows": []}
+            if os.path.isfile(dom_def_path):
+                try:
+                    with open(dom_def_path, "r", encoding="utf-8") as f:
+                        d = json.load(f)
+                        dom_meta["id"] = d.get("id", entry)
+                        dom_meta["label"] = d.get("label", entry)
+                        dom_meta["description"] = d.get("description", "")
+                except Exception:
+                    pass
+
+            for item in os.listdir(dom_path):
+                item_path = os.path.join(dom_path, item)
+                if not os.path.isdir(item_path):
+                    continue
+                flow_def_path = os.path.join(item_path, "flow_def.json")
+                if os.path.isfile(flow_def_path):
+                    try:
+                        with open(flow_def_path, "r", encoding="utf-8") as f:
+                            fdef = json.load(f)
+                            fdef["domain_label"] = dom_meta["label"]
+                            fdef["domain_id"] = dom_meta["id"]
+                            fdef["folder"] = item
+                            fdef["path"] = item_path
+                            fdef["flow_id"] = fdef.get("id") or fdef.get("flow_id") or item.replace(".mxl-flow", "")
+                            dom_meta["flows"].append(fdef)
+                    except Exception:
+                        pass
+            domains[dom_meta["label"]] = dom_meta
+        return domains
+
+    def get_external_flow_waveform(self, flow_id: str) -> dict:
+        """Reads circular audio buffer from an external MXL flow (e.g. CBC Test-Audio-1)."""
+        tai_now = current_tai_ns()
+        ntp_sec = time.time()
+        bins = 720
+        ch0_min, ch0_max = [0.0] * bins, [0.0] * bins
+        ch1_min, ch1_max = [0.0] * bins, [0.0] * bins
+
+        domains = self.scan_all_domains()
+        target_flow = None
+        for dom in domains.values():
+            for flw in dom.get("flows", []):
+                if flw.get("flow_id") == flow_id or flw.get("id") == flow_id or flw.get("folder") == flow_id:
+                    target_flow = flw
+                    break
+            if target_flow:
+                break
+
+        buf_len = 19456
+        srate = 48000
+        if target_flow:
+            srate = target_flow.get("sample_rate", {}).get("numerator", 48000) if isinstance(target_flow.get("sample_rate"), dict) else 48000
+            channels_file = os.path.join(target_flow["path"], "channels")
+            if os.path.isfile(channels_file):
+                try:
+                    with open(channels_file, "rb") as f:
+                        raw = f.read()
+                    floats = struct.unpack(f"<{len(raw)//4}f", raw)
+                    n = len(floats) // 2
+                    buf_len = n if n > 0 else 19456
+                    ch0 = floats[:n]
+                    ch1 = floats[n:]
+                    chunk = max(1, n // bins)
+                    for b in range(bins):
+                        s0 = ch0[b * chunk : (b + 1) * chunk]
+                        s1 = ch1[b * chunk : (b + 1) * chunk]
+                        if s0:
+                            ch0_min[b] = round(min(s0), 4)
+                            ch0_max[b] = round(max(s0), 4)
+                        if s1:
+                            ch1_min[b] = round(min(s1), 4)
+                            ch1_max[b] = round(max(s1), 4)
+                except Exception:
+                    pass
+
+        return {
+            "flow_id": flow_id,
+            "sample_rate": srate,
+            "channel_count": 2,
+            "buffer_length": buf_len,
+            "duration_sec": round(buf_len / srate, 3),
+            "write_head": buf_len,
+            "write_seq": 1,
+            "tai_timestamp_ns": tai_now,
+            "ntp_sec": ntp_sec,
+            "second_of_10": round(ntp_sec % 10.0, 4),
+            "head_sec": round(buf_len / srate, 4),
+            "bins": bins,
+            "ch0_min": ch0_min,
+            "ch0_max": ch0_max,
+            "ch1_min": ch1_min,
+            "ch1_max": ch1_max,
         }
 
     def stop(self):

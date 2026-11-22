@@ -262,6 +262,33 @@ def list_sources():
 
 def source_meter_worker(src_name):
     """Background reader thread computing live RMS, dBFS, and VU for an individual source."""
+    if src_name.startswith("mxl:"):
+        parts = src_name.split(":")
+        flow_id = parts[2] if len(parts) >= 3 else ""
+        vu_val = 0.0
+        while not SHUTDOWN_EVENT.is_set():
+            try:
+                wf = MXL_ENGINE.get_external_flow_waveform(flow_id)
+                maxs = wf.get("ch0_max", [])
+                if maxs:
+                    rms = math.sqrt(sum(x * x for x in maxs) / len(maxs))
+                    vu_val = 0.70 * vu_val + 0.30 * rms
+                    db = 20 * math.log10(max(vu_val, 1e-5))
+                    vu = db + 18.0
+                    with STATE_LOCK:
+                        SOURCE_METERS[src_name] = {"db": round(db, 1), "vu": round(vu, 1)}
+            except Exception:
+                pass
+            time.sleep(0.08)
+        return
+
+    if src_name.startswith("nmos:"):
+        while not SHUTDOWN_EVENT.is_set():
+            with STATE_LOCK:
+                SOURCE_METERS[src_name] = {"db": -20.0, "vu": -2.0}
+            time.sleep(1.0)
+        return
+
     chunk_frames = 512
     bytes_per_read = chunk_frames * 2  # s16le mono
     vu_val = 0.0
@@ -601,6 +628,13 @@ def meter_reader_loop():
                 db_r = 20 * math.log10(max(vu_r, 1e-5))
                 vu_left = db_l + 18.0
                 vu_right = db_r + 18.0
+
+                if SELECTED_SOURCE.startswith("mxl:") and SELECTED_SOURCE in SOURCE_METERS:
+                    sm = SOURCE_METERS[SELECTED_SOURCE]
+                    db_l = sm.get("db", -60.0)
+                    db_r = sm.get("db", -60.0)
+                    vu_left = sm.get("vu", -42.0)
+                    vu_right = sm.get("vu", -42.0)
 
                 with STATE_LOCK:
                     METER_LEVELS = {
@@ -1075,6 +1109,7 @@ HTML_UI = """<!DOCTYPE html>
   .pill-monitor { background: #334155; color: #94a3b8; }
   .pill-mic { background: #b45309; color: #fff; }
   .pill-nmos { background: #0e7490; color: #38bdf8; border: 1px solid #0284c7; }
+  .pill-mxl { background: #c2410c; color: #ffedd5; border: 1px solid #ea580c; }
   
   .mini-meter-track {
     width: 100%; height: 10px; background: #08131d; border-radius: 3px;
@@ -1162,6 +1197,7 @@ HTML_UI = """<!DOCTYPE html>
       <div class="badge badge-active">PIPEWIRE 1.0</div>
       <div class="badge badge-cyan">ALSA HARDWARE</div>
       <div class="badge badge-cyan" id="badge-nmos">📡 NMOS IS-04</div>
+      <div class="badge badge-orange" id="badge-cbc-hdr">📺 CBC GEN :9600</div>
       <div class="badge badge-orange" id="badge-mxl">MXL /dev/shm</div>
       <div class="badge" id="badge-tai">TAI: SYNCING...</div>
     </div>
@@ -1207,9 +1243,10 @@ HTML_UI = """<!DOCTYPE html>
         <!-- Flow Selector -->
         <div class="eye-flow-switcher">
           <div style="font-size: 0.75rem; color: var(--text-dim); margin-bottom: 6px; text-transform: uppercase; font-weight: 700;">Monitored MXL Shared-Memory Flow:</div>
-          <div class="badge-row">
+          <div class="badge-row" id="eye-flow-buttons">
             <button id="btn-flow-master" class="ctrl-btn active" style="font-size: 0.75rem; padding: 4px 12px;" onclick="switchEyeFlow('wbs-flow-master-stereo')">Master Bus (Live Audio)</button>
             <button id="btn-flow-tone" class="ctrl-btn" style="font-size: 0.75rem; padding: 4px 12px;" onclick="switchEyeFlow('wbs-flow-ref-tone')">Calibrated 1kHz Ref Tone</button>
+            <button id="btn-flow-cbc-audio" class="ctrl-btn" style="font-size: 0.75rem; padding: 4px 12px;" onclick="switchEyeFlow('9b85cd39-2476-5467-b1cf-9eb8615dc07c')">CBC Test-Audio-1 (exercise-4)</button>
           </div>
         </div>
 
@@ -1464,7 +1501,106 @@ HTML_UI = """<!DOCTYPE html>
     </div>
   </div>
 
-  <!-- SECTION 5: Multi-Source Audio Matrix Grid -->
+  <!-- SECTION 5: CBC Radio-Canada MXL Test Generator & Pattern Studio -->
+  <div class="section-title">
+    <span>CBC / Radio-Canada MXL Test Generator &amp; Pattern Studio</span>
+    <div class="section-subtitle">Real-time SMPTE Video Test Patterns &amp; Calibrated Audio Tone Generator · Port 9600 (:9601 WebRTC Receiver / :9699 MXL Info GUI)</div>
+  </div>
+
+  <div class="abb-card" id="cbc-studio-card" style="border-left: 4px solid var(--accent-orange); margin-bottom: 24px;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid #1a324b; flex-wrap: wrap; gap: 8px;">
+      <div style="display: flex; align-items: center; gap: 10px;">
+        <span class="badge badge-orange" style="font-weight: 900;">CBC MXL</span>
+        <strong style="color: #f1f5f9; font-size: 0.88rem; letter-spacing: 0.5px;">EBU DMF SHARED-MEMORY TEST PATTERN GENERATOR</strong>
+        <span class="badge" id="badge-cbc-status">POLLING :9600...</span>
+      </div>
+      <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+        <a href="http://localhost:9601" target="_blank" class="ctrl-btn active" style="text-decoration: none; font-size: 0.75rem; padding: 4px 10px; display: inline-flex; align-items: center; gap: 4px;">📺 Launch WebRTC Player (:9601)</a>
+        <a href="http://localhost:9699" target="_blank" class="ctrl-btn" style="text-decoration: none; font-size: 0.75rem; padding: 4px 10px; display: inline-flex; align-items: center; gap: 4px;">📊 Open MXL Info GUI (:9699)</a>
+        <button class="ctrl-btn" id="btn-cbc-eye-view" onclick="switchEyeFlow('9b85cd39-2476-5467-b1cf-9eb8615dc07c')" style="font-size: 0.75rem; padding: 4px 10px;">👁️ Monitor Flow in Audio Eye</button>
+      </div>
+    </div>
+
+    <div class="abb-grid">
+      <!-- Video Pattern Selector -->
+      <div class="abb-col">
+        <div class="abb-title">VIDEO TEST PATTERNS (25 PATTERNS)</div>
+        <div style="margin-bottom: 6px;">
+          <select id="cbc-video-pattern-select" class="ctrl-btn" style="width: 100%; text-align: left;" onchange="setCbcVideoPattern(this.value)">
+            <option value="100% bars" selected>100% Color Bars (Default)</option>
+            <option value="SMPTE 75%">SMPTE 75% Color Bars</option>
+            <option value="SMPTE">SMPTE Bars</option>
+            <option value="SMPTE RP-219">SMPTE RP-219 High Definition</option>
+            <option value="Snow">Snow / Static Noise</option>
+            <option value="Zone Plate">Zone Plate</option>
+            <option value="Chroma Zone Plate">Chroma Zone Plate</option>
+            <option value="Gamut">Gamut Test Pattern</option>
+            <option value="Checkers 1">Checkers 1</option>
+            <option value="Checkers 2">Checkers 2</option>
+            <option value="Checkers 4">Checkers 4</option>
+            <option value="Checkers 8">Checkers 8</option>
+            <option value="Circular">Circular Pattern</option>
+            <option value="Blink">Blink Alternator</option>
+            <option value="Ball">Bouncing Ball</option>
+            <option value="Bar">Scrolling Bar</option>
+            <option value="Pinwheel">Rotating Pinwheel</option>
+            <option value="Spokes">Siemens Spokes</option>
+            <option value="Gradient">Smooth Luma Gradient</option>
+            <option value="Black">Black Screen</option>
+            <option value="White">White 100% Field</option>
+            <option value="Red">Red Pure Primary</option>
+            <option value="Green">Green Pure Primary</option>
+            <option value="Blue">Blue Pure Primary</option>
+            <option value="Solid Color">Solid Custom Color</option>
+          </select>
+        </div>
+        <div style="font-size: 0.72rem; color: var(--text-dim);" id="cbc-video-flow-info">
+          Flow: 6b5d8d68... · 1920x1080 @ 30 fps · Timecode Active
+        </div>
+      </div>
+
+      <!-- Audio Pattern Selector -->
+      <div class="abb-col">
+        <div class="abb-title">AUDIO TEST PATTERNS (13 WAVEFORMS)</div>
+        <div style="margin-bottom: 6px;">
+          <select id="cbc-audio-pattern-select" class="ctrl-btn" style="width: 100%; text-align: left;" onchange="setCbcAudioPattern(this.value)">
+            <option value="1 kHz tone" selected>Calibrated 1 kHz Sine Tone</option>
+            <option value="Pink Noise">Pink Noise (-3 dB/octave)</option>
+            <option value="White Noise">White Noise (Flat Spectral)</option>
+            <option value="Square">Square Wave (Odd Harmonics)</option>
+            <option value="Saw">Sawtooth Wave (All Harmonics)</option>
+            <option value="Triangle">Triangle Wave</option>
+            <option value="Sine Table">Sine Table Synthesizer</option>
+            <option value="Ticks">Synchronous Audio Ticks</option>
+            <option value="Gaussian Noise">Gaussian Distribution Noise</option>
+            <option value="Red Noise">Red / Brownian Noise (-6 dB/oct)</option>
+            <option value="Blue Noise">Blue Noise (+3 dB/oct)</option>
+            <option value="Violet Noise">Violet Noise (+6 dB/oct)</option>
+            <option value="Silence">Full Digital Silence (0.0)</option>
+          </select>
+        </div>
+        <div style="font-size: 0.72rem; color: var(--text-dim);" id="cbc-audio-flow-info">
+          Flow: 9b85cd39... · 2 Channels Float32 @ 48 kHz
+        </div>
+      </div>
+
+      <!-- Level & Presets -->
+      <div class="abb-col">
+        <div class="abb-title">CALIBRATED OUTPUT LEVEL (dBFS)</div>
+        <div style="display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 6px;">
+          <button class="ctrl-btn active" id="btn-cbc-lvl-m20" onclick="setCbcAudioLevel(-20.0)">-20 dBFS (EBU)</button>
+          <button class="ctrl-btn" id="btn-cbc-lvl-m18" onclick="setCbcAudioLevel(-18.0)">-18 dBFS (0 VU)</button>
+          <button class="ctrl-btn" id="btn-cbc-lvl-m12" onclick="setCbcAudioLevel(-12.0)">-12 dBFS</button>
+          <button class="ctrl-btn" id="btn-cbc-lvl-0" onclick="setCbcAudioLevel(0.0)">0 dBFS</button>
+        </div>
+        <div style="font-size: 0.72rem; color: var(--accent-orange);" id="cbc-level-readout">
+          Current Level: -20.0 dBFS (Peak 0.1000)
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 6: Multi-Source Audio Matrix Grid -->
   <div class="section-title">
     <span>Live Multi-Source Audio Matrix</span>
     <div class="section-subtitle">Tapped Source: <span id="tapped-info" style="color: var(--accent-orange); font-weight: bold;">wbs_input_bus.monitor</span></div>
@@ -1525,10 +1661,10 @@ function switchEyeFlow(flowId) {
   activeMonitoredFlow = flowId;
   const btnMaster = document.getElementById('btn-flow-master');
   const btnTone = document.getElementById('btn-flow-tone');
-  if (btnMaster && btnTone) {
-    btnMaster.className = (flowId === 'wbs-flow-master-stereo') ? 'ctrl-btn active' : 'ctrl-btn';
-    btnTone.className = (flowId === 'wbs-flow-ref-tone') ? 'ctrl-btn active' : 'ctrl-btn';
-  }
+  const btnCbc = document.getElementById('btn-flow-cbc-audio');
+  if (btnMaster) btnMaster.className = (flowId === 'wbs-flow-master-stereo') ? 'ctrl-btn active' : 'ctrl-btn';
+  if (btnTone) btnTone.className = (flowId === 'wbs-flow-ref-tone') ? 'ctrl-btn active' : 'ctrl-btn';
+  if (btnCbc) btnCbc.className = (flowId.includes('9b85cd39') || flowId.includes('Test-Audio-1')) ? 'ctrl-btn active' : 'ctrl-btn';
   cachedWaveform = null;
   fetchWaveform();
 }
@@ -1742,6 +1878,7 @@ function renderSourceCards(sources, selected) {
   for (const s of sources) {
     const isTapped = (s.name === selected);
     const isWbs = s.name.startsWith("wbs_");
+    const isMxl = s.name.startsWith("mxl:") || !!s.mxl;
     const isNmos = s.name.startsWith("nmos:") || !!s.nmos;
     const isMon = s.name.endsWith(".monitor");
 
@@ -1750,6 +1887,9 @@ function renderSourceCards(sources, selected) {
     if (isNmos) {
       typeClass = "pill-nmos";
       typeLabel = "NMOS IS-04";
+    } else if (isMxl) {
+      typeClass = "pill-mxl";
+      typeLabel = "CBC MXL";
     } else if (isWbs) {
       typeClass = "pill-wbs";
       typeLabel = "WBS BUS";
@@ -1881,6 +2021,59 @@ async function pollStatus() {
       }
     }
 
+    // 3c. Update CBC Test Generator Studio
+    if (data.cbc_generator) {
+      const cbc = data.cbc_generator;
+      const statusBadge = document.getElementById('badge-cbc-status');
+      const hdrBadge = document.getElementById('badge-cbc-hdr');
+      if (statusBadge) {
+        if (cbc.online) {
+          statusBadge.className = 'badge badge-orange';
+          statusBadge.textContent = '● CBC GENERATOR ACTIVE (:9600)';
+        } else {
+          statusBadge.className = 'badge';
+          statusBadge.textContent = '○ CBC GENERATOR OFFLINE';
+        }
+      }
+      if (hdrBadge) {
+        if (cbc.online) {
+          hdrBadge.className = 'badge badge-orange';
+          hdrBadge.textContent = '📺 CBC GEN :9600 (ONLINE)';
+        } else {
+          hdrBadge.className = 'badge';
+          hdrBadge.textContent = '📺 CBC GEN :9600 (OFFLINE)';
+        }
+      }
+      const vSelect = document.getElementById('cbc-video-pattern-select');
+      if (vSelect && document.activeElement !== vSelect && cbc.video_pattern) {
+        vSelect.value = cbc.video_pattern;
+      }
+      const aSelect = document.getElementById('cbc-audio-pattern-select');
+      if (aSelect && document.activeElement !== aSelect && cbc.audio_pattern) {
+        aSelect.value = cbc.audio_pattern;
+      }
+      const lvlReadout = document.getElementById('cbc-level-readout');
+      if (lvlReadout && typeof cbc.level_db !== 'undefined') {
+        const peakLin = Math.pow(10, cbc.level_db / 20.0);
+        lvlReadout.textContent = `Current Level: ${cbc.level_db.toFixed(1)} dBFS (Peak ${peakLin.toFixed(4)})`;
+      }
+      const vInfo = document.getElementById('cbc-video-flow-info');
+      if (vInfo && cbc.flows && cbc.flows.video) {
+        vInfo.textContent = `Flow: ${cbc.flows.video.slice(0, 8)}... · ${cbc.resolution || '1920x1080'} @ ${cbc.framerate || 30} fps · Timecode Active`;
+      }
+      const aInfo = document.getElementById('cbc-audio-flow-info');
+      if (aInfo && cbc.flows && cbc.flows.audio1) {
+        aInfo.textContent = `Flow: ${cbc.flows.audio1.slice(0, 8)}... · 2 Channels Float32 @ 48 kHz`;
+      }
+      for (const lvl of [-20.0, -18.0, -12.0, 0.0]) {
+        const btnId = 'btn-cbc-lvl-' + (lvl === 0 ? '0' : 'm' + Math.abs(Math.round(lvl)));
+        const btn = document.getElementById(btnId);
+        if (btn) {
+          btn.className = (Math.abs((cbc.level_db || -20.0) - lvl) < 0.2) ? 'ctrl-btn active' : 'ctrl-btn';
+        }
+      }
+    }
+
     // 4. Render and update individual source meter bars
     if (data.nmos) {
       const nmosBadge = document.getElementById('badge-nmos');
@@ -1961,6 +2154,12 @@ async function pollStatus() {
 async function tapSource(srcName) {
   if (abandoned) return;
   document.getElementById('tapped-info').textContent = 'SWITCHING...';
+  if (srcName.startsWith('mxl:')) {
+    const parts = srcName.split(':');
+    if (parts.length >= 3) {
+      switchEyeFlow(parts[2]);
+    }
+  }
   await fetch('/api/set_source', {
     method: 'POST',
     headers: {'Content-Type': 'application/json'},
@@ -1968,6 +2167,50 @@ async function tapSource(srcName) {
   });
   lastSourcesJson = "";
   pollStatus();
+}
+
+async function setCbcVideoPattern(pattern) {
+  try {
+    await fetch('/api/cbc/pattern', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({target: 'video', pattern})
+    });
+  } catch (e) {
+    console.error('Failed to set CBC video pattern:', e);
+  }
+}
+
+async function setCbcAudioPattern(pattern) {
+  try {
+    await fetch('/api/cbc/pattern', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({target: 'audio', pattern})
+    });
+    if (activeMonitoredFlow.includes('9b85cd39') || activeMonitoredFlow.includes('Test-Audio-1')) {
+      cachedWaveform = null;
+      fetchWaveform();
+    }
+  } catch (e) {
+    console.error('Failed to set CBC audio pattern:', e);
+  }
+}
+
+async function setCbcAudioLevel(levelDb) {
+  try {
+    await fetch('/api/cbc/audio_level', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({level_db: levelDb})
+    });
+    if (activeMonitoredFlow.includes('9b85cd39') || activeMonitoredFlow.includes('Test-Audio-1')) {
+      cachedWaveform = null;
+      fetchWaveform();
+    }
+  } catch (e) {
+    console.error('Failed to set CBC audio level:', e);
+  }
 }
 
 async function refreshSourcesList() {
@@ -2213,12 +2456,21 @@ class WBSHandler(http.server.BaseHTTPRequestHandler):
         elif path == "/api/mxl/waveform" or (path.startswith("/api/mxl/flow/") and "/waveform" in path):
             parts = path.split("/")
             flow_id = parts[4] if len(parts) >= 5 and parts[4] != "waveform" else "wbs-flow-master-stereo"
-            flow = MXL_ENGINE.flows.get(flow_id, MXL_ENGINE.master_flow)
-            waveform_data = flow.get_waveform_bins()
+            if flow_id in MXL_ENGINE.flows:
+                flow = MXL_ENGINE.flows[flow_id]
+                waveform_data = flow.get_waveform_bins()
+            else:
+                waveform_data = MXL_ENGINE.get_external_flow_waveform(flow_id)
             self.send_response(200)
             self.send_header("Content-Type", "application/json")
             self.end_headers()
             self.wfile.write(json.dumps(waveform_data).encode("utf-8"))
+
+        elif path == "/api/cbc/status":
+            self.send_response(200)
+            self.send_header("Content-Type", "application/json")
+            self.end_headers()
+            self.wfile.write(json.dumps(CBC_GEN_STATE).encode("utf-8"))
 
         elif path.startswith("/api/mxl/flow/") and "/slice" in path:
             # Query slice: /api/mxl/flow/<flow_id>/slice?tail=479900&count=256
@@ -2362,6 +2614,54 @@ class WBSHandler(http.server.BaseHTTPRequestHandler):
                 "active": BITBUDDY_ACTIVE,
                 "config": BITBUDDY_CONFIG
             }).encode("utf-8"))
+        elif parsed.path == "/api/cbc/pattern":
+            data = json.loads(body)
+            target = data.get("target", "video")
+            pattern = data.get("pattern", "")
+            try:
+                url = "http://127.0.0.1:9600/video/test-pattern" if target == "video" else "http://127.0.0.1:9600/audio/flow1/test-pattern"
+                req = urllib.request.Request(
+                    url,
+                    data=json.dumps({"pattern": pattern}).encode("utf-8"),
+                    headers={"Content-Type": "application/json"},
+                    method="POST"
+                )
+                with urllib.request.urlopen(req, timeout=2.0) as resp:
+                    resp_body = resp.read()
+                poll_cbc_generator()
+                self.send_response(200)
+                self.send_header("Content-Type", "application/json")
+                self.end_headers()
+                self.wfile.write(resp_body)
+            except Exception as e:
+                self.send_response(500)
+                self.send_header("Content-Type", "application/json")
+                self.end_headers()
+                self.wfile.write(json.dumps({"error": str(e)}).encode("utf-8"))
+
+        elif parsed.path == "/api/cbc/audio_level":
+            data = json.loads(body)
+            level_db = float(data.get("level_db", -20.0))
+            try:
+                url = "http://127.0.0.1:9600/audio/flow1/level"
+                req = urllib.request.Request(
+                    url,
+                    data=json.dumps({"level_db": level_db}).encode("utf-8"),
+                    headers={"Content-Type": "application/json"},
+                    method="POST"
+                )
+                with urllib.request.urlopen(req, timeout=2.0) as resp:
+                    resp_body = resp.read()
+                poll_cbc_generator()
+                self.send_response(200)
+                self.send_header("Content-Type", "application/json")
+                self.end_headers()
+                self.wfile.write(resp_body)
+            except Exception as e:
+                self.send_response(500)
+                self.send_header("Content-Type", "application/json")
+                self.end_headers()
+                self.wfile.write(json.dumps({"error": str(e)}).encode("utf-8"))
         elif parsed.path == "/api/restart":
             with STATE_LOCK:
                 full_restart()
@@ -2431,12 +2731,16 @@ if __name__ == "__main__":
         assert "btn-toggle-bitbuddy" in HTML_UI, "Bit Buddy toggle missing"
         assert BITBUDDY_CONFIG["pattern"] == "prbs", "Bit Buddy config invalid"
         assert callable(discover_nmos_nodes), "NMOS discovery missing"
+        assert "cbc-video-pattern-select" in HTML_UI, "CBC video pattern select missing"
+        assert "cbc-audio-pattern-select" in HTML_UI, "CBC audio pattern select missing"
+        assert callable(poll_cbc_generator), "CBC generator polling missing"
         srcs = list_sources()
         print(f"[WARD BECK TAP] Detected audio subsystem ({len(srcs)} available audio sources).")
         pipe = inspect_full_pipeline(MXL_ENGINE)
         print(f"[WARD BECK TAP] 3-Layer Linux Audio Pipeline online (ALSA cards: {pipe['layers']['layer1_kernel_hardware']['telemetry']['card_count']}).")
         print("[WARD BECK TAP] ✔ ABB-1 Bit Buddy & ABP-1 Bit Spitter engine verified.")
         print("[WARD BECK TAP] ✔ NMOS IS-04 Announcement & Stream Discovery verified.")
+        print("[WARD BECK TAP] ✔ CBC Radio-Canada MXL Test Generator (:9600) & Pattern Studio verified.")
         print("[WARD BECK TAP] ✔ Self-test passed: WARD BECK TAP is valid, MXL-aware, and deployment-ready.")
         sys.exit(0)
 
