@@ -2169,3 +2169,499 @@ body.theme-wbs-dark .rc-meter-hub {
   stroke-width: 0.6;
 }
 
+/* =============================================================================
+   TOP STUDIO MONITORING DECK & SCANALYZER AUDIO EYE
+   ============================================================================= */
+
+.rc-top-monitoring-deck {
+  display: grid;
+  grid-template-columns: 460px 1fr;
+  gap: 16px;
+  margin-bottom: 16px;
+  background: #040910;
+  border: 1px solid #142a42;
+  border-radius: 8px;
+  padding: 14px;
+  box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.6);
+}
+
+@media (max-width: 1100px) {
+  .rc-top-monitoring-deck {
+    grid-template-columns: 1fr;
+  }
+}
+
+.rc-deck-col {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.rc-deck-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.78rem;
+  font-weight: 800;
+  color: #38bdf8;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  border-bottom: 1px solid #162e47;
+  padding-bottom: 6px;
+}
+
+.rc-deck-sub {
+  font-size: 0.68rem;
+  font-weight: 600;
+  color: #64748b;
+  text-transform: none;
+}
+
+/* Scanalyzer Audio Eye Container & Canvas */
+.rc-eye-canvas-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #02060b;
+  border: 1px solid #102338;
+  border-radius: 6px;
+  padding: 6px;
+  box-shadow: inset 0 0 25px rgba(0, 0, 0, 0.9);
+}
+
+.rc-eye-canvas {
+  width: 100%;
+  max-width: 440px;
+  height: auto;
+  aspect-ratio: 1 / 1;
+  display: block;
+  cursor: crosshair;
+}
+
+/* Scanalyzer Phase Correlation Bar */
+.rc-scanalyzer-phase-bar-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  max-width: 440px;
+  margin: 2px auto 0 auto;
+  font-family: monospace;
+  font-size: 0.7rem;
+}
+
+.rc-phase-lbl {
+  font-weight: 800;
+  color: #94a3b8;
+}
+
+.rc-phase-track {
+  position: relative;
+  flex: 1;
+  height: 16px;
+  background: #050e17;
+  border: 1px solid #183350;
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.rc-phase-marker-scale {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 6px;
+  font-size: 0.6rem;
+  color: #64748b;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.rc-phase-needle {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 6px;
+  margin-left: -3px;
+  background: #22c55e;
+  box-shadow: 0 0 8px #22c55e;
+  transition: left 0.08s ease-out;
+}
+
+/* Telemetry HUD Cards Grid */
+.rc-eye-hud-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 6px;
+  width: 100%;
+  max-width: 440px;
+  margin: 0 auto;
+}
+
+.rc-eye-hud-card {
+  background: #040910;
+  border: 1px solid #142a42;
+  border-radius: 4px;
+  padding: 6px 8px;
+}
+
+.rc-eye-hud-label {
+  font-size: 0.6rem;
+  color: #64748b;
+  font-weight: 700;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+}
+
+.rc-eye-hud-val {
+  font-family: monospace;
+  font-size: 0.88rem;
+  font-weight: 800;
+  color: #ffffff;
+  margin: 2px 0 1px 0;
+}
+
+.rc-eye-hud-sub {
+  font-size: 0.6rem;
+  color: #94a3b8;
+}
+
+/* STUDIO PRECISION DUAL ANALOG VU METERS */
+.rc-studio-vu-stage {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.rc-studio-vu-meters-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+@media (max-width: 640px) {
+  .rc-studio-vu-meters-row {
+    grid-template-columns: 1fr;
+  }
+}
+
+.rc-studio-vu-card {
+  background: #060e17;
+  border: 2px solid #1c3b5e;
+  border-radius: 8px;
+  padding: 8px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+.rc-studio-vu-dial {
+  background: #03080e;
+  border-radius: 6px;
+  overflow: hidden;
+  box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.8);
+}
+
+.rc-studio-vu-svg {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.rc-studio-dial-face {
+  fill: #faf8ed;
+}
+
+.rc-studio-scale-arc {
+  stroke: #1c1917;
+}
+
+.rc-studio-ticks {
+  stroke: #1c1917;
+}
+
+.rc-studio-numeral {
+  font-family: monospace;
+}
+
+.rc-studio-brand-vu {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+.rc-studio-brand-name {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+.rc-studio-needle-g {
+  transition: transform 0.05s cubic-bezier(0.1, 0.9, 0.2, 1);
+}
+
+.rc-studio-vu-label {
+  margin-top: 6px;
+  font-size: 0.68rem;
+  font-weight: 800;
+  text-align: center;
+  color: #94a3b8;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.rc-studio-vu-label span {
+  color: #38bdf8;
+  font-family: monospace;
+}
+
+/* 4-LAYER LINUX AUDIO PIPELINE & TOPOLOGY */
+.rc-pipeline-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  margin-top: 4px;
+}
+
+@media (max-width: 900px) {
+  .rc-pipeline-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.rc-pipeline-card {
+  background: #050d17;
+  border: 1px solid #142a42;
+  border-radius: 6px;
+  padding: 8px 10px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.rc-pipeline-title {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.68rem;
+  font-weight: 800;
+  color: #ffffff;
+  margin-bottom: 6px;
+}
+
+.rc-pipeline-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  font-size: 0.62rem;
+  color: #94a3b8;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  font-family: monospace;
+}
+
+.rc-pipeline-list li {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.rc-pipeline-footer {
+  margin-top: 6px;
+  font-size: 0.6rem;
+  color: #64748b;
+  border-top: 1px solid #0d1e30;
+  padding-top: 4px;
+}
+
+/* AoIP Network Badges */
+.rc-pill-dante {
+  background: #581c87 !important;
+  color: #d8b4fe !important;
+  border: 1px solid #7e22ce !important;
+}
+
+.rc-pill-ravenna {
+  background: #78350f !important;
+  color: #fde68a !important;
+  border: 1px solid #d97706 !important;
+}
+
+.rc-pill-aes67 {
+  background: #1e3a8a !important;
+  color: #93c5fd !important;
+  border: 1px solid #2563eb !important;
+}
+
+.rc-pill-moip {
+  background: #0f766e !important;
+  color: #99f6e4 !important;
+  border: 1px solid #0d9488 !important;
+}
+
+/* CBC MXL TEST GENERATOR & PATTERN STUDIO AUX PANEL */
+.rc-cbc-studio-panel {
+  background: #09131d;
+  border: 1px solid #f97316;
+  border-left: 4px solid #f97316;
+  border-radius: 6px;
+  padding: 12px;
+  margin-top: 12px;
+}
+
+.rc-cbc-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.rc-cbc-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.8rem;
+  font-weight: 800;
+  color: #f97316;
+  text-transform: uppercase;
+}
+
+.rc-cbc-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1.2fr;
+  gap: 12px;
+}
+
+@media (max-width: 800px) {
+  .rc-cbc-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.rc-cbc-col {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.rc-cbc-label {
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: #94a3b8;
+  text-transform: uppercase;
+}
+
+.rc-cbc-select {
+  background: #040910;
+  border: 1px solid #1c3b5e;
+  border-radius: 4px;
+  color: #ffffff;
+  padding: 5px 8px;
+  font-size: 0.72rem;
+  font-family: monospace;
+  outline: none;
+}
+
+.rc-cbc-select:focus {
+  border-color: #f97316;
+}
+
+.rc-cbc-btn-group {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+
+.rc-cbc-btn {
+  background: #050e18;
+  border: 1px solid #162e48;
+  border-radius: 3px;
+  padding: 4px 8px;
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: #94a3b8;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.rc-cbc-btn:hover {
+  background: #0d2238;
+  color: #ffffff;
+}
+
+.rc-cbc-btn.active {
+  background: #f97316;
+  border-color: #ea580c;
+  color: #ffffff;
+  box-shadow: 0 0 8px rgba(249, 115, 22, 0.4);
+}
+
+.rc-cbc-flow-info {
+  font-size: 0.64rem;
+  color: #64748b;
+  font-family: monospace;
+  margin-top: 2px;
+}
+
+/* =============================================================================
+   THEME STYLING OVERRIDES FOR STUDIO VU DIALS
+   ============================================================================= */
+
+/* McCurdy Dark: Warm Amber Dials */
+body.theme-mccurdy-dark .rc-studio-dial-face {
+  fill: #eed584;
+}
+body.theme-mccurdy-dark .rc-studio-scale-arc,
+body.theme-mccurdy-dark .rc-studio-ticks,
+body.theme-mccurdy-dark .rc-studio-numeral,
+body.theme-mccurdy-dark .rc-studio-brand-vu {
+  stroke: #1a2228;
+  fill: #1a2228;
+}
+
+/* McCurdy Light: ATS-100 Cream Parchment */
+body.theme-mccurdy .rc-studio-dial-face,
+body.theme-mccurdy-light .rc-studio-dial-face {
+  fill: #faf6ea;
+}
+body.theme-mccurdy .rc-studio-scale-arc,
+body.theme-mccurdy-light .rc-studio-scale-arc,
+body.theme-mccurdy .rc-studio-ticks,
+body.theme-mccurdy-light .rc-studio-ticks,
+body.theme-mccurdy .rc-studio-numeral,
+body.theme-mccurdy-light .rc-studio-numeral,
+body.theme-mccurdy .rc-studio-brand-vu,
+body.theme-mccurdy-light .rc-studio-brand-vu {
+  stroke: #1e3a5f;
+  fill: #1e3a5f;
+}
+
+/* Ward-Beck Systems CA: M405 Classic Ivory */
+body.theme-wbs-ca .rc-studio-dial-face {
+  fill: #faf8ed;
+}
+body.theme-wbs-ca .rc-studio-scale-arc,
+body.theme-wbs-ca .rc-studio-ticks,
+body.theme-wbs-ca .rc-studio-numeral,
+body.theme-wbs-ca .rc-studio-brand-vu {
+  stroke: #1c1917;
+  fill: #1c1917;
+}
+
+/* Ward-Beck Systems Modern Dark */
+body.theme-wbs-dark .rc-studio-dial-face {
+  fill: #161b22;
+}
+body.theme-wbs-dark .rc-studio-scale-arc,
+body.theme-wbs-dark .rc-studio-ticks {
+  stroke: #22c55e;
+}
+body.theme-wbs-dark .rc-studio-numeral,
+body.theme-wbs-dark .rc-studio-brand-vu {
+  fill: #22c55e;
+}
+body.theme-wbs-dark .rc-studio-brand-name {
+  fill: #8b949e;
+}
+body.theme-wbs-dark .rc-studio-needle-stem,
+body.theme-wbs-dark .rc-studio-needle-tip {
+  fill: #9dff3a;
+}
+
+

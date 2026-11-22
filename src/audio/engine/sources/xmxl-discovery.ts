@@ -32,7 +32,7 @@ export interface XmxlFlowInfo {
 export interface XmxlInstance {
   id: string;
   name: string;
-  type: 'wbs-router' | 'mxl-generator' | 'mxl-receiver' | 'mxl-player' | 'mxl-gui' | 'wbs-dsp' | 'apk-node' | 'nmos-node';
+  type: 'wbs-router' | 'mxl-generator' | 'mxl-receiver' | 'mxl-player' | 'mxl-gui' | 'wbs-dsp' | 'apk-node' | 'nmos-node' | 'dante-node' | 'ravenna-node' | 'aes67-node' | 'moip-node';
   port: number;
   baseUrl: string;
   domainId?: string;
@@ -353,6 +353,114 @@ async function probeDirectNmos(target: NmosProbeTarget): Promise<XmxlInstance | 
   }
 }
 
+/** Probes local host daemon (port 8467 /api/aoip) for Dante, Ravenna, AES67, and MoipBuddy nodes */
+async function probeAoipFromHost(): Promise<XmxlInstance[]> {
+  const hosts = ['127.0.0.1', 'localhost'];
+  for (const host of hosts) {
+    try {
+      const res = await fetchWithTimeout(`http://${host}:8467/api/aoip`, { method: 'GET' }, 700);
+      if (!res.ok) continue;
+      const data = await res.json();
+      const instances: XmxlInstance[] = [];
+
+      // 1. Dante Devices & Channels
+      const danteDevs = data.dante?.devices || [];
+      for (const d of danteDevs) {
+        instances.push({
+          id: `dante-${d.name.toLowerCase().replace(/[^a-z0-9]/g, '-')}`,
+          name: `Dante: ${d.name} (${d.manufacturer || 'Audinate DCM'} 16ch)`,
+          type: 'dante-node',
+          port: d.port || 4440,
+          baseUrl: `http://${d.ip}:${d.port || 4440}`,
+          domainId: 'dante-aoip',
+          domainLabel: 'Audinate Dante Broadcast Network',
+          status: 'online',
+          latencyMs: 1,
+          lastSeen: Date.now(),
+          flows: [
+            { flowId: `${d.name}-Ch1-Ch2`, label: `${d.name} Ch 1-2 (2ch L24 @ 48000Hz)`, mediaType: 'audio/L24', sampleRate: 48000, channelCount: 2, bufferLength: 480000, quantum: 256 },
+            { flowId: `${d.name}-Ch3-Ch4`, label: `${d.name} Ch 3-4 (2ch L24 @ 48000Hz)`, mediaType: 'audio/L24', sampleRate: 48000, channelCount: 2, bufferLength: 480000, quantum: 256 },
+            { flowId: `${d.name}-Ch5-Ch8`, label: `${d.name} Ch 5-8 (4ch L24 @ 48000Hz)`, mediaType: 'audio/L24', sampleRate: 48000, channelCount: 4, bufferLength: 480000, quantum: 256 },
+            { flowId: `${d.name}-Ch9-Ch16`, label: `${d.name} Ch 9-16 (8ch L24 @ 48000Hz)`, mediaType: 'audio/L24', sampleRate: 48000, channelCount: 8, bufferLength: 480000, quantum: 256 },
+          ],
+        });
+      }
+
+      // 2. Ravenna RTSP Streams
+      const ravStreams = data.ravenna?.streams || [];
+      if (ravStreams.length > 0) {
+        instances.push({
+          id: 'ravenna-archwave',
+          name: `Ravenna: WBS-32me (Archwave uNet2500)`,
+          type: 'ravenna-node',
+          port: 554,
+          baseUrl: 'rtsp://44.44.44.158:554',
+          domainId: 'ravenna-aes67',
+          domainLabel: 'Ravenna / AES67 Media Network',
+          status: 'online',
+          latencyMs: 5,
+          lastSeen: Date.now(),
+          flows: ravStreams.map((s: any) => ({
+            flowId: s.name,
+            label: `${s.name} (8ch L24 @ 48000Hz RTSP)`,
+            mediaType: 'audio/L24',
+            sampleRate: 48000,
+            channelCount: 8,
+            bufferLength: 480000,
+            quantum: 256,
+          })),
+        });
+      }
+
+      // 3. AES67 SAP Multicast Bus
+      const sapList = data.aes67_sap?.active_announcements || [];
+      if (sapList.length > 0) {
+        instances.push({
+          id: 'aes67-sap-bus',
+          name: `AES67: SAP Multicast (239.69.1.1)`,
+          type: 'aes67-node',
+          port: 5004,
+          baseUrl: 'rtp://239.69.1.1:5004',
+          domainId: 'aes67-sap',
+          domainLabel: 'AES67 Session Announcement Bus',
+          status: 'online',
+          latencyMs: 4,
+          lastSeen: Date.now(),
+          flows: sapList.map((sap: any) => ({
+            flowId: sap.session_name,
+            label: `${sap.session_name} (2ch L24 @ 48000Hz PTP)`,
+            mediaType: 'audio/L24',
+            sampleRate: 48000,
+            channelCount: 2,
+            bufferLength: 480000,
+            quantum: 256,
+          })),
+        });
+      }
+
+      // 4. LikeDotAudio MoipBuddy & Dante Plugin Gateway
+      instances.push({
+        id: 'likedotaudio-moip',
+        name: `LikeDotAudio: MoipBuddy AoIP Gateway`,
+        type: 'moip-node',
+        port: 8467,
+        baseUrl: 'https://github.com/LikeDotAudio/APK.softapp.EDITORS.MoipBuddy',
+        domainId: 'likedotaudio-moip',
+        domainLabel: 'LikeDotAudio AoIP Ecosystem',
+        status: 'online',
+        latencyMs: 2,
+        lastSeen: Date.now(),
+        flows: [
+          { flowId: 'moip-virtual-master', label: 'MoipBuddy Master AoIP Flow (Dante + Ravenna)', mediaType: 'audio/float32', sampleRate: 48000, channelCount: 2, bufferLength: 480000, quantum: 256 },
+        ],
+      });
+
+      return instances;
+    } catch (_) {}
+  }
+  return [];
+}
+
 /** Executes an active scan across all candidate ports */
 export async function scanXmxlInstances(): Promise<XmxlInstance[]> {
   if (isScanning) return discoveredInstances;
@@ -360,10 +468,11 @@ export async function scanXmxlInstances(): Promise<XmxlInstance[]> {
 
   try {
     const probePromises = CANDIDATE_TARGETS.map((t) => probeTarget(t));
-    const [probeResults, hostNmos, directNmos] = await Promise.all([
+    const [probeResults, hostNmos, directNmos, hostAoip] = await Promise.all([
       Promise.all(probePromises),
       probeNmosFromHost(),
       probeDirectNmos(NMOS_TARGETS[0]),
+      probeAoipFromHost(),
     ]);
 
     const validInstances = probeResults.filter((r): r is XmxlInstance => r !== null);
@@ -371,6 +480,11 @@ export async function scanXmxlInstances(): Promise<XmxlInstance[]> {
     for (const n of nmosNodes) {
       if (!validInstances.some((inst) => inst.id === n.id)) {
         validInstances.push(n);
+      }
+    }
+    for (const a of hostAoip) {
+      if (!validInstances.some((inst) => inst.id === a.id)) {
+        validInstances.push(a);
       }
     }
 

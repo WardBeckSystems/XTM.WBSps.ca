@@ -61,6 +61,16 @@ export class RoutingCanvasView {
   outNeedlesL: (SVGElement | null)[] = [];
   outNeedlesR: (SVGElement | null)[] = [];
 
+  // Studio Master Dual Electromechanical VU Meters & Scanalyzer Eye
+  studioNeedleL: SVGElement | null = null;
+  studioNeedleR: SVGElement | null = null;
+  studioVuL: HTMLElement | null = null;
+  studioVuR: HTMLElement | null = null;
+  phaseNeedle: HTMLElement | null = null;
+  corrValReadout: HTMLElement | null = null;
+  eyeCanvas: HTMLCanvasElement | null = null;
+  cachedWaveform: any = null;
+
   // XMXL Dynamic Instances & Flow Discovery
   detectedInstances: XmxlInstance[] = [];
   selectedPort: number = 8467;
@@ -96,6 +106,13 @@ export class RoutingCanvasView {
       this.outNeedlesL[i] = this.container.querySelector(`#rcOutNeedleL${i}`) as SVGElement | null;
       this.outNeedlesR[i] = this.container.querySelector(`#rcOutNeedleR${i}`) as SVGElement | null;
     }
+    this.studioNeedleL = this.container.querySelector('#rcStudioNeedleL') as SVGElement | null;
+    this.studioNeedleR = this.container.querySelector('#rcStudioNeedleR') as SVGElement | null;
+    this.studioVuL = this.container.querySelector('#rcStudioVuL') as HTMLElement | null;
+    this.studioVuR = this.container.querySelector('#rcStudioVuR') as HTMLElement | null;
+    this.phaseNeedle = this.container.querySelector('#rcPhaseNeedle') as HTMLElement | null;
+    this.corrValReadout = this.container.querySelector('#rcCorrValReadout') as HTMLElement | null;
+    this.eyeCanvas = this.container.querySelector('#rcEyeCanvas') as HTMLCanvasElement | null;
   }
 
   private renderHtml(): string {
@@ -120,6 +137,141 @@ export class RoutingCanvasView {
             <span class="rc-badge rc-badge-cyan" id="rcBadgeAlsa">ALSA DIRECT</span>
             <span class="rc-badge rc-badge-pulse-green" id="rcBadgeMxl">● XMXL: SCANNING...</span>
             <span class="rc-badge" id="rcBadgeTai">TAI: SYNCED</span>
+            <span class="rc-badge rc-pill-dante" id="rcBadgeDante">🎵 DANTE: 16 CH</span>
+            <span class="rc-badge rc-pill-ravenna" id="rcBadgeRavenna">📻 RAVENNA RTSP</span>
+            <span class="rc-badge rc-pill-aes67" id="rcBadgeAes67">🌐 AES67 SAP</span>
+          </div>
+        </div>
+
+        <!-- TOP STUDIO MONITORING DECK: SCANALYZER AUDIO EYE + DUAL STUDIO ANALOG VU METERS -->
+        <div class="rc-top-monitoring-deck">
+          <!-- LEFT PANE: Scanalyzer Audio Eye Visualizer & Phase Correlation Bar -->
+          <div class="rc-deck-col rc-eye-col">
+            <div class="rc-deck-header">
+              <span>SCANALYZER AUDIO EYE // 10s RADIAL RING BUFFER (STEREO)</span>
+              <span class="rc-deck-sub">Float32 @ 48kHz · SMPTE 2059-1 TAI</span>
+            </div>
+
+            <div class="rc-eye-canvas-container">
+              <canvas id="rcEyeCanvas" width="440" height="440" class="rc-eye-canvas"></canvas>
+            </div>
+
+            <!-- Scanalyzer Style Phase Correlation Bar -->
+            <div class="rc-scanalyzer-phase-bar-wrapper">
+              <span class="rc-phase-lbl">L</span>
+              <div class="rc-phase-track">
+                <div class="rc-phase-marker-scale">
+                  <span>-1 out of phase</span>
+                  <span id="rcCorrValReadout">corr +0.96</span>
+                  <span>mono +1</span>
+                </div>
+                <div class="rc-phase-needle" id="rcPhaseNeedle" style="left: 98%;"></div>
+              </div>
+              <span class="rc-phase-lbl">R</span>
+            </div>
+
+            <!-- Telemetry HUD Cards Grid -->
+            <div class="rc-eye-hud-grid">
+              <div class="rc-eye-hud-card">
+                <div class="rc-eye-hud-label">NTP TIME (UTC / SMPTE 2059-1)</div>
+                <div class="rc-eye-hud-val" id="rcEyeNtpClock" style="color:#38bdf8;">00:00:00.000</div>
+                <div class="rc-eye-hud-sub" id="rcEyeTaiNs">TAI: SYNCED (0 ns)</div>
+              </div>
+              <div class="rc-eye-hud-card">
+                <div class="rc-eye-hud-label">10-SECOND BUFFER PHASE</div>
+                <div class="rc-eye-hud-val" id="rcEyeSec10" style="color:#f97316;">0.000 s / 10.000 s</div>
+                <div class="rc-eye-hud-sub">0s @ Far Right (3 o'clock) · Clockwise</div>
+              </div>
+              <div class="rc-eye-hud-card">
+                <div class="rc-eye-hud-label">ACTIVE WRITE HEAD</div>
+                <div class="rc-eye-hud-val" id="rcEyeHeadIndex">HEAD: #0</div>
+                <div class="rc-eye-hud-sub" id="rcEyeHeadSec">0.000s / 480,000 frames</div>
+              </div>
+              <div class="rc-eye-hud-card">
+                <div class="rc-eye-hud-label">BUFFER CAPACITY &amp; SHM</div>
+                <div class="rc-eye-hud-val" style="color:#4ade80;">480,000 FRAMES (10.0s)</div>
+                <div class="rc-eye-hud-sub">Float32 Stereo · 3.84 MB /dev/shm</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- RIGHT PANE: Studio Dual Analog VU Meters & 4-Layer Linux Audio Pipeline -->
+          <div class="rc-deck-col rc-studio-vu-col">
+            <div class="rc-deck-header">
+              <span>WARD-BECK STUDIO PRECISION ELECTROMECHANICAL VU METERS</span>
+              <span class="rc-deck-sub">Calibrated 1 kHz @ 0 VU (-18 dBFS) Reference</span>
+            </div>
+
+            <div class="rc-studio-vu-stage">
+              <div class="rc-studio-vu-meters-row">
+                ${this.renderStudioVuDial('CHANNEL 1 // LEFT', 'rcStudioNeedleL', 'rcStudioVuL', 'CHANNEL 1 // LEFT')}
+                ${this.renderStudioVuDial('CHANNEL 2 // RIGHT', 'rcStudioNeedleR', 'rcStudioVuR', 'CHANNEL 2 // RIGHT')}
+              </div>
+            </div>
+
+            <!-- Layered Linux Audio Pipeline & Topology Grid -->
+            <div class="rc-deck-header" style="margin-top: 6px;">
+              <span>LAYERED LINUX AUDIO PIPELINE &amp; GRAPH TOPOLOGY</span>
+              <span class="rc-deck-sub">ALSA Hardware · PipeWire Graph · MXL Shared Memory · Network AoIP</span>
+            </div>
+
+            <div class="rc-pipeline-grid">
+              <!-- Layer 1: ALSA Hardware -->
+              <div class="rc-pipeline-card">
+                <div class="rc-pipeline-title">
+                  <span>1. ALSA Hardware</span>
+                  <span class="rc-badge rc-badge-cyan" id="rcAlsaCardBadge">HARDWARE</span>
+                </div>
+                <ul class="rc-pipeline-list" id="rcAlsaList">
+                  <li>NVIDIA HDA / HDMI Audio</li>
+                  <li>Realtek ALC1220 HD Audio</li>
+                  <li>USB Audio Interface</li>
+                </ul>
+                <div class="rc-pipeline-footer">PCM Devices: Active | 0 Overruns</div>
+              </div>
+
+              <!-- Layer 2: PipeWire Graph -->
+              <div class="rc-pipeline-card">
+                <div class="rc-pipeline-title">
+                  <span>2. PipeWire 1.0</span>
+                  <span class="rc-badge rc-badge-active" id="rcPwQuantumBadge">256 / 48k</span>
+                </div>
+                <ul class="rc-pipeline-list" id="rcPwList">
+                  <li>wbs_input_bus.monitor</li>
+                  <li>wbs_meter_tap.monitor</li>
+                  <li>pw-loopback stream links</li>
+                </ul>
+                <div class="rc-pipeline-footer">Latency: 5.33 ms | Routing: Active</div>
+              </div>
+
+              <!-- Layer 3: MXL Shared Memory -->
+              <div class="rc-pipeline-card">
+                <div class="rc-pipeline-title">
+                  <span>3. EBU DMF / MXL</span>
+                  <span class="rc-badge" style="background:#ea580c;color:#fff;">/dev/shm/mxl</span>
+                </div>
+                <ul class="rc-pipeline-list" id="rcMxlList">
+                  <li>domain-wbs-dmf-01 (Active)</li>
+                  <li>wbs-flow-master-stereo</li>
+                  <li>wbs-flow-ref-tone</li>
+                </ul>
+                <div class="rc-pipeline-footer">SMPTE 2059-1 TAI | Zero-Copy PROT_READ</div>
+              </div>
+
+              <!-- Layer 4: Network AoIP Bus -->
+              <div class="rc-pipeline-card">
+                <div class="rc-pipeline-title">
+                  <span>4. Network AoIP</span>
+                  <span class="rc-badge rc-pill-dante" id="rcAoipBadge">DANTE &amp; RAVENNA</span>
+                </div>
+                <ul class="rc-pipeline-list" id="rcAoipList">
+                  <li>🎵 Dante: Metro16 (16ch DCM)</li>
+                  <li>📻 Ravenna: WBS-32me (RTSP)</li>
+                  <li>🌐 AES67: SAP Multicast 239.69</li>
+                </ul>
+                <div class="rc-pipeline-footer">IEEE 1588 PTP | MoipBuddy</div>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -448,7 +600,101 @@ export class RoutingCanvasView {
             </div>
           </div>
 
+          <!-- CBC / RADIO-CANADA MXL TEST GENERATOR & PATTERN STUDIO -->
+          <div class="rc-cbc-studio-panel">
+            <div class="rc-cbc-header">
+              <div class="rc-cbc-title">
+                <span class="rc-panel-badge" style="background:#ea580c;color:#fff;">CBC MXL</span>
+                <strong>CBC / RADIO-CANADA MXL TEST GENERATOR &amp; PATTERN STUDIO</strong>
+                <span class="rc-telemetry-pill" id="rcCbcStatusPill">PORT 9600 (:9601 WebRTC / :9699 Info GUI)</span>
+              </div>
+              <div style="display:flex; gap:8px;">
+                <a href="http://localhost:9601" target="_blank" class="rc-cbc-btn" style="color:#38bdf8; text-decoration:none;">🌐 Launch WebRTC Player (:9601)</a>
+                <a href="http://localhost:9699" target="_blank" class="rc-cbc-btn" style="color:#22c55e; text-decoration:none;">📊 Open MXL Info GUI (:9699)</a>
+              </div>
+            </div>
+
+            <div class="rc-cbc-grid">
+              <!-- Video Test Patterns -->
+              <div class="rc-cbc-col">
+                <div class="rc-cbc-label">VIDEO TEST PATTERNS (25 PATTERNS)</div>
+                <select id="rcCbcVideoSelect" class="rc-cbc-select">
+                  <option value="100% Color Bars">100% Color Bars (Default)</option>
+                  <option value="75% Color Bars">75% Color Bars</option>
+                  <option value="SMPTE RP 219">SMPTE RP 219 (HD Color Bars)</option>
+                  <option value="Multiburst">Multiburst Resolution Chart</option>
+                  <option value="Zone Plate">Zone Plate Dynamic Sweep</option>
+                  <option value="Pluge">Pluge Black Reference</option>
+                  <option value="Convergence">Convergence Grid</option>
+                  <option value="Checkerboard">Checkerboard 16x9</option>
+                </select>
+                <div class="rc-cbc-flow-info" id="rcCbcVideoFlow">Flow: 6b5d8d68... · 1920x1080 @ 30 fps · Timecode Active</div>
+              </div>
+
+              <!-- Audio Test Patterns -->
+              <div class="rc-cbc-col">
+                <div class="rc-cbc-label">AUDIO TEST PATTERNS (13 WAVEFORMS)</div>
+                <select id="rcCbcAudioSelect" class="rc-cbc-select">
+                  <option value="1 kHz Sine">Calibrated 1 kHz Sine Tone</option>
+                  <option value="400 Hz Sine">400 Hz Reference Sine</option>
+                  <option value="Dual Tone">Dual Tone (400 Hz L / 1 kHz R)</option>
+                  <option value="Pink Noise">Pink Noise Reference (-20 dBFS)</option>
+                  <option value="Frequency Sweep">Logarithmic Frequency Sweep (20Hz-20kHz)</option>
+                  <option value="EBU Glits">EBU Glits Identification Channel Sequence</option>
+                </select>
+                <div class="rc-cbc-flow-info" id="rcCbcAudioFlow">Flow: 9b85cd39... · 2 Channels Float32 @ 48 kHz</div>
+              </div>
+
+              <!-- Calibrated Output Level -->
+              <div class="rc-cbc-col">
+                <div class="rc-cbc-label">CALIBRATED OUTPUT LEVEL (dBFS)</div>
+                <div class="rc-cbc-btn-group">
+                  <button type="button" class="rc-cbc-btn active" data-cbc-lvl="-20">-20 dBFS (EBU)</button>
+                  <button type="button" class="rc-cbc-btn" data-cbc-lvl="-18">-18 dBFS (0 VU)</button>
+                  <button type="button" class="rc-cbc-btn" data-cbc-lvl="-12">-12 dBFS</button>
+                  <button type="button" class="rc-cbc-btn" data-cbc-lvl="0">0 dBFS (Ceiling)</button>
+                </div>
+                <div class="rc-cbc-flow-info" id="rcCbcLevelReadout" style="color:#f97316;">Current Level: -20.0 dBFS (Peak 0.1000)</div>
+              </div>
+            </div>
+          </div>
+
         </div>
+      </div>
+    `;
+  }
+
+  private renderStudioVuDial(chLabel: string, needleId: string, valId: string, txtCh: string): string {
+    return `
+      <div class="rc-studio-vu-card">
+        <div class="rc-studio-vu-dial">
+          <svg viewBox="0 0 320 195" class="rc-studio-vu-svg" preserveAspectRatio="xMidYMid meet">
+            <!-- Scale background -->
+            <path d="M 30 150 A 130 130 0 0 1 290 150" fill="none" class="rc-studio-scale-arc" stroke="#222" stroke-width="2" />
+            <!-- Red zone -->
+            <path d="M 235 62 A 130 130 0 0 1 285 125" fill="none" stroke="#c0392b" stroke-width="8" />
+            <!-- Scale Ticks -->
+            <path d="M 45 130 L 55 125 M 65 105 L 75 103 M 95 85 L 103 86 M 130 70 L 135 75 M 175 65 L 175 72 M 220 70 L 217 76 M 255 85 L 248 90 M 275 110 L 268 112" fill="none" class="rc-studio-ticks" stroke="#222" stroke-width="1.5" />
+            <!-- Dial Markings -->
+            <text x="50" y="145" font-size="11" font-weight="bold" class="rc-studio-numeral" fill="#222">-20</text>
+            <text x="90" y="105" font-size="11" font-weight="bold" class="rc-studio-numeral" fill="#222">-10</text>
+            <text x="135" y="88" font-size="11" font-weight="bold" class="rc-studio-numeral" fill="#222">-7</text>
+            <text x="175" y="82" font-size="11" font-weight="bold" class="rc-studio-numeral" fill="#222">-3</text>
+            <text x="215" y="88" font-size="13" font-weight="bold" class="rc-studio-numeral" fill="#222">0</text>
+            <text x="250" y="105" font-size="12" font-weight="bold" fill="#c0392b">+1</text>
+            <text x="270" y="130" font-size="12" font-weight="bold" fill="#c0392b">+3</text>
+            <text x="160" y="125" text-anchor="middle" font-size="16" font-weight="900" letter-spacing="3" class="rc-studio-brand-vu" fill="#222">VU</text>
+            <text x="160" y="142" text-anchor="middle" font-size="9" font-weight="bold" letter-spacing="1" class="rc-studio-brand-name" fill="#666">WARD-BECK SYSTEMS</text>
+            <!-- Teardrop Needle -->
+            <g id="${needleId}" transform="rotate(-42 160 195)" class="rc-studio-needle-g">
+              <path d="M 158.5 195 L 159.5 45 C 159.5 40 160.5 40 160.5 45 L 161.5 195 Z" class="rc-studio-needle-stem" fill="#111" />
+              <path d="M 157.5 45 Q 160 30 160 25 Q 160 30 162.5 45 Z" class="rc-studio-needle-tip" fill="#111" />
+              <circle cx="160" cy="195" r="16" class="rc-studio-needle-pivot" fill="#111" />
+              <circle cx="160" cy="195" r="6" class="rc-studio-needle-cap" fill="#555" />
+            </g>
+          </svg>
+        </div>
+        <div class="rc-studio-vu-label">${txtCh} (<span id="${valId}">-42.0</span> VU)</div>
       </div>
     `;
   }
@@ -767,6 +1013,49 @@ export class RoutingCanvasView {
         this.forceRouteToSpeakers(idx);
       });
     });
+
+    // 8. CBC Test Generator Controls
+    const cbcVideo = this.container.querySelector('#rcCbcVideoSelect') as HTMLSelectElement | null;
+    if (cbcVideo) {
+      cbcVideo.addEventListener('change', (e) => {
+        const val = (e.target as HTMLSelectElement).value;
+        fetch('http://localhost:8467/api/cbc/pattern', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ target: 'video', pattern: val }),
+        }).catch(() => {});
+      });
+    }
+
+    const cbcAudio = this.container.querySelector('#rcCbcAudioSelect') as HTMLSelectElement | null;
+    if (cbcAudio) {
+      cbcAudio.addEventListener('change', (e) => {
+        const val = (e.target as HTMLSelectElement).value;
+        fetch('http://localhost:8467/api/cbc/pattern', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ target: 'audio', pattern: val }),
+        }).catch(() => {});
+      });
+    }
+
+    this.container.querySelectorAll('[data-cbc-lvl]').forEach((btn) => {
+      btn.addEventListener('click', (e) => {
+        const lvl = parseFloat((e.currentTarget as HTMLElement).getAttribute('data-cbc-lvl') || '-20');
+        this.container?.querySelectorAll('[data-cbc-lvl]').forEach((b) => b.classList.remove('active'));
+        (e.currentTarget as HTMLElement).classList.add('active');
+        const readout = this.container?.querySelector('#rcCbcLevelReadout');
+        if (readout) {
+          const peak = Math.pow(10, lvl / 20.0);
+          readout.textContent = `Current Level: ${lvl.toFixed(1)} dBFS (Peak ${peak.toFixed(4)})`;
+        }
+        fetch('http://localhost:8467/api/cbc/audio_level', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ level_db: lvl }),
+        }).catch(() => {});
+      });
+    });
   }
 
   public forceRouteToSpeakers(idx: number = this.activeInput): void {
@@ -1046,6 +1335,49 @@ export class RoutingCanvasView {
       ringColor1 = '#d97706'; // WBS Vintage Amber
     }
 
+    // Drive Studio Master Electromechanical Dual VU Meters (Tapped from Output 5 / Master)
+    const vuL = levels?.vuDb ? levels.vuDb[0] : -60.0;
+    const vuR = levels?.vuDb ? levels.vuDb[1] : -60.0;
+    const clampDb = (db: number) => Math.max(-60, Math.min(3, isFinite(db) ? db : -60));
+
+    let tapDbL = -60.0;
+    let tapDbR = -60.0;
+    if (this.liveMxlTelemetry?.meters) {
+      tapDbL = this.liveMxlTelemetry.meters.left_vu !== undefined ? this.liveMxlTelemetry.meters.left_vu : vuL;
+      tapDbR = this.liveMxlTelemetry.meters.right_vu !== undefined ? this.liveMxlTelemetry.meters.right_vu : vuR;
+    } else {
+      tapDbL = vuL;
+      tapDbR = vuR;
+    }
+    const angleStudioL = this.vuDbToAngle(tapDbL);
+    const angleStudioR = this.vuDbToAngle(tapDbR);
+    if (this.studioNeedleL) this.studioNeedleL.setAttribute('transform', `rotate(${angleStudioL.toFixed(1)} 160 195)`);
+    if (this.studioNeedleR) this.studioNeedleR.setAttribute('transform', `rotate(${angleStudioR.toFixed(1)} 160 195)`);
+    if (this.studioVuL) this.studioVuL.textContent = tapDbL.toFixed(1);
+    if (this.studioVuR) this.studioVuR.textContent = tapDbR.toFixed(1);
+
+    // Scanalyzer Audio Eye 10-Second Continuous Circular Ring Buffer
+    if (this.eyeCanvas) {
+      const nowMs = Date.now();
+      const secOf10 = (nowMs / 1000.0) % 10.0;
+      this.drawScanalyzerEye(this.eyeCanvas, this.liveMxlTelemetry?.waveform || this.cachedWaveform, secOf10, this.ringHead, this.QUANTUM, this.selectedFlowId, isMcDark, isMcLight, isWbsCa);
+
+      const clkEl = this.container.querySelector('#rcEyeNtpClock');
+      const secEl = this.container.querySelector('#rcEyeSec10');
+      const headIdxEl = this.container.querySelector('#rcEyeHeadIndex');
+      const headSecEl = this.container.querySelector('#rcEyeHeadSec');
+      if (clkEl) clkEl.textContent = new Date().toISOString().slice(11, 23);
+      if (secEl) secEl.textContent = `${secOf10.toFixed(3)} s / 10.000 s`;
+      if (headIdxEl) headIdxEl.textContent = `HEAD: #${this.ringHead}`;
+      if (headSecEl) headSecEl.textContent = `${(this.ringHead / 48000).toFixed(3)}s / 480,000 frames`;
+    }
+
+    // Phase Correlation Calculation & Needle Deflection
+    const diff = Math.abs(vuL - vuR);
+    const currentPhaseCorr = Math.max(-0.95, Math.min(0.98, 1.0 - (diff / 16.0)));
+    if (this.corrValReadout) this.corrValReadout.textContent = `corr ${currentPhaseCorr >= 0 ? '+' : ''}${currentPhaseCorr.toFixed(2)}`;
+    if (this.phaseNeedle) this.phaseNeedle.style.left = `${((currentPhaseCorr + 1.0) / 2.0) * 100}%`;
+
     // 1. Draw Left & Right Continuous Ring Buffers (Theme-Colored)
     this.drawRing('rcRingCanvas0', this.ringHead, ringColor0, isMcDark, isMcLight, isWbsCa);
     this.drawRing('rcRingCanvas1', this.ringHead, ringColor1, isMcDark, isMcLight, isWbsCa);
@@ -1064,9 +1396,6 @@ export class RoutingCanvasView {
     }
 
     // 3. Update Miniature Broadcast Theme VU Meters on Inputs
-    const vuL = levels?.vuDb ? levels.vuDb[0] : -60.0;
-    const vuR = levels?.vuDb ? levels.vuDb[1] : -60.0;
-    const clampDb = (db: number) => Math.max(-60, Math.min(3, isFinite(db) ? db : -60));
 
     for (let inIdx = 0; inIdx < 5; inIdx++) {
       let dbL = -60.0;
@@ -1182,11 +1511,23 @@ export class RoutingCanvasView {
         instancesEl.innerHTML = this.detectedInstances
           .map((inst) => {
             const isNmos = inst.type === 'nmos-node';
-            const isActive = inst.port === this.selectedPort;
-            const portTag = isNmos ? '📡 NMOS' : `:${inst.port}`;
-            return `<button type="button" class="rc-xmxl-pill ${isActive ? 'active' : ''}" data-xmxl-port="${inst.port}">
-              <span class="rc-led-dot ${isActive ? (isNmos ? 'lit-cyan' : 'lit-green') : ''}"></span>
-              ${portTag} ${inst.name.replace(/^(Ward-Beck|CBC\/Radio-Canada|NMOS IS-04:\s*)\s*/, '')} (${inst.latencyMs}ms)
+            const isDante = inst.type === 'dante-node';
+            const isRavenna = inst.type === 'ravenna-node';
+            const isAes67 = inst.type === 'aes67-node';
+            const isMoip = inst.type === 'moip-node';
+            const isActive = inst.port === this.selectedPort || (inst.id && inst.id.includes(this.selectedFlowId));
+
+            let portTag = `:${inst.port}`;
+            let pillClass = '';
+            if (isDante) { portTag = '🎵 DANTE'; pillClass = 'rc-pill-dante'; }
+            else if (isRavenna) { portTag = '📻 RAVENNA'; pillClass = 'rc-pill-ravenna'; }
+            else if (isAes67) { portTag = '🌐 AES67'; pillClass = 'rc-pill-aes67'; }
+            else if (isMoip) { portTag = '🐳 MOIP'; pillClass = 'rc-pill-moip'; }
+            else if (isNmos) { portTag = '📡 NMOS'; }
+
+            return `<button type="button" class="rc-xmxl-pill ${pillClass} ${isActive ? 'active' : ''}" data-xmxl-port="${inst.port}">
+              <span class="rc-led-dot ${isActive ? (isNmos || isDante ? 'lit-cyan' : 'lit-green') : ''}"></span>
+              ${portTag} ${inst.name.replace(/^(Ward-Beck|CBC\/Radio-Canada|NMOS IS-04:\s*|Dante:\s*|Ravenna:\s*|AES67:\s*)\s*/, '')} (${inst.latencyMs}ms)
             </button>`;
           })
           .join('');
@@ -1252,6 +1593,186 @@ export class RoutingCanvasView {
       });
     }
     this.updateXmxlBar();
+  }
+
+  private drawScanalyzerEye(
+    canvas: HTMLCanvasElement,
+    waveform: any,
+    ntpSecOf10: number,
+    head: number,
+    quantum: number,
+    flowLabel: string,
+    isMcDark = false,
+    isMcLight = false,
+    isWbsCa = false
+  ): void {
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+    const w = canvas.width;
+    const h = canvas.height;
+    const cx = w / 2;
+    const cy = h / 2;
+
+    const rOuter = 188;
+    const rMid = 140;
+    const rInner = 82;
+    const rCenterPlayhead = 28;
+
+    ctx.clearRect(0, 0, w, h);
+
+    // 1. Background Tracks & Radial Grid
+    ctx.save();
+    ctx.lineWidth = 1;
+    ctx.strokeStyle = isMcLight ? '#c8c4b7' : (isWbsCa ? '#b0aba0' : (isMcDark ? '#1a2e40' : '#0e2338'));
+    for (const r of [rInner, rMid, rOuter]) {
+      ctx.beginPath();
+      ctx.arc(cx, cy, r, 0, Math.PI * 2);
+      ctx.stroke();
+    }
+
+    for (let s = 0; s < 10; s++) {
+      const a = (s / 10.0) * Math.PI * 2;
+      ctx.beginPath();
+      ctx.moveTo(cx + Math.cos(a) * (rInner - 4), cy + Math.sin(a) * (rInner - 4));
+      ctx.lineTo(cx + Math.cos(a) * (rOuter + 6), cy + Math.sin(a) * (rOuter + 6));
+      ctx.strokeStyle = (s === 0) ? 'rgba(239, 68, 68, 0.45)' : (isMcLight ? '#c8c4b7' : '#112942');
+      ctx.lineWidth = (s === 0) ? 2 : 1;
+      ctx.stroke();
+    }
+    ctx.restore();
+
+    // 2. Radial Waveform Spokes
+    const bins = (waveform && waveform.ch0_max && waveform.ch0_max.length) ? waveform.ch0_max.length : 360;
+    const reachL = (rOuter - rMid) * 0.48;
+    const baseRL = (rOuter + rMid) / 2;
+    const reachR = (rMid - rInner) * 0.48;
+    const baseRR = (rMid + rInner) / 2;
+
+    // Draw Channel 0: Left (Outer Band)
+    ctx.save();
+    ctx.strokeStyle = isMcDark ? 'rgba(56, 146, 212, 0.9)' : (isWbsCa ? 'rgba(249, 115, 22, 0.9)' : 'rgba(34, 197, 94, 0.9)');
+    ctx.lineWidth = 1.3;
+    ctx.beginPath();
+    for (let b = 0; b < bins; b++) {
+      const frac = b / bins;
+      const a = frac * Math.PI * 2;
+      let minVal = (waveform && waveform.ch0_min) ? (waveform.ch0_min[b] || 0) : 0;
+      let maxVal = (waveform && waveform.ch0_max) ? (waveform.ch0_max[b] || 0) : 0;
+      if (!waveform) {
+        const seed = Math.sin(b * 13.7 + (head / 4800)) * Math.cos(b * 3.3);
+        maxVal = Math.abs(seed) * 0.55;
+        minVal = -maxVal * 0.7;
+      }
+      const rIn = baseRL + (minVal * reachL * 0.96);
+      const rOut = baseRL + Math.max(0.04, maxVal * reachL * 0.96);
+      ctx.moveTo(cx + Math.cos(a) * rIn, cy + Math.sin(a) * rIn);
+      ctx.lineTo(cx + Math.cos(a) * rOut, cy + Math.sin(a) * rOut);
+    }
+    ctx.stroke();
+
+    // Draw Channel 1: Right (Inner Band)
+    ctx.strokeStyle = isMcDark ? 'rgba(245, 158, 11, 0.9)' : (isWbsCa ? 'rgba(217, 119, 6, 0.9)' : 'rgba(56, 189, 248, 0.9)');
+    ctx.lineWidth = 1.3;
+    ctx.beginPath();
+    for (let b = 0; b < bins; b++) {
+      const frac = b / bins;
+      const a = frac * Math.PI * 2;
+      let minVal = (waveform && waveform.ch1_min) ? (waveform.ch1_min[b] || 0) : 0;
+      let maxVal = (waveform && waveform.ch1_max) ? (waveform.ch1_max[b] || 0) : 0;
+      if (!waveform) {
+        const seed = Math.sin(b * 11.3 + (head / 4800) + 1.2) * Math.cos(b * 4.1);
+        maxVal = Math.abs(seed) * 0.50;
+        minVal = -maxVal * 0.65;
+      }
+      const rIn = baseRR + (minVal * reachR * 0.96);
+      const rOut = baseRR + Math.max(0.04, maxVal * reachR * 0.96);
+      ctx.moveTo(cx + Math.cos(a) * rIn, cy + Math.sin(a) * rIn);
+      ctx.lineTo(cx + Math.cos(a) * rOut, cy + Math.sin(a) * rOut);
+    }
+    ctx.stroke();
+    ctx.restore();
+
+    // 3. NTP Second Ticks
+    ctx.save();
+    for (let s = 0; s < 10; s++) {
+      const a = (s / 10.0) * Math.PI * 2;
+      const cos = Math.cos(a);
+      const sin = Math.sin(a);
+      const isZero = (s === 0);
+      const isTopPulse = Math.abs(ntpSecOf10 - s) < 0.12;
+
+      const tLen = isZero ? 16 : 10;
+      const p1X = cx + cos * (rOuter + 3);
+      const p1Y = cy + sin * (rOuter + 3);
+      const p2X = cx + cos * (rOuter + 3 + tLen);
+      const p2Y = cy + sin * (rOuter + 3 + tLen);
+
+      ctx.beginPath();
+      ctx.moveTo(p1X, p1Y);
+      ctx.lineTo(p2X, p2Y);
+      ctx.strokeStyle = isTopPulse ? '#ffffff' : (isZero ? '#ef4444' : '#38bdf8');
+      ctx.lineWidth = (isZero || isTopPulse) ? 3 : 1.5;
+      if (isTopPulse) {
+        ctx.shadowColor = '#38bdf8';
+        ctx.shadowBlur = 10;
+      }
+      ctx.stroke();
+      ctx.shadowBlur = 0;
+
+      const lblDist = rOuter + (isZero ? 27 : 20);
+      const lblX = cx + cos * lblDist;
+      const lblY = cy + sin * lblDist;
+      ctx.font = isZero ? 'bold 11px monospace' : '9px monospace';
+      ctx.fillStyle = isTopPulse ? '#ffffff' : (isZero ? '#ef4444' : '#94a3b8');
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      const txt = isZero ? '0.0s [NTP]' : `${s}.0s`;
+      ctx.fillText(txt, lblX, lblY);
+    }
+    ctx.restore();
+
+    // 4. Center Playhead Triangle
+    const currentAngle = (ntpSecOf10 / 10.0) * Math.PI * 2;
+    const ca = Math.cos(currentAngle);
+    const sa = Math.sin(currentAngle);
+
+    ctx.save();
+    ctx.translate(cx, cy);
+    ctx.rotate(currentAngle);
+
+    ctx.beginPath();
+    ctx.moveTo(rCenterPlayhead, 0);
+    ctx.lineTo(-rCenterPlayhead * 0.65, -rCenterPlayhead * 0.65);
+    ctx.lineTo(-rCenterPlayhead * 0.38, 0);
+    ctx.lineTo(-rCenterPlayhead * 0.65, rCenterPlayhead * 0.65);
+    ctx.closePath();
+    ctx.fillStyle = '#d946ef';
+    ctx.shadowColor = '#d946ef';
+    ctx.shadowBlur = 14;
+    ctx.fill();
+    ctx.restore();
+
+    // 5. Rotating NTP Write-Head Needle Arm with Red-Hot Glowing Tip
+    ctx.save();
+    ctx.lineCap = 'round';
+    ctx.strokeStyle = '#f97316';
+    ctx.lineWidth = 3.2;
+    ctx.shadowColor = '#f97316';
+    ctx.shadowBlur = 9;
+    ctx.beginPath();
+    ctx.moveTo(cx + ca * (rInner - 6), cy + sa * (rInner - 6));
+    ctx.lineTo(cx + ca * (rOuter + 6), cy + sa * (rOuter + 6));
+    ctx.stroke();
+
+    const tipX = cx + ca * (rOuter + 6);
+    const tipY = cy + sa * (rOuter + 6);
+    ctx.beginPath();
+    ctx.arc(tipX, tipY, 5.2, 0, Math.PI * 2);
+    ctx.fillStyle = '#ff2810';
+    ctx.shadowColor = '#ff2810';
+    ctx.shadowBlur = 15;
+    ctx.fill();
+    ctx.restore();
   }
 
   private drawRing(canvasId: string, head: number, accentColor: string, isMcDark = false, isMcLight = false, isWbsCa = false): void {
