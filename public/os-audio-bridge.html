@@ -151,26 +151,29 @@
 
   <!-- LINUX PIPEWIRE / PULSEAUDIO -->
   <div class="card">
-    <h2><span>🐧 Method 2: Linux PipeWire &amp; PulseAudio Loopback</span> <span class="os-badge">Linux</span></h2>
-    <p>Linux features native kernel-level and server-level audio monitoring. You can stream YouTube Music or desktop audio directly to XTM as an audio input device (<code>getUserMedia</code>), completely bypassing screen capture.</p>
+    <h2><span>🐧 Method 2: Linux PipeWire &amp; PulseAudio Native Monitor (Feedback-Free)</span> <span class="os-badge">Linux</span></h2>
+    <p>Linux features native kernel-level and server-level audio monitoring. Every audio output device in Linux already has a built-in <strong>.monitor</strong> stream that taps what is playing through your speakers directly into software, completely bypassing screen capture and avoiding any microphone feedback.</p>
     
     <ol>
-      <li><strong>Check Built-in Monitor Devices:</strong>
-        <p>In XTM's Settings Drawer under <strong>Audio Input Device</strong>, look for devices tagged with <code>🎧 [OS Loopback · Banner-Free]</code> (e.g. <code>Monitor of Built-in Audio Analog Stereo</code> or <code>Monitor of ALSA</code>). If present, select it and you are done!</p>
+      <li><strong>Recommended (100% Feedback-Free via pavucontrol GUI):</strong>
+        <p>Open <code>pavucontrol</code> (Volume Control). Go to the <strong>Recording</strong> tab while XTM is listening in Chrome/Firefox. Find <strong>Google Chrome</strong> (or your browser) and change its input dropdown from your physical Microphone to <strong>"Monitor of Built-in Audio Analog Stereo"</strong> (or "Monitor of [Your Speakers/Headphones]").</p>
+        <p>This streams crystal-clear desktop sound (YouTube, Spotify, DAWs) with 0% microphone pickup and 0% feedback risk!</p>
       </li>
-      <li><strong>Create an Instant PipeWire Loopback Bridge:</strong>
-        <p>Run the following command in a terminal to create an instant audio loopback sink in PipeWire:</p>
-        <pre>pw-loopback --capture-props='media.class=Audio/Sink' &</pre>
+      <li><strong>Check Built-in Monitor Devices directly in XTM:</strong>
+        <p>In XTM's Settings Drawer under <strong>Audio Input Device</strong>, look for devices tagged with <code>🎧 [OS Loopback · Banner-Free]</code> (e.g. <code>Monitor of Built-in Audio Analog Stereo</code>). If present, simply select it!</p>
       </li>
-      <li><strong>Or with PulseAudio (Ubuntu / Debian / Fedora / Arch):</strong>
-        <pre>pactl load-module module-loopback latency_msec=1</pre>
-      </li>
-      <li><strong>Using pavucontrol (GUI Volume Control):</strong>
-        <p>Install and open <code>pavucontrol</code>. Go to the <strong>Recording</strong> tab while XTM is listening, find <strong>Google Chrome</strong>, and change its dropdown from "Built-in Audio Microphone" to <strong>"Monitor of Built-in Audio Analog Stereo"</strong>.</p>
+      <li><strong>Optional: Dedicated Virtual Null-Sink Cable (Silent &amp; Isolated):</strong>
+        <p>To create a safe virtual audio cable that does not route to physical speakers:</p>
+        <pre>pactl load-module module-null-sink sink_name=XTM_Bridge sink_properties=device.description="XTM_Virtual_Audio_Cable"</pre>
+        <p>To remove it at any time: <code>pactl unload-module module-null-sink</code></p>
       </li>
     </ol>
+    <div class="warning">
+      <strong>⚠️ Warning on Feedback:</strong> Never run bare <code>pactl load-module module-loopback</code> without specifying source and sink! Bare loopback links your physical microphone directly into your speakers, creating an immediate acoustic feedback screech. If you ever loaded one by accident, immediately run:
+      <pre style="margin: 8px 0 0 0; color: #fca5a5;">pactl unload-module module-loopback</pre>
+    </div>
     <div class="tip">
-      <strong>Pro Tip:</strong> Audio monitor sinks stream raw PCM with 0% CPU overhead, zero browser banners, and perfect 60 FPS meter synchronization.
+      <strong>Pro Tip:</strong> Audio monitor sinks stream raw 32-bit float / 24-bit PCM with zero browser banners, 0% CPU overhead, and sub-millisecond meter synchronization.
     </div>
   </div>
 
