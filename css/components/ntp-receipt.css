@@ -1,0 +1,296 @@
+/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.ca). All rights reserved. */
+/* NTP Sync Receipt Card & Timeline Markers Stylesheet */
+
+.ntp-receipt-card {
+  position: absolute;
+  width: 320px;
+  background: rgba(8, 12, 18, 0.96);
+  border: 1px solid rgba(56, 189, 248, 0.55);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.85), 0 0 16px rgba(56, 189, 248, 0.2);
+  border-radius: 8px;
+  padding: 12px 14px;
+  color: #e2e8f0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-size: 11.5px;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  z-index: 1000;
+  pointer-events: auto;
+  user-select: text;
+  animation: ntpCardPop 0.16s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes ntpCardPop {
+  from { opacity: 0; transform: translateY(4px) scale(0.97); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+body.theme-mccurdy .ntp-receipt-card,
+body.theme-mccurdy-light .ntp-receipt-card {
+  background: rgba(253, 251, 245, 0.98);
+  border: 1px solid rgba(185, 28, 28, 0.6);
+  box-shadow: 0 16px 36px rgba(40, 20, 10, 0.25);
+  color: #1e293b;
+}
+
+.ntp-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 8px;
+  border-bottom: 1px solid rgba(56, 189, 248, 0.25);
+  padding-bottom: 6px;
+}
+
+body.theme-mccurdy .ntp-card-header,
+body.theme-mccurdy-light .ntp-card-header {
+  border-bottom-color: rgba(185, 28, 28, 0.2);
+}
+
+.ntp-card-badge {
+  font-size: 10.5px;
+  font-weight: 800;
+  color: #f87171;
+  letter-spacing: 0.5px;
+}
+
+.ntp-card-id {
+  font-family: ui-monospace, "SF Mono", monospace;
+  font-size: 10px;
+  color: #94a3b8;
+}
+
+body.theme-mccurdy .ntp-card-id,
+body.theme-mccurdy-light .ntp-card-id {
+  color: #64748b;
+}
+
+.ntp-card-actions {
+  display: flex;
+  gap: 4px;
+}
+
+.ntp-card-btn {
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 4px;
+  color: #94a3b8;
+  cursor: pointer;
+  padding: 2px 6px;
+  font-size: 10px;
+  line-height: 1;
+}
+
+.ntp-card-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #ffffff;
+}
+
+.ntp-card-btn.active {
+  background: rgba(56, 189, 248, 0.25);
+  border-color: #38bdf8;
+  color: #38bdf8;
+}
+
+.ntp-receipt-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 8px;
+  margin-bottom: 3px;
+}
+
+.ntp-lbl {
+  font-size: 9.5px;
+  font-weight: 700;
+  color: #64748b;
+  letter-spacing: 0.4px;
+  white-space: nowrap;
+}
+
+.ntp-val {
+  text-align: right;
+  word-break: break-all;
+}
+
+.ntp-srv {
+  color: #38bdf8;
+  font-weight: 700;
+}
+
+body.theme-mccurdy .ntp-srv,
+body.theme-mccurdy-light .ntp-srv {
+  color: #b91c1c;
+}
+
+.ntp-stratum {
+  font-size: 9px;
+  padding: 1px 4px;
+  border-radius: 3px;
+  background: rgba(56, 189, 248, 0.15);
+  color: #7dd3fc;
+  font-weight: 800;
+}
+
+.ntp-muted {
+  color: #94a3b8;
+  font-size: 10px;
+}
+
+.text-cyan {
+  color: #38bdf8;
+}
+
+.text-yellow {
+  color: #facc15;
+}
+
+.mono {
+  font-family: ui-monospace, "SF Mono", monospace;
+  font-size: 10.5px;
+}
+
+.ntp-receipt-divider {
+  height: 1px;
+  background: rgba(255, 255, 255, 0.08);
+  margin: 6px 0;
+}
+
+body.theme-mccurdy .ntp-receipt-divider,
+body.theme-mccurdy-light .ntp-receipt-divider {
+  background: rgba(0, 0, 0, 0.08);
+}
+
+.ntp-grid-stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px;
+  margin: 5px 0;
+}
+
+.ntp-stat-box {
+  background: rgba(0, 0, 0, 0.35);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 4px;
+  padding: 4px 6px;
+}
+
+body.theme-mccurdy .ntp-stat-box,
+body.theme-mccurdy-light .ntp-stat-box {
+  background: rgba(0, 0, 0, 0.03);
+  border-color: rgba(0, 0, 0, 0.08);
+}
+
+.ntp-stat-lbl {
+  font-size: 8.5px;
+  font-weight: 800;
+  color: #64748b;
+  letter-spacing: 0.3px;
+}
+
+.ntp-stat-val {
+  font-size: 11.5px;
+  font-weight: 700;
+  margin-top: 1px;
+}
+
+.ntp-stat-val.good {
+  color: #4ade80;
+}
+
+.ntp-stat-val.warn {
+  color: #facc15;
+}
+
+.ntp-stat-val.bad {
+  color: #f87171;
+}
+
+.ntp-ledger-section {
+  background: rgba(0, 0, 0, 0.25);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 4px;
+  padding: 5px 7px;
+  margin: 4px 0;
+}
+
+body.theme-mccurdy .ntp-ledger-section,
+body.theme-mccurdy-light .ntp-ledger-section {
+  background: rgba(0, 0, 0, 0.03);
+}
+
+.ntp-ledger-title {
+  font-size: 8.5px;
+  font-weight: 800;
+  color: #64748b;
+  letter-spacing: 0.5px;
+  margin-bottom: 3px;
+}
+
+.ntp-ledger-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2px 6px;
+  font-size: 9.5px;
+}
+
+.ntp-ledger-cell .k {
+  color: #94a3b8;
+}
+
+.ntp-ledger-cell .v {
+  color: #7dd3fc;
+}
+
+.ntp-hash-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 4px;
+  font-size: 9px;
+}
+
+.ntp-hash {
+  font-size: 9px;
+  color: #64748b;
+}
+
+.ntp-card-footer {
+  display: flex;
+  gap: 6px;
+  margin-top: 8px;
+  padding-top: 6px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.ntp-action-btn {
+  flex: 1;
+  background: #1e293b;
+  border: 1px solid #334155;
+  color: #e2e8f0;
+  border-radius: 4px;
+  padding: 5px 8px;
+  font-size: 10px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+}
+
+.ntp-action-btn:hover {
+  background: #334155;
+  border-color: #38bdf8;
+  color: #38bdf8;
+}
+
+.ntp-action-btn.ntp-clock-btn {
+  background: rgba(220, 38, 38, 0.18);
+  border-color: rgba(220, 38, 38, 0.4);
+  color: #f87171;
+}
+
+.ntp-action-btn.ntp-clock-btn:hover {
+  background: rgba(220, 38, 38, 0.3);
+  border-color: #ef4444;
+  color: #ffffff;
+}

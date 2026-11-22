@@ -7,6 +7,7 @@ import { computeLayout } from './layout';
 import { drawGraph } from './graph';
 import { drawZoomOverlay } from './zoom-overlay';
 import { drawCursorTrace, drawLeadingDots } from './leading-edge';
+import { drawNtpDots } from './ntp-dots';
 import { updateHudReadout, drawSignalLossWarning } from './hud-readout';
 
 /* Per-frame render: push the live sample, refresh the offscreen graph, blit, draw live overlays + HUD. */
@@ -54,6 +55,7 @@ export function renderFrame(v: DbfsView, _model: XtmModel, levels: MeterFrameTel
   drawZoomOverlay(v, ctx, L);
   drawCursorTrace(v, ctx, L);
   drawLeadingDots(v, ctx, L);
+  drawNtpDots(v, ctx, L, Date.now());
   // Note: Canvas color key legend removed per user request (colors are on the hover HUD)
   updateHudReadout(v, live, L.bufLen);
   drawSignalLossWarning(v, ctx, L, now);

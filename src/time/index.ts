@@ -6,6 +6,8 @@
  */
 
 export * from './types';
+export * from './ntp-types';
+export * from './ntp-service';
 export * from './clock-shell';
 export * from './clock-hands';
 export * from './clock-renderer';

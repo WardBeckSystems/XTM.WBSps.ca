@@ -1,6 +1,7 @@
 /*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.ca). All rights reserved. */
 import type { MeterFrameTelemetry, TimeScaleMode } from '../types/telemetry';
 import type { XtmModel } from '../models/xtm-model';
+import type { VisibleNtpDot, NtpReceipt } from '../time/ntp-types';
 import { sliderToSeconds, secondsToSlider, formatDuration } from './dbfs/capture-steps';
 import { allocHistories, resizeBuffer, clearHistory, pushSample } from './dbfs/history';
 import { PYR_LEVELS, pyrSources, pyrReset, pyrPush, rawAt, blockAt, levelAt, pyrSample } from './dbfs/pyramid';
@@ -106,6 +107,9 @@ export class DbfsView {
   isDocked: boolean;
   hoverX: number | null = null;
   hoverY: number | null = null;
+
+  visibleNtpDots: VisibleNtpDot[] = [];
+  hoveredNtpReceipt: NtpReceipt | null = null;
 
   peakMaxL: number = -60;
   peakMaxR: number = -60;

@@ -7,6 +7,7 @@
 
 import type { AppContext } from '../app/app-context';
 import { clockModalController } from './clock-popup';
+import { ntpService } from './ntp-service';
 
 let footerTimer: any = null;
 
@@ -43,12 +44,14 @@ export function toggleClockModal(): void {
 
 export function initTimeModule(ctx?: AppContext): void {
   clockModalController.init();
+  ntpService.startAutoSync(45000);
 
   // 1. Timeline NOW Time Button on the dBFS scope
   const btnTimelineNow = document.getElementById('btnTimelineNowTime');
   if (btnTimelineNow) {
     btnTimelineNow.addEventListener('click', (e) => {
       e.stopPropagation();
+      ntpService.syncNow();
       openClockModal();
     });
   }
@@ -114,4 +117,5 @@ export function initTimeModule(ctx?: AppContext): void {
     toggle: toggleClockModal,
     controller: clockModalController
   };
+  (window as any).xtmNtp = ntpService;
 }

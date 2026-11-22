@@ -6,6 +6,7 @@ import { bindCaptureControls } from './capture-controls';
 import { bindDisplayOptions } from './display-options';
 import { bindPointerInput } from './pointer-input';
 import { bindHudDrag } from './hud-drag';
+import { ntpReceiptCard } from './ntp-receipt-card';
 
 /* Build the scope DOM, cache elements, and wire every control and input handler. */
 
@@ -37,6 +38,7 @@ export function initCanvas(v: DbfsView): void {
   if (wrapper) {
     bindPointerInput(v, wrapper);
     bindHudDrag(v, container);
+    ntpReceiptCard.init(wrapper);
   }
 
   v.handleResize();
