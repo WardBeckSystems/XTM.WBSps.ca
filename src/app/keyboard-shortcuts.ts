@@ -23,6 +23,8 @@ export function initKeyboardShortcuts(ctx: AppContext, sync: AudioSync): void {
       model.holdMode();
     } else if (k === 'P') {
       model.togglePower();
+    } else if (k === 'T') {
+      window.dispatchEvent(new CustomEvent('xtm:open-clock'));
     }
   });
 }

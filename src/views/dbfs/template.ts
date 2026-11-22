@@ -7,6 +7,13 @@ export const DBFS_TEMPLATE = `
         <div class="dbfs-canvas-wrapper" style="position:relative;width:100%;height:100%;flex:1;overflow:hidden;">
           <canvas id="dbfsCanvas" style="width:100%;height:100%;display:block;"></canvas>
 
+          <!-- Timeline NOW Time Badge / Button (Click opens Full Screen Master Clock) -->
+          <button type="button" class="timeline-now-time-btn" id="btnTimelineNowTime" title="Current Time (NOW) - Click to open Full Screen Master Clock (time.nrc.ca · time.chu.nrc.ca)">
+            <span class="timeline-now-label">NOW</span>
+            <span class="timeline-now-val" id="timelineNowTimeText">--:--:--</span>
+            <span class="timeline-now-nrc" id="timelineNowNrcText">time.nrc.ca · time.chu.nrc.ca</span>
+          </button>
+
           <!-- Floating / Dockable Hover HUD Tooltip Card -->
           <div id="dbfsHoverHud" class="dbfs-hover-hud">
             <div class="hud-header">

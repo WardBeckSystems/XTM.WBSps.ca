@@ -46,6 +46,12 @@ export function drawTimeAxis(v: DbfsView, ctx: CanvasRenderingContext2D, L: Scop
     ctx.lineTo(x, padT + plotH + 4 * dpr);
     ctx.stroke();
 
+    // At ts.sec === 0 (the NOW time on the timeline), the interactive
+    // #btnTimelineNowTime badge is rendered directly above/beside this tick.
+    if (ts.sec === 0) {
+      return;
+    }
+
     ctx.fillText(ts.label, x, padT + plotH + 6 * dpr);
   });
 }

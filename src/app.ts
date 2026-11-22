@@ -34,6 +34,7 @@ import { initKeyboardShortcuts } from './app/keyboard-shortcuts';
 import { initUpdateCheck } from './app/update-check';
 import { registerServiceWorker } from './app/service-worker';
 import { initPwaInstall } from './app/pwa-install';
+import { initTimeModule } from './time';
 import { startFrameLoop } from './app/frame-loop';
 
 export async function initApp(): Promise<void> {
@@ -89,6 +90,7 @@ export async function initApp(): Promise<void> {
   initUpdateCheck();
   registerServiceWorker();
   initPwaInstall();
+  initTimeModule(ctx);
 
   startFrameLoop(ctx, recorder);
 }

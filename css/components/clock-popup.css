@@ -1,0 +1,452 @@
+/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.ca). All rights reserved. */
+/* Precision Broadcast Master Studio Clock Modal (TIME/ Module) - Full Screen */
+/* Connected at the stylesheet to the active meter skins (Ward-Beck & McCurdy) */
+
+@keyframes clockFadeIn {
+  from { opacity: 0; transform: scale(0.98); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.clock-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  background: rgba(4, 6, 9, 0.94);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+}
+
+.clock-modal-card {
+  background: radial-gradient(circle at center, #141822 0%, #07090d 100%);
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+  width: 100vw;
+  height: 100vh;
+  max-width: 100vw;
+  max-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  animation: clockFadeIn 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+  user-select: none;
+}
+
+.clock-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 24px;
+  background: rgba(15, 19, 26, 0.88);
+  border-bottom: 1px solid #1f2733;
+  backdrop-filter: blur(8px);
+}
+
+.clock-modal-title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 1.2px;
+  color: #e2e8f0;
+}
+
+.clock-modal-title svg {
+  color: #c8f53c;
+}
+
+.clock-nrc-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 4px;
+  background: rgba(220, 38, 38, 0.15);
+  border: 1px solid rgba(220, 38, 38, 0.35);
+  color: #f87171;
+  text-decoration: none;
+  transition: all 0.15s ease;
+}
+
+.clock-nrc-badge:hover {
+  background: rgba(220, 38, 38, 0.25);
+  border-color: #ef4444;
+  color: #ffffff;
+}
+
+.clock-modal-controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.clock-ctrl-btn {
+  background: #1a222e;
+  border: 1px solid #2e3b4e;
+  color: #94a3b8;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  font-family: inherit;
+}
+
+.clock-ctrl-btn:hover {
+  background: #253346;
+  color: #ffffff;
+  border-color: #38bdf8;
+}
+
+.clock-btn-close {
+  background: #991b1b;
+  color: #ffffff;
+  border-color: #ef4444;
+  font-size: 12px;
+  padding: 6px 12px;
+}
+
+.clock-btn-close:hover {
+  background: #dc2626;
+}
+
+.clock-stage-container {
+  flex: 1;
+  width: 100%;
+  height: 100%;
+  padding: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.clock-svg-root {
+  filter: drop-shadow(0 24px 60px rgba(0, 0, 0, 0.94));
+  width: min(84vw, 82vh);
+  height: min(84vw, 82vh);
+  max-width: none;
+  max-height: none;
+}
+
+.clock-modal-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 24px;
+  background: rgba(12, 15, 20, 0.92);
+  border-top: 1px solid #1f2733;
+  backdrop-filter: blur(8px);
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.clock-footer-readouts {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.clock-badge {
+  font-family: ui-monospace, "SF Mono", monospace;
+  font-size: 12px;
+  font-weight: 800;
+  background: #07090d;
+  border: 1px solid #1e2633;
+  padding: 5px 12px;
+  border-radius: 4px;
+}
+
+.clock-badge-time {
+  color: #c8f53c;
+  letter-spacing: 1.5px;
+  font-size: 15px;
+  text-shadow: 0 0 8px rgba(200, 245, 60, 0.45);
+}
+
+.clock-badge-utc {
+  color: #38bdf8;
+}
+
+.clock-badge-nrc {
+  display: inline-flex;
+  align-items: center;
+}
+
+.clock-nrc-anchor {
+  color: #f87171;
+  font-size: 11px;
+  font-weight: 800;
+  text-decoration: none;
+  letter-spacing: 0.8px;
+  transition: color 0.15s ease;
+}
+
+.clock-nrc-anchor:hover {
+  color: #ffffff;
+}
+
+/* =========================================================================
+   CONNECTED AT THE STYLE SHEET: METER SKIN COUPLING
+   The clock automatically reflects the active meter mode via CSS classes!
+   ========================================================================= */
+
+/* 1. Modern Ward-Beck (Default / theme-wbs-dark) */
+body.theme-wbs-dark .clock-dial-plate,
+.clock-dial-plate {
+  fill: url(#meterDialDark);
+}
+body.theme-wbs-dark .clock-baseline-arc,
+.clock-baseline-arc {
+  stroke: #ffffff;
+}
+body.theme-wbs-dark .clock-yellow-band,
+.clock-yellow-band {
+  fill: #facc15;
+}
+body.theme-wbs-dark .clock-tick-std,
+.clock-tick-std {
+  stroke: #ffffff;
+}
+body.theme-wbs-dark .clock-tick-warn,
+.clock-tick-warn {
+  stroke: #111317;
+}
+body.theme-wbs-dark .clock-num-std,
+.clock-num-std {
+  fill: #ffffff;
+}
+body.theme-wbs-dark .clock-num-warn,
+.clock-num-warn {
+  fill: #facc15;
+}
+body.theme-wbs-dark .clock-num-24,
+.clock-num-24 {
+  fill: #718096;
+}
+body.theme-wbs-dark .clock-nrc-lbl,
+.clock-nrc-lbl {
+  fill: #94a3b8;
+}
+body.theme-wbs-dark .clock-nrc-sub,
+.clock-nrc-sub {
+  fill: #64748b;
+}
+body.theme-wbs-dark .clock-nrc-srv,
+.clock-nrc-srv {
+  fill: #94a3b8;
+}
+
+/* 2. Vintage Ward-Beck (theme-wbs-ca) */
+body.theme-wbs-ca .clock-dial-plate {
+  fill: url(#clockDialCream) !important;
+}
+body.theme-wbs-ca .clock-baseline-arc {
+  stroke: #2a2b2a !important;
+}
+body.theme-wbs-ca .clock-yellow-band {
+  fill: #facc15 !important;
+}
+body.theme-wbs-ca .clock-tick-std {
+  stroke: #2a2b2a !important;
+}
+body.theme-wbs-ca .clock-tick-warn {
+  stroke: #111317 !important;
+}
+body.theme-wbs-ca .clock-num-std {
+  fill: #1f2421 !important;
+}
+body.theme-wbs-ca .clock-num-warn {
+  fill: #c2410c !important;
+}
+body.theme-wbs-ca .clock-num-24 {
+  fill: #8c7853 !important;
+}
+body.theme-wbs-ca .clock-nrc-lbl {
+  fill: #57534e !important;
+}
+body.theme-wbs-ca .clock-nrc-sub {
+  fill: #78716c !important;
+}
+body.theme-wbs-ca .clock-nrc-srv {
+  fill: #78716c !important;
+}
+
+/* 3. McCurdy Studio Dark (theme-mccurdy-dark) */
+body.theme-mccurdy-dark .clock-dial-plate {
+  fill: url(#clockDialMcCurdyDark) !important;
+}
+body.theme-mccurdy-dark .clock-baseline-arc {
+  stroke: #f0f4f8 !important;
+}
+body.theme-mccurdy-dark .clock-tick-std {
+  stroke: #f0f4f8 !important;
+}
+body.theme-mccurdy-dark .clock-num-std {
+  fill: #f0f4f8 !important;
+}
+body.theme-mccurdy-dark .clock-num-warn {
+  fill: #facc15 !important;
+}
+body.theme-mccurdy-dark .clock-num-24 {
+  fill: #627d98 !important;
+}
+body.theme-mccurdy-dark .clock-nrc-lbl {
+  fill: #9fb3c8 !important;
+}
+body.theme-mccurdy-dark .clock-nrc-sub {
+  fill: #627d98 !important;
+}
+body.theme-mccurdy-dark .clock-nrc-srv {
+  fill: #9fb3c8 !important;
+}
+
+/* 4. McCurdy ATS-100 Light Cream (theme-mccurdy) */
+body.theme-mccurdy .clock-dial-plate {
+  fill: url(#clockDialMcCurdyLight) !important;
+}
+body.theme-mccurdy .clock-baseline-arc {
+  stroke: #102a43 !important;
+}
+body.theme-mccurdy .clock-tick-std {
+  stroke: #102a43 !important;
+}
+body.theme-mccurdy .clock-num-std {
+  fill: #0b1b2b !important;
+}
+body.theme-mccurdy .clock-num-warn {
+  fill: #c2410c !important;
+}
+body.theme-mccurdy .clock-num-24 {
+  fill: #627d98 !important;
+}
+body.theme-mccurdy .clock-nrc-lbl {
+  fill: #334e68 !important;
+}
+body.theme-mccurdy .clock-nrc-sub {
+  fill: #486581 !important;
+}
+body.theme-mccurdy .clock-nrc-srv {
+  fill: #486581 !important;
+}
+
+/* Interactive Timeline NOW Time Badge (dBFS Scope) */
+.timeline-now-time-btn {
+  position: absolute;
+  right: 18px;
+  bottom: 3px;
+  z-index: 15;
+  background: rgba(10, 13, 18, 0.94);
+  border: 1.5px solid #22c55e;
+  border-radius: 6px;
+  padding: 2px 8px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.75), 0 0 10px rgba(34, 197, 94, 0.25);
+  transition: all 0.15s ease;
+  user-select: none;
+  backdrop-filter: blur(6px);
+}
+
+.timeline-now-time-btn:hover {
+  background: #141c28;
+  border-color: #38bdf8;
+  box-shadow: 0 0 14px rgba(56, 189, 248, 0.45);
+  transform: translateY(-1px);
+}
+
+.timeline-now-label {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: 0.8px;
+  background: #22c55e;
+  color: #000000;
+  padding: 1px 4px;
+  border-radius: 3px;
+  line-height: 1.2;
+}
+
+.timeline-now-val {
+  font-family: ui-monospace, "SF Mono", monospace;
+  font-size: 12px;
+  font-weight: 800;
+  color: #c8f53c;
+  letter-spacing: 1px;
+  text-shadow: 0 0 6px rgba(200, 245, 60, 0.4);
+}
+
+.timeline-now-nrc {
+  font-family: ui-monospace, "SF Mono", monospace;
+  font-size: 10px;
+  font-weight: 700;
+  color: #94a3b8;
+  letter-spacing: 0.6px;
+  padding-left: 6px;
+  border-left: 1px solid rgba(255, 255, 255, 0.2);
+  white-space: nowrap;
+}
+
+body.theme-wbs-ca .timeline-now-nrc {
+  color: #57534e;
+  border-left-color: rgba(0, 0, 0, 0.2);
+}
+
+body.theme-mccurdy .timeline-now-nrc {
+  color: #334e68;
+  border-left-color: rgba(16, 42, 67, 0.25);
+}
+
+@media (max-width: 640px) {
+  .timeline-now-nrc {
+    display: none;
+  }
+}
+
+body.theme-wbs-ca .timeline-now-time-btn {
+  border-color: #f97316;
+}
+body.theme-wbs-ca .timeline-now-label {
+  background: #f97316;
+}
+body.theme-wbs-ca .timeline-now-val {
+  color: #f97316;
+  text-shadow: none;
+}
+
+body.theme-mccurdy .timeline-now-time-btn {
+  background: rgba(220, 216, 204, 0.95);
+  border-color: #102a43;
+}
+body.theme-mccurdy .timeline-now-label {
+  background: #102a43;
+  color: #ffffff;
+}
+body.theme-mccurdy .timeline-now-val {
+  color: #102a43;
+  text-shadow: none;
+}
+
+@media (max-width: 640px) {
+  .timeline-now-time-btn {
+    right: 8px;
+    padding: 1px 5px;
+  }
+  .timeline-now-val {
+    font-size: 11px;
+  }
+  .clock-modal-header,
+  .clock-modal-footer {
+    padding: 10px 14px;
+  }
+}

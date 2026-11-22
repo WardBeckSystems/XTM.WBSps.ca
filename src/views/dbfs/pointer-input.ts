@@ -21,9 +21,21 @@ function limeHit(v: DbfsView, wrapper: HTMLElement, e: any, tol: number): { x: n
   return { x, y, over };
 }
 
+/** Check if pointer is over the bottom time axis (e.g. current time tick mark) */
+function timeAxisHit(v: DbfsView, wrapper: HTMLElement, e: any): boolean {
+  const rect = wrapper.getBoundingClientRect();
+  const dpr = v.dpr || 1;
+  const y = (e.clientY - rect.top) * dpr;
+  const padT = 18 * dpr;
+  const padB = 26 * dpr;
+  const plotH = Math.max(10, (v.h || 300) - padT - padB);
+  return y >= (padT + plotH - 6 * dpr);
+}
+
 export function bindPointerInput(v: DbfsView, wrapper: HTMLElement): void {
   wrapper.addEventListener('pointermove', (e: any) => {
     const { x, y, over: overLime } = limeHit(v, wrapper, e, 32);
+    const overTime = timeAxisHit(v, wrapper, e);
     v.hoverX = x;
     v.hoverY = y;
 
@@ -32,7 +44,22 @@ export function bindPointerInput(v: DbfsView, wrapper: HTMLElement): void {
     }
 
     v.isHoveringLime = overLime;
-    wrapper.style.cursor = overLime ? 'ns-resize' : 'crosshair';
+    if (overLime) {
+      wrapper.style.cursor = 'ns-resize';
+      wrapper.title = '';
+    } else if (overTime) {
+      wrapper.style.cursor = 'pointer';
+      wrapper.title = 'Click current time to open Master Studio Clock';
+    } else {
+      wrapper.style.cursor = 'crosshair';
+      wrapper.title = '';
+    }
+  });
+
+  wrapper.addEventListener('click', (e: any) => {
+    if (timeAxisHit(v, wrapper, e)) {
+      window.dispatchEvent(new CustomEvent('xtm:open-clock'));
+    }
   });
 
   wrapper.addEventListener('pointerleave', () => {
