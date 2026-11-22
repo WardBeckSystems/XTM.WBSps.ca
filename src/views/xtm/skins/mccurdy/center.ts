@@ -74,7 +74,7 @@ export function renderMcCurdyCaCenter(): string {
   const font = `font-family="'Helvetica Neue', Helvetica, Arial, sans-serif"`;
 
   // Centered horizontally in center bay (x: 1350 to 1850 -> center 1600)
-  // Scaled 30% larger, positioned with ky = 186 to leave clean clearance for input buttons below (by = 384)
+  // Scaled 30% larger, positioned with ky = 186 to leave clean clearance for input buttons below (by = 374)
   const kx = 1600, ky = 186;
 
   let scaleTicks = '';
@@ -203,7 +203,7 @@ export function renderMcCurdyCaCenter(): string {
         <text x="1400" y="248" font-size="10" font-weight="800" fill="#f8fafc" text-anchor="start">20K</text>
 
         <!-- Model Designation Silkscreen (Lower Left) -->
-        <text x="1382" y="388" font-size="12" font-weight="900" fill="#94a3b8" text-anchor="middle" letter-spacing="1.5">SA14023</text>
+        <text x="1382" y="378" font-size="12" font-weight="900" fill="#94a3b8" text-anchor="middle" letter-spacing="1.5">SA14023</text>
       </g>
 
       <!-- ================================================================= -->
@@ -274,17 +274,18 @@ export function renderMcCurdyCaCenter(): string {
       <g id="mc-bottom-selectors" ${font}>
         ${[1, 2, 3, 4].map(i => {
           const bx = 1600 + (i - 2.5) * 72;
-          const by = 384;
+          const by = 374;
           return `
         <g class="xtm-btn mc-selector-btn ${i === 1 ? 'mc-btn-latched' : ''}" id="mc_input_btn_${i}" data-btn="INPUT_${i}" data-input="${i}" style="cursor:pointer" transform="translate(${bx}, ${by})" role="button" tabindex="0" aria-label="Input ${i}">
           <title>Input ${i} Selector Switch (Push to select, snaps up when another is pushed)</title>
-          <text x="0" y="-19" font-size="9.5" font-weight="700" fill="#cbd5e1" text-anchor="middle" letter-spacing="0.5">INPUT ${i}</text>
           <!-- Outer Bezel & Well -->
           <circle cx="0" cy="0" r="17" fill="url(#chromeMetalGrad)" stroke="#152636" stroke-width="1.3"/>
           <circle cx="0" cy="0" r="13" fill="#0d141c" stroke="#080e14" stroke-width="1"/>
           <!-- Pushbutton Cap (Latches down / snaps up) -->
           <circle class="mc-btn-cap" cx="0" cy="0" r="10.5" fill="#1e293b" stroke="#475569" stroke-width="1"/>
           <text class="mc-btn-label" x="0" y="4" font-size="11.5" font-weight="900" fill="#f8fafc" text-anchor="middle">${i}</text>
+          <!-- Input Label Below Switch -->
+          <text x="0" y="27" font-size="9.5" font-weight="700" fill="#cbd5e1" text-anchor="middle" letter-spacing="0.5">INPUT ${i}</text>
         </g>`;
         }).join('')}
       </g>
