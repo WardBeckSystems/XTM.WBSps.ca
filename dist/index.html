@@ -6,25 +6,53 @@
   <meta name="copyright" content="Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.ca). All rights reserved.">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Ward-Beck Systems</title>
+  <link rel="icon" type="image/svg+xml" href="favicon-wbs-dark.svg" id="appFavicon" >
   <script>
     (function() {
       var host = location.hostname;
       var params = new URLSearchParams(location.search);
       var m = params.get('mode') || params.get('console') || params.get('theme') || location.hash.replace('#', '');
-      var isMcCurdy = /(^|\.)(mccurdyradio|mccurdy)\.(com|ca)$/i.test(host) || (m && m.indexOf('mccurdy') !== -1);
+      var isMcLight = m === 'mccurdy-light' || m === 'mccurdy-com' || /(^|\.)(mccurdyradio|mccurdy)\.com$/i.test(host);
+      var isMcDark = m === 'mccurdy-dark' || m === 'mccurdy-ca' || /(^|\.)(mccurdyradio|mccurdy)\.ca$/i.test(host);
+      var isWbsCa = m === 'wbs-ca' || /(^|\.)(ward-beck|wardbeck)\.ca$/i.test(host);
       var isWbsPs = /(^|\.)wbsps\.ca$/i.test(host);
 
-      if (isMcCurdy) {
-        document.title = "McCurdy Radio Industries";
+      var title = "Ward-Beck Systems";
+      var icon = "favicon-wbs-dark.svg";
+
+      if (isMcLight) {
+        title = "McCurdy Radio Industries";
+        icon = "favicon-mccurdy-light.svg";
+      } else if (isMcDark) {
+        title = "McCurdy Radio Industries";
+        icon = "favicon-mccurdy-dark.svg";
+      } else if (isWbsCa) {
+        title = "Ward-Beck Systems";
+        icon = "favicon-wbs-ca.svg";
       } else if (isWbsPs) {
-        document.title = "Ward-Beck Systems Preservation Society";
+        title = "Ward-Beck Systems Preservation Society";
+        icon = "favicon-wbs-dark.svg";
       } else {
-        document.title = "Ward-Beck Systems";
+        try {
+          var saved = localStorage.getItem("xtm.mode");
+          if (saved === 'mccurdy-light') {
+            title = "McCurdy Radio Industries";
+            icon = "favicon-mccurdy-light.svg";
+          } else if (saved === 'mccurdy-dark') {
+            title = "McCurdy Radio Industries";
+            icon = "favicon-mccurdy-dark.svg";
+          } else if (saved === 'wbs-ca') {
+            title = "Ward-Beck Systems";
+            icon = "favicon-wbs-ca.svg";
+          }
+        } catch (_) {}
       }
+      document.title = title;
+      var fav = document.getElementById("appFavicon");
+      if (fav) fav.href = icon;
     })();
   </script>
   <meta name="description" content="Precision broadcast mastering visualizers: Ward-Beck Systems Precision Mastering Visualizers and Loudness Metering.">
-  <link rel="icon" type="image/svg+xml" href="favicon.svg" >
   <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png" >
   <link rel="apple-touch-icon" href="icon-192.png" >
   <link rel="manifest" href="manifest.json" >
@@ -703,13 +731,25 @@
     document.body.classList.toggle("theme-wbs-ca", isWbsCa);
     document.body.classList.toggle("theme-wbs-dark", isWbsDark);
 
-    if (isMcLight || isMcDark) {
+    var favHref = "favicon-wbs-dark.svg";
+    if (isMcLight) {
       document.title = "McCurdy Radio Industries";
+      favHref = "favicon-mccurdy-light.svg";
+    } else if (isMcDark) {
+      document.title = "McCurdy Radio Industries";
+      favHref = "favicon-mccurdy-dark.svg";
+    } else if (isWbsCa) {
+      document.title = "Ward-Beck Systems";
+      favHref = "favicon-wbs-ca.svg";
     } else if (/(^|\.)wbsps\.ca$/i.test(location.hostname)) {
       document.title = "Ward-Beck Systems Preservation Society";
+      favHref = "favicon-wbs-dark.svg";
     } else {
       document.title = "Ward-Beck Systems";
+      favHref = "favicon-wbs-dark.svg";
     }
+    var appFav = document.getElementById("appFavicon") || document.querySelector('link[type="image/svg+xml"]');
+    if (appFav) appFav.href = favHref;
 
     var btnWbsCa = document.getElementById("btnWardBeckCa");
     var btnWbsCom = document.getElementById("btnWardBeckCom");
