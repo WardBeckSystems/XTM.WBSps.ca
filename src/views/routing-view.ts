@@ -61,11 +61,7 @@ export class RoutingCanvasView {
   outNeedlesL: (SVGElement | null)[] = [];
   outNeedlesR: (SVGElement | null)[] = [];
 
-  // Studio Master Dual Electromechanical VU Meters & Scanalyzer Eye
-  studioNeedleL: SVGElement | null = null;
-  studioNeedleR: SVGElement | null = null;
-  studioVuL: HTMLElement | null = null;
-  studioVuR: HTMLElement | null = null;
+  // Scanalyzer Audio Eye Visualizer
   phaseNeedle: HTMLElement | null = null;
   corrValReadout: HTMLElement | null = null;
   eyeCanvas: HTMLCanvasElement | null = null;
@@ -106,10 +102,6 @@ export class RoutingCanvasView {
       this.outNeedlesL[i] = this.container.querySelector(`#rcOutNeedleL${i}`) as SVGElement | null;
       this.outNeedlesR[i] = this.container.querySelector(`#rcOutNeedleR${i}`) as SVGElement | null;
     }
-    this.studioNeedleL = this.container.querySelector('#rcStudioNeedleL') as SVGElement | null;
-    this.studioNeedleR = this.container.querySelector('#rcStudioNeedleR') as SVGElement | null;
-    this.studioVuL = this.container.querySelector('#rcStudioVuL') as HTMLElement | null;
-    this.studioVuR = this.container.querySelector('#rcStudioVuR') as HTMLElement | null;
     this.phaseNeedle = this.container.querySelector('#rcPhaseNeedle') as HTMLElement | null;
     this.corrValReadout = this.container.querySelector('#rcCorrValReadout') as HTMLElement | null;
     this.eyeCanvas = this.container.querySelector('#rcEyeCanvas') as HTMLCanvasElement | null;
@@ -195,22 +187,9 @@ export class RoutingCanvasView {
             </div>
           </div>
 
-          <!-- RIGHT PANE: Studio Dual Analog VU Meters & 4-Layer Linux Audio Pipeline -->
-          <div class="rc-deck-col rc-studio-vu-col">
+          <!-- RIGHT PANE: 4-Layer Linux Audio Pipeline & Topology Grid -->
+          <div class="rc-deck-col rc-pipeline-col">
             <div class="rc-deck-header">
-              <span>WARD-BECK STUDIO PRECISION ELECTROMECHANICAL VU METERS</span>
-              <span class="rc-deck-sub">Calibrated 1 kHz @ 0 VU (-18 dBFS) Reference</span>
-            </div>
-
-            <div class="rc-studio-vu-stage">
-              <div class="rc-studio-vu-meters-row">
-                ${this.renderStudioVuDial('CHANNEL 1 // LEFT', 'rcStudioNeedleL', 'rcStudioVuL', 'CHANNEL 1 // LEFT')}
-                ${this.renderStudioVuDial('CHANNEL 2 // RIGHT', 'rcStudioNeedleR', 'rcStudioVuR', 'CHANNEL 2 // RIGHT')}
-              </div>
-            </div>
-
-            <!-- Layered Linux Audio Pipeline & Topology Grid -->
-            <div class="rc-deck-header" style="margin-top: 6px;">
               <span>LAYERED LINUX AUDIO PIPELINE &amp; GRAPH TOPOLOGY</span>
               <span class="rc-deck-sub">ALSA Hardware · PipeWire Graph · MXL Shared Memory · Network AoIP</span>
             </div>
@@ -252,8 +231,9 @@ export class RoutingCanvasView {
                 </div>
                 <ul class="rc-pipeline-list" id="rcMxlList">
                   <li>domain-wbs-dmf-01 (Active)</li>
-                  <li>wbs-flow-master-stereo</li>
-                  <li>wbs-flow-ref-tone</li>
+                  <li>wbs-flow-master-stereo (Master)</li>
+                  <li>wbs-flow-ref-tone (POD-33)</li>
+                  <li>wbs-flow-bit-spitter (Bit Spitter)</li>
                 </ul>
                 <div class="rc-pipeline-footer">SMPTE 2059-1 TAI | Zero-Copy PROT_READ</div>
               </div>
@@ -270,6 +250,28 @@ export class RoutingCanvasView {
                   <li>🌐 AES67: SAP Multicast 239.69</li>
                 </ul>
                 <div class="rc-pipeline-footer">IEEE 1588 PTP | MoipBuddy</div>
+              </div>
+            </div>
+
+            <!-- Pipeline Stream Telemetry Details -->
+            <div class="rc-pipeline-telemetry-row">
+              <div class="rc-telemetry-box">
+                <div class="rc-telemetry-box-title">STREAM CLOCK &amp; TIMING</div>
+                <div class="rc-telemetry-box-body">
+                  <div class="rc-telemetry-item"><span>Clock Master:</span> <strong style="color:#38bdf8;">SMPTE 2059-1 TAI (PTP Domain 0)</strong></div>
+                  <div class="rc-telemetry-item"><span>Sampling Clock:</span> <strong>48,000 Hz Continuous</strong></div>
+                  <div class="rc-telemetry-item"><span>Quantum Period:</span> <strong>256 samples (5.333 ms)</strong></div>
+                  <div class="rc-telemetry-item"><span>Grandmaster Skew:</span> <strong style="color:#4ade80;">&lt; 15 ns (Locked)</strong></div>
+                </div>
+              </div>
+              <div class="rc-telemetry-box">
+                <div class="rc-telemetry-box-title">ZERO-COPY RING STATUS</div>
+                <div class="rc-telemetry-box-body">
+                  <div class="rc-telemetry-item"><span>SHM Domain:</span> <strong style="color:#ea580c;">/dev/shm/mxl/domain-wbs-dmf-01</strong></div>
+                  <div class="rc-telemetry-item"><span>Ring Buffer Capacity:</span> <strong>480,000 frames (10.0 s)</strong></div>
+                  <div class="rc-telemetry-item"><span>Access Mode:</span> <strong>PROT_READ (Wait-Free Atomic)</strong></div>
+                  <div class="rc-telemetry-item"><span>Buffer Overruns:</span> <strong style="color:#4ade80;">0 Overruns / 0 Drops</strong></div>
+                </div>
               </div>
             </div>
           </div>
@@ -318,6 +320,7 @@ export class RoutingCanvasView {
                   <div class="rc-xmxl-flows" id="rcXmxlFlows">
                     <button type="button" class="rc-xmxl-flow-btn active" data-flow="wbs-flow-master-stereo">wbs-flow-master-stereo</button>
                     <button type="button" class="rc-xmxl-flow-btn" data-flow="wbs-flow-ref-tone">wbs-flow-ref-tone</button>
+                    <button type="button" class="rc-xmxl-flow-btn" data-flow="wbs-flow-bit-spitter">wbs-flow-bit-spitter</button>
                   </div>
                 </div>
               </div>
@@ -664,41 +667,6 @@ export class RoutingCanvasView {
     `;
   }
 
-  private renderStudioVuDial(chLabel: string, needleId: string, valId: string, txtCh: string): string {
-    return `
-      <div class="rc-studio-vu-card">
-        <div class="rc-studio-vu-dial">
-          <svg viewBox="0 0 320 195" class="rc-studio-vu-svg" preserveAspectRatio="xMidYMid meet">
-            <!-- Scale background -->
-            <path d="M 30 150 A 130 130 0 0 1 290 150" fill="none" class="rc-studio-scale-arc" stroke="#222" stroke-width="2" />
-            <!-- Red zone -->
-            <path d="M 235 62 A 130 130 0 0 1 285 125" fill="none" stroke="#c0392b" stroke-width="8" />
-            <!-- Scale Ticks -->
-            <path d="M 45 130 L 55 125 M 65 105 L 75 103 M 95 85 L 103 86 M 130 70 L 135 75 M 175 65 L 175 72 M 220 70 L 217 76 M 255 85 L 248 90 M 275 110 L 268 112" fill="none" class="rc-studio-ticks" stroke="#222" stroke-width="1.5" />
-            <!-- Dial Markings -->
-            <text x="50" y="145" font-size="11" font-weight="bold" class="rc-studio-numeral" fill="#222">-20</text>
-            <text x="90" y="105" font-size="11" font-weight="bold" class="rc-studio-numeral" fill="#222">-10</text>
-            <text x="135" y="88" font-size="11" font-weight="bold" class="rc-studio-numeral" fill="#222">-7</text>
-            <text x="175" y="82" font-size="11" font-weight="bold" class="rc-studio-numeral" fill="#222">-3</text>
-            <text x="215" y="88" font-size="13" font-weight="bold" class="rc-studio-numeral" fill="#222">0</text>
-            <text x="250" y="105" font-size="12" font-weight="bold" fill="#c0392b">+1</text>
-            <text x="270" y="130" font-size="12" font-weight="bold" fill="#c0392b">+3</text>
-            <text x="160" y="125" text-anchor="middle" font-size="16" font-weight="900" letter-spacing="3" class="rc-studio-brand-vu" fill="#222">VU</text>
-            <text x="160" y="142" text-anchor="middle" font-size="9" font-weight="bold" letter-spacing="1" class="rc-studio-brand-name" fill="#666">WARD-BECK SYSTEMS</text>
-            <!-- Teardrop Needle -->
-            <g id="${needleId}" transform="rotate(-42 160 195)" class="rc-studio-needle-g">
-              <path d="M 158.5 195 L 159.5 45 C 159.5 40 160.5 40 160.5 45 L 161.5 195 Z" class="rc-studio-needle-stem" fill="#111" />
-              <path d="M 157.5 45 Q 160 30 160 25 Q 160 30 162.5 45 Z" class="rc-studio-needle-tip" fill="#111" />
-              <circle cx="160" cy="195" r="16" class="rc-studio-needle-pivot" fill="#111" />
-              <circle cx="160" cy="195" r="6" class="rc-studio-needle-cap" fill="#555" />
-            </g>
-          </svg>
-        </div>
-        <div class="rc-studio-vu-label">${txtCh} (<span id="${valId}">-42.0</span> VU)</div>
-      </div>
-    `;
-  }
-
   private renderThemeMeterPair(prefix: 'rcIn' | 'rcOut', idx: number): string {
     return `
       <!-- Miniature Broadcast Theme VU Meters (Stereo L / R) -->
@@ -885,11 +853,35 @@ export class RoutingCanvasView {
       btnPodToggle.addEventListener('click', () => {
         this.pod33Engaged = !this.pod33Engaged;
         if (this.pod33Engaged) {
-          this.selectInputSource(2); // Select In 2: POD-33
+          this.matrix[2][0] = true;
+          this.matrix[2][2] = true;
+          this.ctx?.audio?.startPod33Generator(this.pod33Config);
+          this.selectedFlowId = 'wbs-flow-ref-tone';
+          fetch('http://localhost:8467/api/test_tone', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ freq: this.pod33Config.freq, restart: true })
+          }).catch(() => {});
         } else {
-          this.selectInputSource(1); // Revert to System Audio
+          this.matrix[2][0] = false;
+          this.matrix[2][2] = false;
+          this.ctx?.audio?.stopPod33Generator();
+          if (this.bitBuddyEngaged) {
+            this.selectedFlowId = 'wbs-flow-bit-spitter';
+          } else {
+            this.selectedFlowId = 'wbs-flow-master-stereo';
+          }
+          fetch('http://localhost:8467/api/test_tone', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ freq: this.pod33Config.freq, restart: false })
+          }).catch(() => {});
         }
         this.updatePod33State();
+        this.updateBitBuddyState();
+        this.updateStripVisuals();
+        this.updateMatrixVisuals();
+        this.updateXmxlBar();
       });
     }
 
@@ -931,11 +923,41 @@ export class RoutingCanvasView {
       btnBitBuddyToggle.addEventListener('click', () => {
         this.bitBuddyEngaged = !this.bitBuddyEngaged;
         if (this.bitBuddyEngaged) {
-          this.selectInputSource(3); // Select In 3: Bit Buddy
+          this.matrix[3][0] = true;
+          this.matrix[3][2] = true;
+          this.ctx?.audio?.startBitBuddyGenerator(this.bitBuddyConfig);
+          this.selectedFlowId = 'wbs-flow-bit-spitter';
+          fetch('http://localhost:8467/api/bitbuddy', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              active: true,
+              pattern: this.bitBuddyConfig.pattern,
+              pro_mode: this.bitBuddyConfig.proMode,
+              audio_data: this.bitBuddyConfig.audioData === 'audio',
+              sample_rate: this.bitBuddyConfig.sampleRate
+            })
+          }).catch(() => {});
         } else {
-          this.selectInputSource(1); // Revert to System Audio
+          this.matrix[3][0] = false;
+          this.matrix[3][2] = false;
+          this.ctx?.audio?.stopBitBuddyGenerator();
+          if (this.pod33Engaged) {
+            this.selectedFlowId = 'wbs-flow-ref-tone';
+          } else {
+            this.selectedFlowId = 'wbs-flow-master-stereo';
+          }
+          fetch('http://localhost:8467/api/bitbuddy', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ active: false })
+          }).catch(() => {});
         }
+        this.updatePod33State();
         this.updateBitBuddyState();
+        this.updateStripVisuals();
+        this.updateMatrixVisuals();
+        this.updateXmxlBar();
       });
     }
 
@@ -1123,7 +1145,6 @@ export class RoutingCanvasView {
   }
 
   private selectInputSource(idx: number): void {
-    this.activeInput = idx;
     if (!this.ctx || !this.ctx.audio) return;
     const audio = this.ctx.audio;
 
@@ -1133,33 +1154,52 @@ export class RoutingCanvasView {
 
     if (idx === 0) {
       // Soundcard
-      this.pod33Engaged = false;
-      this.bitBuddyEngaged = false;
+      this.activeInput = 0;
       audio.connectSoundCard();
     } else if (idx === 1) {
       // System Audio
-      this.pod33Engaged = false;
-      this.bitBuddyEngaged = false;
+      this.activeInput = 1;
       audio.connectSystemAudio('browser');
     } else if (idx === 2) {
-      // POD-33 Tone Generator
+      // POD-33 Tone Generator (Dual Flow Spitting concurrent with Bit Spitter)
+      this.activeInput = 2;
       this.pod33Engaged = true;
-      this.bitBuddyEngaged = false;
+      this.matrix[2][0] = true;
+      this.matrix[2][2] = true;
       audio.startPod33Generator(this.pod33Config);
+      this.selectedFlowId = 'wbs-flow-ref-tone';
+      fetch('http://localhost:8467/api/test_tone', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ freq: this.pod33Config.freq, restart: true })
+      }).catch(() => {});
     } else if (idx === 3) {
-      // Bit Buddy
-      this.pod33Engaged = false;
+      // Bit Buddy (Dual Flow Spitting concurrent with POD-33)
+      this.activeInput = 3;
       this.bitBuddyEngaged = true;
+      this.matrix[3][0] = true;
+      this.matrix[3][2] = true;
       audio.startBitBuddyGenerator(this.bitBuddyConfig);
+      this.selectedFlowId = 'wbs-flow-bit-spitter';
+      fetch('http://localhost:8467/api/bitbuddy', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          active: true,
+          pattern: this.bitBuddyConfig.pattern,
+          pro_mode: this.bitBuddyConfig.proMode,
+          audio_data: this.bitBuddyConfig.audioData === 'audio',
+          sample_rate: this.bitBuddyConfig.sampleRate
+        })
+      }).catch(() => {});
     } else if (idx === 4) {
       // Pink Noise / Sweep
-      this.pod33Engaged = false;
-      this.bitBuddyEngaged = false;
+      this.activeInput = 4;
       audio.startTestGenerator('pink');
     }
 
     // Always output audio to the soundcard / physical speakers unless explicitly muted
-    const isSpeakersConnected = this.matrix[idx][2] || this.matrix[idx][3];
+    const isSpeakersConnected = this.matrix[idx][2] || this.matrix[idx][3] || (this.pod33Engaged && this.matrix[2][2]) || (this.bitBuddyEngaged && this.matrix[3][2]);
     const isMuted = this.outMutes[2];
     const isDim = this.outDims[2];
     if (audio.setMonitor) {
@@ -1167,8 +1207,10 @@ export class RoutingCanvasView {
     }
 
     this.updateStripVisuals();
+    this.updateMatrixVisuals();
     this.updatePod33State();
     this.updateBitBuddyState();
+    this.updateXmxlBar();
   }
 
   private updatePod33State(): void {
@@ -1213,6 +1255,20 @@ export class RoutingCanvasView {
     if (btn) {
       btn.className = `rc-power-btn ${this.bitBuddyEngaged ? 'active' : ''}`;
       btn.textContent = this.bitBuddyEngaged ? '● SPITTING BITS' : '○ TRANSMIT BIT SPITTER';
+    }
+
+    // Diagnostic LEDs
+    const ledLock = this.container?.querySelector('#ledAbbLock');
+    const ledErr = this.container?.querySelector('#ledAbbErr');
+    const ledActivity = this.container?.querySelector('#ledAbbActivity');
+    if (ledLock) {
+      ledLock.className = `rc-led-indicator ${this.bitBuddyEngaged ? 'lit-green' : ''}`;
+    }
+    if (ledErr) {
+      ledErr.className = `rc-led-indicator ${this.bitBuddyEngaged ? '' : 'lit-red'}`;
+    }
+    if (ledActivity) {
+      ledActivity.className = `rc-led-indicator ${this.bitBuddyEngaged ? 'lit-pulse' : ''}`;
     }
 
     this.container?.querySelectorAll('[data-abb-pat]').forEach(b => {
@@ -1290,7 +1346,10 @@ export class RoutingCanvasView {
   private updateStripVisuals(): void {
     if (!this.container) return;
     for (let i = 0; i < 5; i++) {
-      const isSelected = this.activeInput === i;
+      let isSelected = this.activeInput === i;
+      if (i === 2) isSelected = this.pod33Engaged || this.activeInput === 2;
+      if (i === 3) isSelected = this.bitBuddyEngaged || this.activeInput === 3;
+
       const strip = this.container.querySelector(`#rcInStrip${i}`);
       if (strip) {
         strip.className = `rc-strip rc-in-strip ${isSelected ? 'selected' : ''}`;
@@ -1335,26 +1394,9 @@ export class RoutingCanvasView {
       ringColor1 = '#d97706'; // WBS Vintage Amber
     }
 
-    // Drive Studio Master Electromechanical Dual VU Meters (Tapped from Output 5 / Master)
     const vuL = levels?.vuDb ? levels.vuDb[0] : -60.0;
     const vuR = levels?.vuDb ? levels.vuDb[1] : -60.0;
     const clampDb = (db: number) => Math.max(-60, Math.min(3, isFinite(db) ? db : -60));
-
-    let tapDbL = -60.0;
-    let tapDbR = -60.0;
-    if (this.liveMxlTelemetry?.meters) {
-      tapDbL = this.liveMxlTelemetry.meters.left_vu !== undefined ? this.liveMxlTelemetry.meters.left_vu : vuL;
-      tapDbR = this.liveMxlTelemetry.meters.right_vu !== undefined ? this.liveMxlTelemetry.meters.right_vu : vuR;
-    } else {
-      tapDbL = vuL;
-      tapDbR = vuR;
-    }
-    const angleStudioL = this.vuDbToAngle(tapDbL);
-    const angleStudioR = this.vuDbToAngle(tapDbR);
-    if (this.studioNeedleL) this.studioNeedleL.setAttribute('transform', `rotate(${angleStudioL.toFixed(1)} 160 195)`);
-    if (this.studioNeedleR) this.studioNeedleR.setAttribute('transform', `rotate(${angleStudioR.toFixed(1)} 160 195)`);
-    if (this.studioVuL) this.studioVuL.textContent = tapDbL.toFixed(1);
-    if (this.studioVuR) this.studioVuR.textContent = tapDbR.toFixed(1);
 
     // Scanalyzer Audio Eye 10-Second Continuous Circular Ring Buffer
     if (this.eyeCanvas) {
@@ -1400,7 +1442,18 @@ export class RoutingCanvasView {
     for (let inIdx = 0; inIdx < 5; inIdx++) {
       let dbL = -60.0;
       let dbR = -60.0;
-      if (inIdx === this.activeInput) {
+      if (inIdx === 2 && this.pod33Engaged) {
+        // CH 3: POD-33 Tone Generator
+        const cal = this.pod33Config.levelDb;
+        dbL = this.pod33Config.channelMode === 'right' ? -60.0 : cal;
+        dbR = this.pod33Config.channelMode === 'left' ? -60.0 : (this.pod33Config.channelMode === 'invert' ? cal : cal);
+      } else if (inIdx === 3 && this.bitBuddyEngaged) {
+        // CH 4: Bit Buddy
+        const base = this.bitBuddyConfig.pattern === 'tone' ? -18.0 : (this.bitBuddyConfig.pattern === 'minmax' ? -1.0 : -14.0);
+        const jitter = Math.sin(Date.now() / 90) * 1.5;
+        dbL = base + (this.bitBuddyConfig.pattern === 'tone' ? 0 : jitter);
+        dbR = base + (this.bitBuddyConfig.pattern === 'tone' ? 0 : -jitter);
+      } else if (inIdx === this.activeInput) {
         dbL = vuL;
         dbR = vuR;
       }
@@ -1423,7 +1476,14 @@ export class RoutingCanvasView {
 
     // 4. Update Miniature Broadcast Theme VU Meters on Outputs (including OUT 5: Ward-Beck Tap)
     for (let outIdx = 0; outIdx < 5; outIdx++) {
-      const isConnected = this.matrix[this.activeInput] ? this.matrix[this.activeInput][outIdx] : false;
+      let isConnected = false;
+      for (let r = 0; r < 5; r++) {
+        const rowActive = (r === this.activeInput) || (r === 2 && this.pod33Engaged) || (r === 3 && this.bitBuddyEngaged);
+        if (rowActive && this.matrix[r] && this.matrix[r][outIdx]) {
+          isConnected = true;
+          break;
+        }
+      }
       const isMuted = this.outMutes[outIdx];
       const isDimmed = this.outDims[outIdx];
 

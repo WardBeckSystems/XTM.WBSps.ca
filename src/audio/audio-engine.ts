@@ -181,9 +181,11 @@ export class XtmAudioEngine {
 
   /** WBS POD-33 Digital Audio Reference & Precision Tone Generator */
   startPod33Generator(config?: Pod33Config): void { pod33Gen.startPod33Generator(this, config); }
+  stopPod33Generator(): void { pod33Gen.stopPod33Generator(this); }
 
   /** WBS ABB-1 Audio Bit Buddy / ABP-1 Bit Spitter Generator */
   startBitBuddyGenerator(config?: BitBuddyConfig): void { pod33Gen.startBitBuddyGenerator(this, config); }
+  stopBitBuddyGenerator(): void { pod33Gen.stopBitBuddyGenerator(this); }
 
   /** Set 1 kHz Test Tone Calibration Level (-24, -20, -18, -14, -12, -6, 0 dBFS) */
   setToneCalibration(calDb: number): void { testGen.setToneCalibration(this, calDb); }

@@ -371,6 +371,176 @@ class MxlFlow:
             pass
 
 
+WBS_TEST_SIGNALS_DOMAIN_DIR = "domain-wbs-test-signals"
+WBS_TEST_SIGNALS_DOMAIN_ID = "e4a78120-d001-4800-8000-000000000001"
+WBS_TEST_SIGNALS_DOMAIN_LABEL = "Ward-Beck Test Signals"
+
+WBS_TEST_SIGNALS_CATALOG = [
+    {
+        "uuid": "e4a78120-abb1-4800-8000-000000000001",
+        "flow_id": "wbs-abb1-bit-spitter",
+        "label": "ABB-1-Bit-Spitter",
+        "grouphint": "Ward-Beck:Bit-Spitter",
+        "desc": "Ward-Beck ABB-1 Audio Bit Buddy & ABP-1 Bit Spitter (Walking 1s / PRBS-15 / Polarity)",
+        "signal_type": "bitbuddy",
+    },
+    {
+        "uuid": "e4a78120-3301-4800-8000-000000000001",
+        "flow_id": "wbs-pod33-1k-cal",
+        "label": "POD-33-1kHz-Reference",
+        "grouphint": "Ward-Beck:POD-33",
+        "desc": "Ward-Beck POD-33 Calibrated 1 kHz Reference Tone (0 VU / -18 dBFS EBU / -20 dBFS SMPTE)",
+        "signal_type": "sine_1000",
+    },
+    {
+        "uuid": "e4a78120-3302-4800-8000-000000000002",
+        "flow_id": "wbs-pod33-400-tone",
+        "label": "POD-33-400Hz-Alignment",
+        "grouphint": "Ward-Beck:POD-33",
+        "desc": "Ward-Beck POD-33 400 Hz Console Alignment Tone",
+        "signal_type": "sine_400",
+    },
+    {
+        "uuid": "e4a78120-3303-4800-8000-000000000003",
+        "flow_id": "wbs-pod33-100-tone",
+        "label": "POD-33-100Hz-LowEnd",
+        "grouphint": "Ward-Beck:POD-33",
+        "desc": "Ward-Beck POD-33 100 Hz Low Frequency Reference Tone",
+        "signal_type": "sine_100",
+    },
+    {
+        "uuid": "e4a78120-3304-4800-8000-000000000004",
+        "flow_id": "wbs-pod33-dars-silence",
+        "label": "POD-33-DARS-Silence",
+        "grouphint": "Ward-Beck:POD-33",
+        "desc": "Ward-Beck POD-33 DARS Digital Audio Reference Word Clock Silence",
+        "signal_type": "silence",
+    },
+    {
+        "uuid": "e4a78120-7001-4800-8000-000000000001",
+        "flow_id": "wbs-pink-noise",
+        "label": "WBS-Pink-Noise",
+        "grouphint": "Ward-Beck:Acoustic",
+        "desc": "Ward-Beck Equal-Energy Per Octave Pink Noise Calibration Reference",
+        "signal_type": "pink_noise",
+    },
+    {
+        "uuid": "e4a78120-7002-4800-8000-000000000002",
+        "flow_id": "wbs-frequency-sweep",
+        "label": "WBS-Frequency-Sweep",
+        "grouphint": "Ward-Beck:Acoustic",
+        "desc": "Ward-Beck 20 Hz to 20 kHz Logarithmic Precision Frequency Sweep",
+        "signal_type": "sweep",
+    },
+    {
+        "uuid": "e4a78120-abb1-4800-8000-000000000002",
+        "flow_id": "wbs-master-program",
+        "label": "WBS-Master-Audio",
+        "grouphint": "Ward-Beck:Master",
+        "desc": "Ward-Beck Systems Console Master Audio Program Flow",
+        "signal_type": "master",
+    },
+    {
+        "uuid": "e4a78120-abb1-4800-8000-000000000003",
+        "flow_id": "wbs-signal-tap",
+        "label": "WBS-Signal-Tap",
+        "grouphint": "Ward-Beck:Demarc",
+        "desc": "Ward-Beck Demarcation Signal Tap Point (Physical HW Tap)",
+        "signal_type": "demarc",
+    },
+]
+
+
+def synthesize_test_signal_buffer(signal_type: str, num_frames: int = 19456, sample_rate: int = 48000) -> bytes:
+    """Synthesizes IEEE 754 Float32 interleaved stereo samples for broadcast test signals."""
+    samples = []
+    if signal_type == "sine_1000":
+        amp = 0.1  # -20 dBFS standard broadcast alignment
+        phase_inc = 2.0 * math.pi * 1000.0 / sample_rate
+        for i in range(num_frames):
+            v = amp * math.sin(phase_inc * i)
+            samples.extend((v, v))
+    elif signal_type == "sine_400":
+        amp = 0.1
+        phase_inc = 2.0 * math.pi * 400.0 / sample_rate
+        for i in range(num_frames):
+            v = amp * math.sin(phase_inc * i)
+            samples.extend((v, v))
+    elif signal_type == "sine_100":
+        amp = 0.1
+        phase_inc = 2.0 * math.pi * 100.0 / sample_rate
+        for i in range(num_frames):
+            v = amp * math.sin(phase_inc * i)
+            samples.extend((v, v))
+    elif signal_type == "silence":
+        return b"\x00" * (num_frames * 2 * 4)
+    elif signal_type == "pink_noise":
+        import random
+        amp = 0.08
+        b0 = b1 = b2 = b3 = b4 = b5 = b6 = 0.0
+        for _ in range(num_frames):
+            white = (random.random() * 2.0 - 1.0)
+            b0 = 0.99886 * b0 + white * 0.0555179
+            b1 = 0.99332 * b1 + white * 0.0750759
+            b2 = 0.96900 * b2 + white * 0.1538520
+            b3 = 0.86650 * b3 + white * 0.3104856
+            b4 = 0.55000 * b4 + white * 0.5329522
+            b5 = -0.7616 * b5 - white * 0.0168980
+            pink = (b0 + b1 + b2 + b3 + b4 + b5 + b6 + white * 0.5362) * 0.11 * amp
+            b6 = white * 0.115926
+            samples.extend((pink, pink))
+    elif signal_type == "sweep":
+        f_start = 20.0
+        f_end = 20000.0
+        duration = num_frames / sample_rate
+        amp = 0.1
+        log_ratio = math.log(f_end / f_start)
+        for i in range(num_frames):
+            t = i / sample_rate
+            phase = 2.0 * math.pi * f_start * (math.pow(f_end / f_start, t / duration) - 1.0) / (log_ratio / duration)
+            v = amp * math.sin(phase)
+            samples.extend((v, v))
+    elif signal_type == "bitbuddy":
+        amp = 0.1
+        lfsr = 0x7ACE
+        for _ in range(num_frames):
+            bit = ((lfsr >> 0) ^ (lfsr >> 1)) & 1
+            lfsr = (lfsr >> 1) | (bit << 14)
+            v = amp if bit else -amp
+            samples.extend((v, v))
+    else:
+        amp = 0.1
+        phase_inc = 2.0 * math.pi * 1000.0 / sample_rate
+        for i in range(num_frames):
+            v = amp * math.sin(phase_inc * i)
+            samples.extend((v, v))
+
+    return struct.pack(f"<{len(samples)}f", *samples)
+
+
+def create_mxl_data_header(flow_uuid_str: str, channel_count: int = 2, sample_rate: int = 48000, quantum: int = 480) -> bytes:
+    """Generates standard 2064-byte MXL data header for CBC/EBU DMF compatibility."""
+    raw = bytearray(2064)
+    struct.pack_into(
+        "<II16sIIIIIIII",
+        raw,
+        0,
+        1,                             # version = 1
+        2048,                          # header length = 2048
+        uuid.UUID(flow_uuid_str).bytes,# UUID bytes
+        channel_count,                 # 2 channels
+        0,                             # reserved
+        sample_rate,                   # 48000
+        0,                             # reserved
+        1,                             # grain count
+        0,                             # reserved
+        quantum,                       # quantum = 480
+        quantum                        # buffer quantum = 480
+    )
+    struct.pack_into("<I", raw, 60, 0xFFFFFFFF)
+    return bytes(raw)
+
+
 class MxlEngine:
     """
     Coordinates MXL shared-memory domains and edge bridging.
@@ -403,99 +573,133 @@ class MxlEngine:
         self.tone_flow = MxlFlow(
             domain_id=domain_id,
             flow_id="wbs-flow-ref-tone",
-            label="Ward-Beck Calibrated 1kHz Ref Tone (Float32 Stereo)",
+            label="Ward-Beck POD-33 Precision Tone Flow (Float32 Stereo)",
             sample_rate=48000,
             channel_count=2,
             buffer_length=480000,  # 10.000s ring buffer (480,000 frames @ 48kHz)
             quantum=256,
         )
         self.flows[self.tone_flow.flow_id] = self.tone_flow
-        self._publish_cbc_mxl_flows()
 
-    def _publish_cbc_mxl_flows(self):
+        # 3. ABB-1 Audio Bit Buddy & ABP-1 Bit Spitter Flow (10.000s continuous ring buffer)
+        self.bit_spitter_flow = MxlFlow(
+            domain_id=domain_id,
+            flow_id="wbs-flow-bit-spitter",
+            label="Ward-Beck ABB-1 Audio Bit Buddy & ABP-1 Bit Spitter Flow (Float32 Stereo)",
+            sample_rate=48000,
+            channel_count=2,
+            buffer_length=480000,  # 10.000s ring buffer (480,000 frames @ 48kHz)
+            quantum=256,
+        )
+        self.flows[self.bit_spitter_flow.flow_id] = self.bit_spitter_flow
+
+        # Publish the dedicated 'Ward-Beck Test Signals' MXL domain and all test signal flows
+        self.publish_wbs_test_signals_domain()
+
+    def publish_wbs_test_signals_domain(self):
         """
-        Publishes Ward-Beck flows (ABB-1 Bit Spitter and WBS Master Audio) directly
-        into the CBC/Radio-Canada MXL domain (/dev/shm/mxl/domain_1) so that
-        mxl2webrtc (http://localhost:9601/) and mxl-info-gui automatically discover
-        and stream them via WebRTC.
+        Creates and populates the dedicated 'Ward-Beck Test Signals' MXL domain:
+        /dev/shm/mxl/domain-wbs-test-signals/
+        with domain_def.json and complete audio flow structures (ABB-1 Bit Spitter,
+        POD-33 Precision Tones, Pink Noise, Log Sweeps, and Live Master Tap).
+        Also cross-publishes each flow into the CBC MXL domain (/dev/shm/mxl/domain_1)
+        and nested domain directories so that mxl2webrtc (http://localhost:9601/)
+        and mxl-info-gui automatically discover and stream every Ward-Beck test signal.
         """
+        wbs_domain_dir = os.path.join(SHM_BASE_DIR, WBS_TEST_SIGNALS_DOMAIN_DIR)
+        os.makedirs(wbs_domain_dir, exist_ok=True)
+
+        # 1. Write domain_def.json for Ward-Beck Test Signals
+        dom_def = {
+            "id": WBS_TEST_SIGNALS_DOMAIN_ID,
+            "label": WBS_TEST_SIGNALS_DOMAIN_LABEL,
+            "description": "Ward-Beck Systems Broadcast Calibration & Precision Test Signal Domain (POD-33, ABB-1 Bit Spitter, Sweep, Noise, DARS)"
+        }
+        try:
+            with open(os.path.join(wbs_domain_dir, "domain_def.json"), "w", encoding="utf-8") as f:
+                json.dump(dom_def, f, indent=2)
+        except Exception:
+            pass
+
+        # 2. Setup symlink for convenient access: /dev/shm/mxl/wbs-test-signals
+        symlink_path = os.path.join(SHM_BASE_DIR, "wbs-test-signals")
+        if not os.path.exists(symlink_path):
+            try:
+                os.symlink(WBS_TEST_SIGNALS_DOMAIN_DIR, symlink_path)
+            except Exception:
+                pass
+
+        # Target directories to publish to:
+        # A. The dedicated Ward-Beck domain (/dev/shm/mxl/domain-wbs-test-signals/)
+        # B. The CBC reference domain (/dev/shm/mxl/domain_1/)
+        # C. Nested in domain_1 (/dev/shm/mxl/domain_1/domain-wbs-test-signals/) for recursive scan
+        target_domains = [wbs_domain_dir]
         cbc_domain_dir = os.path.join(SHM_BASE_DIR, "domain_1")
-        if not os.path.isdir(cbc_domain_dir):
+        if os.path.isdir(cbc_domain_dir):
+            target_domains.append(cbc_domain_dir)
+            nested_cbc_dir = os.path.join(cbc_domain_dir, WBS_TEST_SIGNALS_DOMAIN_DIR)
+            os.makedirs(nested_cbc_dir, exist_ok=True)
             try:
-                os.makedirs(cbc_domain_dir, exist_ok=True)
-            except Exception:
-                return
-
-        flows_to_publish = [
-            {
-                "uuid": "e4a78120-abb1-4800-8000-000000000001",
-                "label": "ABB-1-Bit-Spitter",
-                "grouphint": "Ward-Beck:Bit-Spitter",
-                "desc": "Ward-Beck ABB-1 Audio Bit Buddy & ABP-1 Bit Spitter",
-            },
-            {
-                "uuid": "e4a78120-abb1-4800-8000-000000000002",
-                "label": "WBS-Master-Audio",
-                "grouphint": "Ward-Beck:Master",
-                "desc": "Ward-Beck Systems Console Master Audio Flow",
-            },
-        ]
-
-        ref_flow_dir = os.path.join(cbc_domain_dir, "9b85cd39-2476-5467-b1cf-9eb8615dc07c.mxl-flow")
-        ref_data = b""
-        ref_channels = b""
-        if os.path.isdir(ref_flow_dir):
-            try:
-                with open(os.path.join(ref_flow_dir, "data"), "rb") as f:
-                    ref_data = f.read()
-                with open(os.path.join(ref_flow_dir, "channels"), "rb") as f:
-                    ref_channels = f.read()
+                with open(os.path.join(nested_cbc_dir, "domain_def.json"), "w", encoding="utf-8") as f:
+                    json.dump(dom_def, f, indent=2)
             except Exception:
                 pass
+            target_domains.append(nested_cbc_dir)
 
-        for flw in flows_to_publish:
+        for flw in WBS_TEST_SIGNALS_CATALOG:
             flw_uuid = flw["uuid"]
-            flw_dir = os.path.join(cbc_domain_dir, f"{flw_uuid}.mxl-flow")
-            os.makedirs(flw_dir, exist_ok=True)
+            sig_type = flw.get("signal_type", "sine_1000")
 
-            fdef_path = os.path.join(flw_dir, "flow_def.json")
-            fdef = {
-                "id": flw_uuid,
-                "description": flw["desc"],
-                "tags": {
-                    "urn:x-nmos:tag:grouphint/v1.0": [flw["grouphint"]]
-                },
-                "format": "urn:x-nmos:format:audio",
-                "label": flw["label"],
-                "parents": [],
-                "media_type": "audio/float32",
-                "sample_rate": {"numerator": 48000, "denominator": 1},
-                "channel_count": 2,
-                "bit_depth": 32
-            }
-            try:
-                with open(fdef_path, "w", encoding="utf-8") as f:
-                    json.dump(fdef, f, indent=2)
-            except Exception:
-                pass
+            # Synthesize real Float32 audio samples for the circular buffer
+            audio_buffer = synthesize_test_signal_buffer(sig_type)
 
-            data_file = os.path.join(flw_dir, "data")
-            if ref_data and not os.path.exists(data_file):
+            for target_dir in target_domains:
+                flw_dir = os.path.join(target_dir, f"{flw_uuid}.mxl-flow")
+                os.makedirs(flw_dir, exist_ok=True)
+
+                fdef_path = os.path.join(flw_dir, "flow_def.json")
+                fdef = {
+                    "id": flw_uuid,
+                    "description": flw["desc"],
+                    "tags": {
+                        "urn:x-nmos:tag:grouphint/v1.0": [flw["grouphint"]]
+                    },
+                    "format": "urn:x-nmos:format:audio",
+                    "label": flw["label"],
+                    "parents": [],
+                    "media_type": "audio/float32",
+                    "sample_rate": {"numerator": 48000, "denominator": 1},
+                    "channel_count": 2,
+                    "bit_depth": 32,
+                    "domain_id": dom_def["id"],
+                    "domain_label": dom_def["label"]
+                }
                 try:
-                    d_bytes = bytearray(ref_data)
-                    d_bytes[8:24] = uuid.UUID(flw_uuid).bytes
-                    with open(data_file, "wb") as f:
-                        f.write(d_bytes)
+                    with open(fdef_path, "w", encoding="utf-8") as f:
+                        json.dump(fdef, f, indent=2)
                 except Exception:
                     pass
 
-            chan_file = os.path.join(flw_dir, "channels")
-            if ref_channels and not os.path.exists(chan_file):
+                # Write data header (2064 bytes with UUID)
+                data_file = os.path.join(flw_dir, "data")
+                data_bytes = create_mxl_data_header(flw_uuid)
+                try:
+                    with open(data_file, "wb") as f:
+                        f.write(data_bytes)
+                except Exception:
+                    pass
+
+                # Write synthesized audio channels (155,648 bytes)
+                chan_file = os.path.join(flw_dir, "channels")
                 try:
                     with open(chan_file, "wb") as f:
-                        f.write(ref_channels)
+                        f.write(audio_buffer)
                 except Exception:
                     pass
+
+    def _publish_cbc_mxl_flows(self):
+        """Deprecated alias maintained for backwards compatibility."""
+        self.publish_wbs_test_signals_domain()
 
     def start(self, source_device: str = "wbs_meter_tap.monitor"):
         self.active_source = source_device
@@ -511,6 +715,10 @@ class MxlEngine:
         # Start reference tone synthesis thread into tone_flow
         self.tone_thread = threading.Thread(target=self._tone_worker, daemon=True)
         self.tone_thread.start()
+
+        # Start bit spitter synthesis thread into bit_spitter_flow
+        self.bit_spitter_thread = threading.Thread(target=self._bit_spitter_worker, daemon=True)
+        self.bit_spitter_thread.start()
 
     def set_source(self, source_device: str):
         if self.active_source != source_device:
@@ -586,6 +794,36 @@ class MxlEngine:
                     phase -= 2.0 * math.pi
 
             self.tone_flow.write_frames(ch0, ch1)
+            time.sleep(interval_sec * 0.85)
+
+    def _bit_spitter_worker(self):
+        """Continuously synthesizes authentic ABP-1 Bit Spitter walking 1s & PRBS patterns into bit_spitter_flow."""
+        quantum_frames = 256
+        sample_rate = 48000
+        interval_sec = quantum_frames / sample_rate
+        lfsr = 0x7ACE
+        frame_idx = 0
+
+        while not self.shutdown_event.is_set():
+            ch0 = []
+            ch1 = []
+            # Walking 1s pulse pattern mixed with PRBS-15 sequence
+            pulse_active = (frame_idx % 24) == 0
+            for i in range(quantum_frames):
+                # 15-bit Galois LFSR
+                bit = ((lfsr >> 0) ^ (lfsr >> 1)) & 1
+                lfsr = (lfsr >> 1) | (bit << 14)
+                prbs_val = 0.22 if bit else -0.22
+
+                # Walking 1s impulse spike
+                pulse_val = 0.55 if (pulse_active and (i % 32 == 0)) else 0.0
+
+                s = prbs_val * 0.4 + pulse_val
+                ch0.append(s)
+                ch1.append(s)
+
+            self.bit_spitter_flow.write_frames(ch0, ch1)
+            frame_idx += 1
             time.sleep(interval_sec * 0.85)
 
     def get_telemetry(self) -> dict:

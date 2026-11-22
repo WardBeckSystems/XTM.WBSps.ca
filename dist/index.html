@@ -61,8 +61,8 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Ward-Beck Systems">
-  <script type="module" crossorigin src="./assets/index---ncGIQc.js"></script>
-  <link rel="stylesheet" crossorigin href="./assets/index-BfRb8nLc.css">
+  <script type="module" crossorigin src="./assets/index-B5O11WOn.js"></script>
+  <link rel="stylesheet" crossorigin href="./assets/index-DjZz9hzw.css">
 </head>
 <body class="">
   <!-- <div id="audioStartOverlay" style="position:fixed; top:0; left:0; width:100%; height:100%; background:#0a0b0d; z-index:9999; display:flex; align-items:center; justify-content:center;">
@@ -217,7 +217,7 @@
             </svg>
             <span class="footer-btn-text mc-com-text">McCurdyRadio.com</span>
           </button>
-          <span class="build-stamp" style="font-size: 0.7em; opacity: 0.6; margin-left: 12px;">v2.0.67</span>
+          <span class="build-stamp" style="font-size: 0.7em; opacity: 0.6; margin-left: 12px;">v2.0.69</span>
         </div>
       </summary>
 
@@ -1085,27 +1085,25 @@
   var onMcCurdyCom = /(^|\.)(mccurdyradio|mccurdy)\.com$/i.test(host) || urlMode === "mccurdy-light" || urlMode === "mccurdy-com";
   var onMcCurdyCa = /(^|\.)(mccurdyradio|mccurdy)\.ca$/i.test(host) || urlMode === "mccurdy-dark" || urlMode === "mccurdy-ca";
   var onWardBeckCa = /(^|\.)(ward-beck|wardbeck)\.ca$/i.test(host) || urlMode === "wbs-ca";
-  var onWardBeckHost = /(^|\.)(ward-beck\.[a-z]+|wardbeck\.[a-z]+|wbsps\.ca)$/i.test(host) || urlMode === "wbs-dark";
+  var onWardBeckHost = /(^|\.)(ward-beck\.[a-z]+|wardbeck\.[a-z]+|wbsps\.ca)$/i.test(host);
 
   if (urlMode && (urlMode === 'mccurdy-light' || urlMode === 'mccurdy-dark' || urlMode === 'wbs-ca' || urlMode === 'wbs-dark')) {
     applyMode(urlMode);
-  } else if (onWardBeckCa) {
+  } else if (onWardBeckCa || onWardBeckHost) {
     applyMode('wbs-ca');
   } else if (onMcCurdyCom) {
     applyMode('mccurdy-light');
   } else if (onMcCurdyCa) {
     applyMode('mccurdy-dark');
-  } else if (onWardBeckHost) {
-    applyMode('wbs-dark');
   } else {
     try {
       var saved = localStorage.getItem("xtm.mode");
       if (!saved) {
-        saved = localStorage.getItem("xtm.mccurdy") === "1" ? "mccurdy-light" : "wbs-dark";
+        saved = localStorage.getItem("xtm.mccurdy") === "1" ? "mccurdy-light" : "wbs-ca";
       }
-      applyMode(saved || "wbs-dark");
+      applyMode(saved || "wbs-ca");
     } catch (e) {
-      applyMode("wbs-dark");
+      applyMode("wbs-ca");
     }
   }
 </script>

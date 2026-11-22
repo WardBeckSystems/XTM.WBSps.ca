@@ -253,25 +253,28 @@ def list_sources():
                 "rate": rate,
             })
 
-    # Append detected CBC MXL audio flows across domains
+    # Append detected MXL audio flows across domains (including Ward-Beck Test Signals)
     try:
         all_domains = MXL_ENGINE.scan_all_domains()
         for dom_lbl, dom in all_domains.items():
             if dom_lbl == MXL_ENGINE.domain_id:
                 continue
+            is_wbs_domain = "ward-beck" in dom_lbl.lower() or "wbs" in dom_lbl.lower()
             for flw in dom.get("flows", []):
                 flw_fmt = flw.get("format", "") or ""
                 flw_media = flw.get("media_type", "") or ""
                 if "audio" in flw_fmt.lower() or "audio" in flw_media.lower() or "channel_count" in flw:
                     flw_id = flw.get("flow_id") or flw.get("id")
                     flw_lbl = flw.get("label") or flw_id[:8]
+                    prefix = "⚡ WBS TEST SIGNAL" if is_wbs_domain else f"🎛️ CBC MXL ({dom_lbl})"
                     sources.append({
                         "name": f"mxl:{dom_lbl}:{flw_id}",
-                        "description": f"🎛️ CBC MXL ({dom_lbl}): {flw_lbl} — {flw.get('description', '')}",
+                        "description": f"{prefix}: {flw_lbl} — {flw.get('description', '')}",
                         "mxl": True,
                         "domain": dom_lbl,
                         "flow_id": flw_id,
                         "flow_label": flw_lbl,
+                        "is_wbs_test_signal": is_wbs_domain,
                     })
     except Exception:
         pass
@@ -718,7 +721,7 @@ def meter_reader_loop():
 def start_test_tone(freq=1000):
     global TEST_TONE_ACTIVE, TEST_TONE_FREQ, TEST_TONE_PROC
     stop_test_tone()
-    stop_bit_buddy()
+    # Note: Allows concurrent operation with ABP-1 Bit Spitter (Dual Flow Spitting)
     TEST_TONE_FREQ = int(freq)
     TEST_TONE_ACTIVE = True
 
@@ -754,7 +757,7 @@ BITBUDDY_CONFIG = {
 def start_bit_buddy(pattern="prbs", pro_mode=True, audio_data=True, sample_rate=48000):
     global BITBUDDY_ACTIVE, BITBUDDY_CONFIG, BITBUDDY_PROC
     stop_bit_buddy()
-    stop_test_tone()
+    # Note: Allows concurrent operation with POD-33 Tone Generator (Dual Flow Spitting)
     BITBUDDY_ACTIVE = True
     BITBUDDY_CONFIG = {
         "pattern": pattern,
@@ -902,39 +905,128 @@ HTML_UI = """<!DOCTYPE html>
 <title>WARD BECK TAP // Signal Tap &amp; MXL Ring Buffer Controller</title>
 <style>
   :root {
-    --wbs-blue: #0f2438;
+    /* Authentic Ward-Beck Systems Brushed Champagne Aluminum Livery (Default) */
+    --wbs-chassis-bg: linear-gradient(180deg, #dedacb 0%, #d4cfbd 45%, #c8c3b1 100%);
+    --wbs-chassis-border: #8c897b;
+    --wbs-rack-shadow: 0 16px 50px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.7), inset 0 -1px 0 rgba(0,0,0,0.25);
+    --wbs-panel: #edeae0;
+    --wbs-panel-border: #9e9a89;
+    --wbs-bezel: #dedad0;
+    --wbs-bezel-border: #a8a494;
+    --wbs-subtle-box: #e5e2d6;
+    --text-light: #1e293b;
+    --text-dim: #5c6470;
+    --accent-orange: #ea580c;
+    --accent-green: #15803d;
+    --accent-cyan: #0284c7;
+    --btn-bg: #dedad0;
+    --btn-border: #9e9a89;
+    --btn-hover: #d2cebe;
+    --badge-bg: #d8d4c5;
+    --badge-border: #8c897b;
+    --meter-bezel: linear-gradient(180deg, #c4bead 0%, #b3af9f 100%);
+    --meter-bezel-border: #8c897b;
+    --meter-shadow: 0 4px 10px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.6);
+    --canvas-bg: #dcd7c8;
+    --canvas-border: #9e9a89;
+    --canvas-shadow: inset 0 0 18px rgba(0,0,0,0.15);
+  }
+
+  body.theme-wbs-dark {
+    /* Midnight Broadcast MCR Dark Livery (Ward-Beck.com) */
+    --wbs-chassis-bg: #09131d;
+    --wbs-chassis-border: #23486a;
+    --wbs-rack-shadow: 0 16px 50px rgba(0,0,0,0.9), inset 0 1px 0 rgba(255,255,255,0.08);
     --wbs-panel: #0a1724;
+    --wbs-panel-border: #1c3b5e;
     --wbs-bezel: #060e17;
+    --wbs-bezel-border: #1c3b5e;
+    --wbs-subtle-box: #081420;
+    --text-light: #e6eef5;
+    --text-dim: #94a3b8;
     --accent-orange: rgb(244, 144, 44);
     --accent-green: #22c55e;
     --accent-cyan: #38bdf8;
-    --text-light: #e6eef5;
-    --text-dim: #94a3b8;
+    --btn-bg: #162f47;
+    --btn-border: #2b547e;
+    --btn-hover: #224569;
+    --badge-bg: #0a1724;
+    --badge-border: #2b547e;
+    --meter-bezel: #000000;
+    --meter-bezel-border: #23486a;
+    --meter-shadow: 0 4px 10px rgba(0,0,0,0.85);
+    --canvas-bg: #03080e;
+    --canvas-border: #142a42;
+    --canvas-shadow: inset 0 0 20px rgba(0,0,0,0.85);
   }
+
   * { box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, monospace; }
   body {
-    margin: 0; background: #04080d; color: var(--text-light);
+    margin: 0; background: var(--wbs-chassis-bg); color: var(--text-light);
     display: flex; justify-content: center; padding: 8px 12px;
+    transition: background 0.25s ease, color 0.25s ease;
   }
   .rack-unit {
-    width: 100%; max-width: 100%; background: var(--wbs-blue);
-    border: 2px solid #23486a; border-radius: 6px; padding: 12px 14px;
-    box-shadow: 0 16px 50px rgba(0,0,0,0.9);
+    width: 100%; max-width: 100%; background: var(--wbs-chassis-bg);
+    border: 2px solid var(--wbs-chassis-border); border-radius: 8px; padding: 12px 14px;
+    box-shadow: var(--wbs-rack-shadow);
+    color: var(--text-light);
+    transition: all 0.25s ease;
   }
   .header {
     display: flex; justify-content: space-between; align-items: center;
-    border-bottom: 2px solid #1c3b5e; padding-bottom: 8px; margin-bottom: 10px;
+    border-bottom: 2px solid var(--wbs-panel-border); padding-bottom: 8px; margin-bottom: 10px;
     gap: 10px; flex-wrap: wrap;
   }
-  .header h1 { margin: 0; font-size: 1.18rem; letter-spacing: 1.4px; text-transform: uppercase; color: #fff; }
+  .header h1 { margin: 0; font-size: 1.18rem; letter-spacing: 1.4px; text-transform: uppercase; color: var(--text-light); }
+  
+  .routing-wbs-badge {
+    background: #ffffff;
+    border: 2px solid var(--accent-orange);
+    border-radius: 4px;
+    padding: 3px 8px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+  }
+  .wbs-mark { font-weight: 900; font-size: 0.88rem; color: var(--accent-orange); line-height: 1; letter-spacing: 0.5px; }
+  .wbs-rack-code { font-size: 0.58rem; font-weight: 800; color: #6c7077; letter-spacing: 0.5px; }
+
   .badge-row { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
   .badge {
-    background: var(--wbs-panel); padding: 3px 8px; border-radius: 4px;
-    font-size: 0.72rem; border: 1px solid #2b547e; font-weight: 700;
+    background: var(--badge-bg); padding: 3px 8px; border-radius: 4px;
+    font-size: 0.72rem; border: 1px solid var(--badge-border); font-weight: 700;
+    color: var(--text-light);
   }
   .badge-active { border-color: var(--accent-green); color: var(--accent-green); }
   .badge-cyan { border-color: var(--accent-cyan); color: var(--accent-cyan); }
   .badge-orange { border-color: var(--accent-orange); color: var(--accent-orange); }
+
+  .theme-toggle-btn {
+    padding: 3px 9px;
+    border-radius: 4px;
+    font-size: 0.68rem;
+    font-weight: 800;
+    cursor: pointer;
+    border: 1px solid var(--btn-border);
+    background: var(--btn-bg);
+    color: var(--text-light);
+    transition: all 0.15s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .theme-toggle-btn:hover {
+    background: var(--btn-hover);
+    border-color: var(--accent-orange);
+  }
+  .theme-toggle-btn.active {
+    background: var(--accent-orange);
+    border-color: #f97316;
+    color: #fff;
+    box-shadow: 0 0 8px rgba(234, 88, 12, 0.4);
+  }
 
   /* 3-Zone Broadcast Console Grid: Left (Persistent Eye), Center (Tabs), Right (Telemetry & Meters) */
   .console-layout {
@@ -968,19 +1060,21 @@ HTML_UI = """<!DOCTYPE html>
 
   /* Left Flank: Persistent Scanalyzer Audio Eye Visualizer Card */
   .mxl-eye-card {
-    background: var(--wbs-bezel); border: 1px solid #1c3b5e; border-radius: 6px;
-    padding: 10px; box-shadow: inset 0 2px 8px rgba(0,0,0,0.6);
+    background: var(--wbs-panel); border: 1px solid var(--wbs-panel-border); border-radius: 6px;
+    padding: 10px; box-shadow: inset 0 1px 3px rgba(0,0,0,0.1), 0 2px 8px rgba(0,0,0,0.06);
     display: flex; flex-direction: column; gap: 8px;
+    transition: all 0.2s ease;
   }
   .eye-canvas-container {
     position: relative;
     width: 440px;
     height: 440px;
     margin: 0 auto;
-    background: #03080e;
-    border: 1px solid #142a42;
+    background: var(--canvas-bg);
+    border: 1px solid var(--canvas-border);
     border-radius: 6px;
-    box-shadow: inset 0 0 20px rgba(0,0,0,0.85);
+    box-shadow: var(--canvas-shadow);
+    transition: all 0.2s ease;
   }
   #eye-player-canvas {
     width: 440px;
@@ -998,13 +1092,13 @@ HTML_UI = """<!DOCTYPE html>
     font-family: monospace;
     font-size: 0.7rem;
   }
-  .phase-lbl { font-weight: 800; color: #94a3b8; }
+  .phase-lbl { font-weight: 800; color: var(--text-dim); }
   .phase-track {
     position: relative;
     flex: 1;
     height: 15px;
-    background: #050e17;
-    border: 1px solid #183350;
+    background: var(--wbs-subtle-box);
+    border: 1px solid var(--wbs-bezel-border);
     border-radius: 3px;
     overflow: hidden;
   }
@@ -1016,7 +1110,7 @@ HTML_UI = """<!DOCTYPE html>
     align-items: center;
     padding: 0 6px;
     font-size: 0.6rem;
-    color: #64748b;
+    color: var(--text-dim);
     z-index: 1;
   }
   .phase-needle {
@@ -1029,8 +1123,8 @@ HTML_UI = """<!DOCTYPE html>
     transition: left 0.08s ease-out;
   }
   .eye-flow-switcher {
-    background: #081420;
-    border: 1px solid #183350;
+    background: var(--wbs-subtle-box);
+    border: 1px solid var(--wbs-bezel-border);
     border-radius: 4px;
     padding: 6px 8px;
   }
@@ -1040,14 +1134,14 @@ HTML_UI = """<!DOCTYPE html>
     gap: 6px;
   }
   .eye-hud-card {
-    background: #040910;
-    border: 1px solid #142a42;
+    background: var(--wbs-subtle-box);
+    border: 1px solid var(--wbs-bezel-border);
     border-radius: 4px;
     padding: 6px 8px;
   }
   .eye-hud-label {
     font-size: 0.62rem;
-    color: #64748b;
+    color: var(--text-dim);
     font-weight: 700;
     letter-spacing: 0.4px;
     text-transform: uppercase;
@@ -1056,23 +1150,23 @@ HTML_UI = """<!DOCTYPE html>
     font-family: monospace;
     font-size: 0.92rem;
     font-weight: 800;
-    color: #fff;
+    color: var(--text-light);
     margin: 2px 0 1px 0;
   }
   .eye-hud-sub {
     font-size: 0.62rem;
-    color: #94a3b8;
+    color: var(--text-dim);
   }
   .eye-legend-box {
-    background: #081420;
-    border: 1px solid #183350;
+    background: var(--wbs-subtle-box);
+    border: 1px solid var(--wbs-bezel-border);
     border-radius: 4px;
     padding: 6px 8px;
     display: flex;
     flex-direction: column;
     gap: 3px;
     font-size: 0.66rem;
-    color: #cbd5e1;
+    color: var(--text-light);
   }
   .eye-legend-item {
     display: flex;
@@ -1091,18 +1185,18 @@ HTML_UI = """<!DOCTYPE html>
     display: flex;
     gap: 4px;
     background: var(--wbs-bezel);
-    border: 1px solid #1c3b5e;
+    border: 1px solid var(--wbs-bezel-border);
     border-radius: 6px;
     padding: 4px;
     margin-bottom: 10px;
     overflow-x: auto;
   }
   .console-tab-bar::-webkit-scrollbar { height: 4px; }
-  .console-tab-bar::-webkit-scrollbar-thumb { background: #23486a; border-radius: 2px; }
+  .console-tab-bar::-webkit-scrollbar-thumb { background: var(--wbs-panel-border); border-radius: 2px; }
   .console-tab {
     padding: 6px 12px;
-    background: transparent;
-    border: 1px solid transparent;
+    background: var(--btn-bg);
+    border: 1px solid var(--btn-border);
     border-radius: 4px;
     color: var(--text-dim);
     font-weight: 700;
@@ -1115,39 +1209,41 @@ HTML_UI = """<!DOCTYPE html>
     align-items: center;
     gap: 5px;
   }
-  .console-tab:hover { background: #10263c; color: #fff; }
+  .console-tab:hover { background: var(--btn-hover); color: var(--text-light); }
   .console-tab.active {
-    background: #183654;
+    background: #0f2438;
     border-color: var(--accent-orange);
     color: #fff;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.5);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.25);
   }
   .tab-pane {
     display: none;
     background: var(--wbs-panel);
-    border: 1px solid #1c3b5e;
+    border: 1px solid var(--wbs-panel-border);
     border-radius: 6px;
     padding: 12px;
     min-height: 520px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.06);
   }
   .tab-pane.active { display: block; }
 
   /* Right Flank: Telemetry & Meters */
   .right-flank-card {
-    background: var(--wbs-bezel); border: 1px solid #1c3b5e; border-radius: 6px;
-    padding: 10px; margin-bottom: 8px; box-shadow: inset 0 2px 8px rgba(0,0,0,0.6);
+    background: var(--wbs-panel); border: 1px solid var(--wbs-panel-border); border-radius: 6px;
+    padding: 10px; margin-bottom: 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.06);
   }
   .vu-meters-row-side {
     display: flex; gap: 8px; justify-content: center; align-items: stretch;
   }
   .vu-bezel-side {
-    background: #000; border: 2px solid #23486a; border-radius: 5px;
-    padding: 4px; box-shadow: 0 4px 10px rgba(0,0,0,0.85); flex: 1; max-width: 160px;
+    background: var(--meter-bezel); border: 2px solid var(--meter-bezel-border); border-radius: 5px;
+    padding: 4px; box-shadow: var(--meter-shadow); flex: 1; max-width: 160px;
     display: flex; flex-direction: column; align-items: center;
   }
   .vu-dial-side {
     width: 100%; aspect-ratio: 320 / 195; height: auto;
     background: #eed5a1; border-radius: 3px; position: relative; overflow: hidden;
+    border: 1px solid #c8b060;
   }
   .vu-dial-side svg { width: 100%; height: 100%; display: block; }
   .vu-label-side {
@@ -1156,39 +1252,39 @@ HTML_UI = """<!DOCTYPE html>
   }
   .side-meter-bars {
     margin-top: 8px; display: flex; flex-direction: column; gap: 4px;
-    background: #040910; padding: 6px 8px; border-radius: 4px; border: 1px solid #142a42;
+    background: var(--wbs-subtle-box); padding: 6px 8px; border-radius: 4px; border: 1px solid var(--wbs-bezel-border);
   }
   .side-meter-row {
     display: flex; align-items: center; font-size: 0.68rem; font-family: monospace;
   }
-  .side-meter-ch { font-weight: 800; color: #94a3b8; width: 14px; }
-  .side-meter-val { color: #fff; width: 62px; text-align: right; }
+  .side-meter-ch { font-weight: 800; color: var(--text-dim); width: 14px; }
+  .side-meter-val { color: var(--text-light); width: 62px; text-align: right; }
 
   .side-prop-list {
     display: flex; flex-direction: column; gap: 5px; font-size: 0.7rem; margin-top: 6px;
   }
   .side-prop-row {
     display: flex; justify-content: space-between; align-items: center;
-    border-bottom: 1px solid #122436; padding-bottom: 3px;
+    border-bottom: 1px solid var(--wbs-bezel-border); padding-bottom: 3px;
   }
-  .side-prop-row span { color: #94a3b8; }
-  .side-prop-row strong { color: #fff; font-family: monospace; font-size: 0.72rem; }
+  .side-prop-row span { color: var(--text-dim); }
+  .side-prop-row strong { color: var(--text-light); font-family: monospace; font-size: 0.72rem; }
 
   /* Linear Unwrap Visualizer (Tab 6 & Slice Inspector) */
   .slice-view-box {
-    background: #040910; border: 1px solid #1c3b5e; border-radius: 4px;
-    padding: 10px; font-size: 0.74rem;
+    background: var(--wbs-subtle-box); border: 1px solid var(--wbs-bezel-border); border-radius: 4px;
+    padding: 10px; font-size: 0.74rem; color: var(--text-light);
   }
   .memory-bar {
-    height: 28px; background: #13273d; border-radius: 4px; position: relative;
-    overflow: hidden; margin: 8px 0; display: flex; border: 1px solid #2b547e;
+    height: 28px; background: var(--btn-bg); border-radius: 4px; position: relative;
+    overflow: hidden; margin: 8px 0; display: flex; border: 1px solid var(--btn-border);
   }
   .slice-block {
     height: 100%; display: flex; align-items: center; justify-content: center;
     font-weight: 700; font-size: 0.68rem; color: #fff;
   }
   .slice1-block { background: #0284c7; width: 35%; }
-  .headroom-block { background: #0f172a; flex: 1; color: #64748b; }
+  .headroom-block { background: var(--wbs-panel); flex: 1; color: var(--text-dim); }
   .slice2-block { background: #f97316; width: 20%; }
 
   /* 3-Layer Pipeline Grid */
@@ -1200,11 +1296,11 @@ HTML_UI = """<!DOCTYPE html>
     .pipeline-grid { grid-template-columns: 1fr; }
   }
   .pipeline-card {
-    background: var(--wbs-bezel); border: 1px solid #1c3b5e; border-radius: 6px;
+    background: var(--wbs-panel); border: 1px solid var(--wbs-panel-border); border-radius: 6px;
     padding: 10px 12px; font-size: 0.78rem; display: flex; flex-direction: column; justify-content: space-between;
   }
   .pipeline-card h3 {
-    margin: 0 0 8px 0; font-size: 0.82rem; color: #fff; display: flex;
+    margin: 0 0 8px 0; font-size: 0.82rem; color: var(--text-light); display: flex;
     justify-content: space-between; align-items: center;
   }
   .pipeline-list {
@@ -1212,17 +1308,17 @@ HTML_UI = """<!DOCTYPE html>
     max-height: 280px; overflow-y: auto; flex: 1;
   }
   .pipeline-list li {
-    padding: 4px 0; border-bottom: 1px solid #142a42; white-space: nowrap;
+    padding: 4px 0; border-bottom: 1px solid var(--wbs-bezel-border); white-space: nowrap;
     overflow: hidden; text-overflow: ellipsis;
   }
   .pipeline-list::-webkit-scrollbar, .source-grid::-webkit-scrollbar {
     width: 5px; height: 5px;
   }
   .pipeline-list::-webkit-scrollbar-track, .source-grid::-webkit-scrollbar-track {
-    background: #040910; border-radius: 2px;
+    background: var(--wbs-subtle-box); border-radius: 2px;
   }
   .pipeline-list::-webkit-scrollbar-thumb, .source-grid::-webkit-scrollbar-thumb {
-    background: #1c3b5e; border-radius: 2px;
+    background: var(--wbs-panel-border); border-radius: 2px;
   }
   .pipeline-list::-webkit-scrollbar-thumb:hover, .source-grid::-webkit-scrollbar-thumb:hover {
     background: var(--accent-cyan);
@@ -1232,24 +1328,24 @@ HTML_UI = """<!DOCTYPE html>
   .matrix-toolbar {
     display: flex; gap: 8px; align-items: center; justify-content: space-between;
     margin-bottom: 10px; flex-wrap: wrap; background: var(--wbs-bezel);
-    padding: 8px 10px; border-radius: 5px; border: 1px solid #183350;
+    padding: 8px 10px; border-radius: 5px; border: 1px solid var(--wbs-bezel-border);
   }
   .source-grid {
     display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
     gap: 10px; max-height: 560px; overflow-y: auto; padding-right: 4px;
   }
   .source-card {
-    background: var(--wbs-bezel); border: 1px solid #1c3b5e; border-radius: 5px;
+    background: var(--wbs-bezel); border: 1px solid var(--wbs-panel-border); border-radius: 5px;
     padding: 8px 10px; display: flex; flex-direction: column; justify-content: space-between;
     transition: all 0.15s ease;
   }
   .source-card.tapped {
-    border-color: var(--accent-orange); background: #12283e;
+    border-color: var(--accent-orange); background: var(--wbs-subtle-box);
     box-shadow: 0 0 10px rgba(244, 144, 44, 0.35);
   }
   .source-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 6px; }
   .source-name {
-    font-size: 0.78rem; font-weight: 700; color: #fff; word-break: break-all;
+    font-size: 0.78rem; font-weight: 700; color: var(--text-light); word-break: break-all;
     line-height: 1.2; margin-bottom: 2px;
   }
   .source-desc { font-size: 0.68rem; color: var(--text-dim); }
@@ -1257,16 +1353,10 @@ HTML_UI = """<!DOCTYPE html>
     font-size: 0.6rem; padding: 2px 5px; border-radius: 3px; font-weight: 800; text-transform: uppercase;
   }
   .pill-wbs { background: #0369a1; color: #fff; }
-  .pill-monitor { background: #334155; color: #94a3b8; }
+  .pill-monitor { background: #475569; color: #f1f5f9; }
   .pill-mic { background: #b45309; color: #fff; }
-  .badge-purple { background: #581c87; color: #d8b4fe; border: 1px solid #7e22ce; }
-  .badge-amber { background: #78350f; color: #fde68a; border: 1px solid #d97706; }
-  .badge-blue { background: #1e3a8a; color: #93c5fd; border: 1px solid #2563eb; }
   .pill-nmos { background: #0e7490; color: #38bdf8; border: 1px solid #0284c7; }
   .pill-mxl { background: #c2410c; color: #ffedd5; border: 1px solid #ea580c; }
-  .pill-dante { background: #581c87; color: #d8b4fe; border: 1px solid #7e22ce; }
-  .pill-ravenna { background: #78350f; color: #fde68a; border: 1px solid #d97706; }
-  .pill-aes67 { background: #1e3a8a; color: #93c5fd; border: 1px solid #2563eb; }
   
   .card-mini-vu-wrap {
     width: 100%; margin: 6px 0 4px 0;
@@ -1275,38 +1365,38 @@ HTML_UI = """<!DOCTYPE html>
     width: 100%; height: 44px; display: block;
   }
   .mini-meter-track {
-    width: 100%; height: 7px; background: #040910; border-radius: 2px;
-    overflow: hidden; margin: 6px 0 4px 0; border: 1px solid #142a42; position: relative;
+    width: 100%; height: 7px; background: var(--wbs-subtle-box); border-radius: 2px;
+    overflow: hidden; margin: 6px 0 4px 0; border: 1px solid var(--wbs-bezel-border); position: relative;
   }
   .mini-meter-fill {
-    height: 100%; width: 0%; background: linear-gradient(90deg, #22c55e 60%, #eab308 85%, #ef4444 100%);
+    height: 100%; width: 0%; background: linear-gradient(90deg, #15803d 60%, #ca8a04 85%, #dc2626 100%);
     transition: width 0.08s ease;
   }
   .meter-digits {
-    display: flex; justify-content: space-between; font-size: 0.64rem; color: #94a3b8; font-weight: 600;
+    display: flex; justify-content: space-between; font-size: 0.64rem; color: var(--text-dim); font-weight: 600;
   }
 
   .btn-tap {
-    width: 100%; margin-top: 6px; padding: 5px; background: #13273d; border: 1px solid #23486a;
-    color: #e6eef5; border-radius: 3px; font-weight: 700; font-size: 0.72rem;
+    width: 100%; margin-top: 6px; padding: 5px; background: var(--btn-bg); border: 1px solid var(--btn-border);
+    color: var(--text-light); border-radius: 3px; font-weight: 700; font-size: 0.72rem;
     cursor: pointer; transition: all 0.15s ease;
   }
-  .btn-tap:hover { background: #1e3d5f; color: #fff; }
-  .btn-tap.tapped { background: var(--accent-orange); color: #000; border-color: #ff9d42; }
+  .btn-tap:hover { background: var(--btn-hover); color: var(--text-light); }
+  .btn-tap.tapped { background: var(--accent-orange); color: #fff; border-color: #f97316; }
 
   /* Buttons & Controls */
   .controls-bar {
     display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px;
-    background: var(--wbs-panel); padding: 8px 12px; border-radius: 5px; border: 1px solid #1c3b5e;
+    background: var(--wbs-bezel); padding: 8px 12px; border-radius: 5px; border: 1px solid var(--wbs-bezel-border);
     align-items: center;
   }
   .ctrl-btn {
-    padding: 5px 12px; background: #162f47; border: 1px solid #2b547e; border-radius: 4px;
-    color: #fff; font-weight: 700; font-size: 0.73rem; cursor: pointer; transition: all 0.15s ease;
+    padding: 5px 12px; background: var(--btn-bg); border: 1px solid var(--btn-border); border-radius: 4px;
+    color: var(--text-light); font-weight: 700; font-size: 0.73rem; cursor: pointer; transition: all 0.15s ease;
   }
-  .ctrl-btn:hover { background: #224569; border-color: var(--accent-cyan); }
-  .ctrl-btn.active { background: var(--accent-green); color: #000; border-color: #4ade80; }
-  .ctrl-btn.warn { background: #991b1b; border-color: #ef4444; }
+  .ctrl-btn:hover { background: var(--btn-hover); border-color: var(--accent-cyan); }
+  .ctrl-btn.active { background: var(--accent-green); color: #fff; border-color: #22c55e; }
+  .ctrl-btn.warn { background: #991b1b; border-color: #ef4444; color: #fff; }
   .ctrl-btn.warn:hover { background: #b91c1c; }
 
   .offline-banner {
@@ -1317,8 +1407,8 @@ HTML_UI = """<!DOCTYPE html>
 
   /* ABB-1 Audio Bit Buddy & ABP-1 Bit Spitter Styling */
   .abb-card {
-    background: var(--wbs-bezel); border: 1px solid #1c3b5e; border-radius: 6px;
-    padding: 12px; margin-bottom: 0; box-shadow: 0 4px 14px rgba(0,0,0,0.5);
+    background: var(--wbs-panel); border: 1px solid var(--wbs-panel-border); border-radius: 6px;
+    padding: 12px; margin-bottom: 0; box-shadow: 0 2px 6px rgba(0,0,0,0.06);
     display: flex; flex-direction: column; justify-content: space-between;
   }
   .abb-grid {
@@ -1329,13 +1419,13 @@ HTML_UI = """<!DOCTYPE html>
   }
   .abb-col { display: flex; flex-direction: column; gap: 6px; }
   .abb-title {
-    font-size: 0.68rem; font-weight: 800; color: var(--accent-cyan);
+    font-size: 0.68rem; font-weight: 800; color: var(--accent-orange);
     letter-spacing: 0.8px; text-transform: uppercase;
   }
   .abb-led-rack { display: flex; gap: 5px; flex-wrap: wrap; margin-top: 4px; }
   .abb-led-pill {
     padding: 3px 7px; border-radius: 3px; font-size: 0.62rem; font-weight: 800;
-    background: #040910; border: 1px solid #142a42; color: #475569; letter-spacing: 0.5px;
+    background: var(--wbs-subtle-box); border: 1px solid var(--wbs-bezel-border); color: var(--text-dim); letter-spacing: 0.5px;
     transition: all 0.15s ease;
   }
   .abb-led-pill.lit-green { background: #052e16; border-color: #22c55e; color: #86efac; box-shadow: 0 0 8px rgba(34, 197, 94, 0.4); }
@@ -1347,14 +1437,34 @@ HTML_UI = """<!DOCTYPE html>
 <body>
 
 <div class="rack-unit">
-  <!-- System Header -->
+  <!-- System Header with Reflective Theme Switcher -->
   <div class="header">
-    <div>
-      <h1>WARD BECK TAP // Signal Tap &amp; MXL Controller</h1>
-      <div style="font-size: 0.74rem; color: var(--text-dim); margin-top: 2px;">
-        Non-Destructive Signal Tap · Virtual Audio Patchbay · EBU DMF / MXL Shared Memory · Native 60 FPS Meter Telemetry
+    <div style="display: flex; align-items: center; gap: 12px;">
+      <div class="routing-wbs-badge">
+        <span class="wbs-mark">WBS</span>
+        <span class="wbs-rack-code">WBS-CRM-100</span>
+      </div>
+      <div>
+        <h1>WARD BECK TAP // CONSOLE ROUTING MATRIX</h1>
+        <div style="font-size: 0.74rem; color: var(--text-dim); margin-top: 2px;">
+          EBU DMF Shared-Memory Ring Buffer Bus · SMPTE 2059-1 TAI · Precision Console Flow
+        </div>
       </div>
     </div>
+    <div class="badge-row">
+      <button class="theme-toggle-btn active" id="btn-theme-wbs-ca" onclick="setConsoleTheme('wbs-ca')">Ward-Beck.ca (Aluminum)</button>
+      <button class="theme-toggle-btn" id="btn-theme-wbs-dark" onclick="setConsoleTheme('wbs-dark')">Ward-Beck.com (Dark MCR)</button>
+      <div class="badge badge-active">PIPEWIRE 1.0</div>
+      <div class="badge badge-cyan">ALSA HARDWARE</div>
+      <div class="badge badge-cyan" id="badge-nmos">📡 NMOS IS-04</div>
+      <div class="badge badge-purple" id="badge-dante">🎵 DANTE: 16 CH</div>
+      <div class="badge badge-amber" id="badge-ravenna">📻 RAVENNA RTSP</div>
+      <div class="badge badge-blue" id="badge-aes67">🌐 AES67 SAP</div>
+      <div class="badge badge-orange" id="badge-cbc-hdr">📺 CBC GEN :9600</div>
+      <div class="badge badge-orange" id="badge-mxl">MXL /dev/shm</div>
+      <div class="badge" id="badge-tai">TAI: SYNCING...</div>
+    </div>
+  </div>
     <div class="badge-row">
       <div class="badge badge-active">PIPEWIRE 1.0</div>
       <div class="badge badge-cyan">ALSA HARDWARE</div>
@@ -1974,6 +2084,26 @@ async function testSliceContiguous() {
   }
 }
 
+// Reflective Console Livery & Theme Controller
+function setConsoleTheme(theme) {
+  const isDark = (theme === 'wbs-dark');
+  document.body.classList.toggle('theme-wbs-dark', isDark);
+  document.body.classList.toggle('theme-wbs-ca', !isDark);
+  
+  const btnCa = document.getElementById('btn-theme-wbs-ca');
+  const btnDark = document.getElementById('btn-theme-wbs-dark');
+  if (btnCa) btnCa.className = !isDark ? 'theme-toggle-btn active' : 'theme-toggle-btn';
+  if (btnDark) btnDark.className = isDark ? 'theme-toggle-btn active' : 'theme-toggle-btn';
+  
+  try {
+    localStorage.setItem('wbs_tab_theme', theme);
+  } catch (e) {}
+}
+
+// Default to authentic Ward-Beck Systems warm champagne aluminum (wbs-ca)
+const initialTheme = (typeof localStorage !== 'undefined' && localStorage.getItem('wbs_tab_theme')) || 'wbs-ca';
+setConsoleTheme(initialTheme);
+
 let abandoned = false;
 let lastSourcesJson = "";
 let currentToneActive = false;
@@ -2056,6 +2186,8 @@ function drawScanalyzerEye(canvas, waveform, ntpSecOf10, headIndex, quantum, flo
   const cx = w / 2;
   const cy = h / 2;
 
+  const isDark = document.body.classList.contains('theme-wbs-dark');
+
   // Geometry: outer band (Left channel), inner band (Right channel)
   const rOuter = 188;
   const rMid = 140;
@@ -2064,10 +2196,28 @@ function drawScanalyzerEye(canvas, waveform, ntpSecOf10, headIndex, quantum, flo
 
   ctx.clearRect(0, 0, w, h);
 
-  // 1. Background Tracks & Radial Grid
+  // 1. Theme-aware circular metallic backplate with radial gradient
+  const bgGrad = ctx.createRadialGradient(cx, cy, rInner - 8, cx, cy, rOuter + 6);
+  if (!isDark) {
+    // Ward-Beck Vintage Warm Brushed Aluminum Backplate
+    bgGrad.addColorStop(0, '#d5d1c2');
+    bgGrad.addColorStop(0.7, '#cac5b4');
+    bgGrad.addColorStop(1, '#bebaa7');
+  } else {
+    // Midnight MCR High-Contrast Backplate
+    bgGrad.addColorStop(0, '#03080e');
+    bgGrad.addColorStop(0.7, '#07121c');
+    bgGrad.addColorStop(1, '#0c1d2e');
+  }
+  ctx.beginPath();
+  ctx.arc(cx, cy, rOuter + 6, 0, Math.PI * 2);
+  ctx.fillStyle = bgGrad;
+  ctx.fill();
+
+  // Radial grid tracks
   ctx.save();
   ctx.lineWidth = 1;
-  ctx.strokeStyle = '#0e2338';
+  ctx.strokeStyle = !isDark ? '#9e9a89' : '#0e2338';
   for (const r of [rInner, rMid, rOuter]) {
     ctx.beginPath();
     ctx.arc(cx, cy, r, 0, Math.PI * 2);
@@ -2076,31 +2226,31 @@ function drawScanalyzerEye(canvas, waveform, ntpSecOf10, headIndex, quantum, flo
 
   // Radial spokes for each second (0s through 9s)
   for (let s = 0; s < 10; s++) {
-    const a = (s / 10.0) * Math.PI * 2; // 0 rad at 3 o'clock (far right)
+    const a = (s / 10.0) * Math.PI * 2;
     ctx.beginPath();
     ctx.moveTo(cx + Math.cos(a) * (rInner - 4), cy + Math.sin(a) * (rInner - 4));
     ctx.lineTo(cx + Math.cos(a) * (rOuter + 6), cy + Math.sin(a) * (rOuter + 6));
-    ctx.strokeStyle = (s === 0) ? 'rgba(239, 68, 68, 0.45)' : '#112942';
+    ctx.strokeStyle = (s === 0) ? 'rgba(220, 38, 38, 0.65)' : (!isDark ? '#9e9a89' : '#112942');
     ctx.lineWidth = (s === 0) ? 2 : 1;
     ctx.stroke();
   }
   ctx.restore();
 
-  // 2. Radial Waveform Spokes (CH0 Left in Emerald #22c55e, CH1 Right in Cyan #38bdf8)
+  // 2. Radial Waveform Spokes
   const bins = (waveform && waveform.ch0_max && waveform.ch0_max.length) ? waveform.ch0_max.length : 720;
   const reachL = (rOuter - rMid) * 0.48;
   const baseRL = (rOuter + rMid) / 2;
   const reachR = (rMid - rInner) * 0.48;
   const baseRR = (rMid + rInner) / 2;
 
-  // Draw Channel 0: Left (Outer Band, Emerald #22c55e)
+  // Draw Channel 0: Left (Outer Band)
   ctx.save();
-  ctx.strokeStyle = 'rgba(34, 197, 94, 0.88)';
-  ctx.lineWidth = 1.25;
+  ctx.strokeStyle = !isDark ? 'rgba(234, 88, 12, 0.95)' : 'rgba(34, 197, 94, 0.88)';
+  ctx.lineWidth = 1.3;
   ctx.beginPath();
   for (let b = 0; b < bins; b++) {
     const frac = b / bins;
-    const a = frac * Math.PI * 2; // 0 rad = 3 o'clock, clockwise sweep
+    const a = frac * Math.PI * 2;
     const minVal = (waveform && waveform.ch0_min) ? (waveform.ch0_min[b] || 0) : 0;
     const maxVal = (waveform && waveform.ch0_max) ? (waveform.ch0_max[b] || 0) : 0;
     const rIn = baseRL + (minVal * reachL * 0.96);
@@ -2110,9 +2260,9 @@ function drawScanalyzerEye(canvas, waveform, ntpSecOf10, headIndex, quantum, flo
   }
   ctx.stroke();
 
-  // Draw Channel 1: Right (Inner Band, Cyan #38bdf8)
-  ctx.strokeStyle = 'rgba(56, 189, 248, 0.88)';
-  ctx.lineWidth = 1.25;
+  // Draw Channel 1: Right (Inner Band)
+  ctx.strokeStyle = !isDark ? 'rgba(217, 119, 6, 0.95)' : 'rgba(56, 189, 248, 0.88)';
+  ctx.lineWidth = 1.3;
   ctx.beginPath();
   for (let b = 0; b < bins; b++) {
     const frac = b / bins;
@@ -2127,7 +2277,7 @@ function drawScanalyzerEye(canvas, waveform, ntpSecOf10, headIndex, quantum, flo
   ctx.stroke();
   ctx.restore();
 
-  // 3. NTP Second Ticks (10 Seconds: 0s at Far Right, Top of Second Aligned)
+  // 3. NTP Second Ticks
   ctx.save();
   for (let s = 0; s < 10; s++) {
     const a = (s / 10.0) * Math.PI * 2;
@@ -2145,21 +2295,15 @@ function drawScanalyzerEye(canvas, waveform, ntpSecOf10, headIndex, quantum, flo
     ctx.beginPath();
     ctx.moveTo(p1X, p1Y);
     ctx.lineTo(p2X, p2Y);
-    ctx.strokeStyle = isTopPulse ? '#ffffff' : (isZero ? '#ef4444' : '#38bdf8');
+    ctx.strokeStyle = isTopPulse ? (!isDark ? '#ea580c' : '#ffffff') : (isZero ? '#dc2626' : (!isDark ? '#7d796b' : '#38bdf8'));
     ctx.lineWidth = (isZero || isTopPulse) ? 3 : 1.5;
-    if (isTopPulse) {
-      ctx.shadowColor = '#38bdf8';
-      ctx.shadowBlur = 10;
-    }
     ctx.stroke();
-    ctx.shadowBlur = 0;
 
-    // Second Tick Label
     const lblDist = rOuter + (isZero ? 27 : 20);
     const lblX = cx + cos * lblDist;
     const lblY = cy + sin * lblDist;
     ctx.font = isZero ? 'bold 11px monospace' : '9px monospace';
-    ctx.fillStyle = isTopPulse ? '#ffffff' : (isZero ? '#ef4444' : '#94a3b8');
+    ctx.fillStyle = isTopPulse ? (!isDark ? '#ea580c' : '#ffffff') : (isZero ? '#dc2626' : (!isDark ? '#2a2b2a' : '#94a3b8'));
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
     const txt = isZero ? '0.0s [NTP]' : `${s}.0s`;
@@ -2167,7 +2311,7 @@ function drawScanalyzerEye(canvas, waveform, ntpSecOf10, headIndex, quantum, flo
   }
   ctx.restore();
 
-  // 4. Center Playhead Triangle (Scanalyzer Style Magenta #d946ef)
+  // 4. Center Playhead Triangle
   const currentAngle = (ntpSecOf10 / 10.0) * Math.PI * 2;
   const ca = Math.cos(currentAngle);
   const sa = Math.sin(currentAngle);
@@ -2176,39 +2320,38 @@ function drawScanalyzerEye(canvas, waveform, ntpSecOf10, headIndex, quantum, flo
   ctx.translate(cx, cy);
   ctx.rotate(currentAngle);
 
-  // Magenta pointer triangle pointing towards the sweep angle
   ctx.beginPath();
   ctx.moveTo(rCenterPlayhead, 0);
   ctx.lineTo(-rCenterPlayhead * 0.65, -rCenterPlayhead * 0.65);
   ctx.lineTo(-rCenterPlayhead * 0.38, 0);
   ctx.lineTo(-rCenterPlayhead * 0.65, rCenterPlayhead * 0.65);
   ctx.closePath();
-  ctx.fillStyle = '#d946ef';
-  ctx.shadowColor = '#d946ef';
-  ctx.shadowBlur = 14;
+  ctx.fillStyle = !isDark ? '#ea580c' : '#d946ef';
+  ctx.shadowColor = !isDark ? '#ea580c' : '#d946ef';
+  ctx.shadowBlur = 10;
   ctx.fill();
   ctx.restore();
 
-  // 5. Rotating NTP Write-Head Needle Arm with Red-Hot Glowing Tip
+  // 5. Rotating NTP Write-Head Needle Arm
   ctx.save();
   ctx.lineCap = 'round';
-  ctx.strokeStyle = '#f97316';
-  ctx.lineWidth = 3.2;
-  ctx.shadowColor = '#f97316';
-  ctx.shadowBlur = 9;
+  ctx.strokeStyle = !isDark ? '#b91c1c' : '#f97316';
+  ctx.lineWidth = 3.0;
+  ctx.shadowColor = !isDark ? '#b91c1c' : '#f97316';
+  ctx.shadowBlur = 8;
   ctx.beginPath();
   ctx.moveTo(cx + ca * (rInner - 6), cy + sa * (rInner - 6));
   ctx.lineTo(cx + ca * (rOuter + 6), cy + sa * (rOuter + 6));
   ctx.stroke();
 
-  // Red-hot Glowing Tip Ball at Perimeter
+  // Red-hot Tip Ball at Perimeter
   const tipX = cx + ca * (rOuter + 6);
   const tipY = cy + sa * (rOuter + 6);
   ctx.beginPath();
-  ctx.arc(tipX, tipY, 5.2, 0, Math.PI * 2);
-  ctx.fillStyle = '#ff2810';
-  ctx.shadowColor = '#ff2810';
-  ctx.shadowBlur = 15;
+  ctx.arc(tipX, tipY, 5.0, 0, Math.PI * 2);
+  ctx.fillStyle = '#dc2626';
+  ctx.shadowColor = '#dc2626';
+  ctx.shadowBlur = 12;
   ctx.fill();
   ctx.restore();
 }
@@ -3046,19 +3189,26 @@ class WBSHandler(http.server.BaseHTTPRequestHandler):
                     apply_routes()
             self.send_response(200)
             self.end_headers()
-        elif parsed.path == "/api/toggle_test_tone":
-            data = json.loads(body)
+        elif parsed.path in ("/api/toggle_test_tone", "/api/test_tone"):
+            data = json.loads(body) if body else {}
             freq = data.get("freq", 1000)
             restart = data.get("restart", False)
             with STATE_LOCK:
-                if restart:
+                if restart is True:
                     start_test_tone(freq)
+                elif restart is False and "restart" in data:
+                    stop_test_tone()
                 elif TEST_TONE_ACTIVE:
                     stop_test_tone()
                 else:
                     start_test_tone(freq)
             self.send_response(200)
+            self.send_header("Content-Type", "application/json")
             self.end_headers()
+            self.wfile.write(json.dumps({
+                "active": TEST_TONE_ACTIVE,
+                "freq": TEST_TONE_FREQ
+            }).encode("utf-8"))
         elif parsed.path == "/api/bitbuddy":
             data = json.loads(body)
             pattern = data.get("pattern", BITBUDDY_CONFIG.get("pattern", "prbs"))

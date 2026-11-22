@@ -2327,100 +2327,24 @@ body.theme-wbs-dark .rc-meter-hub {
   color: #94a3b8;
 }
 
-/* STUDIO PRECISION DUAL ANALOG VU METERS */
-.rc-studio-vu-stage {
+/* LAYERED LINUX AUDIO PIPELINE & TOPOLOGY */
+.rc-pipeline-col {
   display: flex;
   flex-direction: column;
   gap: 10px;
+  justify-content: space-between;
 }
 
-.rc-studio-vu-meters-row {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
-}
-
-@media (max-width: 640px) {
-  .rc-studio-vu-meters-row {
-    grid-template-columns: 1fr;
-  }
-}
-
-.rc-studio-vu-card {
-  background: #060e17;
-  border: 2px solid #1c3b5e;
-  border-radius: 8px;
-  padding: 8px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.08);
-}
-
-.rc-studio-vu-dial {
-  background: #03080e;
-  border-radius: 6px;
-  overflow: hidden;
-  box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.8);
-}
-
-.rc-studio-vu-svg {
-  width: 100%;
-  height: auto;
-  display: block;
-}
-
-.rc-studio-dial-face {
-  fill: #faf8ed;
-}
-
-.rc-studio-scale-arc {
-  stroke: #1c1917;
-}
-
-.rc-studio-ticks {
-  stroke: #1c1917;
-}
-
-.rc-studio-numeral {
-  font-family: monospace;
-}
-
-.rc-studio-brand-vu {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-}
-
-.rc-studio-brand-name {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-}
-
-.rc-studio-needle-g {
-  transition: transform 0.05s cubic-bezier(0.1, 0.9, 0.2, 1);
-}
-
-.rc-studio-vu-label {
-  margin-top: 6px;
-  font-size: 0.68rem;
-  font-weight: 800;
-  text-align: center;
-  color: #94a3b8;
-  letter-spacing: 0.5px;
-  text-transform: uppercase;
-}
-
-.rc-studio-vu-label span {
-  color: #38bdf8;
-  font-family: monospace;
-}
-
-/* 4-LAYER LINUX AUDIO PIPELINE & TOPOLOGY */
 .rc-pipeline-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 8px;
-  margin-top: 4px;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  flex: 1;
 }
 
 @media (max-width: 900px) {
   .rc-pipeline-grid {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: 1fr;
   }
 }
 
@@ -2428,10 +2352,60 @@ body.theme-wbs-dark .rc-meter-hub {
   background: #050d17;
   border: 1px solid #142a42;
   border-radius: 6px;
-  padding: 8px 10px;
+  padding: 10px 12px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+}
+
+.rc-pipeline-telemetry-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-top: 4px;
+}
+
+@media (max-width: 900px) {
+  .rc-pipeline-telemetry-row {
+    grid-template-columns: 1fr;
+  }
+}
+
+.rc-telemetry-box {
+  background: #040910;
+  border: 1px solid #142a42;
+  border-radius: 6px;
+  padding: 8px 10px;
+}
+
+.rc-telemetry-box-title {
+  font-size: 0.62rem;
+  font-weight: 800;
+  color: #64748b;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+  border-bottom: 1px solid #0d1e30;
+  padding-bottom: 3px;
+}
+
+.rc-telemetry-box-body {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.rc-telemetry-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-family: monospace;
+  font-size: 0.64rem;
+  color: #94a3b8;
+}
+
+.rc-telemetry-item span {
+  color: #64748b;
 }
 
 .rc-pipeline-title {

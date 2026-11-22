@@ -1,7 +1,8 @@
 /*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.ca). All rights reserved. */
 /**
  * Web Audio processing graph: wiring source -> trim -> HPF -> monitor / meter
- * processor, and tearing down the active source.
+ * processor, and tearing down the active source. Supports multi-source summing
+ * for concurrent POD-33 Tone & ABP-1 Bit Spitter flows.
  */
 
 import type { XtmAudioEngine } from '../audio-engine';
@@ -11,11 +12,84 @@ import { clearLufsAccumulators } from './loudness';
 import { createCurrentLevels } from './types';
 
 /**
+ * Ensures the Web Audio processing graph (input bus, HPF, monitor, metering)
+ * is initialized once and stays connected for multi-source summing.
+ */
+export function ensureAudioGraph(engine: XtmAudioEngine): GainNode | null {
+  const ctx = engine.ctx;
+  if (!ctx) return null;
+
+  if (!engine.inputGainNode) {
+    // Input Trim Gain / Master Summing Bus
+    engine.inputGainNode = ctx.createGain();
+    engine.inputGainNode.channelCount = 2;
+    engine.inputGainNode.channelCountMode = 'explicit';
+    engine.inputGainNode.channelInterpretation = 'speakers';
+    updateInputGain(engine);
+
+    // High Pass Filter (Sub-Audible Rumble Rejection at 18 Hz or 80 Hz)
+    engine.hpfNode = ctx.createBiquadFilter();
+    engine.hpfNode.type = 'highpass';
+    engine.hpfNode.frequency.setValueAtTime(HPF_ON_HZ, ctx.currentTime);
+    engine.hpfNode.Q.setValueAtTime(0.707, ctx.currentTime);
+    updateHpfState(engine);
+
+    // Listen-Through / Monitor Output
+    engine.monitorGainNode = ctx.createGain();
+    updateMonitorState(engine);
+    engine.monitorGainNode.connect(ctx.destination);
+
+    // Channel Splitter (Left = Ch A, Right = Ch B)
+    engine.splitterNode = ctx.createChannelSplitter(2);
+
+    // AudioWorkletNode fallback management (modernizing deprecated ScriptProcessor)
+    if (engine.workletLoaded && typeof AudioWorkletNode !== 'undefined') {
+      try {
+        engine.processorNode = new AudioWorkletNode(ctx, WORKLET_PROCESSOR_NAME);
+        engine.processorNode.port.onmessage = (e) => {
+          if (e.data && e.data.ch0 && e.data.ch1) {
+            engine.processAudioBlockBuffers(e.data.ch0, e.data.ch1);
+          }
+        };
+      } catch (_) {
+        engine.processorNode = null;
+      }
+    }
+
+    if (!engine.processorNode) {
+      // Legacy fallback
+      const bufferSize = 1024;
+      engine.processorNode = ctx.createScriptProcessor(bufferSize, 2, 2);
+      engine.processorNode.onaudioprocess = (e) => engine.processAudioBlock(e);
+    }
+
+    engine.inputGainNode.connect(engine.hpfNode);
+    engine.hpfNode.connect(engine.monitorGainNode);
+    engine.hpfNode.connect(engine.processorNode);
+
+    // Connect processor to destination (silent dummy connection required for processor to run)
+    const silentGain = ctx.createGain();
+    silentGain.gain.value = 0.0;
+    engine.processorNode.connect(silentGain);
+    silentGain.connect(ctx.destination);
+  }
+
+  return engine.inputGainNode;
+}
+
+/**
  * Wires the Web Audio processing graph
  */
 export function setupAudioGraph(engine: XtmAudioEngine, sourceObj: any, isDirectNode: boolean = false): void {
   const ctx = engine.ctx;
   if (!ctx) return;
+
+  const bus = ensureAudioGraph(engine);
+  if (!bus) return;
+
+  if (engine.sourceNode) {
+    try { engine.sourceNode.disconnect(); } catch (_) {}
+  }
 
   if (isDirectNode) {
     engine.sourceNode = sourceObj;
@@ -23,64 +97,10 @@ export function setupAudioGraph(engine: XtmAudioEngine, sourceObj: any, isDirect
     engine.sourceNode = ctx.createMediaStreamSource(sourceObj);
   }
 
-  // Input Trim Gain
-  engine.inputGainNode = ctx.createGain();
-  engine.inputGainNode.channelCount = 2;
-  engine.inputGainNode.channelCountMode = 'explicit';
-  engine.inputGainNode.channelInterpretation = 'speakers';
-  updateInputGain(engine);
-
-  // High Pass Filter (Sub-Audible Rumble Rejection at 18 Hz or 80 Hz)
-  engine.hpfNode = ctx.createBiquadFilter();
-  engine.hpfNode.type = 'highpass';
-  engine.hpfNode.frequency.setValueAtTime(HPF_ON_HZ, ctx.currentTime);
-  engine.hpfNode.Q.setValueAtTime(0.707, ctx.currentTime);
-  updateHpfState(engine);
-
-  // Listen-Through / Monitor Output
-  engine.monitorGainNode = ctx.createGain();
-  updateMonitorState(engine);
-  engine.monitorGainNode.connect(ctx.destination);
-
-  // Channel Splitter (Left = Ch A, Right = Ch B)
-  engine.splitterNode = ctx.createChannelSplitter(2);
-
-  // AudioWorkletNode fallback management (modernizing deprecated ScriptProcessor)
-  // Note: If AudioWorklet fails, we must rely on the existing legacy path.
-  // Ensure all nodes are constructed after ensureContext() and audio is resumed.
-  if (engine.workletLoaded && typeof AudioWorkletNode !== 'undefined') {
-    try {
-      engine.processorNode = new AudioWorkletNode(ctx, WORKLET_PROCESSOR_NAME);
-      engine.processorNode.port.onmessage = (e) => {
-        if (e.data && e.data.ch0 && e.data.ch1) {
-          engine.processAudioBlockBuffers(e.data.ch0, e.data.ch1);
-        }
-      };
-    } catch (_) {
-      engine.processorNode = null;
-    }
-  }
-
-  if (!engine.processorNode) {
-    // Legacy fallback
-    const bufferSize = 1024;
-    engine.processorNode = ctx.createScriptProcessor(bufferSize, 2, 2);
-    engine.processorNode.onaudioprocess = (e) => engine.processAudioBlock(e);
-  }
-
-  // Connect chain:
-  // sourceNode -> inputGainNode -> (hpfNode if on) -> splitter / monitor / processor
-  if (engine.sourceNode && engine.inputGainNode && engine.hpfNode && engine.monitorGainNode && engine.processorNode) {
-    engine.sourceNode.connect(engine.inputGainNode);
-    engine.inputGainNode.connect(engine.hpfNode);
-
-    engine.hpfNode.connect(engine.monitorGainNode);
-    engine.hpfNode.connect(engine.processorNode);
-    // Connect processor to destination (silent dummy connection required for processor to run)
-    const silentGain = ctx.createGain();
-    silentGain.gain.value = 0.0;
-    engine.processorNode.connect(silentGain);
-    silentGain.connect(ctx.destination);
+  try {
+    engine.sourceNode.connect(bus);
+  } catch (err) {
+    console.warn('Error connecting source node to audio graph:', err);
   }
 }
 
@@ -94,8 +114,18 @@ export function stopCurrentSource(engine: XtmAudioEngine): void {
   }
   if (engine.testOsc) {
     try { engine.testOsc.stop(); } catch (_) {}
-    engine.testOsc.disconnect();
+    try { engine.testOsc.disconnect(); } catch (_) {}
     engine.testOsc = null;
+  }
+  if ((engine as any).pod33Node) {
+    try { (engine as any).pod33Node.osc?.stop(); } catch (_) {}
+    try { (engine as any).pod33Node.outGain?.disconnect(); } catch (_) {}
+    (engine as any).pod33Node = null;
+  }
+  if ((engine as any).bitBuddyNode) {
+    try { (engine as any).bitBuddyNode.source?.stop(); } catch (_) {}
+    try { (engine as any).bitBuddyNode.masterGain?.disconnect(); } catch (_) {}
+    (engine as any).bitBuddyNode = null;
   }
   if (engine.stream) {
     engine.stream.getTracks().forEach(t => t.stop());
