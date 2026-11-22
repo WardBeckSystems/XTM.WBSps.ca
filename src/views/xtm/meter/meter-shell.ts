@@ -41,14 +41,30 @@ export function renderMeterShell(id: number, cx: number, cy: number, kind: 'vu' 
       <!-- Base Dial Plate Background with Rich Radiance Gradient -->
       <rect class="xt-face xt-lamp-${kind === 'vu' && !isBlackPpm ? activeLamp : 'ppm'}" x="${x0}" y="${y0}" width="${MW}" height="${MH}" rx="5" fill="${fillGrad}"/>`;
 
-  // Warm incandescent filament halo glow behind VU scales (emerging from behind lower bezel in Ward-Beck.ca)
+  // Warm incandescent filament halo glow behind VU scales (dual bottom lamps for Ward-Beck.ca)
   if (kind === 'vu' && isPowered && lampHasBloom(activeLamp) && dialBg !== 'dark_night') {
     const isBottom = lampBloomPos(activeLamp) === 'bottom' || isWbsCa;
-    const bloomCy = isBottom ? y0 + 265 : y0 + 115;
-    const bloomRx = isBottom ? (MW * 0.50).toFixed(1) : (MW * 0.42).toFixed(1);
-    const bloomRy = isBottom ? 120 : 82;
-    const bloomGrad = isBottom ? 'xincand_bloom_bottom' : 'xincand_bloom';
-    s += `<ellipse class="xt-bloom xt-lamp-${activeLamp}" cx="${cx}" cy="${bloomCy}" rx="${bloomRx}" ry="${bloomRy}" fill="url(#${bloomGrad})"/>`;
+    if (isBottom) {
+      // Dual incandescent lamps at bottom (one left, one right) for uniform vintage illumination
+      const lampBloomCy = y0 + 105;
+      const lampBloomRy = 118;
+      const lampBloomRx = 180;
+      const lampOffset = 145;
+      const lampGrad = 'xincand_bloom_bottom';
+      // Left bottom lamp
+      s += `<ellipse class="xt-bloom xt-lamp-left xt-lamp-${activeLamp}" cx="${cx - lampOffset}" cy="${lampBloomCy}" rx="${lampBloomRx}" ry="${lampBloomRy}" fill="url(#${lampGrad})"/>`;
+      // Right bottom lamp
+      s += `<ellipse class="xt-bloom xt-lamp-right xt-lamp-${activeLamp}" cx="${cx + lampOffset}" cy="${lampBloomCy}" rx="${lampBloomRx}" ry="${lampBloomRy}" fill="url(#${lampGrad})"/>`;
+      // Concentrated filament hotspots near lower aperture rim
+      s += `<ellipse class="xt-bloom-hotspot" cx="${cx - lampOffset}" cy="${y0 + 208}" rx="56" ry="24" fill="url(#${lampGrad})"/>`;
+      s += `<ellipse class="xt-bloom-hotspot" cx="${cx + lampOffset}" cy="${y0 + 208}" rx="56" ry="24" fill="url(#${lampGrad})"/>`;
+    } else {
+      const bloomCy = y0 + 115;
+      const bloomRx = (MW * 0.42).toFixed(1);
+      const bloomRy = 82;
+      const bloomGrad = 'xincand_bloom';
+      s += `<ellipse class="xt-bloom xt-lamp-${activeLamp}" cx="${cx}" cy="${bloomCy}" rx="${bloomRx}" ry="${bloomRy}" fill="url(#${bloomGrad})"/>`;
+    }
   }
 
   if (kind === 'vu') {

@@ -268,13 +268,7 @@ export function bezelRim(x0: number, y0: number, cx: number = x0 + MW / 2): stri
       <rect x="${wx_wbs - 1.5}" y="${wy_wbs - 1.5}" width="${ww_wbs + 3}" height="${wh_wbs + 3}" rx="${wr_wbs + 1}" fill="none" stroke="#08090b" stroke-width="1.6" pointer-events="none"/>
       <rect x="${wx_wbs}" y="${wy_wbs}" width="${ww_wbs}" height="${wh_wbs}" rx="${wr_wbs}" fill="none" stroke="#23252a" stroke-width="0.8" stroke-opacity="0.6" pointer-events="none"/>
 
-      <!-- Window Inner Shadows & Specular Glass Reflection Sheen (Casts deep corner shadow over red lettering) -->
-      <rect x="${wx_wbs}" y="${wy_wbs}" width="${ww_wbs}" height="22" fill="url(#xch_top)" pointer-events="none"/>
-      <rect x="${wx_wbs}" y="${winBot_wbs - 14}" width="${ww_wbs}" height="14" fill="url(#xch_bot)" pointer-events="none"/>
-      <rect x="${wx_wbs}" y="${wy_wbs}" width="20" height="${wh_wbs}" fill="url(#xch_left)" pointer-events="none"/>
-      <rect x="${wx_wbs + ww_wbs - 70}" y="${wy_wbs}" width="70" height="${wh_wbs}" fill="url(#xch_right_wbs)" pointer-events="none"/>
-      <rect x="${wx_wbs + ww_wbs - 165}" y="${wy_wbs}" width="165" height="155" fill="url(#xch_corner_tr)" pointer-events="none"/>
-      <rect x="${wx_wbs}" y="${wy_wbs}" width="140" height="130" fill="url(#xch_corner_tl)" pointer-events="none"/>
+      <!-- Window Specular Glass Reflection Sheen -->
       <path d="M ${wx_wbs + 6} ${wy_wbs + 6} L ${wx_wbs + ww_wbs * 0.65} ${wy_wbs + 6} L ${wx_wbs + 6} ${winBot_wbs - 12} Z" fill="url(#meterGlassSheenGrad)" pointer-events="none"/>
       <rect x="${wx_wbs + 6}" y="${(wy_wbs + wh_wbs * 0.42).toFixed(1)}" width="${ww_wbs - 12}" height="1.6" fill="#ffffff" opacity="0.03" pointer-events="none"/>
 
