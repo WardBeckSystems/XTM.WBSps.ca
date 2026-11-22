@@ -384,6 +384,33 @@ body.theme-wbs-dark .clock-nrc-srv,
   fill: #94a3b8;
 }
 
+/* Canadian Maple Leaf Logo on Dial Face */
+.clock-nrc-leaf-path {
+  fill: #ef4444;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.4));
+}
+body.theme-wbs-dark .clock-nrc-leaf-path,
+.clock-modal-overlay.theme-wbs-dark .clock-nrc-leaf-path,
+.clock-svg-root.theme-wbs-dark .clock-nrc-leaf-path {
+  fill: #ef4444 !important;
+}
+body.theme-wbs-ca .clock-nrc-leaf-path,
+.clock-modal-overlay.theme-wbs-ca .clock-nrc-leaf-path,
+.clock-svg-root.theme-wbs-ca .clock-nrc-leaf-path {
+  fill: #c2410c !important;
+}
+body.theme-mccurdy-dark .clock-nrc-leaf-path,
+.clock-modal-overlay.theme-mccurdy-dark .clock-nrc-leaf-path,
+.clock-svg-root.theme-mccurdy-dark .clock-nrc-leaf-path {
+  fill: #ef4444 !important;
+}
+body.theme-mccurdy .clock-nrc-leaf-path,
+body.theme-mccurdy-light .clock-nrc-leaf-path,
+.clock-modal-overlay.theme-mccurdy-light .clock-nrc-leaf-path,
+.clock-svg-root.theme-mccurdy-light .clock-nrc-leaf-path {
+  fill: #b91c1c !important;
+}
+
 /* 2. Vintage Ward-Beck (theme-wbs-ca) */
 body.theme-wbs-ca .clock-dial-plate,
 .clock-modal-overlay.theme-wbs-ca .clock-dial-plate,

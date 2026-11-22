@@ -86,32 +86,32 @@ export function mccurdyVuNeedle(px: number, py: number, R: number): NeedleParts 
     shadow: `
       <!-- McCurdy Authentic Vintage Needle Drop Shadow -->
       <path d="
-        M ${px + sx} ${topY + 1.5 + sy}
-        C ${px + 1.2 + sx} ${topY + 6 + sy}, ${px + 4.8 + sx} ${topY + 12 + sy}, ${px + 7.0 + sx} ${topY + 16.5 + sy}
-        C ${px + 8.6 + sx} ${topY + 19.5 + sy}, ${px + 8.2 + sx} ${topY + 23.0 + sy}, ${px + 5.5 + sx} ${topY + 25.2 + sy}
-        C ${px + 3.4 + sx} ${topY + 26.6 + sy}, ${px + 1.5 + sx} ${topY + 25.8 + sy}, ${px + 0.8 + sx} ${topY + 24 + sy}
-        L ${px + 2.8 + sx} ${py + sy}
-        L ${px - 2.8 + sx} ${py + sy}
-        L ${px - 0.8 + sx} ${topY + 24 + sy}
-        C ${px - 1.5 + sx} ${topY + 25.8 + sy}, ${px - 3.4 + sx} ${topY + 26.6 + sy}, ${px - 5.5 + sx} ${topY + 25.2 + sy}
-        C ${px - 8.2 + sx} ${topY + 23.0 + sy}, ${px - 8.6 + sx} ${topY + 19.5 + sy}, ${px - 7.0 + sx} ${topY + 16.5 + sy}
-        C ${px - 4.8 + sx} ${topY + 12 + sy}, ${px - 1.2 + sx} ${topY + 6 + sy}, ${px + sx} ${topY + 1.5 + sy}
+        M ${px + sx} ${topY + sy}
+        C ${px + 1.2 + sx} ${topY + 4 + sy}, ${px + 3.8 + sx} ${topY + 8 + sy}, ${px + 5.2 + sx} ${topY + 13 + sy}
+        C ${px + 5.8 + sx} ${topY + 16 + sy}, ${px + 5.2 + sx} ${topY + 19 + sy}, ${px + 3.2 + sx} ${topY + 22 + sy}
+        C ${px + 2.0 + sx} ${topY + 24 + sy}, ${px + 1.2 + sx} ${topY + 26 + sy}, ${px + 1.0 + sx} ${topY + 29 + sy}
+        L ${px + 1.3 + sx} ${py + sy}
+        L ${px - 1.3 + sx} ${py + sy}
+        L ${px - 1.0 + sx} ${topY + 29 + sy}
+        C ${px - 1.2 + sx} ${topY + 26 + sy}, ${px - 2.0 + sx} ${topY + 24 + sy}, ${px - 3.2 + sx} ${topY + 22 + sy}
+        C ${px - 5.2 + sx} ${topY + 19 + sy}, ${px - 5.8 + sx} ${topY + 16 + sy}, ${px - 3.8 + sx} ${topY + 8 + sy}
+        C ${px - 1.2 + sx} ${topY + 4 + sy}, ${px + sx} ${topY + sy}, ${px + sx} ${topY + sy}
         Z" fill="rgba(0,0,0,0.30)"/>
       <circle cx="${px + sx}" cy="${py + sy}" r="11" fill="rgba(0,0,0,0.25)"/>
     `,
     body: `
       <!-- McCurdy Authentic Vintage Needle with Classic Teardrop Pointer -->
       <path d="
-        M ${px} ${topY + 1.5}
-        C ${px + 1.2} ${topY + 6}, ${px + 4.8} ${topY + 12}, ${px + 7.0} ${topY + 16.5}
-        C ${px + 8.6} ${topY + 19.5}, ${px + 8.2} ${topY + 23.0}, ${px + 5.5} ${topY + 25.2}
-        C ${px + 3.4} ${topY + 26.6}, ${px + 1.5} ${topY + 25.8}, ${px + 0.8} ${topY + 24}
-        L ${px + 2.8} ${py}
-        L ${px - 2.8} ${py}
-        L ${px - 0.8} ${topY + 24}
-        C ${px - 1.5} ${topY + 25.8}, ${px - 3.4} ${topY + 26.6}, ${px - 5.5} ${topY + 25.2}
-        C ${px - 8.2} ${topY + 23.0}, ${px - 8.6} ${topY + 19.5}, ${px - 7.0} ${topY + 16.5}
-        C ${px - 4.8} ${topY + 12}, ${px - 1.2} ${topY + 6}, ${px} ${topY + 1.5}
+        M ${px} ${topY}
+        C ${px + 1.2} ${topY + 4}, ${px + 3.8} ${topY + 8}, ${px + 5.2} ${topY + 13}
+        C ${px + 5.8} ${topY + 16}, ${px + 5.2} ${topY + 19}, ${px + 3.2} ${topY + 22}
+        C ${px + 2.0} ${topY + 24}, ${px + 1.2} ${topY + 26}, ${px + 1.0} ${topY + 29}
+        L ${px + 1.3} ${py}
+        L ${px - 1.3} ${py}
+        L ${px - 1.0} ${topY + 29}
+        C ${px - 1.2} ${topY + 26}, ${px - 2.0} ${topY + 24}, ${px - 3.2} ${topY + 22}
+        C ${px - 5.2} ${topY + 19}, ${px - 5.8} ${topY + 16}, ${px - 3.8} ${topY + 8}
+        C ${px - 1.2} ${topY + 4}, ${px} ${topY}, ${px} ${topY}
         Z" fill="#1e1b18"/>
       
       <!-- Subtle needle spine ridge highlight -->

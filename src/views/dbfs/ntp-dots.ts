@@ -57,11 +57,38 @@ export function drawSparkle(
   ctx.restore();
 }
 
+// Canonical 11-point Canadian Maple Leaf vector path (centered at 0, 0, ~22x22 units)
+const MAPLE_LEAF_PATH = new Path2D(`
+  M 0 -11
+  L 1.6 -6.8
+  L 4.6 -7.5
+  L 4.9 -4.2
+  L 3.2 -3.7
+  L 7.6 -3.9
+  L 10.8 -0.6
+  L 8.4 1.4
+  L 4.3 0.9
+  L 6.5 4.0
+  L 2.4 4.3
+  L 0.8 9.8
+  L -0.8 9.8
+  L -2.4 4.3
+  L -6.5 4.0
+  L -4.3 0.9
+  L -8.4 1.4
+  L -10.8 -0.6
+  L -7.6 -3.9
+  L -3.2 -3.7
+  L -4.9 -4.2
+  L -4.6 -7.5
+  L -1.6 -6.8
+  Z
+`);
+
 /**
- * Draw NTP Event Dots & Sparkles of Clocking along the dBFS Scope Graph Timeline.
- * Each NTP sync event appears as an interactive precision marker with receipts,
- * surrounded by animated sparkles representing picosecond clocking quanta,
- * timing stability, and atomic frequency lock.
+ * Draw NTP Event Markers along the dBFS Scope Graph Timeline.
+ * Renders purely as a traveling Canadian Maple Leaf (🍁) icon for authentic
+ * Canadian broadcast time reference, free of distracting sparkles and clutter.
  */
 export function drawNtpDots(v: DbfsView, ctx: CanvasRenderingContext2D, L: ScopeLayout, nowMs: number): void {
   const { dpr, padL, padT, plotW, plotH, maxX } = L;
@@ -74,17 +101,6 @@ export function drawNtpDots(v: DbfsView, ctx: CanvasRenderingContext2D, L: Scope
   v.visibleNtpDots = [];
 
   const receipts = ntpService.getRecentReceipts(capSec * 1000);
-
-  // -------------------------------------------------------------
-  // 1. Sparkles of Clocking at Timeline Leading Edge (NOW / Active Clock)
-  // -------------------------------------------------------------
-  const nowTickSec = (nowMs % 1000) / 1000;
-  const leadingPulse = Math.sin(nowTickSec * Math.PI * 2);
-  const leadingY = Math.round(padT + plotH - 14 * dpr);
-  const nowSparkleCol = (Math.floor(nowMs / 800) % 2 === 0) ? '#facc15' : '#38bdf8';
-  const nowSparkleSize = (2.4 + Math.max(0, leadingPulse) * 2.2) * dpr;
-  drawSparkle(ctx, maxX, leadingY, nowSparkleSize, 0.75 + leadingPulse * 0.25, nowSparkleCol, nowMs * 0.002);
-
   if (!receipts || receipts.length === 0) return;
 
   const dotY = Math.round(padT + plotH - 14 * dpr);
@@ -108,7 +124,6 @@ export function drawNtpDots(v: DbfsView, ctx: CanvasRenderingContext2D, L: Scope
     if (x < padL || x > maxX) continue;
 
     const isHovered = (v.hoveredNtpReceipt?.id === receipt.id);
-    const isNew = (nowMs - receipt.timestamp < 4000); // Created in last 4 seconds
 
     // Record for hit-testing in pointer-input
     const hitRadius = 16 * dpr;
@@ -123,7 +138,7 @@ export function drawNtpDots(v: DbfsView, ctx: CanvasRenderingContext2D, L: Scope
 
     ctx.save();
 
-    // 2. Vertical Event Hairline (shown only when hovered)
+    // 1. Vertical Event Hairline (shown only when hovered)
     if (isHovered) {
       ctx.beginPath();
       ctx.setLineDash([3 * dpr, 3 * dpr]);
@@ -135,63 +150,31 @@ export function drawNtpDots(v: DbfsView, ctx: CanvasRenderingContext2D, L: Scope
       ctx.setLineDash([]);
     }
 
-    // 4. Animated Pulse Wave for New or Hovered Events
-    if (isNew || isHovered) {
-      const pulseT = ((nowMs - receipt.timestamp) % 1200) / 1200;
-      const pulseR = (6 + pulseT * 14) * dpr;
-      ctx.beginPath();
-      ctx.arc(x, dotY, pulseR, 0, Math.PI * 2);
-      ctx.strokeStyle = isHovered 
-        ? `rgba(56, 189, 248, ${(1 - pulseT) * 0.9})`
-        : `rgba(239, 68, 68, ${(1 - pulseT) * 0.8})`;
-      ctx.lineWidth = 1.5 * dpr;
-      ctx.stroke();
-    }
+    // 2. Traveling Canadian Maple Leaf (pure leaf, no sparkles or rings)
+    ctx.save();
+    ctx.translate(x, dotY);
+    const leafScale = (isHovered ? 0.85 : 0.65) * dpr;
+    ctx.scale(leafScale, leafScale);
 
-    // 5. NTP Event Dot Outer Ring / Halo
-    const outerR = (isHovered ? 6.5 : 4.8) * dpr;
-    ctx.beginPath();
-    ctx.arc(x, dotY, outerR, 0, Math.PI * 2);
-    ctx.fillStyle = isHovered 
-      ? '#38bdf8' 
-      : (receipt.server.includes('chu') ? '#f59e0b' : '#ef4444');
-    ctx.fill();
-
-    // 6. NTP Event Dot Inner Core
-    const innerR = (isHovered ? 3.5 : 2.4) * dpr;
-    ctx.beginPath();
-    ctx.arc(x, dotY, innerR, 0, Math.PI * 2);
-    ctx.fillStyle = '#ffffff';
-    ctx.fill();
-
-    // 7. Sparkles of Clocking: Constellation Orbiting the NTP Dot
-    const sparkleCount = isHovered ? 11 : 6;
-    for (let s = 0; s < sparkleCount; s++) {
-      const seed = (s * 53 + (receipt.timestamp % 997)) * 0.15;
-      const dir = (s % 2 === 0) ? 1 : -1;
-      const orbitSpeed = (isHovered ? 0.0035 : 0.0018);
-      const angle = nowMs * orbitSpeed * dir + seed;
-      const baseDist = (8 + (s % 4) * 4.5 + Math.sin(nowMs * 0.004 + seed) * 3) * dpr;
-      const orbitDist = isHovered ? baseDist * 1.35 : baseDist;
-      const sx = x + Math.cos(angle) * orbitDist;
-      const sy = dotY + Math.sin(angle) * (orbitDist * 0.65); // graceful perspective oval
-
-      const flicker = Math.sin(nowMs * 0.009 + seed * 2.2);
-      if (flicker > -0.25) {
-        const sSize = ((isHovered ? 3.2 : 2.0) + flicker * 1.4) * dpr;
-        const opacity = Math.max(0.15, (flicker + 0.3) / 1.3) * (isHovered ? 0.95 : 0.8);
-        const col = (s % 4 === 0) ? '#ffffff' : ((s % 4 === 1) ? '#38bdf8' : ((s % 4 === 2) ? '#facc15' : '#f87171'));
-        drawSparkle(ctx, sx, sy, sSize, opacity, col, angle * 1.5);
-      }
-    }
-
-    // 8. Timeline Badge Label
-    ctx.font = `bold ${Math.round((isHovered ? 10.5 : 9) * dpr)}px ui-monospace, "SF Mono", monospace`;
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'bottom';
+    const leafFill = isHovered 
+      ? '#f87171' 
+      : (isMcCurdy ? '#dc2626' : (receipt.server.includes('chu') ? '#f59e0b' : '#ef4444'));
+    ctx.fillStyle = leafFill;
+    ctx.fill(MAPLE_LEAF_PATH);
 
     if (isHovered) {
-      // Expanded tooltip hint when hovered directly on the canvas
+      ctx.strokeStyle = '#ffffff';
+      ctx.lineWidth = 1.2 / leafScale;
+      ctx.stroke(MAPLE_LEAF_PATH);
+    }
+    ctx.restore();
+
+    // 3. Hover Tooltip Details Card
+    if (isHovered) {
+      ctx.font = `bold ${Math.round(10.5 * dpr)}px ui-monospace, "SF Mono", monospace`;
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'bottom';
+
       const badgeText = `🍁 NRC NTP · ${receipt.server} (${receipt.offsetMs >= 0 ? '+' : ''}${receipt.offsetMs.toFixed(2)}ms)`;
       const textMetrics = ctx.measureText(badgeText);
       const bgW = textMetrics.width + 12 * dpr;
@@ -209,10 +192,6 @@ export function drawNtpDots(v: DbfsView, ctx: CanvasRenderingContext2D, L: Scope
 
       ctx.fillStyle = isMcCurdy ? '#0f172a' : '#38bdf8';
       ctx.fillText(badgeText, bgX, bgY - 4 * dpr);
-    } else {
-      // Compact label above the dot
-      ctx.fillStyle = isMcCurdy ? '#7f1d1d' : '#f87171';
-      ctx.fillText('🍁 NTP', x, dotY - 7 * dpr);
     }
 
     ctx.restore();

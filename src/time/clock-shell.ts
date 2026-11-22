@@ -222,29 +222,33 @@ export function renderClockDialFace(theme: ClockTheme = 'wbs-dark'): string {
 
     <!-- Brand Badges (Theme Connected at Stylesheet) -->
     <g class="clock-brand clock-brand-wbs-modern wbs-modern-only" style="cursor:pointer;" title="Ward-Beck Systems VU Master Clock">
-      <rect x="-56" y="-74" width="112" height="23" rx="5" fill="#0b0d10" stroke="#22c55e" stroke-width="1.6"/>
+      <rect x="-60" y="-76" width="120" height="38" rx="5" fill="#0b0d10" stroke="#22c55e" stroke-width="1.6"/>
       <text x="0" y="-58" font-family="'Helvetica Neue', Arial, sans-serif" font-size="12" font-weight="900" fill="#22c55e" text-anchor="middle" letter-spacing="1.2">WARD-BECK</text>
-      <text x="0" y="-43" font-family="'Helvetica Neue', Arial, sans-serif" font-size="8.5" font-weight="800" fill="#cbd5e1" text-anchor="middle" letter-spacing="1.5">VU MASTER CLOCK</text>
+      <text x="0" y="-44" font-family="'Helvetica Neue', Arial, sans-serif" font-size="8.5" font-weight="800" fill="#cbd5e1" text-anchor="middle" letter-spacing="1.5">VU MASTER CLOCK</text>
     </g>
 
     <g class="clock-brand clock-brand-wbs-vintage wbs-ca-only" style="cursor:pointer;" title="Ward-Beck Systems Vintage Master Clock">
-      <rect x="-56" y="-74" width="112" height="23" rx="5" fill="#ffffff" stroke="#f97316" stroke-width="1.8"/>
+      <rect x="-60" y="-76" width="120" height="38" rx="5" fill="#ffffff" stroke="#f97316" stroke-width="1.8"/>
       <text x="0" y="-58" font-family="'Helvetica Neue', Arial, sans-serif" font-size="12" font-weight="900" fill="#f97316" text-anchor="middle" letter-spacing="1.2">WARD-BECK</text>
-      <text x="0" y="-43" font-family="'Helvetica Neue', Arial, sans-serif" font-size="8.5" font-weight="800" fill="#2a2b2a" text-anchor="middle" letter-spacing="1.5">SYSTEMS · TORONTO</text>
+      <text x="0" y="-44" font-family="'Helvetica Neue', Arial, sans-serif" font-size="8.5" font-weight="800" fill="#2a2b2a" text-anchor="middle" letter-spacing="1.5">SYSTEMS · TORONTO</text>
     </g>
 
     <g class="clock-brand clock-brand-mc mc-only" style="cursor:pointer;" title="McCurdy Radio Industries Studio Master Clock">
-      <rect x="-50" y="-74" width="100" height="23" rx="4" fill="#142842" stroke="#d9e2ec" stroke-width="1.4"/>
-      <text x="0" y="-58" font-family="'Helvetica Neue', Arial, sans-serif" font-size="13" font-weight="900" fill="#ffffff" text-anchor="middle" letter-spacing="0.8">McCURDY</text>
-      <text x="0" y="-43" font-family="'Helvetica Neue', Arial, sans-serif" font-size="8" font-weight="800" fill="#f0f4f8" text-anchor="middle" letter-spacing="1.2">STUDIO CLOCK</text>
+      <rect x="-56" y="-76" width="112" height="38" rx="5" fill="#142842" stroke="#d9e2ec" stroke-width="1.4"/>
+      <text x="0" y="-57" font-family="'Helvetica Neue', Arial, sans-serif" font-size="13" font-weight="900" fill="#ffffff" text-anchor="middle" letter-spacing="0.8">McCURDY</text>
+      <text x="0" y="-44" font-family="'Helvetica Neue', Arial, sans-serif" font-size="8.5" font-weight="800" fill="#9fb3c8" text-anchor="middle" letter-spacing="1.2">STUDIO CLOCK</text>
     </g>
 
-    <!-- NRC-CNRC Official Time Alignment Inscription (Canada) -->
-    <g class="clock-nrc-inscription" transform="translate(0, 62)">
-      <text x="0" y="0" font-family="'Helvetica Neue', Arial, sans-serif" font-size="8.5" font-weight="800" text-anchor="middle" letter-spacing="1.8" class="clock-nrc-lbl">NRC · CNRC OFFICIAL TIME</text>
-      <text x="0" y="13" font-family="'Helvetica Neue', Arial, sans-serif" font-size="7" font-weight="700" text-anchor="middle" letter-spacing="1.2" class="clock-nrc-sub">CANADIAN BROADCAST STANDARD</text>
-      <text x="0" y="25" font-family="'Helvetica Neue', Arial, sans-serif" font-size="7.5" font-weight="700" text-anchor="middle" letter-spacing="1.1" class="clock-nrc-srv">time.nrc.ca</text>
-      <text x="0" y="36" font-family="'Helvetica Neue', Arial, sans-serif" font-size="7.5" font-weight="700" text-anchor="middle" letter-spacing="1.1" class="clock-nrc-srv">time.chu.nrc.ca</text>
+    <!-- NRC-CNRC Official Time Alignment Inscription & Canadian Broadcast Logo (Canada) -->
+    <g class="clock-nrc-inscription" transform="translate(0, 52)">
+      <!-- Official Canadian Maple Leaf Badge -->
+      <g class="clock-nrc-leaf-badge" transform="translate(0, 0)">
+        <path class="clock-nrc-leaf-path" d="M 0,-10 L 1.5,-6.2 L 4.2,-6.8 L 4.5,-3.8 L 2.9,-3.4 L 6.9,-3.5 L 9.8,-0.5 L 7.6,1.3 L 3.9,0.8 L 5.9,3.6 L 2.2,3.9 L 0.7,8.7 L -0.7,8.7 L -2.2,3.9 L -5.9,3.6 L -3.9,0.8 L -7.6,1.3 L -9.8,-0.5 L -6.9,-3.5 L -2.9,-3.4 L -4.5,-3.8 L -4.2,-6.8 L -1.5,-6.2 Z" fill="#b91c1c" />
+      </g>
+      <text x="0" y="17" font-family="'Helvetica Neue', Arial, sans-serif" font-size="8.5" font-weight="800" text-anchor="middle" letter-spacing="1.8" class="clock-nrc-lbl">NRC · CNRC OFFICIAL TIME</text>
+      <text x="0" y="28" font-family="'Helvetica Neue', Arial, sans-serif" font-size="7" font-weight="700" text-anchor="middle" letter-spacing="1.2" class="clock-nrc-sub">CANADIAN BROADCAST STANDARD</text>
+      <text x="0" y="39" font-family="'Helvetica Neue', Arial, sans-serif" font-size="7.5" font-weight="700" text-anchor="middle" letter-spacing="1.1" class="clock-nrc-srv">time.nrc.ca</text>
+      <text x="0" y="49" font-family="'Helvetica Neue', Arial, sans-serif" font-size="7.5" font-weight="700" text-anchor="middle" letter-spacing="1.1" class="clock-nrc-srv">time.chu.nrc.ca</text>
     </g>
 
     <!-- Chamber Recess Shadows -->
