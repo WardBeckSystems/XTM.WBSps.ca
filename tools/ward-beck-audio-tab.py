@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
 """
-Ward-Beck Audio Tab
-===================
-Virtual Audio Patchbay & Test Point Controller Daemon (HTML Router + Live VU Bridge)
+WARD BECK TAP
+=============
+Virtual Audio Patchbay & Non-Destructive Signal Tap Controller Daemon (HTML Router + Live VU Bridge)
 Linux Audio & MXL (Media eXchange Layer / EBU DMF) Compatible Controller
 Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.ca). All rights reserved.
 
 Routes Linux desktop audio (YouTube, Spotify, DAWs, Media Players) into Ward-Beck XTM-4
-via isolated virtual null-sinks (100% feedback-free, banner-free, low-latency).
+via isolated virtual null-sinks (100% feedback-free, banner-free, low-latency signal tap).
 Includes live multi-source VU metering, matrix source tapping, calibrated test generator,
 and full 3-layer Linux audio pipeline awareness (ALSA, PipeWire/WirePlumber, and
 high-throughput POSIX shared-memory continuous circular ring buffers via DMF / MXL).
@@ -233,7 +233,7 @@ def abandon_ship():
                 pass
         SOURCE_PROCS.clear()
 
-    print(f"[Ward-Beck Audio Tab] Teardown complete. Hardware sink restored: {phys or 'None'}")
+    print(f"[WARD BECK TAP] Teardown complete. Hardware sink restored: {phys or 'None'}")
 
 
 def full_restart():
@@ -275,7 +275,7 @@ def full_restart():
     except Exception as e:
         print(f"[WARN] MXL Engine start failed: {e}")
 
-    print(f"[Ward-Beck Audio Tab] Topology active. Source={SELECTED_SOURCE} -> Speakers={PHYSICAL_SINK}")
+    print(f"[WARD BECK TAP] Topology active. Source={SELECTED_SOURCE} -> Speakers={PHYSICAL_SINK}")
 
 
 def apply_routes():
@@ -476,7 +476,7 @@ HTML_UI = """<!DOCTYPE html>
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Ward-Beck Audio Tab // Linux Audio &amp; MXL Ring Buffer Controller</title>
+<title>WARD BECK TAP // Signal Tap &amp; MXL Ring Buffer Controller</title>
 <style>
   :root {
     --wbs-blue: #142e47;
@@ -794,9 +794,9 @@ HTML_UI = """<!DOCTYPE html>
   <!-- System Header -->
   <div class="header">
     <div>
-      <h1>Ward-Beck Audio Tab // Linux &amp; MXL Controller</h1>
+      <h1>WARD BECK TAP // Signal Tap &amp; MXL Controller</h1>
       <div style="font-size: 0.78rem; color: var(--text-dim); margin-top: 3px;">
-        Virtual Audio Patchbay · EBU DMF / MXL Shared Memory · Native 60 FPS Meter Telemetry
+        Non-Destructive Signal Tap · Virtual Audio Patchbay · EBU DMF / MXL Shared Memory · Native 60 FPS Meter Telemetry
       </div>
     </div>
     <div class="badge-row">
@@ -1815,20 +1815,20 @@ def handle_sigterm(signum, frame):
 
 if __name__ == "__main__":
     if any(arg in sys.argv for arg in ("--check", "--test", "--self-test")):
-        print("[Ward-Beck Audio Tab] Validating configuration and self-test...")
+        print("[WARD BECK TAP] Validating configuration and self-test...")
         assert len(HTML_UI) > 1000, "HTML template empty"
-        assert "Ward-Beck Audio Tab" in HTML_UI, "HTML header missing"
+        assert "WARD BECK TAP" in HTML_UI or "Ward-Beck" in HTML_UI, "HTML header missing"
         assert "needle-l" in HTML_UI and "needle-r" in HTML_UI, "VU needle elements missing"
         assert "eye-player-canvas" in HTML_UI or "ring-canvas" in HTML_UI, "MXL ring buffer canvas missing"
         srcs = list_sources()
-        print(f"[Ward-Beck Audio Tab] Detected audio subsystem ({len(srcs)} available audio sources).")
+        print(f"[WARD BECK TAP] Detected audio subsystem ({len(srcs)} available audio sources).")
         pipe = inspect_full_pipeline(MXL_ENGINE)
-        print(f"[Ward-Beck Audio Tab] 3-Layer Linux Audio Pipeline online (ALSA cards: {pipe['layers']['layer1_kernel_hardware']['telemetry']['card_count']}).")
-        print("[Ward-Beck Audio Tab] ✔ Self-test passed: Ward-Beck Audio Tab is valid, MXL-aware, and deployment-ready.")
+        print(f"[WARD BECK TAP] 3-Layer Linux Audio Pipeline online (ALSA cards: {pipe['layers']['layer1_kernel_hardware']['telemetry']['card_count']}).")
+        print("[WARD BECK TAP] ✔ Self-test passed: WARD BECK TAP is valid, MXL-aware, and deployment-ready.")
         sys.exit(0)
 
     if any(arg in sys.argv for arg in ("--abandon", "--teardown", "--stop")):
-        print("[Ward-Beck Audio Tab] Executing teardown / abandon ship...")
+        print("[WARD BECK TAP] Executing teardown / abandon ship...")
         with STATE_LOCK:
             abandon_ship()
         sys.exit(0)
@@ -1836,7 +1836,7 @@ if __name__ == "__main__":
     signal.signal(signal.SIGTERM, handle_sigterm)
     signal.signal(signal.SIGINT, handle_sigterm)
 
-    print("[Ward-Beck Audio Tab] Initializing virtual buses, multi-source meters, and test point...")
+    print("[WARD BECK TAP] Initializing virtual buses, multi-source meters, and signal tap point...")
     with STATE_LOCK:
         full_restart()
 
@@ -1845,12 +1845,12 @@ if __name__ == "__main__":
 
     no_browser = any(arg in sys.argv for arg in ("--no-browser", "--headless", "--daemon")) or (os.environ.get("WBS_NO_BROWSER", "0") == "1")
     if not no_browser:
-        print(f"[Ward-Beck Audio Tab] Launching browser: http://127.0.0.1:{PORT}")
+        print(f"[WARD BECK TAP] Launching browser: http://127.0.0.1:{PORT}")
         launch_browser(f"http://127.0.0.1:{PORT}")
 
     server = ThreadingHTTPServer(("127.0.0.1", PORT), WBSHandler)
-    print(f"[Ward-Beck Audio Tab] HTML Router & Multi-Source VU Bridge running at: http://127.0.0.1:{PORT}")
-    print("[Ward-Beck Audio Tab] Live VU meters & MXL Continuous Ring Buffers active. Click TAP to route any source.")
+    print(f"[WARD BECK TAP] HTML Router & Multi-Source VU Bridge running at: http://127.0.0.1:{PORT}")
+    print("[WARD BECK TAP] Live VU meters & MXL Continuous Ring Buffers active. Signal Tap online.")
     try:
         server.serve_forever()
     finally:

@@ -54,7 +54,7 @@ interface ProbeTarget {
 }
 
 const CANDIDATE_TARGETS: ProbeTarget[] = [
-  { port: 8467, path: '/api/mxl', type: 'wbs-router', defaultName: 'Ward-Beck Audio Tab (MXL Engine)' },
+  { port: 8467, path: '/api/mxl', type: 'wbs-router', defaultName: 'WARD BECK TAP (MXL Engine)' },
   { port: 9600, path: '/domains', type: 'mxl-generator', defaultName: 'CBC MXL Test Generator' },
   { port: 9601, path: '/openapi.json', type: 'mxl-receiver', defaultName: 'CBC MXL WebRTC Receiver' },
   { port: 9602, path: '/openapi.json', type: 'mxl-player', defaultName: 'CBC MXL Clip / File Player' },
@@ -168,8 +168,8 @@ async function probeTarget(target: ProbeTarget): Promise<XmxlInstance | null> {
 
       // Custom metadata enrichment based on port
       if (target.port === 8467) {
-        // Ward-Beck Audio Tab with MXL Engine
-        instance.name = 'Ward-Beck Audio Tab (MXL Engine)';
+        // WARD BECK TAP with MXL Engine
+        instance.name = 'WARD BECK TAP (MXL Engine)';
         if (data.domain_id) instance.domainId = data.domain_id;
         if (data.active_source) instance.activeSource = data.active_source;
         if (Array.isArray(data.flows)) {

@@ -15,7 +15,7 @@ let linuxHostAvailable = false;
 let linuxHostSse: EventSource | null = null;
 let xmxlDisconnect: (() => void) | null = null;
 
-/** Probes local Linux host daemon (Ward-Beck Audio Tab) on port 8467 */
+/** Probes local Linux host daemon (WARD BECK TAP) on port 8467 */
 export async function probeLinuxHost(): Promise<boolean> {
   try {
     const instances = await scanXmxlInstances();
