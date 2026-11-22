@@ -44,9 +44,18 @@ export function bindAudioCallbacks(ctx: AppContext, refs: DrawerControls): void 
     devices.forEach((d, i) => {
       const opt = document.createElement('option');
       opt.value = d.deviceId;
+      const isWbs = /wbs_meter_tap|wbs_input_bus|wbs_test_point|wbs/i.test(d.label || '');
       const isLoop = isLoopbackDevice(d.label);
-      opt.textContent = isLoop ? `🎧 [OS Loopback · Banner-Free] ${d.label || `Device ${i + 1}`}` : (d.label || `Audio Interface ${i + 1}`);
-      if (isLoop) opt.style.color = '#38bdf8';
+      if (isWbs) {
+        opt.textContent = `🎛️ [WBS Router Active] ${d.label || `WBS Bus ${i + 1}`}`;
+        opt.style.color = '#86efac';
+        opt.style.fontWeight = 'bold';
+      } else if (isLoop) {
+        opt.textContent = `🎧 [OS Loopback · Banner-Free] ${d.label || `Device ${i + 1}`}`;
+        opt.style.color = '#38bdf8';
+      } else {
+        opt.textContent = d.label || `Audio Interface ${i + 1}`;
+      }
       if (d.deviceId === currentVal) opt.selected = true;
       selectDevice.appendChild(opt);
     });
@@ -66,9 +75,18 @@ export async function initDeviceScan(ctx: AppContext, refs: DrawerControls): Pro
     devices.forEach((d, i) => {
       const opt = document.createElement('option');
       opt.value = d.deviceId;
+      const isWbs = /wbs_meter_tap|wbs_input_bus|wbs_test_point|wbs/i.test(d.label || '');
       const isLoop = isLoopbackDevice(d.label);
-      opt.textContent = isLoop ? `🎧 [OS Loopback · Banner-Free] ${d.label || `Device ${i + 1}`}` : (d.label || `Audio Interface ${i + 1}`);
-      if (isLoop) opt.style.color = '#38bdf8';
+      if (isWbs) {
+        opt.textContent = `🎛️ [WBS Router Active] ${d.label || `WBS Bus ${i + 1}`}`;
+        opt.style.color = '#86efac';
+        opt.style.fontWeight = 'bold';
+      } else if (isLoop) {
+        opt.textContent = `🎧 [OS Loopback · Banner-Free] ${d.label || `Device ${i + 1}`}`;
+        opt.style.color = '#38bdf8';
+      } else {
+        opt.textContent = d.label || `Audio Interface ${i + 1}`;
+      }
       if (d.deviceId === currentVal) opt.selected = true;
       selectDevice.appendChild(opt);
     });
