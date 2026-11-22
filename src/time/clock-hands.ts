@@ -109,6 +109,18 @@ export function renderClockHands(theme: ClockTheme): string {
       <line x1="0" y1="32" x2="0" y2="-188" stroke="#ffffff" stroke-width="0.8" stroke-opacity="0.6" />
       <!-- Arrowhead Spade Pointer Tip -->
       <polygon points="-3,-172 0,-191 3,-172 0,-168" fill="${PPM_YELLOW}" />
+      <!-- Sparkles of Clocking: Luminous Escapement & Atomic Pulse Glints -->
+      <g id="clockSweepSparkles" transform="translate(0, -191)">
+        <!-- 4-Pointed Star Sparkle (Main) -->
+        <path class="clock-sparkle-star" d="M 0,-7.5 Q 0,0 7.5,0 Q 0,0 0,7.5 Q 0,0 -7.5,0 Q 0,0 0,-7.5 Z" fill="#ffffff" />
+        <!-- Diagonal Star Sparkle -->
+        <path class="clock-sparkle-diag" d="M -4,-4 Q 0,0 4,-4 Q 0,0 4,4 Q 0,0 -4,4 Q 0,0 -4,-4 Z" fill="${PPM_YELLOW}" opacity="0.85" />
+        <!-- Concentric Glint Core -->
+        <circle cx="0" cy="0" r="1.8" fill="#ffffff" />
+        <!-- Starlight Glint Ray Flares -->
+        <line x1="0" y1="-11" x2="0" y2="11" stroke="#ffffff" stroke-width="0.7" stroke-opacity="0.9" />
+        <line x1="-11" y1="0" x2="11" y2="0" stroke="#ffffff" stroke-width="0.7" stroke-opacity="0.9" />
+      </g>
       <!-- Rear Counterweight Disc -->
       <circle cx="0" cy="34" r="6.5" fill="${PPM_YELLOW}" />
       <circle cx="0" cy="34" r="2.8" fill="#111317" />

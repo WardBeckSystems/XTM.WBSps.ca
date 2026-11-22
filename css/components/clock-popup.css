@@ -450,3 +450,38 @@ body.theme-mccurdy .timeline-now-val {
     padding: 10px 14px;
   }
 }
+
+/* Sparkles of Clocking: Jewel Glints & Atomic Time Scintillation */
+@keyframes clockSparkleTwinkle {
+  0%, 100% {
+    opacity: 0.55;
+    transform: scale(0.85) rotate(0deg);
+    filter: drop-shadow(0 0 2px rgba(250, 204, 21, 0.4));
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.25) rotate(45deg);
+    filter: drop-shadow(0 0 8px #facc15) drop-shadow(0 0 14px rgba(255, 255, 255, 0.85));
+  }
+}
+
+@keyframes clockSparkleDiagPulse {
+  0%, 100% {
+    opacity: 0.4;
+    transform: scale(0.7) rotate(0deg);
+  }
+  50% {
+    opacity: 0.95;
+    transform: scale(1.15) rotate(-30deg);
+  }
+}
+
+.clock-sparkle-star {
+  animation: clockSparkleTwinkle 1.2s ease-in-out infinite;
+  transform-origin: 0 0;
+}
+
+.clock-sparkle-diag {
+  animation: clockSparkleDiagPulse 1.6s ease-in-out infinite reverse;
+  transform-origin: 0 0;
+}
