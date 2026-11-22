@@ -12,7 +12,7 @@ import {
   DARK_NIGHT_LAMP,
   UNLIT_LAMP,
   INCAND_BLOOM_GRADIENT,
-  INCAND_BLOOM_BOTTOM_GRADIENT,
+  DUAL_BOTTOM_LAMP_GRADIENTS,
   DIAL_BG_GRADIENTS
 } from '../skins/lamps/index';
 import { BLACK_PPM_GRADIENT } from '../skins/dial-palette';
@@ -43,7 +43,7 @@ export const SHELL_DEFS = `<defs>
         ${UNLIT_LAMP.gradient}
 
         ${INCAND_BLOOM_GRADIENT}
-        ${INCAND_BLOOM_BOTTOM_GRADIENT}
+        ${DUAL_BOTTOM_LAMP_GRADIENTS}
         ${DIAL_BG_GRADIENTS}
 
         ${BLACK_PPM_GRADIENT}

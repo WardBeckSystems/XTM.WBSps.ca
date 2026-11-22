@@ -41,14 +41,23 @@ export const UNLIT_LAMP: LampVariant = {
         </radialGradient>`
 };
 
-/** Bottom-rim incandescent filament bloom gradient */
-export const INCAND_BLOOM_BOTTOM_GRADIENT = `<radialGradient id="xincand_bloom_bottom" cx="50%" cy="100%" r="95%">
-          <stop offset="0%" stop-color="#fff8db" stop-opacity="0.80"/>
-          <stop offset="20%" stop-color="#ffea9f" stop-opacity="0.60"/>
-          <stop offset="45%" stop-color="#fed766" stop-opacity="0.38"/>
-          <stop offset="75%" stop-color="#f59e0b" stop-opacity="0.15"/>
-          <stop offset="100%" stop-color="#d97706" stop-opacity="0"/>
-        </radialGradient>`;
+/** Dual bottom lamps (left and right) for authentic vintage broadcast meter illumination */
+export const DUAL_BOTTOM_LAMP_GRADIENTS = `
+  <radialGradient id="xamber_lamp_left" cx="28%" cy="100%" r="85%">
+    <stop offset="0%" stop-color="#fff8db" stop-opacity="0.75"/>
+    <stop offset="20%" stop-color="#ffea9f" stop-opacity="0.45"/>
+    <stop offset="50%" stop-color="#fed766" stop-opacity="0.20"/>
+    <stop offset="80%" stop-color="#f59e0b" stop-opacity="0.05"/>
+    <stop offset="100%" stop-color="#d97706" stop-opacity="0"/>
+  </radialGradient>
+  <radialGradient id="xamber_lamp_right" cx="72%" cy="100%" r="85%">
+    <stop offset="0%" stop-color="#fff8db" stop-opacity="0.75"/>
+    <stop offset="20%" stop-color="#ffea9f" stop-opacity="0.45"/>
+    <stop offset="50%" stop-color="#fed766" stop-opacity="0.20"/>
+    <stop offset="80%" stop-color="#f59e0b" stop-opacity="0.05"/>
+    <stop offset="100%" stop-color="#d97706" stop-opacity="0"/>
+  </radialGradient>
+`;
 
 /** Dial face plate background gradients (Buff, Champagne, Slate) */
 export const DIAL_BG_GRADIENTS = `

@@ -45,19 +45,9 @@ export function renderMeterShell(id: number, cx: number, cy: number, kind: 'vu' 
   if (kind === 'vu' && isPowered && lampHasBloom(activeLamp) && dialBg !== 'dark_night') {
     const isBottom = lampBloomPos(activeLamp) === 'bottom' || isWbsCa;
     if (isBottom) {
-      // Dual incandescent lamps at bottom (one left, one right) for uniform vintage illumination
-      const lampBloomCy = y0 + 105;
-      const lampBloomRy = 118;
-      const lampBloomRx = 180;
-      const lampOffset = 145;
-      const lampGrad = 'xincand_bloom_bottom';
-      // Left bottom lamp
-      s += `<ellipse class="xt-bloom xt-lamp-left xt-lamp-${activeLamp}" cx="${cx - lampOffset}" cy="${lampBloomCy}" rx="${lampBloomRx}" ry="${lampBloomRy}" fill="url(#${lampGrad})"/>`;
-      // Right bottom lamp
-      s += `<ellipse class="xt-bloom xt-lamp-right xt-lamp-${activeLamp}" cx="${cx + lampOffset}" cy="${lampBloomCy}" rx="${lampBloomRx}" ry="${lampBloomRy}" fill="url(#${lampGrad})"/>`;
-      // Concentrated filament hotspots near lower aperture rim
-      s += `<ellipse class="xt-bloom-hotspot" cx="${cx - lampOffset}" cy="${y0 + 208}" rx="56" ry="24" fill="url(#${lampGrad})"/>`;
-      s += `<ellipse class="xt-bloom-hotspot" cx="${cx + lampOffset}" cy="${y0 + 208}" rx="56" ry="24" fill="url(#${lampGrad})"/>`;
+      // Dual bottom lamps: full-width rects with left & right radial lamp gradients (smooth & seamless)
+      s += `<rect class="xt-bloom xt-lamp-left" x="${x0}" y="${y0}" width="${MW}" height="${MH}" fill="url(#xamber_lamp_left)" pointer-events="none"/>`;
+      s += `<rect class="xt-bloom xt-lamp-right" x="${x0}" y="${y0}" width="${MW}" height="${MH}" fill="url(#xamber_lamp_right)" pointer-events="none"/>`;
     } else {
       const bloomCy = y0 + 115;
       const bloomRx = (MW * 0.42).toFixed(1);

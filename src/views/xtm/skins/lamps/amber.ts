@@ -23,11 +23,11 @@ export const AMBER_BOTTOM_LAMP: LampVariant = {
   gradientId: 'xamber_bottom',
   bloom: true,
   bloomPos: 'bottom',
-  gradient: `<linearGradient id="xamber_bottom" x1="0" y1="1" x2="0" y2="0">
-          <stop offset="0%" stop-color="#fff6cc"/>
-          <stop offset="16%" stop-color="#fed876"/>
-          <stop offset="45%" stop-color="#fbb024"/>
-          <stop offset="75%" stop-color="#ea8a10"/>
-          <stop offset="100%" stop-color="#cf720a"/>
-        </linearGradient>`
+  gradient: `<radialGradient id="xamber_bottom" cx="50%" cy="65%" r="75%">
+          <stop offset="0%" stop-color="#ffeaa0"/>
+          <stop offset="35%" stop-color="#fed876"/>
+          <stop offset="68%" stop-color="#f5ad2b"/>
+          <stop offset="90%" stop-color="#e28c12"/>
+          <stop offset="100%" stop-color="#cc7408"/>
+        </radialGradient>`
 };
