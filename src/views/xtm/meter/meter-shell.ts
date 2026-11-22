@@ -65,13 +65,13 @@ export function renderMeterShell(id: number, cx: number, cy: number, kind: 'vu' 
   }
 
   // Lower half of the face: Brand logos ALWAYS correspond to the active page theme!
-  // Clicking either logo cycles the meter styles. The logo remains with its theme page and does not swap brand.
+  // Clicking either logo cycles the meter styles. Ctrl+Alt+Click toggles Dual Meter only mode.
   s += `<g class="wbs-only xtm-btn dial-logo-interactive" data-btn="CYCLE_STYLE" style="cursor: pointer;">
-          <title>Click to cycle meter styles (Ward-Beck)</title>
+          <title>Click to cycle meter styles (Ward-Beck) | Ctrl+Alt+Click for Dual Meter mode</title>
           ${renderWbsFaceLogo(cx, cy, ink)}
         </g>`;
   s += `<g class="mc-only xtm-btn dial-logo-interactive" data-btn="CYCLE_STYLE" style="cursor: pointer;">
-          <title>Click to cycle meter styles (McCurdy)</title>
+          <title>Click to cycle meter styles (McCurdy) | Ctrl+Alt+Click for Dual Meter mode</title>
           ${renderMcCurdyVuBadge(cx, cy, ink, isPpm)}
         </g>`;
 

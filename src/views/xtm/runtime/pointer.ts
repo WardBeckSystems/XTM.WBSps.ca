@@ -17,15 +17,12 @@ const REPEAT_INTERVAL_MS = 90;
 export function attachPointerEvents(container: HTMLElement, host: ButtonHost): void {
   let repeatTimer: any = null;
   let repeatInterval: any = null;
-  let logoHoldTimer: any = null;
-  let logoHoldTriggered = false;
   let isDraggingKnob = false;
   let dragStartY = 0;
 
   const stopRepeat = () => {
     if (repeatTimer) { clearTimeout(repeatTimer); repeatTimer = null; }
     if (repeatInterval) { clearInterval(repeatInterval); repeatInterval = null; }
-    if (logoHoldTimer) { clearTimeout(logoHoldTimer); logoHoldTimer = null; }
   };
 
   container.addEventListener('pointerdown', (e: PointerEvent) => {
@@ -46,15 +43,15 @@ export function attachPointerEvents(container: HTMLElement, host: ButtonHost): v
       if (name) {
         host.heldButton = name;
 
-        // Long-press detection for dial face logos (CYCLE_STYLE)
-        // Holding for ~1.5s locks middle section and expands meters; quick tap cycles meter sets
+        // Dial face logos: quick click cycles meter style, CTRL+ALT+Click toggles Dual Meter only mode (no center)
         if (name === 'CYCLE_STYLE') {
           stopRepeat();
-          logoHoldTriggered = false;
-          logoHoldTimer = setTimeout(() => {
-            logoHoldTriggered = true;
+          const isDualMeterShortcut = (e.ctrlKey || e.metaKey) && e.altKey;
+          if (isDualMeterShortcut) {
             if (host.onButtonPressed) host.onButtonPressed('TOGGLE_LOCKED_EXPANDED');
-          }, 1500);
+            return;
+          }
+          if (host.onButtonPressed) host.onButtonPressed('CYCLE_STYLE');
           return;
         }
 
@@ -112,15 +109,6 @@ export function attachPointerEvents(container: HTMLElement, host: ButtonHost): v
     if (host.heldButton) {
       const name = host.heldButton;
       host.heldButton = null;
-
-      // If user released logo without reaching long-press hold threshold, cycle meter set
-      if (name === 'CYCLE_STYLE') {
-        if (!logoHoldTriggered && host.onButtonPressed) {
-          host.onButtonPressed('CYCLE_STYLE');
-        }
-        logoHoldTriggered = false;
-      }
-
       if (host.onButtonReleased) host.onButtonReleased(name);
     }
   };

@@ -412,7 +412,7 @@ export class XtmModel {
 
   public toggleLockedExpanded(): boolean {
     this.isLockedExpanded = !this.isLockedExpanded;
-    this.flash(this.isLockedExpanded ? 'LOCKED  ' : 'UNLOCKED');
+    this.flash(this.isLockedExpanded ? 'DUAL MTR' : 'QUAD MTR');
     this.saveEEPROM();
     this.notify();
     return this.isLockedExpanded;

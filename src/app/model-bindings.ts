@@ -98,10 +98,6 @@ export function bindFrontPanel(ctx: AppContext, sync: AudioSync): void {
         model.setInput(inputNum);
       }
     } else if (btnName === 'CYCLE_STYLE') {
-      // Revert locked expanded meters when user changes meter sets
-      if (model.isLockedExpanded) {
-        model.isLockedExpanded = false;
-      }
       const styles = ['sifam', 'simpson', 'wbs_m405', 'mccurdy_vu', 'standard_vu'];
       const curIdx = styles.indexOf(model.meterStyle);
       model.meterStyle = styles[(curIdx + 1) % styles.length] as any;
