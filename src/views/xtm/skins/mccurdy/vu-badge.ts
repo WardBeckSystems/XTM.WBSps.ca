@@ -1,10 +1,9 @@
 /*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.ca). All rights reserved. */
 /**
- * McCurdy Radio Industries Limited authentic vintage badge:
- * Directly derived from gemini-svg (13).svg and physical reference photo.
- * Features the elongated faceted hexagonal shield, authentic serif lowercase 'm',
- * serif 'cCURDY', and horizontal pill bar.
- * At small meter dial size (<160px), the micro-text 'RADIO INDUSTRIES LIMITED'
+ * McCurdy Radio Industries Limited authentic vintage dial branding:
+ * - McCurdyRadio.com (ATS-100 Cream Mode): Authentic Rectangle Cartouche Box & Wordmark (Monochrome outline)
+ * - McCurdyRadio.ca (Studio Broadcast Mode): Authentic Faceted Hexagonal Shield Badge (Crest)
+ * At small meter dial size (<160px), the crest micro-text 'RADIO INDUSTRIES LIMITED'
  * is omitted for crisp rendering without sub-pixel distortion.
  */
 
@@ -18,8 +17,18 @@ export function renderMcCurdyVuBadge(cx: number, cy: number, ink: string, isPpm 
   const badgeInk = isPpm ? '#f8fafc' : (ink || '#1a1715');
 
   return `
-    <!-- McCurdy Radio Industries Authentic Vintage Dial Badge (gemini-svg (13).svg) -->
-    <g class="mc-only mc-vu-brand-badge" transform="translate(${x.toFixed(1)}, ${y.toFixed(1)})">
+    <!-- McCurdyRadio.com ATS-100 Cream Console: Authentic Rectangle Cartouche Box & Wordmark (Monochrome) -->
+    <g class="mc-only mc-com-only" transform="translate(${(cx - 42).toFixed(1)}, ${(cy + 22).toFixed(1)})">
+      <rect x="0" y="0" width="84" height="28" rx="2.5"
+            fill="none" stroke="${badgeStroke}" stroke-width="1.5" stroke-opacity="0.85" />
+      <text x="42" y="19"
+            font-family="'Arial Black', Helvetica, Arial, sans-serif"
+            font-size="13.5" font-weight="900" letter-spacing="-0.6" text-anchor="middle"
+            fill="none" stroke="${badgeStroke}" stroke-width="1.2" stroke-opacity="0.9">McCurdy</text>
+    </g>
+
+    <!-- McCurdyRadio.ca Studio Broadcast Mode: Authentic Vintage Crest Dial Badge (gemini-svg (13).svg) -->
+    <g class="mc-only mc-ca-only mc-vu-brand-badge" transform="translate(${x.toFixed(1)}, ${y.toFixed(1)})">
       <svg width="${bw}" height="${bh}" viewBox="0 0 600 220" aria-label="McCurdy Radio Industries">
         <defs>
           <path id="mc_badge_shape_${cx}" d="
