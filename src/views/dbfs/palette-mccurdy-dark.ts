@@ -2,15 +2,15 @@
 /* McCurdyRadio.ca dark studio broadcast blue palette overrides */
 
 export const PAL_MC_DARK: Record<string, string> = {
-  bg: '#16222c',
-  grid: '#243543',
-  gridTime: '#1e2c38',
+  bg: 'rgba(12, 22, 34, 0.62)',
+  grid: 'rgba(75, 125, 165, 0.28)',
+  gridTime: 'rgba(60, 105, 140, 0.22)',
   textMuted: '#94a3b8',
   textCyan: '#f8fafc',
-  lineL: '#f8fafc',
-  fillL: 'rgba(248, 250, 252, 0.08)',
-  lineR: '#ef4444',
-  fillR: 'rgba(239, 68, 68, 0.08)',
+  lineL: '#38bdf8',
+  fillL: 'rgba(56, 189, 248, 0.10)',
+  lineR: '#f43f5e',
+  fillR: 'rgba(244, 63, 94, 0.08)',
   lineSum: '#22c55e',
   fillSum: 'rgba(34, 197, 94, 0.09)'
 };

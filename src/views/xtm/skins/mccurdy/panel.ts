@@ -10,46 +10,46 @@ const PANEL_DEFS = `<defs>
         <linearGradient id="mc_panel" x1="0" y1="0" x2="0" y2="1">
           <stop offset="0%" stop-color="#e5e1d5"/><stop offset="50%" stop-color="#dedad0"/><stop offset="100%" stop-color="#d2cec2"/>
         </linearGradient>
-        <!-- Authentic McCurdy PE1000-A Smooth Hammered Enamel (gemini-code-1795317269161.html) -->
+        <!-- Authentic McCurdy PE1000-A Smooth Baked Hammertone Enamel -->
         <filter id="mccurdyEnamel" x="0%" y="0%" width="100%" height="100%" color-interpolation-filters="sRGB">
-          <feTurbulence type="turbulence" baseFrequency="0.045" numOctaves="2" seed="19" result="cells" />
-          <feGaussianBlur in="cells" stdDeviation="2.4" result="softCells" />
-          <feDiffuseLighting in="softCells" surfaceScale="1.15" diffuseConstant="1.03" lighting-color="#ffffff" result="diff">
-            <feDistantLight azimuth="225" elevation="64" />
+          <feTurbulence type="turbulence" baseFrequency="0.108" numOctaves="3" seed="23" result="cells" />
+          <feGaussianBlur in="cells" stdDeviation="0.92" result="softCells" />
+          <feDiffuseLighting in="softCells" surfaceScale="1.9" diffuseConstant="1.04" lighting-color="#ffffff" result="diff">
+            <feDistantLight azimuth="225" elevation="56" />
           </feDiffuseLighting>
-          <feSpecularLighting in="softCells" surfaceScale="0.9" specularConstant="0.22" specularExponent="28" lighting-color="#e3f2fd" result="spec">
-            <feDistantLight azimuth="225" elevation="60" />
+          <feSpecularLighting in="softCells" surfaceScale="1.4" specularConstant="0.34" specularExponent="34" lighting-color="#d4ebfc" result="spec">
+            <feDistantLight azimuth="225" elevation="52" />
           </feSpecularLighting>
           <feColorMatrix in="softCells" type="matrix"
-            values="0 0 0 0 0.12
-                    0 0 0 0 0.24
-                    0 0 0 0 0.32
-                    0 0 0 0 0.16 0" result="rings" />
+            values="0 0 0 0 0.04
+                    0 0 0 0 0.16
+                    0 0 0 0 0.28
+                    0 0 0 0 0.22 0" result="rings" />
           <feBlend in="SourceGraphic" in2="diff" mode="multiply" result="shaded" />
           <feComposite in="rings" in2="shaded" operator="over" result="ringed" />
-          <feComposite in="spec" in2="ringed" operator="arithmetic" k1="0" k2="0.45" k3="1" k4="0" />
+          <feComposite in="spec" in2="ringed" operator="arithmetic" k1="0" k2="0.48" k3="1" k4="0" />
         </filter>
-        <pattern id="mc_panel_blue" width="400" height="400" patternUnits="userSpaceOnUse">
-          <rect width="400" height="400" fill="#59829b" filter="url(#mccurdyEnamel)"/>
+        <pattern id="mc_panel_blue" width="280" height="280" patternUnits="userSpaceOnUse">
+          <rect width="280" height="280" fill="#335d7c" filter="url(#mccurdyEnamel)"/>
         </pattern>
         <!-- Clear Enamel Topcoat / Lacquer Film Sheen Overlay -->
-        <linearGradient id="mc_clear_film" x1="0" y1="0" x2="0.08" y2="1">
-          <stop offset="0%" stop-color="#ffffff" stop-opacity="0.14"/>
-          <stop offset="18%" stop-color="#ffffff" stop-opacity="0.04"/>
+        <linearGradient id="mc_clear_film" x1="0" y1="0" x2="0.06" y2="1">
+          <stop offset="0%" stop-color="#e0f2fe" stop-opacity="0.18"/>
+          <stop offset="14%" stop-color="#bae6fd" stop-opacity="0.06"/>
           <stop offset="50%" stop-color="#ffffff" stop-opacity="0"/>
-          <stop offset="85%" stop-color="#081420" stop-opacity="0.02"/>
-          <stop offset="100%" stop-color="#081420" stop-opacity="0.20"/>
+          <stop offset="85%" stop-color="#04121e" stop-opacity="0.04"/>
+          <stop offset="100%" stop-color="#04121e" stop-opacity="0.25"/>
         </linearGradient>
-        <!-- Authentic McCurdy Solid Walnut / Teak Bridge Overhang Trim (from uploaded_media_0) -->
-        <linearGradient id="mc_wood_top" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stop-color="#7a4624"/>
-          <stop offset="25%" stop-color="#5e3419"/>
-          <stop offset="60%" stop-color="#462510"/>
-          <stop offset="100%" stop-color="#2c1608"/>
+        <!-- Authentic McCurdy Precision Formed Chassis Top Rim (Hammered Blue Broadcast Enamel & Milled Highlight) -->
+        <linearGradient id="mc_chassis_top_rim" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#416b8a"/>
+          <stop offset="30%" stop-color="#315673"/>
+          <stop offset="80%" stop-color="#244259"/>
+          <stop offset="100%" stop-color="#193042"/>
         </linearGradient>
-        <linearGradient id="mc_wood_shadow" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stop-color="#000000" stop-opacity="0.6"/>
-          <stop offset="100%" stop-color="#000000" stop-opacity="0"/>
+        <linearGradient id="mc_chassis_shadow" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#0a1622" stop-opacity="0.5"/>
+          <stop offset="100%" stop-color="#0a1622" stop-opacity="0"/>
         </linearGradient>
         <linearGradient id="mc_bezel" x1="0" y1="0" x2="0" y2="1">
           <stop offset="0%" stop-color="#2a2a2c"/><stop offset="100%" stop-color="#141416"/>
@@ -104,14 +104,14 @@ export function renderMcCurdyPanel(): string {
 
   s += legend(MC_LEGENDS.input1X, 'INPUT 1', null) + legend(MC_LEGENDS.input2X, 'INPUT 2', MC_LEGENDS.input2LineX0);
 
-  // Solid Walnut / Teak Meter Bridge Overhang Trim (from uploaded_media_0 photo)
+  // Precision Formed Chassis Top Rim in McCurdy Broadcast Blue Enamel
   s += `
-      <!-- Authentic McCurdy Solid Walnut / Teak Bridge Overhang Trim (from uploaded_media_0) -->
+      <!-- Authentic McCurdy Precision Formed Chassis Top Rim (from PE1000-A & broadcast hardware) -->
       <g class="mc-only mc-ca-only" pointer-events="none">
-        <rect x="0" y="0" width="${W}" height="20" fill="url(#mc_wood_top)"/>
-        <line x1="0" y1="1" x2="${W}" y2="1" stroke="rgba(255,255,255,0.22)" stroke-width="1.2"/>
-        <line x1="0" y1="20" x2="${W}" y2="20" stroke="#2a1405" stroke-width="1.5"/>
-        <rect x="0" y="20" width="${W}" height="10" fill="url(#mc_wood_shadow)"/>
+        <rect x="0" y="0" width="${W}" height="18" fill="url(#mc_chassis_top_rim)"/>
+        <line x1="0" y1="1" x2="${W}" y2="1" stroke="rgba(215, 235, 255, 0.45)" stroke-width="1.4"/>
+        <line x1="0" y1="18" x2="${W}" y2="18" stroke="#142332" stroke-width="1.6"/>
+        <rect x="0" y="18" width="${W}" height="8" fill="url(#mc_chassis_shadow)"/>
       </g>`;
 
   s += `</g>`;
