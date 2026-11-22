@@ -7,9 +7,21 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Ward-Beck Systems</title>
   <script>
-    if (/(^|\.)mccurdyradio\.(com|ca)$/i.test(location.hostname)) {
-      document.title = "McCurdy Radio Industries";
-    }
+    (function() {
+      var host = location.hostname;
+      var params = new URLSearchParams(location.search);
+      var m = params.get('mode') || params.get('console') || params.get('theme') || location.hash.replace('#', '');
+      var isMcCurdy = /(^|\.)(mccurdyradio|mccurdy)\.(com|ca)$/i.test(host) || (m && m.indexOf('mccurdy') !== -1);
+      var isWbsPs = /(^|\.)wbsps\.ca$/i.test(host);
+
+      if (isMcCurdy) {
+        document.title = "McCurdy Radio Industries";
+      } else if (isWbsPs) {
+        document.title = "Ward-Beck Systems Preservation Society";
+      } else {
+        document.title = "Ward-Beck Systems";
+      }
+    })();
   </script>
   <meta name="description" content="Precision broadcast mastering visualizers: Ward-Beck Systems Precision Mastering Visualizers and Loudness Metering.">
   <link rel="icon" type="image/svg+xml" href="favicon.svg" vite-ignore>
@@ -698,7 +710,13 @@
     document.body.classList.toggle("theme-wbs-ca", isWbsCa);
     document.body.classList.toggle("theme-wbs-dark", isWbsDark);
 
-    document.title = (isMcLight || isMcDark) ? "McCurdy Radio Industries" : "Ward-Beck Systems";
+    if (isMcLight || isMcDark) {
+      document.title = "McCurdy Radio Industries";
+    } else if (/(^|\.)wbsps\.ca$/i.test(location.hostname)) {
+      document.title = "Ward-Beck Systems Preservation Society";
+    } else {
+      document.title = "Ward-Beck Systems";
+    }
 
     var btnWbsCa = document.getElementById("btnWardBeckCa");
     var btnWbsCom = document.getElementById("btnWardBeckCom");
@@ -1003,18 +1021,24 @@
   }, 1200);
 
   // Domain self-awareness:
-  // mccurdyradio.com -> McCurdy light mode (ATS-100 cream faceplate)
-  // mccurdyradio.ca -> McCurdy dark studio mode (Neutral dark broadcast charcoal, no blue)
-  // ward-beck.ca -> Ward-Beck M600 brushed aluminum mode
-  // ward-beck.com / wbsps.ca -> Ward-Beck modern dark mode
+  // mccurdyradio.com / mccurdy.com -> McCurdy light mode (ATS-100 cream faceplate)
+  // mccurdyradio.ca / mccurdy.ca -> McCurdy dark studio mode (Neutral dark broadcast charcoal, no blue)
+  // ward-beck.ca / wardbeck.ca -> Ward-Beck M600 brushed aluminum mode
+  // ward-beck.com / wardbeck.com / wbsps.ca -> Ward-Beck modern dark mode
+  // URL parameters (?mode=... or #mode) take precedence for testing / deep-linking
   // anywhere else (e.g. localhost) -> viewer's remembered preference
   var host = location.hostname;
-  var onMcCurdyCom = /(^|\.)mccurdyradio\.com$/i.test(host);
-  var onMcCurdyCa = /(^|\.)mccurdyradio\.ca$/i.test(host);
-  var onWardBeckCa = /(^|\.)ward-beck\.ca$/i.test(host);
-  var onWardBeckHost = /(^|\.)(ward-beck\.[a-z]+|wbsps\.ca)$/i.test(host);
+  var params = new URLSearchParams(location.search);
+  var urlMode = params.get("mode") || params.get("console") || params.get("theme") || location.hash.replace("#", "");
 
-  if (onWardBeckCa) {
+  var onMcCurdyCom = /(^|\.)(mccurdyradio|mccurdy)\.com$/i.test(host) || urlMode === "mccurdy-light" || urlMode === "mccurdy-com";
+  var onMcCurdyCa = /(^|\.)(mccurdyradio|mccurdy)\.ca$/i.test(host) || urlMode === "mccurdy-dark" || urlMode === "mccurdy-ca";
+  var onWardBeckCa = /(^|\.)(ward-beck|wardbeck)\.ca$/i.test(host) || urlMode === "wbs-ca";
+  var onWardBeckHost = /(^|\.)(ward-beck\.[a-z]+|wardbeck\.[a-z]+|wbsps\.ca)$/i.test(host) || urlMode === "wbs-dark";
+
+  if (urlMode && (urlMode === 'mccurdy-light' || urlMode === 'mccurdy-dark' || urlMode === 'wbs-ca' || urlMode === 'wbs-dark')) {
+    applyMode(urlMode);
+  } else if (onWardBeckCa) {
     applyMode('wbs-ca');
   } else if (onMcCurdyCom) {
     applyMode('mccurdy-light');
