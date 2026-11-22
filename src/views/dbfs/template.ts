@@ -8,10 +8,8 @@ export const DBFS_TEMPLATE = `
           <canvas id="dbfsCanvas" style="width:100%;height:100%;display:block;"></canvas>
 
           <!-- Timeline NOW Time Badge / Button (Click opens Full Screen Master Clock) -->
-          <button type="button" class="timeline-now-time-btn" id="btnTimelineNowTime" title="Current Time (NOW) - Click to open Full Screen Master Clock (time.nrc.ca · time.chu.nrc.ca)">
-            <span class="timeline-now-label">NOW</span>
+          <button type="button" class="timeline-now-time-btn" id="btnTimelineNowTime" title="Current Time (NRC/CHU) - Click to open Full Screen Master Clock">
             <span class="timeline-now-val" id="timelineNowTimeText">--:--:--</span>
-            <span class="timeline-now-nrc" id="timelineNowNrcText">time.nrc.ca · time.chu.nrc.ca</span>
           </button>
 
           <!-- Floating / Dockable Hover HUD Tooltip Card -->

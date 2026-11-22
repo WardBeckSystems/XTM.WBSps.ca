@@ -548,108 +548,83 @@ body.theme-mccurdy-light .clock-nrc-srv,
 .timeline-now-time-btn {
   position: absolute;
   right: 18px;
-  bottom: 3px;
+  bottom: 4px;
   z-index: 15;
-  background: rgba(10, 13, 18, 0.94);
-  border: 1.5px solid #22c55e;
-  border-radius: 6px;
-  padding: 2px 8px;
+  background: rgba(10, 13, 18, 0.72);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: 4px;
+  padding: 1px 6px;
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  justify-content: center;
   cursor: pointer;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.75), 0 0 10px rgba(34, 197, 94, 0.25);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
   transition: all 0.15s ease;
   user-select: none;
-  backdrop-filter: blur(6px);
+  backdrop-filter: blur(4px);
 }
 
 .timeline-now-time-btn:hover {
-  background: #141c28;
-  border-color: #38bdf8;
-  box-shadow: 0 0 14px rgba(56, 189, 248, 0.45);
+  background: rgba(15, 23, 42, 0.88);
+  border-color: rgba(56, 189, 248, 0.7);
+  box-shadow: 0 0 8px rgba(56, 189, 248, 0.3);
   transform: translateY(-1px);
 }
 
-.timeline-now-label {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  font-size: 10px;
-  font-weight: 900;
-  letter-spacing: 0.8px;
-  background: #22c55e;
-  color: #000000;
-  padding: 1px 4px;
-  border-radius: 3px;
+.timeline-now-val {
+  font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  font-size: 11.5px;
+  font-weight: 600;
+  color: #94a3b8;
+  letter-spacing: 0.5px;
   line-height: 1.2;
 }
 
-.timeline-now-val {
-  font-family: ui-monospace, "SF Mono", monospace;
-  font-size: 12px;
-  font-weight: 800;
-  color: #c8f53c;
-  letter-spacing: 1px;
-  text-shadow: 0 0 6px rgba(200, 245, 60, 0.4);
-}
-
-.timeline-now-nrc {
-  font-family: ui-monospace, "SF Mono", monospace;
-  font-size: 10px;
-  font-weight: 700;
-  color: #94a3b8;
-  letter-spacing: 0.6px;
-  padding-left: 6px;
-  border-left: 1px solid rgba(255, 255, 255, 0.2);
-  white-space: nowrap;
-}
-
-body.theme-wbs-ca .timeline-now-nrc {
-  color: #57534e;
-  border-left-color: rgba(0, 0, 0, 0.2);
-}
-
-body.theme-mccurdy .timeline-now-nrc {
-  color: #334e68;
-  border-left-color: rgba(16, 42, 67, 0.25);
-}
-
-@media (max-width: 640px) {
-  .timeline-now-nrc {
-    display: none;
-  }
+.timeline-now-time-btn:hover .timeline-now-val {
+  color: #38bdf8;
 }
 
 body.theme-wbs-ca .timeline-now-time-btn {
-  border-color: #f97316;
-}
-body.theme-wbs-ca .timeline-now-label {
-  background: #f97316;
+  background: rgba(254, 243, 199, 0.75);
+  border-color: rgba(249, 115, 22, 0.35);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 body.theme-wbs-ca .timeline-now-val {
-  color: #f97316;
+  color: #c2410c;
   text-shadow: none;
+}
+body.theme-wbs-ca .timeline-now-time-btn:hover {
+  border-color: #ea580c;
+  background: rgba(254, 243, 199, 0.95);
+}
+body.theme-wbs-ca .timeline-now-time-btn:hover .timeline-now-val {
+  color: #9a3412;
 }
 
 body.theme-mccurdy .timeline-now-time-btn {
-  background: rgba(220, 216, 204, 0.95);
-  border-color: #102a43;
-}
-body.theme-mccurdy .timeline-now-label {
-  background: #102a43;
-  color: #ffffff;
+  background: rgba(220, 216, 204, 0.8);
+  border-color: rgba(16, 42, 67, 0.3);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 body.theme-mccurdy .timeline-now-val {
   color: #102a43;
   text-shadow: none;
 }
+body.theme-mccurdy .timeline-now-time-btn:hover {
+  border-color: #102a43;
+  background: rgba(220, 216, 204, 0.95);
+}
+body.theme-mccurdy .timeline-now-time-btn:hover .timeline-now-val {
+  color: #0b1b2b;
+}
 
 @media (max-width: 640px) {
   .timeline-now-time-btn {
     right: 8px;
-    padding: 1px 5px;
+    padding: 1px 4px;
   }
   .timeline-now-val {
-    font-size: 11px;
+    font-size: 10.5px;
   }
   .clock-modal-header,
   .clock-modal-footer {
