@@ -199,27 +199,6 @@ export function renderMcCurdyCaCenter(): string {
       </g>
 
       <!-- ================================================================= -->
-      <!-- RIGHT SECTION: TOGGLE SWITCH (UPPER)                              -->
-      <!-- ================================================================= -->
-      <!-- Chrome Bat-Handle Toggle Switch Assembly (Upper Right, cx=1805, cy=105) -->
-      <g id="mc-toggle-assembly" class="xtm-btn" data-btn="MC_TOGGLE" style="cursor:pointer" transform="translate(1805, 105)">
-        <title>Range Switch: Click to Toggle Range (MTR / CAL / MON)</title>
-        <text id="mc_toggle_lbl_outer" x="0" y="-32" ${font} font-size="10" font-weight="700" fill="#cbd5e1" text-anchor="middle">MTR</text>
-        <text id="mc_toggle_lbl_cal" x="22" y="3.5" ${font} font-size="9" font-weight="700" fill="#94a3b8" text-anchor="start">CAL</text>
-        <text id="mc_toggle_lbl_inner" x="0" y="38" ${font} font-size="10" font-weight="700" fill="#cbd5e1" text-anchor="middle">MON</text>
-
-        <!-- Chrome Bezel Nut -->
-        <circle cx="0" cy="0" r="19" fill="url(#chromeMetalGrad)" stroke="#1a2530" stroke-width="1.3"/>
-        <circle cx="0" cy="0" r="13.5" fill="#141c24" stroke="#0a121a" stroke-width="1"/>
-
-        <!-- Bat Handle Stick (Angled Upwards to MTR) -->
-        <g id="mc_toggle_stick_rotor" transform="rotate(-24)">
-          <path d="M -3.5,0 L -4,-28 C -4,-33 4,-33 4,-28 L 3.5,0 Z" fill="url(#mc_toggle_stick)" stroke="#334155" stroke-width="0.8"/>
-          <circle cx="0" cy="-30" r="4.8" fill="#f1f5f9"/>
-        </g>
-      </g>
-
-      <!-- ================================================================= -->
       <!-- BOTTOM SECTION: INPUT 1 2 3 4 SELECTORS (CENTERED BELOW)          -->
       <!-- ================================================================= -->
       <g id="mc-bottom-selectors" ${font}>

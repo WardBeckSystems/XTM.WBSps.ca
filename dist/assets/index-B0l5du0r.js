@@ -768,27 +768,6 @@
       </g>
 
       <!-- ================================================================= -->
-      <!-- RIGHT SECTION: TOGGLE SWITCH (UPPER)                              -->
-      <!-- ================================================================= -->
-      <!-- Chrome Bat-Handle Toggle Switch Assembly (Upper Right, cx=1805, cy=105) -->
-      <g id="mc-toggle-assembly" class="xtm-btn" data-btn="MC_TOGGLE" style="cursor:pointer" transform="translate(1805, 105)">
-        <title>Range Switch: Click to Toggle Range (MTR / CAL / MON)</title>
-        <text id="mc_toggle_lbl_outer" x="0" y="-32" ${e} font-size="10" font-weight="700" fill="#cbd5e1" text-anchor="middle">MTR</text>
-        <text id="mc_toggle_lbl_cal" x="22" y="3.5" ${e} font-size="9" font-weight="700" fill="#94a3b8" text-anchor="start">CAL</text>
-        <text id="mc_toggle_lbl_inner" x="0" y="38" ${e} font-size="10" font-weight="700" fill="#cbd5e1" text-anchor="middle">MON</text>
-
-        <!-- Chrome Bezel Nut -->
-        <circle cx="0" cy="0" r="19" fill="url(#chromeMetalGrad)" stroke="#1a2530" stroke-width="1.3"/>
-        <circle cx="0" cy="0" r="13.5" fill="#141c24" stroke="#0a121a" stroke-width="1"/>
-
-        <!-- Bat Handle Stick (Angled Upwards to MTR) -->
-        <g id="mc_toggle_stick_rotor" transform="rotate(-24)">
-          <path d="M -3.5,0 L -4,-28 C -4,-33 4,-33 4,-28 L 3.5,0 Z" fill="url(#mc_toggle_stick)" stroke="#334155" stroke-width="0.8"/>
-          <circle cx="0" cy="-30" r="4.8" fill="#f1f5f9"/>
-        </g>
-      </g>
-
-      <!-- ================================================================= -->
       <!-- BOTTOM SECTION: INPUT 1 2 3 4 SELECTORS (CENTERED BELOW)          -->
       <!-- ================================================================= -->
       <g id="mc-bottom-selectors" ${e}>
@@ -1199,11 +1178,6 @@
         <!-- Subtle Specular Rim Highlight on Skirt -->
         <path d="M -70,-30 A 76,76 0 0 1 62,-44" fill="none" stroke="#52565c" stroke-width="1.1" stroke-opacity="0.65" />
 
-        <!-- White Triangular Pointer on Skirt (Pointing to ~ +4.2 on right scale = +15 deg) -->
-        <g id="wbs_vintage_knob_pointer" transform="rotate(15)">
-          <polygon points="0,-74 -8.5,-54 8.5,-54" fill="#eceae2" stroke="#18191b" stroke-width="0.6" />
-        </g>
-
         <!-- Fluted Barrel & Glossy Cap (Centered at 0, 0 to align with arrow pointer) -->
         <g id="wbs_vintage_knob_rotor" transform="rotate(15)">
           <!-- Fluted Ribs / Scallops around Barrel -->
@@ -1226,10 +1200,15 @@
           <circle cx="0" cy="0" r="41" fill="url(#knobCapGrad)" stroke="#070809" stroke-width="1.2" />
           <!-- Chamfered Cap Rim Highlight -->
           <path d="M -32,-24 A 40,40 0 0 1 34,-20" fill="none" stroke="#686d75" stroke-width="1.2" />
+        </g>
 
+        <!-- White Silk Screen Pointer Arrow & Radial Line Rendered ON TOP of Knob Detail -->
+        <g id="wbs_vintage_knob_pointer" transform="rotate(15)">
           <!-- White Radial Indicator Line on Cap & Top Flute running straight to middle of arrow head -->
           <line x1="0" y1="2" x2="0" y2="-40" stroke="#f2f0ea" stroke-width="3.2" stroke-linecap="round" />
           <line x1="0" y1="-39" x2="0" y2="-55" stroke="#eceae2" stroke-width="2.8" stroke-linecap="butt" />
+          <!-- White Triangular Pointer on Skirt -->
+          <polygon points="0,-74 -8.5,-54 8.5,-54" fill="#eceae2" stroke="#18191b" stroke-width="0.6" />
         </g>
       </g>
     </g>
@@ -1607,4 +1586,4 @@
     `,a.parentElement?.insertBefore(e,a),document.getElementById(`btnReloadNewVersion`)?.addEventListener(`click`,()=>{window.location.reload()})}let o=document.querySelector(`.build-stamp`);o&&(o.innerHTML=`<span style="color:#f97316;cursor:pointer;font-weight:bold" title="Click to reload with new version">Update: ${i||`Available`} ⟳</span>`,o.addEventListener(`click`,()=>window.location.reload()))}function Kd(){window.testUpdatePulse=(e=`1.0.99`)=>Gd(e);async function e(){try{let e=await fetch(`./version.json?cache=`+Date.now(),{cache:`no-store`});if(!e.ok)return;let{version:t}=await e.json();t&&t!==`2.0.22`&&Gd(t)}catch{}}setTimeout(e,3e3),setInterval(e,6e4),document.addEventListener(`visibilitychange`,()=>{document.visibilityState===`visible`&&e()});let t=document.querySelector(`.build-stamp`);if(t){let e=`v2.0.22`;t.textContent=e,t.setAttribute(`title`,`Ward-Beck Systems XTM-4 ${e}`)}}function qd(){`serviceWorker`in navigator&&(navigator.serviceWorker.addEventListener(`message`,e=>{e.data?.type===`xtm-update-ready`&&(console.info(`XTM: new version stored; update ready.`),Gd())}),navigator.serviceWorker.register(`sw.js`,{updateViaCache:`none`}).then(e=>{e.waiting&&Gd(),e.addEventListener(`updatefound`,()=>{let t=e.installing;t&&t.addEventListener(`statechange`,()=>{t.state===`installed`&&navigator.serviceWorker.controller&&Gd()})})}).catch(e=>{console.warn(`Service worker registration failed:`,e)}))}function Jd(){let e=document.getElementById(`pwaInstallBanner`),t=document.getElementById(`btnPwaInstall`),n=document.getElementById(`btnPwaDismiss`),r=document.getElementById(`pwaSubText`),i=null,a=/iPad|iPhone|iPod/.test(navigator.userAgent)&&!window.MSStream,o=/Android|iPhone|iPad|iPod|Opera Mini|IEMobile|WPDesktop/i.test(navigator.userAgent)||window.innerWidth<=840,s=window.matchMedia(`(display-mode: standalone)`).matches||window.navigator.standalone===!0;e&&!s&&(window.addEventListener(`beforeinstallprompt`,t=>{t.preventDefault(),i=t,e.style.display=`block`}),o&&a&&(r&&(r.innerHTML=`Tap the Share icon <strong>[⎋]</strong> in Safari and choose <strong>Add to Home Screen</strong>`),t&&(t.textContent=`How to Install`,t.addEventListener(`click`,()=>{alert(`To install this app on iOS:
 1. Tap the Share button in Safari (box with up arrow).
 2. Scroll down and tap "Add to Home Screen".`)})),e.style.display=`block`),window.addEventListener(`appinstalled`,()=>{e.style.display=`none`,i=null}),t&&!a&&t.addEventListener(`click`,async()=>{if(i){i.prompt();let{outcome:t}=await i.userChoice;t===`accepted`&&(e.style.display=`none`),i=null}else e.style.display=`none`}),n&&n.addEventListener(`click`,()=>{e.style.display=`none`}))}function Yd(e,t){let{model:n,audio:r,view:i,podView:a,dbfsView:o}=e,s=document.querySelector(`.console-viewport`),c=0,l=performance.now(),u=document.getElementById(`fpsDisplay`);function d(e){let f=r&&r.getLevels?r.getLevels():r?.currentLevels||{vu:[0,0],ppm:[-.12,-.12],vuDb:[-1/0,-1/0],ppmDb:[-1/0,-1/0],phaseCorrelation:1,phaseLed:-1,peak:[!1,!1],hasAudio:!1};if(i.updateNeedles(f,n.power,n.meterStyle===`fisam`||n.meterStyle===`sifam`),n.isIdle=!f.hasAudio,i.renderSecondary(n,f),a.render(n,f),o&&o.render(n,f),t.recordTelemetry(f,e),t.recordTransientEvent(f),s){let e=f&&f.lufs&&typeof f.lufs.m==`number`?f.lufs.m:-60;isFinite(e)&&e>-24?e>=-12?s.className=`console-viewport lufs-glow-red`:e>=-18?s.className=`console-viewport lufs-glow-orange`:s.className=`console-viewport lufs-glow-green`:s.className=`console-viewport`}if(c++,e-l>=500){let t=c*1e3/(e-l);u&&(u.textContent=t.toFixed(1)+` FPS`),c=0,l=e}requestAnimationFrame(d)}requestAnimationFrame(d)}async function Xd(){let t=document.getElementById(`visualizerStage`),n=document.getElementById(`pod22Stage`),r=document.getElementById(`dbfsStage`),i=new zr(t);i.build(e);let a={model:e,audio:rt,view:i,podView:new di(n),dbfsView:r?new Ma(r):null};window.xtmModel=e,window.xtmAudio=rt,window.xtmView=i,window.xtmCtx=a,Pa(),Fa(),Ia(a),Zu(a);let o=cd(),s=Na();_d(a);let c=ud(a,s);vd(a,s,c),yd(a,c),bd(a,c),Sd(a,s),await Cd(a,s),wd(a,s,c),Td(a,s),gd(a,s),Ed(a,s),Fd(a,s),Id(a,s),Qu(a,s),Ld(a,s),$u(a,s),Rd(a),zd(a),Bd(a),hd(a),Vd(a,c),Hd(a,s),Ud(a,c),Kd(),qd(),Jd(),Yd(a,o)}window.audioReady=!0,Xd(),window.audioContext&&window.audioContext.state===`suspended`&&window.audioContext.resume();
-//# sourceMappingURL=index-BKzfyKv2.js.map
+//# sourceMappingURL=index-B0l5du0r.js.map

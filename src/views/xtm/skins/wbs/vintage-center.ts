@@ -122,11 +122,6 @@ export function renderVintageWbsCenter(isPowered = true): string {
         <!-- Subtle Specular Rim Highlight on Skirt -->
         <path d="M -70,-30 A 76,76 0 0 1 62,-44" fill="none" stroke="#52565c" stroke-width="1.1" stroke-opacity="0.65" />
 
-        <!-- White Triangular Pointer on Skirt (Pointing to ~ +4.2 on right scale = +15 deg) -->
-        <g id="wbs_vintage_knob_pointer" transform="rotate(15)">
-          <polygon points="0,-74 -8.5,-54 8.5,-54" fill="#eceae2" stroke="#18191b" stroke-width="0.6" />
-        </g>
-
         <!-- Fluted Barrel & Glossy Cap (Centered at 0, 0 to align with arrow pointer) -->
         <g id="wbs_vintage_knob_rotor" transform="rotate(15)">
           <!-- Fluted Ribs / Scallops around Barrel -->
@@ -149,10 +144,15 @@ export function renderVintageWbsCenter(isPowered = true): string {
           <circle cx="0" cy="0" r="41" fill="url(#knobCapGrad)" stroke="#070809" stroke-width="1.2" />
           <!-- Chamfered Cap Rim Highlight -->
           <path d="M -32,-24 A 40,40 0 0 1 34,-20" fill="none" stroke="#686d75" stroke-width="1.2" />
+        </g>
 
+        <!-- White Silk Screen Pointer Arrow & Radial Line Rendered ON TOP of Knob Detail -->
+        <g id="wbs_vintage_knob_pointer" transform="rotate(15)">
           <!-- White Radial Indicator Line on Cap & Top Flute running straight to middle of arrow head -->
           <line x1="0" y1="2" x2="0" y2="-40" stroke="#f2f0ea" stroke-width="3.2" stroke-linecap="round" />
           <line x1="0" y1="-39" x2="0" y2="-55" stroke="#eceae2" stroke-width="2.8" stroke-linecap="butt" />
+          <!-- White Triangular Pointer on Skirt -->
+          <polygon points="0,-74 -8.5,-54 8.5,-54" fill="#eceae2" stroke="#18191b" stroke-width="0.6" />
         </g>
       </g>
     </g>
