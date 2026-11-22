@@ -361,13 +361,18 @@ def main():
 
     # Verification cycle
     if not args.no_verify:
-        test_urls = [
-            ("https://xtm.wbsps.ca/", "Ward-Beck Systems"),
-            ("https://ward-beck.ca/", "Ward-Beck Systems")
-        ]
-        print("\nCycling test URLs...")
-        for url, expected in test_urls:
-            verify_site(url, expected)
+        smoke_script = HERE.parent / "tools" / "smoke_test.py"
+        if smoke_script.is_file():
+            print("\nCoordinating ecosystem smoke test check-in...")
+            subprocess.run([sys.executable, str(smoke_script)], check=False)
+        else:
+            test_urls = [
+                ("https://xtm.wbsps.ca/", "Ward-Beck Systems"),
+                ("https://ward-beck.ca/", "Ward-Beck Systems")
+            ]
+            print("\nCycling test URLs...")
+            for url, expected in test_urls:
+                verify_site(url, expected)
 
     print("\n" + "=" * 68)
     print(" Hosted Deployment Complete!")
