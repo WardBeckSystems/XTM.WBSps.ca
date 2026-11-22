@@ -159,6 +159,8 @@ export function renderMcCurdyCaCenter(): string {
 
       <!-- Center Console Bay in McCurdy Slate Finish (Seamless, No Border) -->
       <rect x="1350" y="16" width="500" height="398" rx="8" fill="url(#mc_panel_blue)"/>
+      <!-- Clear Film Topcoat Overlay -->
+      <rect class="mc-only mc-ca-only" x="1350" y="16" width="500" height="398" rx="8" fill="url(#mc_clear_film)" pointer-events="none"/>
 
       <!-- Authentic McCurdy Beveled Diamond Wordmark Emblem (PE1000-A, gemini-code-1795317269161.html) -->
       <g transform="translate(1600, 48)" pointer-events="none">

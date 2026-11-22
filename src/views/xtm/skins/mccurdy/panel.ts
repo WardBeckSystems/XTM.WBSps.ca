@@ -12,8 +12,8 @@ const PANEL_DEFS = `<defs>
         </linearGradient>
         <!-- Authentic McCurdy PE1000-A Smooth Hammered Enamel (gemini-code-1795317269161.html) -->
         <filter id="mccurdyEnamel" x="0%" y="0%" width="100%" height="100%" color-interpolation-filters="sRGB">
-          <feTurbulence type="turbulence" baseFrequency="0.16" numOctaves="2" seed="19" result="cells" />
-          <feGaussianBlur in="cells" stdDeviation="0.9" result="softCells" />
+          <feTurbulence type="turbulence" baseFrequency="0.045" numOctaves="2" seed="19" result="cells" />
+          <feGaussianBlur in="cells" stdDeviation="2.4" result="softCells" />
           <feDiffuseLighting in="softCells" surfaceScale="1.15" diffuseConstant="1.03" lighting-color="#ffffff" result="diff">
             <feDistantLight azimuth="225" elevation="64" />
           </feDiffuseLighting>
@@ -29,9 +29,17 @@ const PANEL_DEFS = `<defs>
           <feComposite in="rings" in2="shaded" operator="over" result="ringed" />
           <feComposite in="spec" in2="ringed" operator="arithmetic" k1="0" k2="0.45" k3="1" k4="0" />
         </filter>
-        <pattern id="mc_panel_blue" width="280" height="280" patternUnits="userSpaceOnUse">
-          <rect width="280" height="280" fill="#59829b" filter="url(#mccurdyEnamel)"/>
+        <pattern id="mc_panel_blue" width="400" height="400" patternUnits="userSpaceOnUse">
+          <rect width="400" height="400" fill="#59829b" filter="url(#mccurdyEnamel)"/>
         </pattern>
+        <!-- Clear Enamel Topcoat / Lacquer Film Sheen Overlay -->
+        <linearGradient id="mc_clear_film" x1="0" y1="0" x2="0.08" y2="1">
+          <stop offset="0%" stop-color="#ffffff" stop-opacity="0.14"/>
+          <stop offset="18%" stop-color="#ffffff" stop-opacity="0.04"/>
+          <stop offset="50%" stop-color="#ffffff" stop-opacity="0"/>
+          <stop offset="85%" stop-color="#081420" stop-opacity="0.02"/>
+          <stop offset="100%" stop-color="#081420" stop-opacity="0.20"/>
+        </linearGradient>
         <!-- Authentic McCurdy Solid Walnut / Teak Bridge Overhang Trim (from uploaded_media_0) -->
         <linearGradient id="mc_wood_top" x1="0" y1="0" x2="0" y2="1">
           <stop offset="0%" stop-color="#7a4624"/>
@@ -88,7 +96,9 @@ export function renderMcCurdyPanel(): string {
   let s = `<g class="mc-only">
       ${PANEL_DEFS}
       <rect class="mc-panel-bg" x="1" y="1" width="${W - 2}" height="${H - 2}" rx="6" fill="url(#mc_panel)" stroke="#b5b1a6" stroke-width="2"/>
-      <line x1="4" y1="3" x2="${W - 4}" y2="3" stroke="#ffffff" stroke-opacity="0.7" stroke-width="2"/>`;
+      <!-- Clear Film Lacquer Sheen Overlay over Hammertone -->
+      <rect class="mc-only mc-ca-only" x="1" y="1" width="${W - 2}" height="${H - 2}" rx="6" fill="url(#mc_clear_film)" pointer-events="none"/>
+      <line x1="4" y1="3" x2="${W - 4}" y2="3" stroke="#ffffff" stroke-opacity="0.6" stroke-width="1.8"/>`;
 
   for (const cx of MX) s += bezel(cx);
 

@@ -648,8 +648,8 @@
         </linearGradient>
         <!-- Authentic McCurdy PE1000-A Smooth Hammered Enamel (gemini-code-1795317269161.html) -->
         <filter id="mccurdyEnamel" x="0%" y="0%" width="100%" height="100%" color-interpolation-filters="sRGB">
-          <feTurbulence type="turbulence" baseFrequency="0.16" numOctaves="2" seed="19" result="cells" />
-          <feGaussianBlur in="cells" stdDeviation="0.9" result="softCells" />
+          <feTurbulence type="turbulence" baseFrequency="0.045" numOctaves="2" seed="19" result="cells" />
+          <feGaussianBlur in="cells" stdDeviation="2.4" result="softCells" />
           <feDiffuseLighting in="softCells" surfaceScale="1.15" diffuseConstant="1.03" lighting-color="#ffffff" result="diff">
             <feDistantLight azimuth="225" elevation="64" />
           </feDiffuseLighting>
@@ -665,9 +665,17 @@
           <feComposite in="rings" in2="shaded" operator="over" result="ringed" />
           <feComposite in="spec" in2="ringed" operator="arithmetic" k1="0" k2="0.45" k3="1" k4="0" />
         </filter>
-        <pattern id="mc_panel_blue" width="280" height="280" patternUnits="userSpaceOnUse">
-          <rect width="280" height="280" fill="#59829b" filter="url(#mccurdyEnamel)"/>
+        <pattern id="mc_panel_blue" width="400" height="400" patternUnits="userSpaceOnUse">
+          <rect width="400" height="400" fill="#59829b" filter="url(#mccurdyEnamel)"/>
         </pattern>
+        <!-- Clear Enamel Topcoat / Lacquer Film Sheen Overlay -->
+        <linearGradient id="mc_clear_film" x1="0" y1="0" x2="0.08" y2="1">
+          <stop offset="0%" stop-color="#ffffff" stop-opacity="0.14"/>
+          <stop offset="18%" stop-color="#ffffff" stop-opacity="0.04"/>
+          <stop offset="50%" stop-color="#ffffff" stop-opacity="0"/>
+          <stop offset="85%" stop-color="#081420" stop-opacity="0.02"/>
+          <stop offset="100%" stop-color="#081420" stop-opacity="0.20"/>
+        </linearGradient>
         <!-- Authentic McCurdy Solid Walnut / Teak Bridge Overhang Trim (from uploaded_media_0) -->
         <linearGradient id="mc_wood_top" x1="0" y1="0" x2="0" y2="1">
           <stop offset="0%" stop-color="#7a4624"/>
@@ -706,7 +714,9 @@
     </g>`}function Xn(){let e=D,t=`<g class="mc-only">
       ${qn}
       <rect class="mc-panel-bg" x="1" y="1" width="${e-2}" height="428" rx="6" fill="url(#mc_panel)" stroke="#b5b1a6" stroke-width="2"/>
-      <line x1="4" y1="3" x2="${e-4}" y2="3" stroke="#ffffff" stroke-opacity="0.7" stroke-width="2"/>`;for(let e of it)t+=Jn(e);return t+=Yn(lt.input1X,`INPUT 1`,null)+Yn(lt.input2X,`INPUT 2`,lt.input2LineX0),t+=`
+      <!-- Clear Film Lacquer Sheen Overlay over Hammertone -->
+      <rect class="mc-only mc-ca-only" x="1" y="1" width="${e-2}" height="428" rx="6" fill="url(#mc_clear_film)" pointer-events="none"/>
+      <line x1="4" y1="3" x2="${e-4}" y2="3" stroke="#ffffff" stroke-opacity="0.6" stroke-width="1.8"/>`;for(let e of it)t+=Jn(e);return t+=Yn(lt.input1X,`INPUT 1`,null)+Yn(lt.input2X,`INPUT 2`,lt.input2LineX0),t+=`
       <!-- Authentic McCurdy Solid Walnut / Teak Bridge Overhang Trim (from uploaded_media_0) -->
       <g class="mc-only mc-ca-only" pointer-events="none">
         <rect x="0" y="0" width="${e}" height="20" fill="url(#mc_wood_top)"/>
@@ -767,6 +777,8 @@
 
       <!-- Center Console Bay in McCurdy Slate Finish (Seamless, No Border) -->
       <rect x="1350" y="16" width="500" height="398" rx="8" fill="url(#mc_panel_blue)"/>
+      <!-- Clear Film Topcoat Overlay -->
+      <rect class="mc-only mc-ca-only" x="1350" y="16" width="500" height="398" rx="8" fill="url(#mc_clear_film)" pointer-events="none"/>
 
       <!-- Authentic McCurdy Beveled Diamond Wordmark Emblem (PE1000-A, gemini-code-1795317269161.html) -->
       <g transform="translate(1600, 48)" pointer-events="none">
@@ -1670,4 +1682,4 @@
     `,a.parentElement?.insertBefore(e,a),document.getElementById(`btnReloadNewVersion`)?.addEventListener(`click`,()=>{window.location.reload()})}let o=document.querySelector(`.build-stamp`);o&&(o.innerHTML=`<span style="color:#f97316;cursor:pointer;font-weight:bold" title="Click to reload with new version">Update: ${i||`Available`} ⟳</span>`,o.addEventListener(`click`,()=>window.location.reload()))}function Kd(){window.testUpdatePulse=(e=`1.0.99`)=>Gd(e);async function e(){try{let e=await fetch(`./version.json?cache=`+Date.now(),{cache:`no-store`});if(!e.ok)return;let{version:t}=await e.json();t&&t!==`2.0.13`&&Gd(t)}catch{}}setTimeout(e,3e3),setInterval(e,6e4),document.addEventListener(`visibilitychange`,()=>{document.visibilityState===`visible`&&e()});let t=document.querySelector(`.build-stamp`);if(t){let e=`v2.0.13`;t.textContent=e,t.setAttribute(`title`,`Ward-Beck Systems XTM-4 ${e}`)}}function qd(){`serviceWorker`in navigator&&(navigator.serviceWorker.addEventListener(`message`,e=>{e.data?.type===`xtm-update-ready`&&(console.info(`XTM: new version stored; update ready.`),Gd())}),navigator.serviceWorker.register(`sw.js`,{updateViaCache:`none`}).then(e=>{e.waiting&&Gd(),e.addEventListener(`updatefound`,()=>{let t=e.installing;t&&t.addEventListener(`statechange`,()=>{t.state===`installed`&&navigator.serviceWorker.controller&&Gd()})})}).catch(e=>{console.warn(`Service worker registration failed:`,e)}))}function Jd(){let e=document.getElementById(`pwaInstallBanner`),t=document.getElementById(`btnPwaInstall`),n=document.getElementById(`btnPwaDismiss`),r=document.getElementById(`pwaSubText`),i=null,a=/iPad|iPhone|iPod/.test(navigator.userAgent)&&!window.MSStream,o=/Android|iPhone|iPad|iPod|Opera Mini|IEMobile|WPDesktop/i.test(navigator.userAgent)||window.innerWidth<=840,s=window.matchMedia(`(display-mode: standalone)`).matches||window.navigator.standalone===!0;e&&!s&&(window.addEventListener(`beforeinstallprompt`,t=>{t.preventDefault(),i=t,e.style.display=`block`}),o&&a&&(r&&(r.innerHTML=`Tap the Share icon <strong>[⎋]</strong> in Safari and choose <strong>Add to Home Screen</strong>`),t&&(t.textContent=`How to Install`,t.addEventListener(`click`,()=>{alert(`To install this app on iOS:
 1. Tap the Share button in Safari (box with up arrow).
 2. Scroll down and tap "Add to Home Screen".`)})),e.style.display=`block`),window.addEventListener(`appinstalled`,()=>{e.style.display=`none`,i=null}),t&&!a&&t.addEventListener(`click`,async()=>{if(i){i.prompt();let{outcome:t}=await i.userChoice;t===`accepted`&&(e.style.display=`none`),i=null}else e.style.display=`none`}),n&&n.addEventListener(`click`,()=>{e.style.display=`none`}))}function Yd(e,t){let{model:n,audio:r,view:i,podView:a,dbfsView:o}=e,s=document.querySelector(`.console-viewport`),c=0,l=performance.now(),u=document.getElementById(`fpsDisplay`);function d(e){let f=r&&r.getLevels?r.getLevels():r?.currentLevels||{vu:[0,0],ppm:[-.12,-.12],vuDb:[-1/0,-1/0],ppmDb:[-1/0,-1/0],phaseCorrelation:1,phaseLed:-1,peak:[!1,!1],hasAudio:!1};if(i.updateNeedles(f,n.power,n.meterStyle===`fisam`||n.meterStyle===`sifam`),n.isIdle=!f.hasAudio,i.renderSecondary(n,f),a.render(n,f),o&&o.render(n,f),t.recordTelemetry(f,e),t.recordTransientEvent(f),s){let e=f&&f.lufs&&typeof f.lufs.m==`number`?f.lufs.m:-60;isFinite(e)&&e>-24?e>=-12?s.className=`console-viewport lufs-glow-red`:e>=-18?s.className=`console-viewport lufs-glow-orange`:s.className=`console-viewport lufs-glow-green`:s.className=`console-viewport`}if(c++,e-l>=500){let t=c*1e3/(e-l);u&&(u.textContent=t.toFixed(1)+` FPS`),c=0,l=e}requestAnimationFrame(d)}requestAnimationFrame(d)}async function Xd(){let t=document.getElementById(`visualizerStage`),n=document.getElementById(`pod22Stage`),r=document.getElementById(`dbfsStage`),i=new zr(t);i.build(e);let a={model:e,audio:rt,view:i,podView:new di(n),dbfsView:r?new Ma(r):null};window.xtmModel=e,window.xtmAudio=rt,window.xtmView=i,window.xtmCtx=a,Pa(),Fa(),Ia(a),Zu(a);let o=cd(),s=Na();_d(a);let c=ud(a,s);vd(a,s,c),yd(a,c),bd(a,c),Sd(a,s),await Cd(a,s),wd(a,s,c),Td(a,s),gd(a,s),Ed(a,s),Fd(a,s),Id(a,s),Qu(a,s),Ld(a,s),$u(a,s),Rd(a),zd(a),Bd(a),hd(a),Vd(a,c),Hd(a,s),Ud(a,c),Kd(),qd(),Jd(),Yd(a,o)}window.audioReady=!0,Xd(),window.audioContext&&window.audioContext.state===`suspended`&&window.audioContext.resume();
-//# sourceMappingURL=index-BrOHdFm5.js.map
+//# sourceMappingURL=index-D3_USani.js.map
