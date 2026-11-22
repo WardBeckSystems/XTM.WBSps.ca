@@ -1424,6 +1424,27 @@ class WBSHandler(http.server.BaseHTTPRequestHandler):
         os._exit(0)
 
 
+def launch_browser(url: str, delay: float = 0.4):
+    """Launches the system browser pointing to the local router interface."""
+    def _open():
+        time.sleep(delay)
+        if not (os.environ.get("DISPLAY") or os.environ.get("WAYLAND_DISPLAY")):
+            return
+        try:
+            import webbrowser
+            if webbrowser.open(url):
+                return
+        except Exception:
+            pass
+        try:
+            subprocess.Popen(["xdg-open", url], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        except Exception:
+            pass
+
+    t = threading.Thread(target=_open, daemon=True)
+    t.start()
+
+
 class ThreadingHTTPServer(socketserver.ThreadingMixIn, http.server.HTTPServer):
     daemon_threads = True
 
@@ -1464,6 +1485,11 @@ if __name__ == "__main__":
 
     t = threading.Thread(target=meter_reader_loop, daemon=True)
     t.start()
+
+    no_browser = any(arg in sys.argv for arg in ("--no-browser", "--headless", "--daemon")) or (os.environ.get("WBS_NO_BROWSER", "0") == "1")
+    if not no_browser:
+        print(f"[Ward-Beck Audio Tab] Launching browser: http://127.0.0.1:{PORT}")
+        launch_browser(f"http://127.0.0.1:{PORT}")
 
     server = ThreadingHTTPServer(("127.0.0.1", PORT), WBSHandler)
     print(f"[Ward-Beck Audio Tab] HTML Router & Multi-Source VU Bridge running at: http://127.0.0.1:{PORT}")
