@@ -1,0 +1,114 @@
+# SPDX-FileCopyrightText: 2026 CBC/Radio-Canada & Ward-Beck Systems
+# SPDX-License-Identifier: Apache-2.0
+
+name: mxl-demo
+
+volumes:
+  mxl-domain:
+    driver: local
+    driver_opts:
+      type: none
+      device: /dev/shm/mxl/domain_1
+      o: "bind,nosuid,strictatime"
+  mxl-wbs-test-signals:
+    driver: local
+    driver_opts:
+      type: none
+      device: /dev/shm/mxl/domain-wbs-test-signals
+      o: "bind,nosuid,strictatime"
+
+services:
+  # MediaMTX WebRTC Server for low-latency browser streaming
+  mediamtx:
+    platform: linux/amd64
+    image: bluenviron/mediamtx:latest
+    container_name: mxl-mediamtx
+    hostname: mediamtx
+    user: "1001:1001"
+    network_mode: host
+    restart: unless-stopped
+
+  # MXL to WebRTC Player: Receiver Demo (View clip player & tone gen live in browser)
+  mxl2webrtc:
+    platform: linux/amd64
+    image: ghcr.io/cbcrc/mxl2webrtc:latest
+    container_name: mxl-receiver-demo
+    hostname: mxl2webrtc
+    domainname: local
+    ports:
+      - "9601:9600"
+    volumes:
+      - type: volume
+        source: mxl-domain
+        target: /mxl-domain
+      - type: volume
+        source: mxl-wbs-test-signals
+        target: /mxl-wbs-test-signals
+    environment:
+      - MXL_DOMAIN=/mxl-domain
+      - MEDIAMTX_WHIP_URL=http://host.docker.internal:8889/mxl2webrtc/whip
+      - MEDIAMTX_WEBRTC_URL=http://localhost:8889
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    depends_on:
+      - mediamtx
+    restart: unless-stopped
+
+  # Test Generator: Synthetic Video & Calibrated Audio Tone Generator
+  test-generator:
+    platform: linux/amd64
+    image: ghcr.io/cbcrc/test-generator:latest
+    container_name: mxl-test-generator
+    hostname: test-generator
+    domainname: local
+    ports:
+      - "9600:9600"
+    volumes:
+      - type: volume
+        source: mxl-domain
+        target: /mxl-domain
+      - type: volume
+        source: mxl-wbs-test-signals
+        target: /mxl-wbs-test-signals
+    restart: unless-stopped
+
+  # File / Clip Player: Publishes looped video and audio clips into MXL
+  file-player:
+    platform: linux/amd64
+    image: ghcr.io/cbcrc/file-player:latest
+    container_name: mxl-file-player
+    hostname: file-player
+    domainname: local
+    ports:
+      - "9602:9600"
+    volumes:
+      - type: volume
+        source: mxl-domain
+        target: /mxl-domain
+      - type: bind
+        source: ./mxl-hands-on/docker/exercise-4/data/Clips
+        target: /home/file
+        read_only: true
+    environment:
+      - MXL_DOMAIN=/mxl-domain
+    restart: unless-stopped
+
+  # MXL Flow Inspector GUI: Real-time telemetry and metadata
+  mxl-info-gui:
+    platform: linux/amd64
+    image: ghcr.io/cbcrc/mxl-info-gui:latest
+    container_name: mxl-info-gui
+    hostname: mxl-info-gui
+    domainname: local
+    ports:
+      - "9699:9600"
+    volumes:
+      - type: volume
+        source: mxl-domain
+        target: /mxl-domain
+      - type: volume
+        source: mxl-wbs-test-signals
+        target: /mxl-wbs-test-signals
+    environment:
+      - MXL_DOMAIN=/mxl-domain
+    restart: unless-stopped

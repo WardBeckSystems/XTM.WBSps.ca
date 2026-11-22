@@ -33,19 +33,19 @@ export class RoutingCanvasView {
   ctx: AppContext | null = null;
   isBuilt: boolean = false;
 
-  // Active Routing Matrix State (5 Inputs × 5 Outputs)
+  // Active Routing Matrix State (5 Inputs × 7 Outputs — An Output Card per Flow/Destination)
   // Rows: 0: Soundcard, 1: System Audio, 2: POD-33 Tone, 3: Bit Buddy, 4: Pink Noise
-  // Cols: 0: XTM-4 Master, 1: POD-22 Loudness, 2: Speakers, 3: Headphones, 4: Test Point
+  // Cols: 0: XTM-4 Master, 1: POD-22 Loudness, 2: Speakers, 3: Cue/HP, 4: Test Tap, 5: POD-33 Out, 6: Bit Spitter Out
   matrix: boolean[][] = [
-    [true,  true,  false, false, false], // In 0: Soundcard (safe from speaker feedback)
-    [true,  true,  true,  false, false], // In 1: System Audio (Default active -> Speakers ON)
-    [true,  true,  true,  false, false], // In 2: POD-33 Tone (Speakers ON)
-    [true,  true,  true,  false, false], // In 3: Bit Buddy (Speakers ON)
-    [true,  true,  true,  false, false], // In 4: Pink Noise (Speakers ON)
+    [true,  true,  false, false, false, false, false], // In 0: Soundcard (safe from speaker feedback)
+    [true,  true,  true,  false, false, false, false], // In 1: System Audio (Default active -> Speakers ON)
+    [true,  true,  true,  false, false, true,  false], // In 2: POD-33 Tone (Dedicated OUT 6 Card ON)
+    [true,  true,  true,  false, false, false, true ], // In 3: Bit Buddy (Dedicated OUT 7 Card ON)
+    [true,  true,  true,  false, false, false, false], // In 4: Pink Noise (Speakers ON)
   ];
 
-  outMutes: boolean[] = [false, false, false, false, false];
-  outDims: boolean[] = [false, false, false, false, false];
+  outMutes: boolean[] = [false, false, false, false, false, false, false];
+  outDims: boolean[] = [false, false, false, false, false, false, false];
 
   activeInput: number = 1; // 1 = System Audio default
 
@@ -70,6 +70,7 @@ export class RoutingCanvasView {
   // XMXL Dynamic Instances & Flow Discovery
   detectedInstances: XmxlInstance[] = [];
   selectedPort: number = 8467;
+  selectedInstanceId: string = 'xmxl-8467';
   selectedFlowId: string = 'wbs-flow-master-stereo';
   activeXmxlDisconnect: (() => void) | null = null;
   liveMxlTelemetry: any = null;
@@ -99,6 +100,8 @@ export class RoutingCanvasView {
     for (let i = 0; i < 5; i++) {
       this.inNeedlesL[i] = this.container.querySelector(`#rcInNeedleL${i}`) as SVGElement | null;
       this.inNeedlesR[i] = this.container.querySelector(`#rcInNeedleR${i}`) as SVGElement | null;
+    }
+    for (let i = 0; i < 7; i++) {
       this.outNeedlesL[i] = this.container.querySelector(`#rcOutNeedleL${i}`) as SVGElement | null;
       this.outNeedlesR[i] = this.container.querySelector(`#rcOutNeedleR${i}`) as SVGElement | null;
     }
@@ -421,6 +424,8 @@ export class RoutingCanvasView {
                       <th>OUT 3<br><span class="rc-th-sub">Speakers</span></th>
                       <th>OUT 4<br><span class="rc-th-sub">Cue/HP</span></th>
                       <th>OUT 5<br><span class="rc-th-sub">Test Tap</span></th>
+                      <th>OUT 6<br><span class="rc-th-sub">POD-33</span></th>
+                      <th>OUT 7<br><span class="rc-th-sub">Bit Spitter</span></th>
                     </tr>
                   </thead>
                   <tbody>
@@ -435,18 +440,20 @@ export class RoutingCanvasView {
             </div>
           </div>
 
-          <!-- 3. RIGHT BAY: OUTPUTS STRIP -->
+          <!-- 3. RIGHT BAY: OUTPUTS STRIP (AN OUTPUT CARD PER FLOW / SINK) -->
           <div class="rc-bay rc-outputs-bay">
             <div class="rc-bay-header">
               <span>OUTPUT DESTINATIONS</span>
-              <span class="rc-bay-sub">5 BUSES</span>
+              <span class="rc-bay-sub">7 BUSES · AN OUTPUT CARD PER FLOW</span>
             </div>
             <div class="rc-channel-strips" id="rcOutputStrips">
-              ${this.renderOutputStrip(0, 'OUT 1', 'XTM-4 Master', 'VU + PPM Visualizer', true)}
+              ${this.renderOutputStrip(0, 'OUT 1', 'XTM-4 Master', 'wbs-flow-master-stereo', true)}
               ${this.renderOutputStrip(1, 'OUT 2', 'POD-22 Loudness', 'ITU-R BS.1770 Bar', true)}
               ${this.renderOutputStrip(2, 'OUT 3', 'MONITOR 1 OUTPUT', 'Speakers // Physical ALSA HW', true)}
               ${this.renderOutputStrip(3, 'OUT 4', 'Studio Cue / HP', 'Control Room Listen', false)}
               ${this.renderOutputStrip(4, 'OUT 5', 'Ward-Beck Tap', 'WBS Test Point Tap', false)}
+              ${this.renderOutputStrip(5, 'OUT 6', 'POD-33 Tone Out', 'wbs-flow-ref-tone DARS', true)}
+              ${this.renderOutputStrip(6, 'OUT 7', 'Bit Spitter Out', 'wbs-flow-bit-spitter ABP-1', true)}
             </div>
           </div>
         </div>
@@ -796,7 +803,7 @@ export class RoutingCanvasView {
 
   private renderMatrixRow(rowIdx: number, rowLabel: string): string {
     let cells = '';
-    for (let colIdx = 0; colIdx < 5; colIdx++) {
+    for (let colIdx = 0; colIdx < 7; colIdx++) {
       const isConnected = this.matrix[rowIdx][colIdx];
       cells += `
         <td class="rc-td-crosspoint">
@@ -1295,38 +1302,38 @@ export class RoutingCanvasView {
   private applyPreset(preset: string | null): void {
     if (preset === 'broadcast') {
       this.matrix = [
-        [true,  true,  false, false, false],
-        [true,  true,  true,  false, false],
-        [true,  true,  true,  false, false],
-        [true,  true,  true,  false, false],
-        [true,  true,  true,  false, false],
+        [true,  true,  false, false, false, false, false],
+        [true,  true,  true,  false, false, false, false],
+        [true,  true,  true,  false, false, true,  false],
+        [true,  true,  true,  false, false, false, true ],
+        [true,  true,  true,  false, false, false, false],
       ];
       this.selectInputSource(1);
     } else if (preset === 'pod33') {
       this.matrix = [
-        [true,  true,  false, false, false],
-        [true,  true,  true,  false, false],
-        [true,  true,  true,  true,  true],
-        [true,  true,  true,  false, false],
-        [true,  true,  true,  false, false],
+        [true,  true,  false, false, false, false, false],
+        [true,  true,  true,  false, false, false, false],
+        [true,  true,  true,  true,  true,  true,  false],
+        [true,  true,  true,  false, false, false, true ],
+        [true,  true,  true,  false, false, false, false],
       ];
       this.selectInputSource(2);
     } else if (preset === 'bitbuddy') {
       this.matrix = [
-        [true,  true,  false, false, false],
-        [true,  true,  true,  false, false],
-        [true,  true,  true,  false, false],
-        [true,  true,  true,  true,  true],
-        [true,  true,  true,  false, false],
+        [true,  true,  false, false, false, false, false],
+        [true,  true,  true,  false, false, false, false],
+        [true,  true,  true,  false, false, true,  false],
+        [true,  true,  true,  true,  true,  false, true ],
+        [true,  true,  true,  false, false, false, false],
       ];
       this.selectInputSource(3);
     } else if (preset === 'all') {
       this.matrix = [
-        [true, true, true, false, false],
-        [true, true, true, false, false],
-        [true, true, true, false, false],
-        [true, true, true, false, false],
-        [true, true, true, false, false],
+        [true, true, true, false, false, true, true],
+        [true, true, true, false, false, true, true],
+        [true, true, true, false, false, true, true],
+        [true, true, true, false, false, true, true],
+        [true, true, true, false, false, true, true],
       ];
     }
     this.updateMatrixVisuals();
@@ -1474,8 +1481,8 @@ export class RoutingCanvasView {
       }
     }
 
-    // 4. Update Miniature Broadcast Theme VU Meters on Outputs (including OUT 5: Ward-Beck Tap)
-    for (let outIdx = 0; outIdx < 5; outIdx++) {
+    // 4. Update Miniature Broadcast Theme VU Meters on Outputs (7 Buses · An Output Card Per Flow)
+    for (let outIdx = 0; outIdx < 7; outIdx++) {
       let isConnected = false;
       for (let r = 0; r < 5; r++) {
         const rowActive = (r === this.activeInput) || (r === 2 && this.pod33Engaged) || (r === 3 && this.bitBuddyEngaged);
@@ -1489,7 +1496,20 @@ export class RoutingCanvasView {
 
       let dbL = -60.0;
       let dbR = -60.0;
-      if (isConnected && !isMuted) {
+      if (outIdx === 5 && this.pod33Engaged && !isMuted) {
+        // Dedicated OUT 6 Output Card: POD-33 Precision Tone Flow
+        const cal = this.pod33Config.levelDb;
+        const dimOffset = isDimmed ? -20 : 0;
+        dbL = clampDb((this.pod33Config.channelMode === 'right' ? -60.0 : cal) + dimOffset);
+        dbR = clampDb((this.pod33Config.channelMode === 'left' ? -60.0 : (this.pod33Config.channelMode === 'invert' ? cal : cal)) + dimOffset);
+      } else if (outIdx === 6 && this.bitBuddyEngaged && !isMuted) {
+        // Dedicated OUT 7 Output Card: ABB-1 / ABP-1 Bit Spitter Flow
+        const base = this.bitBuddyConfig.pattern === 'tone' ? -18.0 : (this.bitBuddyConfig.pattern === 'minmax' ? -1.0 : -14.0);
+        const jitter = Math.sin(Date.now() / 90) * 1.5;
+        const dimOffset = isDimmed ? -20 : 0;
+        dbL = clampDb(base + (this.bitBuddyConfig.pattern === 'tone' ? 0 : jitter) + dimOffset);
+        dbR = clampDb(base + (this.bitBuddyConfig.pattern === 'tone' ? 0 : -jitter) + dimOffset);
+      } else if (isConnected && !isMuted) {
         const dimOffset = isDimmed ? -20 : 0;
         dbL = clampDb(vuL + dimOffset);
         dbR = clampDb(vuR + dimOffset);
@@ -1575,33 +1595,37 @@ export class RoutingCanvasView {
             const isRavenna = inst.type === 'ravenna-node';
             const isAes67 = inst.type === 'aes67-node';
             const isMoip = inst.type === 'moip-node';
-            const isActive = inst.port === this.selectedPort || (inst.id && inst.id.includes(this.selectedFlowId));
+            const isWbsDomain = inst.id === 'xmxl-wbs-test-signals';
+            const isActive = this.selectedInstanceId ? (inst.id === this.selectedInstanceId) : (inst.port === this.selectedPort);
 
             let portTag = `:${inst.port}`;
             let pillClass = '';
-            if (isDante) { portTag = '🎵 DANTE'; pillClass = 'rc-pill-dante'; }
+            if (isWbsDomain) { portTag = '⚡ WBS SIGNALS'; pillClass = 'rc-pill-wbs'; }
+            else if (isDante) { portTag = '🎵 DANTE'; pillClass = 'rc-pill-dante'; }
             else if (isRavenna) { portTag = '📻 RAVENNA'; pillClass = 'rc-pill-ravenna'; }
             else if (isAes67) { portTag = '🌐 AES67'; pillClass = 'rc-pill-aes67'; }
             else if (isMoip) { portTag = '🐳 MOIP'; pillClass = 'rc-pill-moip'; }
             else if (isNmos) { portTag = '📡 NMOS'; }
 
-            return `<button type="button" class="rc-xmxl-pill ${pillClass} ${isActive ? 'active' : ''}" data-xmxl-port="${inst.port}">
+            return `<button type="button" class="rc-xmxl-pill ${pillClass} ${isActive ? 'active' : ''}" data-xmxl-port="${inst.port}" data-xmxl-id="${inst.id}">
               <span class="rc-led-dot ${isActive ? (isNmos || isDante ? 'lit-cyan' : 'lit-green') : ''}"></span>
               ${portTag} ${inst.name.replace(/^(Ward-Beck|CBC\/Radio-Canada|NMOS IS-04:\s*|Dante:\s*|Ravenna:\s*|AES67:\s*)\s*/, '')} (${inst.latencyMs}ms)
             </button>`;
           })
           .join('');
 
-        instancesEl.querySelectorAll('[data-xmxl-port]').forEach((btn) => {
+        instancesEl.querySelectorAll('[data-xmxl-id]').forEach((btn) => {
           btn.addEventListener('click', (e) => {
-            const port = parseInt((e.currentTarget as HTMLElement).getAttribute('data-xmxl-port') || '8467', 10);
-            this.switchXmxlInstance(port);
+            const target = e.currentTarget as HTMLElement;
+            const instId = target.getAttribute('data-xmxl-id') || '';
+            const port = parseInt(target.getAttribute('data-xmxl-port') || '8467', 10);
+            this.switchXmxlInstance(port, instId);
           });
         });
       }
     }
 
-    const curInst = this.detectedInstances.find((i) => i.port === this.selectedPort) || this.detectedInstances[0];
+    const curInst = (this.selectedInstanceId ? this.detectedInstances.find((i) => i.id === this.selectedInstanceId) : null) || this.detectedInstances.find((i) => i.port === this.selectedPort) || this.detectedInstances[0];
     if (flowsEl && curInst) {
       const flows = curInst.flows || [];
       if (flows.length > 0) {
@@ -1636,14 +1660,19 @@ export class RoutingCanvasView {
     }
   }
 
-  private switchXmxlInstance(port: number): void {
+  private switchXmxlInstance(port: number, instId?: string): void {
     this.selectedPort = port;
-    setSelectedXmxlInstance(`xmxl-${port}`);
+    if (instId) {
+      this.selectedInstanceId = instId;
+      setSelectedXmxlInstance(instId);
+    } else {
+      setSelectedXmxlInstance(`xmxl-${port}`);
+    }
     if (this.activeXmxlDisconnect) {
       this.activeXmxlDisconnect();
       this.activeXmxlDisconnect = null;
     }
-    const inst = this.detectedInstances.find((i) => i.port === port);
+    const inst = (instId ? this.detectedInstances.find((i) => i.id === instId) : null) || this.detectedInstances.find((i) => i.port === port);
     if (inst && inst.flows && inst.flows.length > 0) {
       this.selectedFlowId = inst.flows[0].flowId;
     }

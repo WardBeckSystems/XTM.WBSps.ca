@@ -172,8 +172,9 @@ async function probeTarget(target: ProbeTarget): Promise<XmxlInstance | null> {
         instance.name = 'WARD BECK TAP (MXL Engine)';
         if (data.domain_id) instance.domainId = data.domain_id;
         if (data.active_source) instance.activeSource = data.active_source;
+        const mainFlows: XmxlFlowInfo[] = [];
         if (Array.isArray(data.flows)) {
-          instance.flows = data.flows.map((f: any) => ({
+          mainFlows.push(...data.flows.map((f: any) => ({
             flowId: f.flow_id || 'unknown',
             label: f.label || f.flow_id,
             mediaType: f.media_type || 'audio/float32',
@@ -187,8 +188,28 @@ async function probeTarget(target: ProbeTarget): Promise<XmxlInstance | null> {
             shmPath: f.shm_path || '',
             overrunCount: f.overrun_count || 0,
             underrunCount: f.underrun_count || 0,
-          }));
+          })));
         }
+        // Also include all flows from data.domains["Ward-Beck Test Signals"]
+        const testDom = data.domains?.['Ward-Beck Test Signals'];
+        if (testDom && Array.isArray(testDom.flows)) {
+          for (const tf of testDom.flows) {
+            const fid = tf.id || tf.flow_id;
+            if (!mainFlows.some((mf) => mf.flowId === fid)) {
+              mainFlows.push({
+                flowId: fid,
+                label: `⚡ ${tf.label || fid} (${tf.description || 'Test Signal'})`,
+                mediaType: tf.media_type || 'audio/float32',
+                sampleRate: typeof tf.sample_rate === 'object' ? (tf.sample_rate.numerator || 48000) : (tf.sample_rate || 48000),
+                channelCount: tf.channel_count || 2,
+                bufferLength: tf.buffer_length || 480000,
+                quantum: tf.quantum || 256,
+                shmPath: tf.path || '',
+              });
+            }
+          }
+        }
+        instance.flows = mainFlows;
       } else if (target.port === 9600) {
         // CBC MXL Test Generator
         instance.name = 'CBC/Radio-Canada MXL Test Generator';
@@ -485,6 +506,27 @@ export async function scanXmxlInstances(): Promise<XmxlInstance[]> {
     for (const a of hostAoip) {
       if (!validInstances.some((inst) => inst.id === a.id)) {
         validInstances.push(a);
+      }
+    }
+
+    // Add dedicated Ward-Beck Test Signals MXL Domain instance if flows are discovered
+    const tapInst = validInstances.find((i) => i.port === 8467);
+    if (tapInst && tapInst.flows.some((f) => f.label.startsWith('⚡'))) {
+      const testFlows = tapInst.flows.filter((f) => f.label.startsWith('⚡'));
+      if (testFlows.length > 0 && !validInstances.some((i) => i.id === 'xmxl-wbs-test-signals')) {
+        validInstances.push({
+          id: 'xmxl-wbs-test-signals',
+          name: 'Ward-Beck Test Signals (MXL Domain)',
+          type: 'wbs-router',
+          port: 8467,
+          baseUrl: tapInst.baseUrl,
+          domainId: 'domain-wbs-test-signals',
+          domainLabel: 'Ward-Beck Test Signals',
+          flows: testFlows,
+          status: 'online',
+          latencyMs: tapInst.latencyMs,
+          lastSeen: Date.now(),
+        });
       }
     }
 

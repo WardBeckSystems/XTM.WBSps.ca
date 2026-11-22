@@ -297,7 +297,7 @@ def main():
         router_script = HERE / "tools" / r_name
         if router_script.is_file():
             print(f"\nExecuting Ward-Beck Audio Tab self-test ({r_name} --check)...")
-            res = subprocess.run([sys.executable, str(router_script), "--check"], capture_output=True, text=True)
+            res = subprocess.run([sys.executable, str(router_script), "--check"], cwd=str(router_script.parent), capture_output=True, text=True)
             if res.returncode != 0:
                 print(f"❌ Error validating {r_name}:\n{res.stderr}\n{res.stdout}", file=sys.stderr)
                 sys.exit(1)

@@ -53,6 +53,16 @@ export function initLowerUnitSwitcher(): void {
       routingStageEl.style.display = !isLoudness ? 'block' : 'none';
     }
 
+    // Ensure audio stream output to the sound card remains active and unblocked
+    if (!isLoudness) {
+      try {
+        const audio = (window as any).app?.audio;
+        if (audio?.ctx && audio.ctx.state === 'suspended') {
+          audio.ctx.resume().catch(() => {});
+        }
+      } catch {}
+    }
+
     // Inform layout and canvas elements
     window.dispatchEvent(new Event('resize'));
   };

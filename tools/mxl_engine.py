@@ -633,10 +633,21 @@ class MxlEngine:
         # A. The dedicated Ward-Beck domain (/dev/shm/mxl/domain-wbs-test-signals/)
         # B. The CBC reference domain (/dev/shm/mxl/domain_1/)
         # C. Nested in domain_1 (/dev/shm/mxl/domain_1/domain-wbs-test-signals/) for recursive scan
-        target_domains = [wbs_domain_dir]
+        target_domains = [(wbs_domain_dir, dom_def["id"], dom_def["label"])]
         cbc_domain_dir = os.path.join(SHM_BASE_DIR, "domain_1")
         if os.path.isdir(cbc_domain_dir):
-            target_domains.append(cbc_domain_dir)
+            cbc_dom_id = "61ef9b5c-98c1-4f98-9def-1d61ee9a4fdb"
+            cbc_dom_label = "exercise-4"
+            cbc_dom_def_path = os.path.join(cbc_domain_dir, "domain_def.json")
+            if os.path.isfile(cbc_dom_def_path):
+                try:
+                    with open(cbc_dom_def_path, "r", encoding="utf-8") as f:
+                        cdef = json.load(f)
+                        cbc_dom_id = cdef.get("id", cbc_dom_id)
+                        cbc_dom_label = cdef.get("label", cbc_dom_label)
+                except Exception:
+                    pass
+            target_domains.append((cbc_domain_dir, cbc_dom_id, cbc_dom_label))
             nested_cbc_dir = os.path.join(cbc_domain_dir, WBS_TEST_SIGNALS_DOMAIN_DIR)
             os.makedirs(nested_cbc_dir, exist_ok=True)
             try:
@@ -644,7 +655,7 @@ class MxlEngine:
                     json.dump(dom_def, f, indent=2)
             except Exception:
                 pass
-            target_domains.append(nested_cbc_dir)
+            target_domains.append((nested_cbc_dir, dom_def["id"], dom_def["label"]))
 
         for flw in WBS_TEST_SIGNALS_CATALOG:
             flw_uuid = flw["uuid"]
@@ -653,7 +664,7 @@ class MxlEngine:
             # Synthesize real Float32 audio samples for the circular buffer
             audio_buffer = synthesize_test_signal_buffer(sig_type)
 
-            for target_dir in target_domains:
+            for target_dir, target_dom_id, target_dom_label in target_domains:
                 flw_dir = os.path.join(target_dir, f"{flw_uuid}.mxl-flow")
                 os.makedirs(flw_dir, exist_ok=True)
 
@@ -671,8 +682,8 @@ class MxlEngine:
                     "sample_rate": {"numerator": 48000, "denominator": 1},
                     "channel_count": 2,
                     "bit_depth": 32,
-                    "domain_id": dom_def["id"],
-                    "domain_label": dom_def["label"]
+                    "domain_id": target_dom_id,
+                    "domain_label": target_dom_label
                 }
                 try:
                     with open(fdef_path, "w", encoding="utf-8") as f:

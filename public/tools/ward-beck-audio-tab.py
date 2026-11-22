@@ -60,6 +60,20 @@ NMOS_REGISTRY = {}          # {ip_or_id: {"node": ..., "flows": ..., "senders": 
 DANTE_REGISTRY = {}         # {name: device_dict}
 RAVENNA_REGISTRY = {}       # {name: stream_dict}
 AOIP_TELEMETRY = {}         # Complete 4th layer telemetry
+LAST_PIPELINE_CACHE = {}
+LAST_PIPELINE_TIME = 0.0
+
+
+def get_cached_pipeline(engine, max_age=3.0):
+    global LAST_PIPELINE_CACHE, LAST_PIPELINE_TIME
+    now = time.time()
+    if (now - LAST_PIPELINE_TIME > max_age) or not LAST_PIPELINE_CACHE:
+        try:
+            LAST_PIPELINE_CACHE = inspect_full_pipeline(engine)
+            LAST_PIPELINE_TIME = now
+        except Exception:
+            pass
+    return LAST_PIPELINE_CACHE
 
 
 def discover_aoip_network():
@@ -440,10 +454,15 @@ def is_virtual_sink(name):
     return (
         low.startswith("wbs_")
         or "loopback" in low
+        or "aloop" in low
+        or "snd_aloop" in low
+        or "snd-aloop" in low
         or "null" in low
         or "dummy" in low
         or "virtual" in low
         or "remap" in low
+        or "pw-loopback" in low
+        or "input.pw" in low
     )
 
 
@@ -930,6 +949,10 @@ HTML_UI = """<!DOCTYPE html>
     --canvas-bg: #dcd7c8;
     --canvas-border: #9e9a89;
     --canvas-shadow: inset 0 0 18px rgba(0,0,0,0.15);
+    --eye-ch0-color: #ea580c;
+    --eye-ch1-color: #d97706;
+    --eye-pointer-color: #ea580c;
+    --eye-marker-color: #dc2626;
   }
 
   body.theme-wbs-dark {
@@ -958,6 +981,10 @@ HTML_UI = """<!DOCTYPE html>
     --canvas-bg: #03080e;
     --canvas-border: #142a42;
     --canvas-shadow: inset 0 0 20px rgba(0,0,0,0.85);
+    --eye-ch0-color: #22c55e;
+    --eye-ch1-color: #38bdf8;
+    --eye-pointer-color: #d946ef;
+    --eye-marker-color: #ef4444;
   }
 
   * { box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, monospace; }
@@ -1545,19 +1572,19 @@ HTML_UI = """<!DOCTYPE html>
         <!-- Channel Legend & Spec -->
         <div class="eye-legend-box">
           <div class="eye-legend-item">
-            <span class="legend-swatch" style="background: #22c55e;"></span>
+            <span class="legend-swatch" style="background: var(--eye-ch0-color);"></span>
             <span>CH 0: LEFT (Outer Radial Band, Float32 @ 48 kHz)</span>
           </div>
           <div class="eye-legend-item">
-            <span class="legend-swatch" style="background: #38bdf8;"></span>
+            <span class="legend-swatch" style="background: var(--eye-ch1-color);"></span>
             <span>CH 1: RIGHT (Inner Radial Band, Float32 @ 48 kHz)</span>
           </div>
           <div class="eye-legend-item">
-            <span class="legend-swatch" style="background: #d946ef;"></span>
+            <span class="legend-swatch" style="background: var(--eye-pointer-color);"></span>
             <span>Center Pointer &amp; NTP Sweep Playhead</span>
           </div>
           <div class="eye-legend-item">
-            <span class="legend-swatch" style="background: #ef4444;"></span>
+            <span class="legend-swatch" style="background: var(--eye-marker-color);"></span>
             <span>0.0s Marker @ Far Right &amp; Top-of-Sec Ticks</span>
           </div>
         </div>
@@ -1596,6 +1623,14 @@ HTML_UI = """<!DOCTYPE html>
         </div>
         <div class="source-grid" id="source-grid">
           <!-- Dynamically populated source cards with mini VU needle/meter -->
+        </div>
+
+        <div class="section-title" style="margin-top: 18px; margin-bottom: 8px;">
+          <span>Live Output Destinations &amp; Bus Flows</span>
+          <div class="section-subtitle">Dedicated Output Card per Flow · Shared-Memory MXL · Physical Hardware</div>
+        </div>
+        <div class="source-grid" id="output-grid">
+          <!-- Dynamically populated output cards with mini VU needle/meter per flow -->
         </div>
       </div>
 
@@ -2029,6 +2064,7 @@ function switchTab(tabId) {
     if (btn) btn.className = (t === tabId) ? 'console-tab active' : 'console-tab';
     if (pane) pane.className = (t === tabId) ? 'tab-pane active' : 'tab-pane';
   });
+  try { localStorage.setItem('wbs_active_tab', tabId); } catch(e) {}
 }
 
 let currentMatrixFilter = 'all';
@@ -2045,6 +2081,7 @@ function filterMatrixType(type) {
     const btn = document.getElementById(`filter-${t}`);
     if (btn) btn.className = (t === type) ? 'ctrl-btn active' : 'ctrl-btn';
   });
+  try { localStorage.setItem('wbs_matrix_filter', type); } catch(e) {}
   applyMatrixFilters();
 }
 
@@ -2141,6 +2178,7 @@ function switchEyeFlow(flowId) {
   if (btnMaster) btnMaster.className = (flowId === 'wbs-flow-master-stereo') ? 'ctrl-btn active' : 'ctrl-btn';
   if (btnTone) btnTone.className = (flowId === 'wbs-flow-ref-tone') ? 'ctrl-btn active' : 'ctrl-btn';
   if (btnCbc) btnCbc.className = (flowId.includes('9b85cd39') || flowId.includes('Test-Audio-1')) ? 'ctrl-btn active' : 'ctrl-btn';
+  try { localStorage.setItem('wbs_eye_flow', flowId); } catch(e) {}
   cachedWaveform = null;
   fetchWaveform();
 }
@@ -2457,6 +2495,125 @@ function renderSourceCards(sources, selected) {
     container.appendChild(card);
   }
   applyMatrixFilters();
+}
+
+function renderOutputCards(data) {
+  const container = document.getElementById('output-grid');
+  if (!container) return;
+
+  const outputs = [
+    {
+      id: 'out-master',
+      name: 'wbs-flow-master-stereo',
+      label: 'OUT 1: Console Master Bus',
+      desc: 'Shared-Memory MXL Continuous Ring Buffer (480,000 frames @ 48kHz Float32)',
+      pill: 'MXL ZERO-COPY',
+      pillClass: 'pill-mxl',
+      vu: data.meters ? data.meters.left_vu : -60.0,
+      db: data.meters ? data.meters.left_db : -60.0
+    },
+    {
+      id: 'out-pod33',
+      name: 'wbs-flow-ref-tone',
+      label: 'OUT 2: POD-33 Precision Tone Flow',
+      desc: 'WBS POD-33 DARS Precision Tone Reference Output (100/400/1k Hz)',
+      pill: 'POD-33 DARS',
+      pillClass: 'pill-wbs',
+      vu: (data.test_tone && data.test_tone.active) ? -0.0 : -60.0,
+      db: (data.test_tone && data.test_tone.active) ? -18.0 : -60.0
+    },
+    {
+      id: 'out-bitbuddy',
+      name: 'wbs-flow-bit-spitter',
+      label: 'OUT 3: ABB-1 / ABP-1 Bit Spitter Flow',
+      desc: 'WBS AES3 Digital Audio Diagnostic Sequence Output (Walking 1s / PRBS-15)',
+      pill: 'ABP-1 SPITTER',
+      pillClass: 'pill-dante',
+      vu: (data.bit_buddy && data.bit_buddy.active) ? (data.bit_buddy.config && data.bit_buddy.config.pattern === 'tone' ? 0.0 : -2.0) : -60.0,
+      db: (data.bit_buddy && data.bit_buddy.active) ? (data.bit_buddy.config && data.bit_buddy.config.pattern === 'tone' ? -18.0 : -14.0) : -60.0
+    },
+    {
+      id: 'out-speakers',
+      name: 'alsa-speakers',
+      label: 'OUT 4: Monitor 1 Output (Speakers)',
+      desc: data.physical_sink || 'Physical ALSA Soundcard Destination Sink',
+      pill: 'ALSA HARDWARE',
+      pillClass: 'pill-mic',
+      vu: (data.routes && data.routes.speaker_split && data.meters) ? data.meters.left_vu : -60.0,
+      db: (data.routes && data.routes.speaker_split && data.meters) ? data.meters.left_db : -60.0
+    },
+    {
+      id: 'out-cue',
+      name: 'studio-cue',
+      label: 'OUT 5: Studio Cue / Headphones',
+      desc: 'Control Room Listen & Solo Cue Bus Stage',
+      pill: 'CUE BUS',
+      pillClass: 'pill-monitor',
+      vu: (data.routes && data.routes.insert_stage && data.meters) ? data.meters.left_vu : -60.0,
+      db: (data.routes && data.routes.insert_stage && data.meters) ? data.meters.left_db : -60.0
+    },
+    {
+      id: 'out-demarc',
+      name: 'wbs-tap-point',
+      label: 'OUT 6: Ward-Beck Demarcation Tap Point',
+      desc: 'Direct Physical Hardware Demarcation Probe & Calibration Tap Bus',
+      pill: 'SIGNAL TAP',
+      pillClass: 'pill-nmos',
+      vu: (data.routes && data.routes.meter_tap && data.meters) ? data.meters.left_vu : -60.0,
+      db: (data.routes && data.routes.meter_tap && data.meters) ? data.meters.left_db : -60.0
+    }
+  ];
+
+  if (!container.hasChildNodes()) {
+    container.innerHTML = outputs.map(o => `
+      <div class="source-card output-card" id="card-${o.id}">
+        <div class="source-top">
+          <div>
+            <div class="source-name">${o.label}</div>
+            <div class="source-desc">${o.desc}</div>
+          </div>
+          <span class="source-pill ${o.pillClass}">${o.pill}</span>
+        </div>
+        <div class="card-mini-vu-wrap">
+          <svg viewBox="0 0 160 44" class="card-mini-vu-svg" width="100%" height="44" preserveAspectRatio="xMidYMid meet">
+            <rect x="2" y="2" width="156" height="40" rx="3" fill="#08131d" stroke="#1e3d5f" stroke-width="1" />
+            <rect x="4" y="4" width="152" height="36" rx="2" fill="#eed584" stroke="#c8b060" stroke-width="0.8" />
+            <text x="8" y="13" font-size="7" font-weight="800" fill="#1a2228">VU</text>
+            <text x="80" y="37" font-size="6" font-weight="900" fill="#1a2228" text-anchor="middle" letter-spacing="0.8">WARD-BECK</text>
+            <path d="M 60 21 A 30 30 0 0 1 88 14" fill="none" stroke="#1a2228" stroke-width="1.2" />
+            <path d="M 88 14 A 30 30 0 0 1 100 21" fill="none" stroke="#dc2626" stroke-width="1.4" />
+            <line x1="63.5" y1="20.5" x2="61.5" y2="17.5" stroke="#1a2228" stroke-width="0.8" />
+            <line x1="68.5" y1="18.0" x2="67.0" y2="14.5" stroke="#1a2228" stroke-width="0.8" />
+            <line x1="72.5" y1="16.5" x2="71.5" y2="12.5" stroke="#1a2228" stroke-width="0.8" />
+            <line x1="80.0" y1="15.0" x2="80.0" y2="11.0" stroke="#1a2228" stroke-width="0.8" />
+            <line x1="87.5" y1="16.5" x2="88.5" y2="12.5" stroke="#dc2626" stroke-width="1.0" />
+            <line x1="98.5" y1="22.5" x2="101.0" y2="19.5" stroke="#dc2626" stroke-width="1.0" />
+            <text x="59" y="27" font-size="5" font-weight="bold" fill="#1a2228" text-anchor="middle">-20</text>
+            <text x="80" y="9.5" font-size="5" font-weight="bold" fill="#1a2228" text-anchor="middle">-3</text>
+            <text x="89.5" y="10.5" font-size="5.5" font-weight="900" fill="#dc2626" text-anchor="middle">0</text>
+            <text x="103" y="27" font-size="5.5" font-weight="900" fill="#dc2626" text-anchor="middle">+3</text>
+            <g id="meter-needle-${o.id}" transform="rotate(-42 80 42)" style="transition: transform 0.04s ease-out;">
+              <line x1="80" y1="42" x2="80" y2="13" stroke="#0f172a" stroke-width="1.2" stroke-linecap="round" />
+              <circle cx="80" cy="42" r="2.5" fill="#1e293b" />
+            </g>
+          </svg>
+          <div class="meter-digits">
+            <span id="meter-db-${o.id}">${o.db.toFixed(1)} dBFS</span>
+            <span id="meter-vu-${o.id}">${o.vu.toFixed(1)} VU</span>
+          </div>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  for (const o of outputs) {
+    const needle = document.getElementById(`meter-needle-${o.id}`);
+    const dbEl = document.getElementById(`meter-db-${o.id}`);
+    const vuEl = document.getElementById(`meter-vu-${o.id}`);
+    if (needle) needle.setAttribute('transform', `rotate(${vuToAngle(o.vu)} 80 42)`);
+    if (dbEl) dbEl.textContent = `${o.db.toFixed(1)} dBFS`;
+    if (vuEl) vuEl.textContent = `${o.vu.toFixed(1)} VU`;
+  }
 }
 
 async function pollStatus() {
@@ -2855,6 +3012,11 @@ async function toggleBitBuddy() {
 
 async function setBitBuddyPattern(pattern) {
   if (abandoned) return;
+  try { localStorage.setItem('wbs_abb_pattern', pattern); } catch(e) {}
+  ['tone', 'walk1s', 'prbs', 'minmax'].forEach(p => {
+    const b = document.getElementById(`btn-abb-${p}`);
+    if (b) b.className = (p === pattern) ? 'ctrl-btn active' : 'ctrl-btn';
+  });
   await fetch('/api/bitbuddy', {
     method: 'POST',
     headers: {'Content-Type': 'application/json'},
@@ -2998,8 +3160,8 @@ class WBSHandler(http.server.BaseHTTPRequestHandler):
             self.wfile.write(HTML_UI.encode("utf-8"))
 
         elif path == "/api/status":
+            pipeline_data = get_cached_pipeline(MXL_ENGINE)
             with STATE_LOCK:
-                pipeline_data = inspect_full_pipeline(MXL_ENGINE)
                 payload = {
                     "physical_sink": PHYSICAL_SINK,
                     "selected_source": SELECTED_SOURCE,
@@ -3341,6 +3503,7 @@ def launch_browser(url: str, delay: float = 0.4):
 
 class ThreadingHTTPServer(socketserver.ThreadingMixIn, http.server.HTTPServer):
     daemon_threads = True
+    allow_reuse_address = True
 
     def handle_error(self, request, client_address):
         ex_type, _, _ = sys.exc_info()
@@ -3403,6 +3566,7 @@ if __name__ == "__main__":
         print(f"[WARD BECK TAP] Launching browser: http://127.0.0.1:{PORT}")
         launch_browser(f"http://127.0.0.1:{PORT}")
 
+    ThreadingHTTPServer.allow_reuse_address = True
     server = ThreadingHTTPServer(("127.0.0.1", PORT), WBSHandler)
     print(f"[WARD BECK TAP] HTML Router & Multi-Source VU Bridge running at: http://127.0.0.1:{PORT}")
     print("[WARD BECK TAP] Live VU meters & MXL Continuous Ring Buffers active. Signal Tap online.")

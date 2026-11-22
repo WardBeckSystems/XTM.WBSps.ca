@@ -153,6 +153,9 @@
   flex-direction: column;
   gap: 8px;
   flex: 1;
+  overflow-y: auto;
+  max-height: 840px;
+  padding-right: 2px;
 }
 
 .rc-strip {
