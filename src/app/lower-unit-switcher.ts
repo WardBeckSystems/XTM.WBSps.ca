@@ -1,8 +1,8 @@
 /*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.ca). All rights reserved. */
 /**
  * Lower Console Bay View Switcher:
- * Switches between Loudness Scope (dBFS & BS.1770 LUFS) and Stream Buffer & Matrix (EBU DMF / MXL).
- * Displays "loudness vs stream" on the footer drawer bar.
+ * Switches between Loudness Scope (dBFS & BS.1770 LUFS) and Data Stream Buffer & Matrix (EBU DMF / MXL).
+ * Displays "loudness vs data stream" on the footer drawer bar.
  */
 
 export type LowerUnitMode = 'loudness' | 'stream';

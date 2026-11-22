@@ -339,16 +339,28 @@ def main():
         print("❌ Error: No FTP password provided. Set FTP_USER_PASS in docker/.env or pass --password.", file=sys.stderr)
         sys.exit(1)
 
-    print(f"\nConnecting to {args.host}:{args.port}...")
-    ftp = ftplib.FTP()
+    print(f"\nConnecting to {args.host}:{args.port} via FTPS (TLS)...")
     try:
+        ftp = ftplib.FTP_TLS()
         ftp.connect(args.host, args.port, timeout=15)
         banner = ftp.getwelcome()
         print(f"Connected: {banner.splitlines()[0] if banner else 'OK'}")
 
         print(f"Authenticating as {args.user}...")
         ftp.login(args.user, args.password)
+        ftp.prot_p()
+        print("FTPS authentication successful (TLS data channel secured)!")
+    except Exception as e_tls:
+        print(f"FTPS fallback ({e_tls}). Connecting via plain FTP...")
+        ftp = ftplib.FTP()
+        ftp.connect(args.host, args.port, timeout=15)
+        banner = ftp.getwelcome()
+        print(f"Connected: {banner.splitlines()[0] if banner else 'OK'}")
+        print(f"Authenticating as {args.user}...")
+        ftp.login(args.user, args.password)
         print("Authentication successful!")
+
+    try:
 
         # Auto-detect target directory:
         # If the account root contains 'XTM' directory or path says Wbsps.ca, deploy into XTM/
