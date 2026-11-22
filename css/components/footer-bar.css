@@ -60,14 +60,21 @@
 
 body.theme-mccurdy .wbs-ca-text,
 body.theme-mccurdy .wbs-com-text,
-body.theme-mccurdy .wbsps-text {
-  color: #1e293b;
+body.theme-mccurdy .mc-ca-text,
+body.theme-mccurdy .mc-com-text,
+body.theme-mccurdy .wbsps-text,
+body.theme-mccurdy .build-stamp {
+  color: #1e293b !important;
+  text-shadow: none !important;
   text-decoration: none;
 }
 
-body.theme-mccurdy .mc-ca-text {
-  color: #ffffff;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
+body.theme-mccurdy .footer-style-btn:hover .mc-ca-text,
+body.theme-mccurdy .footer-style-btn:hover .mc-com-text,
+body.theme-mccurdy .footer-style-btn:hover .wbs-ca-text,
+body.theme-mccurdy .footer-style-btn:hover .wbs-com-text,
+body.theme-mccurdy .footer-style-btn:hover .wbsps-text {
+  color: #000000 !important;
   text-decoration: none;
 }
 

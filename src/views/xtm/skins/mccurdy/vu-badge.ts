@@ -13,9 +13,9 @@ export function renderMcCurdyVuBadge(cx: number, cy: number, ink: string, isPpm 
   const bh = 32.3; // 600:220 aspect ratio = 2.727
   const x = cx - (bw / 2);
   const y = cy + 18;
-  const badgeFill = isPpm ? '#181b20' : '#f5ede3';
-  const badgeStroke = isPpm ? '#cbd5e1' : '#1a1715';
-  const badgeInk = isPpm ? '#f8fafc' : '#1a1715';
+  const badgeFill = 'none';
+  const badgeStroke = isPpm ? '#cbd5e1' : (ink || '#1a1715');
+  const badgeInk = isPpm ? '#f8fafc' : (ink || '#1a1715');
 
   return `
     <!-- McCurdy Radio Industries Authentic Vintage Dial Badge (gemini-svg (13).svg) -->
@@ -38,8 +38,8 @@ export function renderMcCurdyVuBadge(cx: number, cy: number, ink: string, isPpm 
             Z" />
         </defs>
 
-        <!-- Elongated Faceted Hexagon Shield Body -->
-        <use href="#mc_badge_shape_${cx}" fill="${badgeFill}" stroke="${badgeStroke}" stroke-width="3.5" />
+        <!-- Elongated Faceted Hexagon Shield Body (Transparent inside; crisp outline on dial) -->
+        <use href="#mc_badge_shape_${cx}" fill="${badgeFill}" stroke="${badgeStroke}" stroke-width="4.0" />
 
         <!-- Authentic Lowercase Serif 'm' with Tall Stem -->
         <path fill="${badgeInk}" d="
