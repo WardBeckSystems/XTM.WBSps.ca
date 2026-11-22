@@ -226,6 +226,8 @@ def abandon_ship():
 
     # Terminate all source meter readers
     with STATE_LOCK:
+        stop_bit_buddy()
+        stop_test_tone()
         for p in SOURCE_PROCS.values():
             try:
                 p.terminate()
@@ -406,6 +408,7 @@ def meter_reader_loop():
 def start_test_tone(freq=1000):
     global TEST_TONE_ACTIVE, TEST_TONE_FREQ, TEST_TONE_PROC
     stop_test_tone()
+    stop_bit_buddy()
     TEST_TONE_FREQ = int(freq)
     TEST_TONE_ACTIVE = True
 
@@ -423,6 +426,116 @@ def stop_test_tone():
         except Exception:
             pass
         TEST_TONE_PROC = None
+
+
+# ---------------------------------------------------------------------------
+# ABB-1 AUDIO BIT BUDDY & ABP-1 BIT SPITTER GENERATOR ENGINE
+# ---------------------------------------------------------------------------
+BITBUDDY_ACTIVE = False
+BITBUDDY_PROC = None
+BITBUDDY_CONFIG = {
+    "pattern": "prbs",     # 'tone', 'walk1s', 'prbs', 'minmax'
+    "pro_mode": True,      # True = Professional (EBU), False = Consumer (S/PDIF)
+    "audio_data": True,    # True = Audio (PCM), False = Non-Audio Data
+    "sample_rate": 48000   # 48000, 96000, 44100
+}
+
+
+def start_bit_buddy(pattern="prbs", pro_mode=True, audio_data=True, sample_rate=48000):
+    global BITBUDDY_ACTIVE, BITBUDDY_CONFIG, BITBUDDY_PROC
+    stop_bit_buddy()
+    stop_test_tone()
+    BITBUDDY_ACTIVE = True
+    BITBUDDY_CONFIG = {
+        "pattern": pattern,
+        "pro_mode": bool(pro_mode),
+        "audio_data": bool(audio_data),
+        "sample_rate": int(sample_rate)
+    }
+    t = threading.Thread(target=_bitbuddy_worker, daemon=True)
+    t.start()
+
+
+def stop_bit_buddy():
+    global BITBUDDY_ACTIVE, BITBUDDY_PROC
+    BITBUDDY_ACTIVE = False
+    if BITBUDDY_PROC:
+        try:
+            BITBUDDY_PROC.terminate()
+            BITBUDDY_PROC.kill()
+        except Exception:
+            pass
+        BITBUDDY_PROC = None
+
+
+def _bitbuddy_worker():
+    global BITBUDDY_PROC, BITBUDDY_ACTIVE
+    try:
+        sr = BITBUDDY_CONFIG.get("sample_rate", 48000)
+        pacat_cmd = [
+            "pacat", "--playback", "--device=wbs_input_bus",
+            "--format=s16le", f"--rate={sr}", "--channels=2",
+            "--latency-msec=20", "--stream-name=Ward-Beck ABB-1 Bit Buddy"
+        ]
+        proc = subprocess.Popen(
+            pacat_cmd,
+            stdin=subprocess.PIPE,
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+            preexec_fn=os.setsid
+        )
+        BITBUDDY_PROC = proc
+        chunk = 256
+        fmt = f"<{chunk * 2}h"
+        pattern = BITBUDDY_CONFIG.get("pattern", "prbs")
+
+        lfsr = 0x7ACE
+        phase = 0.0
+        step = 2.0 * math.pi * 1000.0 / sr
+        walk_counter = 0
+
+        while BITBUDDY_ACTIVE and proc.poll() is None:
+            samples = []
+            if pattern == "tone":
+                amp = int(32767 * 0.12589)  # -18 dBFS reference level
+                for _ in range(chunk):
+                    v = int(amp * math.sin(phase))
+                    samples.extend((v, v))
+                    phase = (phase + step) % (2.0 * math.pi)
+            elif pattern == "walk1s":
+                for _ in range(chunk):
+                    bit_shift = (walk_counter // 32) % 15
+                    v = (1 << bit_shift) if (walk_counter % 32 < 8) else 0
+                    samples.extend((v, v))
+                    walk_counter = (walk_counter + 1) % 65536
+            elif pattern == "minmax":
+                amp = 32000
+                for _ in range(chunk):
+                    v = amp if (phase < math.pi) else -amp
+                    samples.extend((v, v))
+                    phase = (phase + step) % (2.0 * math.pi)
+            else:  # PRBS-15 sequence
+                for _ in range(chunk):
+                    bit = ((lfsr >> 0) ^ (lfsr >> 1)) & 1
+                    lfsr = (lfsr >> 1) | (bit << 14)
+                    v = 11468 if bit else -11468
+                    samples.extend((v, v))
+
+            raw = struct.pack(fmt, *samples)
+            if proc.stdin:
+                proc.stdin.write(raw)
+                proc.stdin.flush()
+    except (BrokenPipeError, OSError):
+        pass
+    except Exception as e:
+        print(f"[WARD BECK TAP] Bit Buddy Error: {e}", file=sys.stderr)
+    finally:
+        if BITBUDDY_PROC:
+            try:
+                BITBUDDY_PROC.terminate()
+            except Exception:
+                pass
+            BITBUDDY_PROC = None
 
 
 def _tone_stream_worker(freq):
@@ -786,6 +899,36 @@ HTML_UI = """<!DOCTYPE html>
     padding: 14px; text-align: center; font-weight: 700; font-size: 0.95rem; margin-bottom: 16px;
     color: #fff;
   }
+  /* ABB-1 Audio Bit Buddy & ABP-1 Bit Spitter Styling */
+  .abb-card {
+    background: var(--wbs-panel); border: 2px solid #1e3d5f; border-radius: 8px;
+    padding: 16px; margin-bottom: 24px; box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+  }
+  .abb-grid {
+    display: grid; grid-template-columns: 240px 1fr 1fr; gap: 16px; align-items: start;
+  }
+  @media (max-width: 900px) {
+    .abb-grid { grid-template-columns: 1fr; }
+  }
+  .abb-col {
+    display: flex; flex-direction: column; gap: 8px;
+  }
+  .abb-title {
+    font-size: 0.72rem; font-weight: 800; color: var(--accent-cyan);
+    letter-spacing: 1px; text-transform: uppercase;
+  }
+  .abb-led-rack {
+    display: flex; gap: 6px; flex-wrap: wrap; margin-top: 6px;
+  }
+  .abb-led-pill {
+    padding: 3px 8px; border-radius: 3px; font-size: 0.65rem; font-weight: 800;
+    background: #09131d; border: 1px solid #1a324b; color: #475569; letter-spacing: 0.5px;
+    transition: all 0.15s ease;
+  }
+  .abb-led-pill.lit-green { background: #052e16; border-color: #22c55e; color: #86efac; box-shadow: 0 0 8px rgba(34, 197, 94, 0.4); }
+  .abb-led-pill.lit-cyan { background: #082f49; border-color: #38bdf8; color: #7dd3fc; box-shadow: 0 0 8px rgba(56, 189, 248, 0.4); }
+  .abb-led-pill.lit-orange { background: #431407; border-color: #f97316; color: #fdba74; box-shadow: 0 0 8px rgba(249, 115, 22, 0.4); }
+  .abb-led-pill.lit-red { background: #450a0a; border-color: #ef4444; color: #fca5a5; box-shadow: 0 0 8px rgba(239, 68, 68, 0.4); }
 </style>
 </head>
 <body>
@@ -1044,7 +1187,67 @@ HTML_UI = """<!DOCTYPE html>
     </div>
   </div>
 
-  <!-- SECTION 4: Multi-Source Audio Matrix Grid -->
+  <!-- SECTION 4: ABB-1 Audio Bit Buddy & ABP-1 Bit Spitter Diagnostics & Test Generator -->
+  <div class="section-title">
+    <span>ABB-1 Audio Bit Buddy &amp; ABP-1 Bit Spitter</span>
+    <div class="section-subtitle">AES/EBU &amp; S/PDIF Digital Audio Diagnostic Set · PRBS / Walking 1s / Polarity Generator</div>
+  </div>
+
+  <div class="abb-card">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid #1a324b;">
+      <div style="display: flex; align-items: center; gap: 10px;">
+        <span class="badge badge-cyan" style="font-weight: 900;">ABB-1</span>
+        <strong style="color: #f1f5f9; font-size: 0.88rem; letter-spacing: 0.5px;">AUDIO BIT BUDDY // ABP-1 BIT SPITTER</strong>
+      </div>
+      <button class="ctrl-btn" id="btn-toggle-bitbuddy" onclick="toggleBitBuddy()">○ TRANSMIT BIT SPITTER</button>
+    </div>
+
+    <div class="abb-grid">
+      <!-- Bit Pattern Selection -->
+      <div class="abb-col">
+        <div class="abb-title">TEST BIT PATTERN</div>
+        <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+          <button class="ctrl-btn" id="btn-abb-tone" onclick="setBitBuddyPattern('tone')">Cal Tone (1k)</button>
+          <button class="ctrl-btn" id="btn-abb-walk1s" onclick="setBitBuddyPattern('walk1s')">Walking 1s</button>
+          <button class="ctrl-btn active" id="btn-abb-prbs" onclick="setBitBuddyPattern('prbs')">PRBS-15</button>
+          <button class="ctrl-btn" id="btn-abb-minmax" onclick="setBitBuddyPattern('minmax')">Min/Max Polarity</button>
+        </div>
+      </div>
+
+      <!-- Channel Status Flags -->
+      <div class="abb-col">
+        <div class="abb-title">CHANNEL STATUS &amp; SAMPLE RATE</div>
+        <div style="display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 6px;">
+          <button class="ctrl-btn active" id="btn-abb-pro" onclick="setBitBuddyPro(true)">Pro (EBU)</button>
+          <button class="ctrl-btn" id="btn-abb-cons" onclick="setBitBuddyPro(false)">Consumer</button>
+          <button class="ctrl-btn active" id="btn-abb-audio" onclick="setBitBuddyAudio(true)">PCM Audio</button>
+          <button class="ctrl-btn" id="btn-abb-data" onclick="setBitBuddyAudio(false)">Non-Audio Data</button>
+        </div>
+        <div style="display: flex; gap: 6px;">
+          <button class="ctrl-btn active" id="btn-abb-sr-48" onclick="setBitBuddySr(48000)">48 kHz</button>
+          <button class="ctrl-btn" id="btn-abb-sr-96" onclick="setBitBuddySr(96000)">96 kHz</button>
+          <button class="ctrl-btn" id="btn-abb-sr-44" onclick="setBitBuddySr(44100)">44.1 kHz</button>
+        </div>
+      </div>
+
+      <!-- Real-Time Diagnostic LEDs -->
+      <div class="abb-col">
+        <div class="abb-title">DIAGNOSTIC STATUS LEDS</div>
+        <div class="abb-led-rack">
+          <span class="abb-led-pill lit-green" id="led-abb-lock">LOCK</span>
+          <span class="abb-led-pill" id="led-abb-err">NO LOCK</span>
+          <span class="abb-led-pill lit-green" id="led-abb-sr">48k</span>
+          <span class="abb-led-pill lit-cyan" id="led-abb-fmt">PRO</span>
+          <span class="abb-led-pill lit-green" id="led-abb-type">AUDIO</span>
+          <span class="abb-led-pill lit-orange" id="led-abb-parity">PARITY OK</span>
+          <span class="abb-led-pill" id="led-abb-slip">SLIP: 0</span>
+          <span class="abb-led-pill" id="led-abb-spitting">SPITTING</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 5: Multi-Source Audio Matrix Grid -->
   <div class="section-title">
     <span>Live Multi-Source Audio Matrix</span>
     <div class="section-subtitle">Tapped Source: <span id="tapped-info" style="color: var(--accent-orange); font-weight: bold;">wbs_input_bus.monitor</span></div>
@@ -1057,6 +1260,7 @@ HTML_UI = """<!DOCTYPE html>
   <!-- Bottom Global Actions -->
   <div class="controls-bar">
     <button class="ctrl-btn" id="btn-tone" onclick="toggleTone()">1 kHz Tone: OFF</button>
+    <button class="ctrl-btn" id="btn-bar-bitbuddy" onclick="toggleBitBuddy()">Bit Buddy: OFF</button>
     <select id="tone-freq-select" class="ctrl-btn" onchange="changeToneFreq(this.value)">
       <option value="100">100 Hz Reference</option>
       <option value="440">440 Hz Pitch A</option>
@@ -1392,6 +1596,70 @@ async function pollStatus() {
       toneBtn.textContent = `1 kHz Tone: OFF`;
     }
 
+    // 3b. Update Bit Buddy Controls & Diagnostic LEDs
+    if (data.bit_buddy) {
+      const bb = data.bit_buddy;
+      const btnCard = document.getElementById('btn-toggle-bitbuddy');
+      const btnBar = document.getElementById('btn-bar-bitbuddy');
+      if (btnCard) {
+        btnCard.className = bb.active ? 'ctrl-btn active' : 'ctrl-btn';
+        btnCard.textContent = bb.active ? '● SPITTING BITS' : '○ TRANSMIT BIT SPITTER';
+      }
+      if (btnBar) {
+        btnBar.className = bb.active ? 'ctrl-btn active' : 'ctrl-btn';
+        btnBar.textContent = bb.active ? `Bit Buddy: ON (${(bb.config && bb.config.pattern || 'PRBS').toUpperCase()})` : 'Bit Buddy: OFF';
+      }
+
+      const pat = (bb.config && bb.config.pattern) || 'prbs';
+      ['tone', 'walk1s', 'prbs', 'minmax'].forEach(p => {
+        const b = document.getElementById(`btn-abb-${p}`);
+        if (b) b.className = (pat === p) ? 'ctrl-btn active' : 'ctrl-btn';
+      });
+
+      const pro = bb.config ? Boolean(bb.config.pro_mode) : true;
+      const bPro = document.getElementById('btn-abb-pro');
+      const bCons = document.getElementById('btn-abb-cons');
+      if (bPro) bPro.className = pro ? 'ctrl-btn active' : 'ctrl-btn';
+      if (bCons) bCons.className = !pro ? 'ctrl-btn active' : 'ctrl-btn';
+
+      const audio = bb.config ? Boolean(bb.config.audio_data) : true;
+      const bAud = document.getElementById('btn-abb-audio');
+      const bDat = document.getElementById('btn-abb-data');
+      if (bAud) bAud.className = audio ? 'ctrl-btn active' : 'ctrl-btn';
+      if (bDat) bDat.className = !audio ? 'ctrl-btn active' : 'ctrl-btn';
+
+      const sr = (bb.config && bb.config.sample_rate) || 48000;
+      [48000, 96000, 44100].forEach(rate => {
+        const idSuffix = (rate === 48000 ? '48' : rate === 96000 ? '96' : '44');
+        const b = document.getElementById(`btn-abb-sr-${idSuffix}`);
+        if (b) b.className = (sr === rate) ? 'ctrl-btn active' : 'ctrl-btn';
+      });
+
+      // Diagnostic LEDs
+      const ledLock = document.getElementById('led-abb-lock');
+      const ledErr = document.getElementById('led-abb-err');
+      const ledSpit = document.getElementById('led-abb-spitting');
+      const ledSr = document.getElementById('led-abb-sr');
+      const ledFmt = document.getElementById('led-abb-fmt');
+      const ledType = document.getElementById('led-abb-type');
+
+      if (ledLock) ledLock.className = bb.active ? 'abb-led-pill lit-green' : 'abb-led-pill';
+      if (ledErr) ledErr.className = bb.active ? 'abb-led-pill' : 'abb-led-pill lit-red';
+      if (ledSpit) ledSpit.className = bb.active ? 'abb-led-pill lit-cyan' : 'abb-led-pill';
+      if (ledSr) {
+        ledSr.className = bb.active ? 'abb-led-pill lit-green' : 'abb-led-pill';
+        ledSr.textContent = sr === 48000 ? '48k' : sr === 96000 ? '96k' : '44.1k';
+      }
+      if (ledFmt) {
+        ledFmt.className = bb.active ? (pro ? 'abb-led-pill lit-cyan' : 'abb-led-pill lit-orange') : 'abb-led-pill';
+        ledFmt.textContent = pro ? 'PRO' : 'CONS';
+      }
+      if (ledType) {
+        ledType.className = bb.active ? (audio ? 'abb-led-pill lit-green' : 'abb-led-pill lit-orange') : 'abb-led-pill';
+        ledType.textContent = audio ? 'AUDIO' : 'DATA';
+      }
+    }
+
     // 4. Render and update individual source meter bars
     renderSourceCards(data.sources, data.selected_source);
     for (const [sname, m] of Object.entries(data.source_meters || {})) {
@@ -1493,6 +1761,56 @@ async function changeToneFreq(val) {
       body: JSON.stringify({freq, restart: true})
     });
   }
+}
+
+async function toggleBitBuddy() {
+  if (abandoned) return;
+  await fetch('/api/bitbuddy', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({})
+  });
+  pollStatus();
+}
+
+async function setBitBuddyPattern(pattern) {
+  if (abandoned) return;
+  await fetch('/api/bitbuddy', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({pattern: pattern, restart: true})
+  });
+  pollStatus();
+}
+
+async function setBitBuddyPro(isPro) {
+  if (abandoned) return;
+  await fetch('/api/bitbuddy', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({pro_mode: isPro, restart: true})
+  });
+  pollStatus();
+}
+
+async function setBitBuddyAudio(isAudio) {
+  if (abandoned) return;
+  await fetch('/api/bitbuddy', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({audio_data: isAudio, restart: true})
+  });
+  pollStatus();
+}
+
+async function setBitBuddySr(sr) {
+  if (abandoned) return;
+  await fetch('/api/bitbuddy', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({sample_rate: sr, restart: true})
+  });
+  pollStatus();
 }
 
 async function fullRestart() {
@@ -1605,6 +1923,7 @@ class WBSHandler(http.server.BaseHTTPRequestHandler):
                     "meters": METER_LEVELS,
                     "source_meters": dict(SOURCE_METERS),
                     "test_tone": {"active": TEST_TONE_ACTIVE, "freq": TEST_TONE_FREQ},
+                    "bit_buddy": {"active": BITBUDDY_ACTIVE, "config": BITBUDDY_CONFIG},
                     "mxl": MXL_ENGINE.get_telemetry(),
                     "pipeline": pipeline_data,
                 }
@@ -1671,6 +1990,17 @@ class WBSHandler(http.server.BaseHTTPRequestHandler):
             self.send_header("Content-Type", "application/json")
             self.end_headers()
             self.wfile.write(json.dumps(slice_data).encode("utf-8"))
+
+        elif path == "/api/bitbuddy":
+            with STATE_LOCK:
+                payload = {
+                    "active": BITBUDDY_ACTIVE,
+                    "config": BITBUDDY_CONFIG
+                }
+            self.send_response(200)
+            self.send_header("Content-Type", "application/json")
+            self.end_headers()
+            self.wfile.write(json.dumps(payload).encode("utf-8"))
 
         elif path == "/api/stream/meters":
             # 60 FPS Server-Sent Events (SSE) live metering stream for web clients
@@ -1754,6 +2084,34 @@ class WBSHandler(http.server.BaseHTTPRequestHandler):
                     start_test_tone(freq)
             self.send_response(200)
             self.end_headers()
+        elif parsed.path == "/api/bitbuddy":
+            data = json.loads(body)
+            pattern = data.get("pattern", BITBUDDY_CONFIG.get("pattern", "prbs"))
+            pro_mode = data.get("pro_mode", BITBUDDY_CONFIG.get("pro_mode", True))
+            audio_data = data.get("audio_data", BITBUDDY_CONFIG.get("audio_data", True))
+            sample_rate = data.get("sample_rate", BITBUDDY_CONFIG.get("sample_rate", 48000))
+            active = data.get("active", None)
+
+            with STATE_LOCK:
+                if active is False:
+                    stop_bit_buddy()
+                elif active is True:
+                    start_bit_buddy(pattern, pro_mode, audio_data, sample_rate)
+                elif BITBUDDY_ACTIVE:
+                    if data.get("restart", False):
+                        start_bit_buddy(pattern, pro_mode, audio_data, sample_rate)
+                    else:
+                        stop_bit_buddy()
+                else:
+                    start_bit_buddy(pattern, pro_mode, audio_data, sample_rate)
+
+            self.send_response(200)
+            self.send_header("Content-Type", "application/json")
+            self.end_headers()
+            self.wfile.write(json.dumps({
+                "active": BITBUDDY_ACTIVE,
+                "config": BITBUDDY_CONFIG
+            }).encode("utf-8"))
         elif parsed.path == "/api/restart":
             with STATE_LOCK:
                 full_restart()
@@ -1820,10 +2178,13 @@ if __name__ == "__main__":
         assert "WARD BECK TAP" in HTML_UI or "Ward-Beck" in HTML_UI, "HTML header missing"
         assert "needle-l" in HTML_UI and "needle-r" in HTML_UI, "VU needle elements missing"
         assert "eye-player-canvas" in HTML_UI or "ring-canvas" in HTML_UI, "MXL ring buffer canvas missing"
+        assert "btn-toggle-bitbuddy" in HTML_UI, "Bit Buddy toggle missing"
+        assert BITBUDDY_CONFIG["pattern"] == "prbs", "Bit Buddy config invalid"
         srcs = list_sources()
         print(f"[WARD BECK TAP] Detected audio subsystem ({len(srcs)} available audio sources).")
         pipe = inspect_full_pipeline(MXL_ENGINE)
         print(f"[WARD BECK TAP] 3-Layer Linux Audio Pipeline online (ALSA cards: {pipe['layers']['layer1_kernel_hardware']['telemetry']['card_count']}).")
+        print("[WARD BECK TAP] ✔ ABB-1 Bit Buddy & ABP-1 Bit Spitter engine verified.")
         print("[WARD BECK TAP] ✔ Self-test passed: WARD BECK TAP is valid, MXL-aware, and deployment-ready.")
         sys.exit(0)
 

@@ -51,7 +51,7 @@ class MxlFlow:
         label: str,
         sample_rate: int = 48000,
         channel_count: int = 2,
-        buffer_length: int = 48000,
+        buffer_length: int = 480000,
         quantum: int = 256,
     ):
         self.domain_id = domain_id
@@ -59,7 +59,7 @@ class MxlFlow:
         self.label = label
         self.sample_rate = sample_rate
         self.channel_count = channel_count
-        self.buffer_length = buffer_length
+        self.buffer_length = buffer_length  # 10.000s ring buffer (480,000 frames @ 48kHz)
         self.quantum = quantum
 
         self.flow_dir = os.path.join(SHM_BASE_DIR, domain_id, flow_id)
@@ -76,6 +76,13 @@ class MxlFlow:
         self.write_seq = 0
         self.overrun_count = 0
         self.underrun_count = 0
+
+        # Waveform bin cache for 10-second polar visualizer (720 bins = 72 bins/sec)
+        self.num_bins = 720
+        self.ch0_bins_min = [0.0] * self.num_bins
+        self.ch0_bins_max = [0.0] * self.num_bins
+        self.ch1_bins_min = [0.0] * self.num_bins
+        self.ch1_bins_max = [0.0] * self.num_bins
 
         self._writer_mm = None
         self._writer_header_mm = None
@@ -128,8 +135,13 @@ class MxlFlow:
         # 3. Initialize ring.data (channel_count * buffer_length * 4 bytes)
         if not os.path.exists(self.data_path) or os.path.getsize(self.data_path) != self.data_size:
             with open(self.data_path, "wb") as f:
-                # Pre-allocate zeroed storage
+                # Pre-allocate non-sparse storage to prevent SIGBUS in tmpfs mmap
                 f.truncate(self.data_size)
+                try:
+                    os.posix_fallocate(f.fileno(), 0, self.data_size)
+                except Exception:
+                    f.seek(self.data_size - 1)
+                    f.write(b"\x00")
 
         # Open writer memory maps
         f_hdr = open(self.header_path, "r+b")
@@ -201,6 +213,25 @@ class MxlFlow:
             self._writer_mm[0 : l2 * 4] = ch0_part2
             self._writer_mm[ch_stride : ch_stride + l2 * 4] = ch1_part2
 
+        # Update ring waveform bins for 10-second polar visualizer (720 bins)
+        bin_idx = int((head / buf_len) * self.num_bins) % self.num_bins
+        ch0_slice = ch0_floats[:n_frames]
+        ch1_slice = ch1_floats[:n_frames]
+        if ch0_slice:
+            self.ch0_bins_min[bin_idx] = round(min(ch0_slice), 5)
+            self.ch0_bins_max[bin_idx] = round(max(ch0_slice), 5)
+        if ch1_slice:
+            self.ch1_bins_min[bin_idx] = round(min(ch1_slice), 5)
+            self.ch1_bins_max[bin_idx] = round(max(ch1_slice), 5)
+
+        # Decay/clear next ahead bins to produce the rotating radar-trace eye effect
+        for step in range(1, 16):
+            cb = (bin_idx + step) % self.num_bins
+            self.ch0_bins_min[cb] = 0.0
+            self.ch0_bins_max[cb] = 0.0
+            self.ch1_bins_min[cb] = 0.0
+            self.ch1_bins_max[cb] = 0.0
+
         # Advance write head and sequence atomically
         self.write_head = (head + n_frames) % buf_len
         self.write_seq += 1
@@ -210,6 +241,33 @@ class MxlFlow:
         struct.pack_into("<I", self._writer_header_mm, 8, self.write_head)
         struct.pack_into("<Q", self._writer_header_mm, 16, self.write_seq)
         struct.pack_into("<Q", self._writer_header_mm, 24, tai_now)
+
+    def get_waveform_bins(self) -> dict:
+        """
+        Returns the downsampled 720-bin radial waveform for the 10-second ring buffer,
+        phase-aligned to NTP and SMPTE 2059-1 TAI time.
+        """
+        tai_now = current_tai_ns()
+        ntp_sec = time.time()
+        hdr = self.read_header()
+        return {
+            "flow_id": self.flow_id,
+            "sample_rate": self.sample_rate,
+            "channel_count": self.channel_count,
+            "buffer_length": self.buffer_length,
+            "duration_sec": self.buffer_length / self.sample_rate,
+            "write_head": hdr["write_head"],
+            "write_seq": hdr["write_seq"],
+            "tai_timestamp_ns": tai_now,
+            "ntp_sec": ntp_sec,
+            "second_of_10": round(ntp_sec % 10.0, 4),
+            "head_sec": round((hdr["write_head"] / self.sample_rate), 4),
+            "bins": self.num_bins,
+            "ch0_min": self.ch0_bins_min,
+            "ch0_max": self.ch0_bins_max,
+            "ch1_min": self.ch1_bins_min,
+            "ch1_max": self.ch1_bins_max,
+        }
 
     def read_header(self) -> dict:
         """Reads current ring state using PROT_READ read isolation."""
@@ -329,26 +387,26 @@ class MxlEngine:
         self.active_source = "wbs_meter_tap.monitor"
 
         # Initialize Flows
-        # 1. Master Stereo Program Flow
+        # 1. Master Stereo Program Flow (10.000s continuous ring buffer)
         self.master_flow = MxlFlow(
             domain_id=domain_id,
             flow_id="wbs-flow-master-stereo",
             label="Ward-Beck Master Bus (Float32 Stereo)",
             sample_rate=48000,
             channel_count=2,
-            buffer_length=48000,  # 1.000s ring buffer (48,000 frames)
+            buffer_length=480000,  # 10.000s ring buffer (480,000 frames @ 48kHz)
             quantum=256,
         )
         self.flows[self.master_flow.flow_id] = self.master_flow
 
-        # 2. Calibrated 1 kHz Reference Tone Flow
+        # 2. Calibrated 1 kHz Reference Tone Flow (10.000s continuous ring buffer)
         self.tone_flow = MxlFlow(
             domain_id=domain_id,
             flow_id="wbs-flow-ref-tone",
             label="Ward-Beck Calibrated 1kHz Ref Tone (Float32 Stereo)",
             sample_rate=48000,
             channel_count=2,
-            buffer_length=48000,
+            buffer_length=480000,  # 10.000s ring buffer (480,000 frames @ 48kHz)
             quantum=256,
         )
         self.flows[self.tone_flow.flow_id] = self.tone_flow
@@ -464,12 +522,16 @@ class MxlEngine:
                 "shm_path": f.flow_dir,
             })
 
+        ntp_now = time.time()
         return {
             "domain_id": self.domain_id,
             "shm_base_dir": SHM_BASE_DIR,
             "active_source": self.active_source,
             "flows": flows_info,
             "tai_epoch_ns": current_tai_ns(),
+            "ntp_sec": ntp_now,
+            "second_of_10": round(ntp_now % 10.0, 4),
+            "buffer_duration_sec": 10.0,
         }
 
     def stop(self):
