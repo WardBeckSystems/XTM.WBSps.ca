@@ -46,7 +46,7 @@ export class ClockModalController {
     if (!overlay) {
       overlay = document.createElement('div');
       overlay.id = 'clockModalOverlay';
-      overlay.className = 'clock-modal-overlay';
+      overlay.className = `clock-modal-overlay theme-${this.options.theme}`;
       overlay.style.display = 'none';
       overlay.innerHTML = `
         <div class="clock-modal-card" id="clockModalCard" role="dialog" aria-modal="true" aria-label="Master Studio Clock">
@@ -152,8 +152,11 @@ export class ClockModalController {
     pillButtons.forEach(btn => {
       btn.addEventListener('click', (e) => {
         e.stopPropagation();
+        e.preventDefault();
         const th = (btn as HTMLElement).getAttribute('data-theme') as ClockTheme;
-        if (th) this.setTheme(th);
+        if (th) {
+          this.setTheme(th);
+        }
       });
     });
   }
@@ -164,6 +167,7 @@ export class ClockModalController {
     this.init();
 
     if (this.overlayEl) {
+      this.overlayEl.className = `clock-modal-overlay theme-${this.options.theme}`;
       this.overlayEl.style.display = 'flex';
       this.rebuildClockView();
       this.updateThemePillActive();
@@ -188,6 +192,33 @@ export class ClockModalController {
 
   public setTheme(theme: ClockTheme): void {
     this.options.theme = theme;
+
+    // 1. Sync global mode if function available
+    if (typeof (window as any).setMode === 'function') {
+      try {
+        (window as any).setMode(theme);
+      } catch (err) {
+        console.warn('setMode failed:', err);
+      }
+    } else {
+      // Direct class toggle on document.body
+      const isMcLight = theme === 'mccurdy-light';
+      const isMcDark = theme === 'mccurdy-dark';
+      const isWbsCa = theme === 'wbs-ca';
+      const isWbsDark = theme === 'wbs-dark' || (!isMcLight && !isMcDark && !isWbsCa);
+
+      document.body.classList.toggle('theme-mccurdy', isMcLight);
+      document.body.classList.toggle('theme-mccurdy-light', isMcLight);
+      document.body.classList.toggle('theme-mccurdy-dark', isMcDark);
+      document.body.classList.toggle('theme-wbs-ca', isWbsCa);
+      document.body.classList.toggle('theme-wbs-dark', isWbsDark);
+    }
+
+    // 2. Set overlay theme class directly
+    if (this.overlayEl) {
+      this.overlayEl.className = `clock-modal-overlay theme-${theme}`;
+    }
+
     this.rebuildClockView();
     this.updateThemePillActive();
   }
@@ -212,14 +243,14 @@ export class ClockModalController {
     if (!this.clockStageEl) return;
     this.clockStageEl.innerHTML = renderCompleteClockSvg(this.options);
 
-    // Clicking brand emblem on dial cycles theme (just like meter face logo!)
-    const badge = this.clockStageEl.querySelector('#clockBrandBadge');
-    if (badge) {
-      badge.addEventListener('click', (e) => {
+    // Clicking any brand badge on dial cycles theme (just like meter face logo!)
+    const badges = this.clockStageEl.querySelectorAll('.clock-brand');
+    badges.forEach(b => {
+      b.addEventListener('click', (e) => {
         e.stopPropagation();
         this.cycleTheme();
       });
-    }
+    });
   }
 
   private startLoop(): void {
