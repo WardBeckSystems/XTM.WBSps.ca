@@ -12,25 +12,33 @@ import { VU_RED } from './vu-scale';
 
 function legend(ctx: FaceCtx): string {
   const { P, ink } = ctx;
-  // Black VU above -7 tick, red VU above +1 tick, mirrored about the centre line.
-  const vuTagA = Math.abs(vuAngle(vuFrac(1), true));
-  const [vuxL, vuyL] = P(-vuTagA, R + 72);
-  const [vuxR, vuyR] = P(vuTagA, R + 72);
+  // Black VU above -7 tick, red VU above +1 tick (clears -10)
+  const aL = vuAngle(vuFrac(-7), true);
+  const aR = vuAngle(vuFrac(1), true);
+  const [vuxL, vuyL] = P(aL, R + 72);
+  const [vuxR, vuyR] = P(aR, R + 72);
   // (No writing on the lower half of the VU face.)
   return `<text x="${vuxL.toFixed(1)}" y="${vuyL.toFixed(1)}" font-size="28" font-weight="800" text-anchor="middle" fill="${ink}" font-family="'Arial Narrow', Arial, sans-serif">VU</text>
               <text x="${vuxR.toFixed(1)}" y="${vuyR.toFixed(1)}" font-size="28" font-weight="800" text-anchor="middle" fill="${VU_RED}" font-family="'Arial Narrow', Arial, sans-serif">VU</text>`;
 }
 
-/** Slender tapered black wand with circular hub skirt cap */
+/** Slender tapered wand with authentic Sifam arrowhead spade pointer and circular hub skirt cap */
 function vuNeedle(px: number, py: number, R: number): NeedleParts {
   const topY = py - (R + 34);
+  const sx = 2;
+  const sy = 2;
   return {
     shadow: `
-          <line x1="${px + 2}" y1="${py + 2}" x2="${px + 2}" y2="${topY + 4}" stroke="rgba(0,0,0,0.30)" stroke-width="3.2" stroke-linecap="round"/>
+          <polygon points="${px - 2.8 + sx},${py + sy} ${px + 2.8 + sx},${py + sy} ${px + 0.8 + sx},${topY + 14 + sy} ${px - 0.8 + sx},${topY + 14 + sy}" fill="rgba(0,0,0,0.30)"/>
+          <polygon points="${px + sx},${topY + 2 + sy} ${px - 9 + sx},${topY + 18 + sy} ${px + sx},${topY + 14 + sy} ${px + 9 + sx},${topY + 18 + sy}" fill="rgba(0,0,0,0.30)"/>
+          <circle cx="${px + sx}" cy="${py + sy}" r="8" fill="rgba(0,0,0,0.25)"/>
         `,
     body: `
-          <polygon points="${px - 2.8},${py} ${px + 2.8},${py} ${px + 0.8},${topY} ${px - 0.8},${topY}" fill="#0b0c0e"/>
-          <line x1="${px - 0.5}" y1="${py}" x2="${px - 0.5}" y2="${topY + 4}" stroke="rgba(255,255,255,0.35)" stroke-width="1.1"/>
+          <!-- Main Needle Shaft -->
+          <polygon points="${px - 2.8},${py} ${px + 2.8},${py} ${px + 0.8},${topY + 14} ${px - 0.8},${topY + 14}" fill="#0b0c0e"/>
+          <!-- Arrowhead Spade Tip (2x width = 18px total) -->
+          <polygon points="${px},${topY + 2} ${px - 9},${topY + 18} ${px},${topY + 14} ${px + 9},${topY + 18}" fill="#0b0c0e"/>
+          <line x1="${px - 0.5}" y1="${py}" x2="${px - 0.5}" y2="${topY + 14}" stroke="rgba(255,255,255,0.35)" stroke-width="1.1"/>
           <circle cx="${px}" cy="${py}" r="8" fill="#0b0c0e"/>
           <circle cx="${px}" cy="${py}" r="3.5" fill="#334155"/>
         `

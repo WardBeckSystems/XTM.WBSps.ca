@@ -86,7 +86,7 @@ export function mccurdyVuNeedle(px: number, py: number, R: number): NeedleParts 
     shadow: `
       <!-- McCurdy Authentic Vintage Needle Drop Shadow -->
       <polygon points="${px - 2.8 + sx},${py + sy} ${px - 0.8 + sx},${topY + 14 + sy} ${px + 0.8 + sx},${topY + 14 + sy} ${px + 2.8 + sx},${py + sy}" fill="rgba(0,0,0,0.30)" />
-      <polygon points="${px + sx},${topY + 2 + sy} ${px - 4.5 + sx},${topY + 18 + sy} ${px + sx},${topY + 14 + sy} ${px + 4.5 + sx},${topY + 18 + sy}" fill="rgba(0,0,0,0.30)" />
+      <polygon points="${px + sx},${topY + 2 + sy} ${px - 9 + sx},${topY + 18 + sy} ${px + sx},${topY + 14 + sy} ${px + 9 + sx},${topY + 18 + sy}" fill="rgba(0,0,0,0.30)" />
       <circle cx="${px + sx}" cy="${py + sy}" r="11" fill="rgba(0,0,0,0.25)"/>
     `,
     body: `
@@ -94,8 +94,8 @@ export function mccurdyVuNeedle(px: number, py: number, R: number): NeedleParts 
       <!-- Main Tapered Needle Shaft -->
       <polygon points="${px - 2.8},${py} ${px - 0.8},${topY + 14} ${px + 0.8},${topY + 14} ${px + 2.8},${py}" fill="#26231f" />
       
-      <!-- Arrowhead Spade Tip -->
-      <polygon points="${px},${topY + 2} ${px - 4.5},${topY + 18} ${px},${topY + 14} ${px + 4.5},${topY + 18}" fill="#1e1b18" />
+      <!-- Arrowhead Spade Tip (2x width = 18px total) -->
+      <polygon points="${px},${topY + 2} ${px - 9},${topY + 18} ${px},${topY + 14} ${px + 9},${topY + 18}" fill="#1e1b18" />
       
       <!-- Center Pivot Hub & Concentric Screws -->
       <circle cx="${px}" cy="${py}" r="11" fill="#141517" stroke="#2a2d33" stroke-width="1.2"/>
