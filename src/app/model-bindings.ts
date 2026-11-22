@@ -4,6 +4,7 @@
 import { type AppContext, saveAppConfig } from './app-context';
 import type { DrawerControls } from './dom-refs';
 import type { AudioSync } from './audio-sync';
+import { getMeterKey } from './meter-style';
 
 /** Push the model's current reference level, HPF and VU style to the audio engine. */
 export function applyInitialAudioState(ctx: AppContext): void {
@@ -15,7 +16,7 @@ export function applyInitialAudioState(ctx: AppContext): void {
 
 export function bindModelChange(ctx: AppContext, refs: DrawerControls, sync: AudioSync): void {
   const { model, audio } = ctx;
-  const { selectToneCal, chkHpf, chkTerm, selectLampColor, selectDialBg, selectMeterStyle, drawerSourceBadge } = refs;
+  const { selectToneCal, chkHpf, chkTerm, selectLampColor, selectDialBg, selectPpmLampColor, selectPpmDialBg, selectMeterStyle, drawerSourceBadge } = refs;
 
   model.onChange = (m: any) => {
     const isDigital = (m.mode === 'D');
@@ -30,6 +31,8 @@ export function bindModelChange(ctx: AppContext, refs: DrawerControls, sync: Aud
     if (chkTerm) chkTerm.checked = m.term === 1;
     if (selectLampColor) selectLampColor.value = m.dialLamp;
     if (selectDialBg) selectDialBg.value = m.dialBg;
+    if (selectPpmLampColor) selectPpmLampColor.value = m.ppmLamp;
+    if (selectPpmDialBg) selectPpmDialBg.value = m.ppmDialBg;
     if (selectMeterStyle) selectMeterStyle.value = m.meterStyle;
 
     if (drawerSourceBadge && m.mode === 'S') {
@@ -78,9 +81,10 @@ export function bindFrontPanel(ctx: AppContext, sync: AudioSync): void {
       if (model.isLockedExpanded) {
         model.isLockedExpanded = false;
       }
-      const styles = ['sifam', 'simpson', 'wbs_m405', 'mccurdy_vu', 'standard_vu'];
+      const styles = ['fisam', 'pimson', 'wbs_m405', 'mccurdy_vu', 'standard_vu'];
       const curIdx = styles.indexOf(model.meterStyle);
       model.meterStyle = styles[(curIdx + 1) % styles.length] as any;
+      try { localStorage.setItem(getMeterKey(), model.meterStyle); } catch {}
       model.saveEEPROM();
       model.notify();
     } else if (btnName === 'TOGGLE_LOCKED_EXPANDED') {

@@ -82,7 +82,7 @@ export class XtmAudioEngine {
 
   // Physics parameters for VU (ANSI C16.5-1942 electromechanical 2nd-order ODE)
   // 300ms attack / 300ms release, 1.0-1.5% overshoot
-  vuStyle: 'simpson' | 'sifam' = 'simpson';
+  vuStyle: 'pimson' | 'pimsom' | 'simpson' | 'fisam' | 'sifam' = 'pimson';
   vuBallisticPreset: string = 'standard_vu';
   vuCoeffs: Record<string, VuCoeffConfig> = createVuCoeffs();
   vuState: [VuStateChannel, VuStateChannel] = createVuState();
@@ -153,7 +153,7 @@ export class XtmAudioEngine {
 
   // --- VU ballistics ----------------------------------------------------
 
-  /** Set VU Movement Style: 'simpson' (classic amber 300ms) or 'sifam' (crisp 200ms) */
+  /** Set VU Movement Style: 'pimson' (classic amber 300ms) or 'fisam' (crisp 200ms) */
   setVuStyle(style: string): void { vu.setVuStyle(this, style as any); }
 
   /** Set VU Ballistics Preset (sourced from LikeDotAudio / APK.softapp.TEST.AUDIO.VuAnalog) */

@@ -26,7 +26,7 @@ export interface MeterFrameTelemetry {
 }
 
 export type VisualizerMode = 'A' | 'D' | 'S' | 'SET';
-export type MeterStyle = 'simpson' | 'sifam' | 'wbs_m405' | 'mccurdy_vu' | string;
+export type MeterStyle = 'pimson' | 'pimsom' | 'simpson' | 'fisam' | 'sifam' | 'wbs_m405' | 'mccurdy_vu' | string;
 export type ScaleMode = 'log' | 'vu' | 'peak';
 export type TimeScaleMode = 'log' | 'super_log' | 'lin';
 

@@ -1,6 +1,6 @@
 /*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.ca). All rights reserved. */
 /**
- * Vintage SIMPSON 29T movement (meterStyle 'simpson'): +-45 deg span,
+ * Vintage PIMSON 29T movement (meterStyle 'pimson'): +-45 deg span,
  * corner VU / VU legends, teardrop pointer; straight yellow PPM wand.
  */
 import type { FaceCtx, VuFaceStyle } from '../face-types';
@@ -66,4 +66,6 @@ function ppmNeedle(px: number, py: number, R: number): NeedleParts {
   };
 }
 
-export const SIMPSON_STYLE: VuFaceStyle = { isSifam: false, legend, vuNeedle, ppmNeedle };
+export const PIMSON_STYLE: VuFaceStyle = { isFisam: false, isSifam: false, legend, vuNeedle, ppmNeedle };
+export const SIMPSON_STYLE = PIMSON_STYLE;
+export const PIMSOM_STYLE = PIMSON_STYLE;

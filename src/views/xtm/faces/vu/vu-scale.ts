@@ -22,17 +22,18 @@ const PERCENT_POINTS = [
 ];
 
 export function renderVuScale(ctx: FaceCtx): string {
-  const { P, arc, ink, isSifam } = ctx;
+  const { P, arc, ink } = ctx;
+  const isFisam = ctx.isFisam ?? ctx.isSifam ?? false;
   const redBandCol = VU_RED;
   let s = '';
 
   // VU Scale Arcs: -20 to 0 VU black, 0 to +3 VU red
-  s += arc(vuAngle(vuFrac(-20), isSifam), vuAngle(vuFrac(0), isSifam), R, 3.8, ink);
-  s += arc(vuAngle(vuFrac(0), isSifam), vuAngle(vuFrac(3), isSifam), R + 3, 10, redBandCol);
+  s += arc(vuAngle(vuFrac(-20), isFisam), vuAngle(vuFrac(0), isFisam), R, 3.8, ink);
+  s += arc(vuAngle(vuFrac(0), isFisam), vuAngle(vuFrac(3), isFisam), R + 3, 10, redBandCol);
 
   // Intermediate ticks
   INTERMEDIATE_TICKS.forEach(d => {
-    const a = vuAngle(vuFrac(d), isSifam);
+    const a = vuAngle(vuFrac(d), isFisam);
     const tickLen = Math.abs(d) <= 3 ? 12 : 14;
     const col = d > 0 ? redBandCol : ink;
     s += tickLine(P, a, R, R + tickLen, col, Math.abs(d) <= 3 ? '2.5' : '3');
@@ -40,7 +41,7 @@ export function renderVuScale(ctx: FaceCtx): string {
 
   // Major ticks + numerals
   MAJOR_TICKS.forEach(d => {
-    const a = vuAngle(vuFrac(d), isSifam);
+    const a = vuAngle(vuFrac(d), isFisam);
     const [tx, ty] = P(a, R + 46);
     const col = d > 0 ? redBandCol : ink;
     s += tickLine(P, a, R, R + 24, col, '4.2') + `
@@ -49,7 +50,7 @@ export function renderVuScale(ctx: FaceCtx): string {
 
   // Percentage sub-scale dots & numbers (0, 20, 40, 60, 80, 100%)
   PERCENT_POINTS.forEach(({ pc, d }) => {
-    const a = vuAngle(vuFrac(d), isSifam);
+    const a = vuAngle(vuFrac(d), isFisam);
     const [x1, y1] = P(a, R - 8), [tx, ty] = P(a, R - 32);
     s += `<circle cx="${x1.toFixed(1)}" cy="${y1.toFixed(1)}" r="4.2" fill="${ink}"/>
               <text x="${tx.toFixed(1)}" y="${(ty + 6).toFixed(1)}" font-size="16" font-weight="700" text-anchor="middle" fill="${ink}">${pc}</text>`;

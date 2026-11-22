@@ -18,8 +18,36 @@ export function dialPalette(isPpm: boolean, isPowered: boolean, dialLamp: string
   const isWbsCa = typeof document !== 'undefined' && document.body?.classList.contains('theme-wbs-ca');
   const activeLamp = (isWbsCa && dialLamp === 'amber') ? 'amber_bottom' : dialLamp;
   if (isPpm) {
-    fill = isPowered ? 'url(#xblackppm)' : '#0a0b0d';
-    ink = isPowered ? '#f8fafc' : '#475569';
+    if (!isPowered) {
+      fill = '#0a0b0d';
+      ink = '#475569';
+    } else if (dialBg && dialBg !== 'auto') {
+      if (dialBg === 'dark_night') {
+        fill = 'url(#xdark_night)';
+        ink = '#f8fafc';
+      } else if (dialBg === 'classic_buff') {
+        fill = 'url(#xdial_buff)';
+        ink = '#141008';
+      } else if (dialBg === 'parchment') {
+        fill = 'url(#xparchment)';
+        ink = '#141008';
+      } else if (dialBg === 'champagne') {
+        fill = 'url(#xdial_champagne)';
+        ink = '#141008';
+      } else if (dialBg === 'slate_neutral') {
+        fill = 'url(#xdial_slate)';
+        ink = '#f8fafc';
+      } else if (dialBg === 'pure_white') {
+        fill = 'url(#xwhite)';
+        ink = '#141008';
+      } else {
+        fill = 'url(#xblackppm)';
+        ink = '#f8fafc';
+      }
+    } else {
+      fill = 'url(#xblackppm)';
+      ink = '#f8fafc';
+    }
   } else if (isPowered) {
     if (dialBg && dialBg !== 'auto') {
       if (dialBg === 'dark_night') {

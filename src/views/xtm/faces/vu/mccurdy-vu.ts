@@ -14,7 +14,7 @@ import type { NeedleParts } from '../../lib/needle';
 import { R, MW } from '../../layout/wbs-layout';
 import { vuAngle, vuFrac } from '../../lib/scale-math';
 import { tickLine } from '../../lib/svg';
-import { SIMPSON_STYLE } from './simpson';
+import { PIMSON_STYLE } from './pimson';
 import { renderMcCurdyVuBadge } from '../../skins/mccurdy/vu-badge';
 
 const MCCURDY_INK = '#2d2924';
@@ -38,16 +38,17 @@ function legend(ctx: FaceCtx): string {
 }
 
 export function renderMcCurdyScale(ctx: FaceCtx): string {
-  const { P, arc, isSifam } = ctx;
+  const { P, arc } = ctx;
+  const isFisam = ctx.isFisam ?? ctx.isSifam ?? false;
   let s = '';
 
   // 1. Upper VU Scale Arcs: -20 to 0 VU in black ink (#2d2924), 0 to +3 VU in red (#c83728)
-  s += arc(vuAngle(vuFrac(-20), isSifam), vuAngle(vuFrac(0), isSifam), R, 2.0, MCCURDY_INK);
-  s += arc(vuAngle(vuFrac(0), isSifam), vuAngle(vuFrac(3), isSifam), R + 1, 3.2, MCCURDY_RED);
+  s += arc(vuAngle(vuFrac(-20), isFisam), vuAngle(vuFrac(0), isFisam), R, 2.0, MCCURDY_INK);
+  s += arc(vuAngle(vuFrac(0), isFisam), vuAngle(vuFrac(3), isFisam), R + 1, 3.2, MCCURDY_RED);
 
   // 2. Intermediate ticks (-15 to +2.5 VU)
   INTERMEDIATE_TICKS.forEach(d => {
-    const a = vuAngle(vuFrac(d), isSifam);
+    const a = vuAngle(vuFrac(d), isFisam);
     const tickLen = Math.abs(d) <= 3 ? 12 : 14;
     const col = d > 0 ? MCCURDY_RED : MCCURDY_INK;
     s += tickLine(P, a, R, R + tickLen, col, Math.abs(d) <= 3 ? '2.2' : '2.6');
@@ -55,7 +56,7 @@ export function renderMcCurdyScale(ctx: FaceCtx): string {
 
   // 3. Major ticks + numerals (-20 to +3 VU)
   MAJOR_TICKS.forEach(d => {
-    const a = vuAngle(vuFrac(d), isSifam);
+    const a = vuAngle(vuFrac(d), isFisam);
     const [tx, ty] = P(a, R + 44);
     const col = d >= 0 ? MCCURDY_RED : MCCURDY_INK;
     s += tickLine(P, a, R, R + 22, col, '3.2') + `
@@ -63,11 +64,11 @@ export function renderMcCurdyScale(ctx: FaceCtx): string {
   });
 
   // 4. Lower Modulation Arc under Percentage scale (0 to 100%)
-  s += arc(vuAngle(vuFrac(-20), isSifam), vuAngle(vuFrac(0), isSifam), R - 10, 1.8, MCCURDY_INK);
+  s += arc(vuAngle(vuFrac(-20), isFisam), vuAngle(vuFrac(0), isFisam), R - 10, 1.8, MCCURDY_INK);
 
   // 5. Percentage sub-scale dots & numbers (0, 20, 40, 60, 80, 100%)
   PERCENT_POINTS.forEach(({ pc, d }) => {
-    const a = vuAngle(vuFrac(d), isSifam);
+    const a = vuAngle(vuFrac(d), isFisam);
     const [x1, y1] = P(a, R - 10), [tx, ty] = P(a, R - 32);
     const col = pc === 100 ? MCCURDY_RED : MCCURDY_INK;
     s += `<circle cx="${x1.toFixed(1)}" cy="${y1.toFixed(1)}" r="3.2" fill="${col}"/>
@@ -109,9 +110,10 @@ export function renderMcCurdyFaceLogo(cx: number, cy: number, ink: string): stri
 }
 
 export const MCCURDY_VU_STYLE: VuFaceStyle = {
+  isFisam: false,
   isSifam: false,
   legend,
   vuNeedle: mccurdyVuNeedle,
-  ppmNeedle: SIMPSON_STYLE.ppmNeedle,
+  ppmNeedle: PIMSON_STYLE.ppmNeedle,
   renderScale: renderMcCurdyScale
 };

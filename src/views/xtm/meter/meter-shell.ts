@@ -23,7 +23,7 @@ export function renderMeterShell(id: number, cx: number, cy: number, kind: 'vu' 
   const x0 = cx - MW / 2, y0 = cy - MH / 2;
   const px = cx, py = PY;
   const style = vuFaceStyle(meterStyle);
-  const isSifam = (meterStyle === 'sifam');
+  const isFisam = (meterStyle === 'fisam' || meterStyle === 'sifam');
   const isPpm = (kind === 'ppm' || isBlackPpm);
 
   const P = makePolar(px, py);
@@ -31,7 +31,7 @@ export function renderMeterShell(id: number, cx: number, cy: number, kind: 'vu' 
   const isWbsCa = typeof document !== 'undefined' && document.body?.classList.contains('theme-wbs-ca');
   const activeLamp = (isWbsCa && dialLamp === 'amber') ? 'amber_bottom' : dialLamp;
   const { fill: fillGrad, ink } = dialPalette(isPpm, isPowered, activeLamp, dialBg);
-  const ctx: FaceCtx = { P, arc, ink, isSifam, x0, y0 };
+  const ctx: FaceCtx = { P, arc, ink, isFisam, isSifam: isFisam, x0, y0 };
 
   let s = `<g id="xtm_meter_group_${id}" class="xtm-meter-group xtm-meter-${id}">
     <clipPath id="xmc${id}"><rect x="${x0}" y="${y0}" width="${MW}" height="${MH}" rx="5"/></clipPath>
@@ -39,10 +39,10 @@ export function renderMeterShell(id: number, cx: number, cy: number, kind: 'vu' 
     <clipPath id="xshatter_clip_${id}"><rect x="${x0 + 6}" y="${y0 + 6}" width="${MW - 12}" height="${MH - 12}" rx="18"/></clipPath>
     <g clip-path="url(#xmc${id})">
       <!-- Base Dial Plate Background with Rich Radiance Gradient -->
-      <rect class="xt-face xt-lamp-${kind === 'vu' && !isBlackPpm ? activeLamp : 'ppm'}" x="${x0}" y="${y0}" width="${MW}" height="${MH}" rx="5" fill="${fillGrad}"/>`;
+      <rect class="xt-face xt-lamp-${activeLamp}" x="${x0}" y="${y0}" width="${MW}" height="${MH}" rx="5" fill="${fillGrad}"/>`;
 
-  // Warm incandescent filament halo glow behind VU scales (dual bottom lamps for Ward-Beck.ca)
-  if (kind === 'vu' && isPowered && lampHasBloom(activeLamp) && dialBg !== 'dark_night') {
+  // Warm incandescent filament halo glow behind dial scales (dual bottom lamps for Ward-Beck.ca or top filament bloom)
+  if (isPowered && lampHasBloom(activeLamp)) {
     const isBottom = lampBloomPos(activeLamp) === 'bottom' || isWbsCa;
     if (isBottom) {
       // Dual bottom lamps: full-width rects with left & right radial lamp gradients (smooth & seamless)
@@ -77,7 +77,7 @@ export function renderMeterShell(id: number, cx: number, cy: number, kind: 'vu' 
 
   // Hardware-accelerated rotating needle assembly
   const needle = isPpm ? style.ppmNeedle(px, py, R) : style.vuNeedle(px, py, R);
-  s += renderNeedleGroup(id, restAngle(isSifam), px, py, needle);
+  s += renderNeedleGroup(id, restAngle(isFisam), px, py, needle);
 
   s += chamberShadows(x0, y0);
 

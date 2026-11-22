@@ -11,6 +11,8 @@ export interface ShellOptions {
   power: boolean;
   dialLamp: string;
   dialBg?: string;
+  ppmLamp?: string;
+  ppmDialBg?: string;
   meterStyle: string;
   ppmStandard: string;
 }
@@ -18,8 +20,13 @@ export interface ShellOptions {
 export function buildShellSvg(o: ShellOptions): string {
   const on = o.power;
   const dialBg = o.dialBg || 'auto';
-  const meter = (id: number, fallbackX: number, kind: 'vu' | 'ppm') =>
-    renderMeterShell(id, MX[id] ?? fallbackX, MYc, kind, on, o.dialLamp, kind === 'ppm', o.meterStyle, o.ppmStandard, dialBg);
+  const ppmLamp = o.ppmLamp || 'unlit';
+  const ppmDialBg = o.ppmDialBg || 'auto';
+  const meter = (id: number, fallbackX: number, kind: 'vu' | 'ppm') => {
+    const lamp = kind === 'ppm' ? ppmLamp : o.dialLamp;
+    const bg = kind === 'ppm' ? ppmDialBg : dialBg;
+    return renderMeterShell(id, MX[id] ?? fallbackX, MYc, kind, on, lamp, kind === 'ppm', o.meterStyle, o.ppmStandard, bg);
+  };
 
   return `<svg class="xtm-master-panel" id="xtm_master_panel" viewBox="0 0 ${VW} ${VH}" role="img" aria-label="Ward-Beck Systems XTM Master Visualizer" style="width:100%;display:block;border-radius:0">
       ${SHELL_DEFS}

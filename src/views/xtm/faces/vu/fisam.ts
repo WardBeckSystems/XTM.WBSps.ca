@@ -1,6 +1,6 @@
 /*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.ca). All rights reserved. */
 /**
- * SIFAM AL29 movement (meterStyle 'sifam', model default): +-50 deg span,
+ * FISAM AL29 movement (meterStyle 'fisam', model default): +-50 deg span,
  * mirrored VU / VU legends above the scale, slender tapered wand pointers.
  */
 import type { FaceCtx, VuFaceStyle } from '../face-types';
@@ -51,4 +51,5 @@ function ppmNeedle(px: number, py: number, R: number): NeedleParts {
   };
 }
 
-export const SIFAM_STYLE: VuFaceStyle = { isSifam: true, legend, vuNeedle, ppmNeedle };
+export const FISAM_STYLE: VuFaceStyle = { isFisam: true, isSifam: true, legend, vuNeedle, ppmNeedle };
+export const SIFAM_STYLE = FISAM_STYLE;

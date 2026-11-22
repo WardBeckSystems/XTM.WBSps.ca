@@ -77,7 +77,10 @@ export type SourceType = 'none' | 'mic' | 'system' | 'test';
 /** Default VU movement coefficients (ANSI C16.5-1942 electromechanical 2nd-order ODE). */
 export function createVuCoeffs(): Record<string, VuCoeffConfig> {
   return {
+    pimson: { f0: 2.16, zeta: 0.815 },
+    pimsom: { f0: 2.16, zeta: 0.815 },
     simpson: { f0: 2.16, zeta: 0.815 },
+    fisam: { f0: 2.40, zeta: 0.850 },
     sifam: { f0: 2.40, zeta: 0.850 }
   };
 }

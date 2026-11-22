@@ -11,8 +11,9 @@ export interface FaceCtx {
   arc: ArcFn;
   /** engraving ink colour */
   ink: string;
-  /** Sifam angle span (+-50 deg) instead of +-45 deg */
-  isSifam: boolean;
+  /** Fisam angle span (+-50 deg) instead of +-45 deg */
+  isFisam: boolean;
+  isSifam?: boolean;
   /** window top-left */
   x0: number;
   y0: number;
@@ -20,7 +21,8 @@ export interface FaceCtx {
 
 /** A VU movement style (meterStyle): legends and needle shapes */
 export interface VuFaceStyle {
-  readonly isSifam: boolean;
+  readonly isFisam: boolean;
+  readonly isSifam?: boolean;
   /** VU / VU legends on the VU face */
   legend(ctx: FaceCtx): string;
   /** VU pointer (px, py = pivot, R = scale radius) */

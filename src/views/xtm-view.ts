@@ -65,7 +65,7 @@ export class XtmView {
   readonly BH: number = L.BH;
   readonly BY: number = L.BY;
 
-  currentMeterStyle: MeterStyle = 'simpson';
+  currentMeterStyle: MeterStyle = 'pimson';
 
   /** PPM ballistics standard chosen in Settings; selects the PPM face in WBS mode. */
   ppmStandard: string = 'type2';
@@ -128,19 +128,19 @@ export class XtmView {
   /* ---------------- Rendering helpers (delegates to xtm/) ---------------- */
   getCenterPlatePath(): string { return getCenterPlatePath(); }
   vuFrac(db: number): number { return scale.vuFrac(db); }
-  vuAngle(p: number, isSifam = false): number { return scale.vuAngle(p, isSifam); }
+  vuAngle(p: number, isFisam = false): number { return scale.vuAngle(p, isFisam); }
   ppmFrac(db: number | null): number { return scale.ppmFrac(db); }
-  ppmAngle(q: number, isSifam = false): number { return scale.ppmAngle(q, isSifam); }
+  ppmAngle(q: number, isFisam = false): number { return scale.ppmAngle(q, isFisam); }
 
   renderDotMatrix(text: string, x: number, y: number, pitch: number, onColor: string, offColor: string): string {
     return renderDotMatrix(text, x, y, pitch, onColor, offColor);
   }
 
-  renderAltPpmFace(P: PolarFn, arc: ArcFn, ink: string, isSifam: boolean): string {
-    return renderAltPpmFace(altPpmFace(this.ppmStandard), P, arc, ink, isSifam);
+  renderAltPpmFace(P: PolarFn, arc: ArcFn, ink: string, isFisam: boolean): string {
+    return renderAltPpmFace(altPpmFace(this.ppmStandard), P, arc, ink, isFisam);
   }
 
-  renderMeterShell(id: number, cx: number, cy: number, kind: 'vu' | 'ppm', isPowered: boolean, dialLamp: string, isBlackPpm = false, meterStyle = 'simpson', dialBg = 'auto'): string {
+  renderMeterShell(id: number, cx: number, cy: number, kind: 'vu' | 'ppm', isPowered: boolean, dialLamp: string, isBlackPpm = false, meterStyle = 'pimson', dialBg = 'auto'): string {
     return renderMeterShell(id, cx, cy, kind, isPowered, dialLamp, isBlackPpm, meterStyle, this.ppmStandard, dialBg);
   }
 
@@ -151,11 +151,13 @@ export class XtmView {
 
   /* ---------------- Build Complete Base SVG Shell ---------------- */
   buildShell(model: XtmModel): string {
-    this.currentMeterStyle = model?.meterStyle || 'simpson';
+    this.currentMeterStyle = model?.meterStyle || 'pimson';
     return buildShellSvg({
       power: model.power,
       dialLamp: model.dialLamp,
       dialBg: model.dialBg,
+      ppmLamp: model.ppmLamp,
+      ppmDialBg: model.ppmDialBg,
       meterStyle: model.meterStyle,
       ppmStandard: this.ppmStandard
     });
@@ -221,10 +223,10 @@ export class XtmView {
   }
 
   /* ---------------- Priority 1: Needle Processing ---------------- */
-  updateNeedles(levels: MeterFrameTelemetry, on: boolean = true, isSifam?: boolean): void {
+  updateNeedles(levels: MeterFrameTelemetry, on: boolean = true, isFisam?: boolean): void {
     if (!this.container || !this.isBuilt) return;
-    const sifam = isSifam !== undefined ? isSifam : (this.currentMeterStyle === 'sifam');
-    applyNeedleAngles(needleAngles(levels, on, sifam), this.lastAngles, this.needleEls);
+    const fisam = isFisam !== undefined ? isFisam : (this.currentMeterStyle === 'fisam' || this.currentMeterStyle === 'sifam');
+    applyNeedleAngles(needleAngles(levels, on, fisam), this.lastAngles, this.needleEls);
   }
 
   /* ---------------- Priority 2: Secondary Visual Elements ---------------- */
@@ -318,11 +320,13 @@ export class XtmView {
       this.vuCleanStartTime = 0;
     }
 
-    // Glass Cracking Overload Detection: past 0 peak constant for 20 seconds
+    // Glass Cracking Overload Detection: sustained extreme volume overload for 20 seconds
+    // Volume threshold increased: requires sustained pinning in the red (+3 VU / +8 dB PPM / 0 dBFS clip)
     const pastZeroPeak = on && levels.hasAudio && (
-      (levels.ppmDb && (levels.ppmDb[0] > 0 || levels.ppmDb[1] > 0)) ||
-      (levels.ppm && (levels.ppm[0] > 0.5 || levels.ppm[1] > 0.5)) ||
-      (levels.peak && (levels.peak[0] || levels.peak[1])) ||
+      (levels.vuDb && (levels.vuDb[0] >= 3.0 || levels.vuDb[1] >= 3.0)) ||
+      (levels.vu && (levels.vu[0] >= 1.0 || levels.vu[1] >= 1.0)) ||
+      (levels.ppmDb && (levels.ppmDb[0] >= 8.0 || levels.ppmDb[1] >= 8.0)) ||
+      (levels.ppm && (levels.ppm[0] >= 0.833 || levels.ppm[1] >= 0.833)) ||
       (levels.dbfs && (levels.dbfs[0] >= 0 || levels.dbfs[1] >= 0))
     );
 
@@ -526,8 +530,8 @@ export class XtmView {
     }
 
     // 1. NEEDLES PROCESSED FIRST
-    const isSifam = model ? (model.meterStyle === 'sifam') : false;
-    this.updateNeedles(levels, model ? model.power : true, isSifam);
+    const isFisam = model ? (model.meterStyle === 'fisam' || model.meterStyle === 'sifam') : false;
+    this.updateNeedles(levels, model ? model.power : true, isFisam);
 
     // 2. SECONDARY PROCESSING AFTER
     this.renderSecondary(model, levels);

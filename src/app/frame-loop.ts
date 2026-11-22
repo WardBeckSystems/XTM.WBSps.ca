@@ -27,7 +27,7 @@ export function startFrameLoop(ctx: AppContext, recorder: TelemetryRecorder): vo
     });
 
     // 100% Guaranteed: Needles process data and commit GPU matrix FIRST
-    view.updateNeedles(levels, model.power, model.meterStyle === 'sifam');
+    view.updateNeedles(levels, model.power, model.meterStyle === 'fisam' || model.meterStyle === 'sifam');
 
     // =========================================================================
     // STEP 2: SECONDARY DISPLAY & CONTROL ELEMENTS

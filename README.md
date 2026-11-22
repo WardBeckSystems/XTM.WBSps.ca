@@ -93,8 +93,8 @@ The visualizer renders the authentic CorelDRAW silkscreen artwork and PIC16F874 
 ### 1. Moving-Coil VU Meter (ANSI C16.5 / IEC 60268-17)
 Simulated via a continuous 2nd-order electromechanical mass-spring-damper differential equation transformed via bilinear transform:
 $$H_{needle}(s) = \frac{\omega_0^2}{s^2 + 2\zeta \omega_0 s + \omega_0^2}$$
-- **Simpson Style:** $\omega_0 = 2\pi \cdot 2.1\text{ Hz}$, damping ratio $\zeta = 0.65$ ($300\text{ ms}$ rise time, $1.0\%\text{--}1.5\%$ overshoot, warm amber dial backlighting).
-- **Modern Sifam Style:** $\omega_0 = 2\pi \cdot 3.2\text{ Hz}$, damping ratio $\zeta = 0.85$ ($200\text{ ms}$ settling, taut-band movement, crisp white dial).
+- **Pimson Style:** $\omega_0 = 2\pi \cdot 2.1\text{ Hz}$, damping ratio $\zeta = 0.65$ ($300\text{ ms}$ rise time, $1.0\%\text{--}1.5\%$ overshoot, warm amber dial backlighting).
+- **Modern Fisam Style:** $\omega_0 = 2\pi \cdot 3.2\text{ Hz}$, damping ratio $\zeta = 0.85$ ($200\text{ ms}$ settling, taut-band movement, crisp white dial).
 
 ### 2. Peak Program Meter (IEC 60268-10 Type IIb Nordic / BBC)
 - Logarithmic attack time constant $\tau_{att} = 5\text{ ms}$.

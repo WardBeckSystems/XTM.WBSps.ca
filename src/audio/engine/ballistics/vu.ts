@@ -1,7 +1,7 @@
 /*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.ca). All rights reserved. */
 /**
  * VU meter movement ballistics (ANSI C16.5-1942 electromechanical 2nd-order ODE),
- * discretised with the bilinear transform. Simpson / Sifam movement styles and
+ * discretised with the bilinear transform. Pimson / Fisam movement styles and
  * presets from the VU ballistics library.
  */
 
@@ -55,11 +55,11 @@ export function vuDbOf(p: number): number {
 }
 
 /**
- * Set VU Movement Style: 'simpson' (classic amber 300ms) or 'sifam' (crisp 200ms)
+ * Set VU Movement Style: 'pimson' (classic amber 300ms) or 'fisam' (crisp 200ms)
  */
-export function setVuStyle(engine: XtmAudioEngine, style: 'simpson' | 'sifam' | string): void {
-  if (style !== 'simpson' && style !== 'sifam') return;
-  engine.vuStyle = style;
+export function setVuStyle(engine: XtmAudioEngine, style: 'pimson' | 'pimsom' | 'simpson' | 'fisam' | 'sifam' | string): void {
+  if (style !== 'pimson' && style !== 'pimsom' && style !== 'simpson' && style !== 'fisam' && style !== 'sifam') return;
+  engine.vuStyle = (style === 'sifam') ? 'fisam' : (style === 'simpson' || style === 'pimsom') ? 'pimson' : (style as any);
   engine.calculateCoefficients();
   const cfg = activeVuMovement(engine);
   if (engine.wasmDsp && engine.wasmDsp.ready) {

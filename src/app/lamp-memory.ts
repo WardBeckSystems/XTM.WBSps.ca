@@ -12,17 +12,19 @@ const lsSet = (k: string, v: string) => { try { localStorage.setItem(k, v); } ca
 
 export function initLampMemory(ctx: AppContext, refs: DrawerControls): void {
   const { model, view } = ctx;
-  const { selectLampColor, selectDialBg, selectConsoleBg } = refs;
+  const { selectLampColor, selectDialBg, selectPpmLampColor, selectPpmDialBg, selectConsoleBg } = refs;
 
   const lampKey = () => {
-    if (document.body.classList.contains('theme-mccurdy')) return 'xtm.lamp.mccurdy';
-    if (document.body.classList.contains('theme-wbs-ca')) return 'xtm.lamp.wbsca';
-    return 'xtm.lamp.dark';
+    if (document.body.classList.contains('theme-mccurdy-dark')) return 'xtm.lamp.v2.mccurdyDark';
+    if (document.body.classList.contains('theme-mccurdy')) return 'xtm.lamp.v2.mccurdyLight';
+    if (document.body.classList.contains('theme-wbs-ca')) return 'xtm.lamp.v2.wbsca';
+    return 'xtm.lamp.v2.wbsdark';
   };
   const applyModeLamp = () => {
-    const mc = document.body.classList.contains('theme-mccurdy');
+    const isMcLight = document.body.classList.contains('theme-mccurdy');
+    const isMcDark = document.body.classList.contains('theme-mccurdy-dark');
     const wbsCa = document.body.classList.contains('theme-wbs-ca');
-    const defaultLamp = wbsCa ? 'amber_bottom' : (mc ? 'parchment' : 'amber');
+    const defaultLamp = wbsCa ? 'amber_bottom' : (isMcLight ? 'unlit' : (isMcDark ? 'amber' : 'amber'));
     const lamp = lsGet(lampKey()) || defaultLamp;
     if (lamp !== model.dialLamp) {
       model.dialLamp = lamp;
@@ -30,8 +32,6 @@ export function initLampMemory(ctx: AppContext, refs: DrawerControls): void {
     }
     if (selectLampColor) selectLampColor.value = model.dialLamp;
   };
-  if (!lsGet('xtm.lamp.dark')) lsSet('xtm.lamp.dark', model.dialLamp || 'amber');
-  if (!lsGet('xtm.lamp.wbsca')) lsSet('xtm.lamp.wbsca', 'amber_bottom');
   applyModeLamp();
   new MutationObserver(applyModeLamp).observe(document.body, { attributes: true, attributeFilter: ['class'] });
 
@@ -56,6 +56,51 @@ export function initLampMemory(ctx: AppContext, refs: DrawerControls): void {
     selectDialBg.addEventListener('change', (e: any) => {
       model.dialBg = e.target.value;
       lsSet(dialBgKey, model.dialBg);
+      model.saveEEPROM();
+      view.isBuilt = false;
+    });
+  }
+
+  // PPM Lamp Memory & Selection
+  const ppmLampKey = () => {
+    if (document.body.classList.contains('theme-mccurdy-dark')) return 'xtm.ppmLamp.v2.mccurdyDark';
+    if (document.body.classList.contains('theme-mccurdy')) return 'xtm.ppmLamp.v2.mccurdyLight';
+    if (document.body.classList.contains('theme-wbs-ca')) return 'xtm.ppmLamp.v2.wbsca';
+    return 'xtm.ppmLamp.v2.wbsdark';
+  };
+  const applyModePpmLamp = () => {
+    const lamp = lsGet(ppmLampKey()) || 'unlit';
+    if (lamp !== model.ppmLamp) {
+      model.ppmLamp = lamp;
+      view.isBuilt = false;
+    }
+    if (selectPpmLampColor) selectPpmLampColor.value = model.ppmLamp;
+  };
+  if (!lsGet('xtm.ppmLamp.dark')) lsSet('xtm.ppmLamp.dark', model.ppmLamp || 'unlit');
+  applyModePpmLamp();
+  new MutationObserver(applyModePpmLamp).observe(document.body, { attributes: true, attributeFilter: ['class'] });
+
+  if (selectPpmLampColor) {
+    selectPpmLampColor.value = model.ppmLamp || 'unlit';
+    selectPpmLampColor.addEventListener('change', (e: any) => {
+      model.ppmLamp = e.target.value;
+      lsSet(ppmLampKey(), model.ppmLamp);
+      model.saveEEPROM();
+      view.isBuilt = false;
+    });
+  }
+
+  // PPM Dial Background Memory & Selection
+  const ppmDialBgKey = 'xtm.ppmDial.bg';
+  const savedPpmDialBg = lsGet(ppmDialBgKey) || model.ppmDialBg || 'auto';
+  if (savedPpmDialBg !== model.ppmDialBg) {
+    model.ppmDialBg = savedPpmDialBg;
+  }
+  if (selectPpmDialBg) {
+    selectPpmDialBg.value = model.ppmDialBg || 'auto';
+    selectPpmDialBg.addEventListener('change', (e: any) => {
+      model.ppmDialBg = e.target.value;
+      lsSet(ppmDialBgKey, model.ppmDialBg);
       model.saveEEPROM();
       view.isBuilt = false;
     });

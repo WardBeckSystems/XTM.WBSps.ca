@@ -34,11 +34,12 @@ export function altPpmFace(ppmStandard: string): AltPpmFace {
 
 /** Full PPM engraving: base arc, WBS-mode face for the standard, McCurdy PGM face */
 export function renderPpmFace(ctx: FaceCtx, ppmStandard: string, isBlackPpm: boolean): string {
-  const { P, arc, ink, isSifam } = ctx;
-  let s = arc(ppmAngle(0, isSifam), ppmAngle(1, isSifam), R, 4, ink);
+  const { P, arc, ink } = ctx;
+  const isFisam = ctx.isFisam ?? ctx.isSifam ?? false;
+  let s = arc(ppmAngle(0, isFisam), ppmAngle(1, isFisam), R, 4, ink);
   s += `<g class="wbs-only">`;
   if (ppmStandard !== 'type2') {
-    s += renderAltPpmFace(altPpmFace(ppmStandard), P, arc, ink, isSifam);
+    s += renderAltPpmFace(altPpmFace(ppmStandard), P, arc, ink, isFisam);
   } else {
     s += renderWbsType2Face(ctx, isBlackPpm);
   }

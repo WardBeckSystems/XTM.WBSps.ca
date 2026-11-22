@@ -5,16 +5,16 @@ import { MX, PY } from '../layout/wbs-layout';
 import { vuAngle, ppmAngle, restAngle } from '../lib/scale-math';
 
 /** Target angles for meters 0..3 (VU A, PPM A, VU B, PPM B) */
-export function needleAngles(levels: MeterFrameTelemetry, on: boolean, sifam: boolean): [number, number, number, number] {
+export function needleAngles(levels: MeterFrameTelemetry, on: boolean, fisam: boolean): [number, number, number, number] {
   const vu = levels?.vu ?? [0, 0];
   const ppm = levels?.ppm ?? [-0.12, -0.12];
-  const restVu = restAngle(sifam);
-  const restPpm = restAngle(sifam);
+  const restVu = restAngle(fisam);
+  const restPpm = restAngle(fisam);
   return [
-    on ? vuAngle(vu[0] ?? 0, sifam) : restVu,
-    on ? ppmAngle(ppm[0] ?? -0.12, sifam) : restPpm,
-    on ? vuAngle(vu[1] ?? 0, sifam) : restVu,
-    on ? ppmAngle(ppm[1] ?? -0.12, sifam) : restPpm
+    on ? vuAngle(vu[0] ?? 0, fisam) : restVu,
+    on ? ppmAngle(ppm[0] ?? -0.12, fisam) : restPpm,
+    on ? vuAngle(vu[1] ?? 0, fisam) : restVu,
+    on ? ppmAngle(ppm[1] ?? -0.12, fisam) : restPpm
   ];
 }
 

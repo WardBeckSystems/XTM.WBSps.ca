@@ -15,6 +15,8 @@ export interface DrawerControls {
   selectToneCal: HTMLSelectElement | null;
   selectLampColor: HTMLSelectElement | null;
   selectDialBg: HTMLSelectElement | null;
+  selectPpmLampColor: HTMLSelectElement | null;
+  selectPpmDialBg: HTMLSelectElement | null;
   selectConsoleBg: HTMLSelectElement | null;
   chkHpf: HTMLInputElement | null;
   chkTerm: HTMLInputElement | null;
@@ -38,6 +40,8 @@ export function queryDrawerControls(): DrawerControls {
     selectToneCal: document.getElementById('selectToneCal') as HTMLSelectElement | null,
     selectLampColor: document.getElementById('selectLampColor') as HTMLSelectElement | null,
     selectDialBg: document.getElementById('selectDialBackground') as HTMLSelectElement | null,
+    selectPpmLampColor: document.getElementById('selectPpmLampColor') as HTMLSelectElement | null,
+    selectPpmDialBg: document.getElementById('selectPpmDialBackground') as HTMLSelectElement | null,
     selectConsoleBg: document.getElementById('selectConsoleBackground') as HTMLSelectElement | null,
     chkHpf: document.getElementById('chkHpf') as HTMLInputElement | null,
     chkTerm: document.getElementById('chkTerm') as HTMLInputElement | null,

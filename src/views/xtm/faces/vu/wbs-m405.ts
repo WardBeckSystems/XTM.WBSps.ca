@@ -37,19 +37,20 @@ function legend(ctx: FaceCtx): string {
 }
 
 export function renderWbsM405Scale(ctx: FaceCtx): string {
-  const { P, arc, ink, isSifam } = ctx;
+  const { P, arc, ink } = ctx;
+  const isFisam = ctx.isFisam ?? ctx.isSifam ?? false;
   const redBandCol = VU_RED;
   let s = '';
 
   // 1. Black Scale Arc (-20 to 0 VU)
-  s += arc(vuAngle(vuFrac(-20), isSifam), vuAngle(vuFrac(0), isSifam), R, 3.8, ink);
+  s += arc(vuAngle(vuFrac(-20), isFisam), vuAngle(vuFrac(0), isFisam), R, 3.8, ink);
 
   // 2. Red Overload Bar (0 to +3 VU)
-  s += arc(vuAngle(vuFrac(0), isSifam), vuAngle(vuFrac(3), isSifam), R + 3, 10, redBandCol);
+  s += arc(vuAngle(vuFrac(0), isFisam), vuAngle(vuFrac(3), isFisam), R + 3, 10, redBandCol);
 
   // 3. Intermediate Ticks
   INTERMEDIATE_TICKS.forEach(d => {
-    const a = vuAngle(vuFrac(d), isSifam);
+    const a = vuAngle(vuFrac(d), isFisam);
     const tickLen = Math.abs(d) <= 3 ? 12 : 14;
     const col = d > 0 ? redBandCol : ink;
     s += tickLine(P, a, R, R + tickLen, col, Math.abs(d) <= 3 ? '2.5' : '3');
@@ -57,7 +58,7 @@ export function renderWbsM405Scale(ctx: FaceCtx): string {
 
   // 4. Major Ticks + Numerals
   MAJOR_TICKS.forEach(d => {
-    const a = vuAngle(vuFrac(d), isSifam);
+    const a = vuAngle(vuFrac(d), isFisam);
     const [tx, ty] = P(a, R + 46);
     const col = d > 0 ? redBandCol : ink;
     s += tickLine(P, a, R, R + 24, col, '4.2') + `
@@ -66,7 +67,7 @@ export function renderWbsM405Scale(ctx: FaceCtx): string {
 
   // 5. Lower Modulation Percentage Scale (20 - 100%)
   PERCENT_POINTS.forEach(({ pc, d }) => {
-    const a = vuAngle(vuFrac(d), isSifam);
+    const a = vuAngle(vuFrac(d), isFisam);
     const [x1, y1] = P(a, R - 10), [tx, ty] = P(a, R - 34);
     s += `<circle cx="${x1.toFixed(1)}" cy="${y1.toFixed(1)}" r="3.8" fill="${ink}"/>
       <text x="${tx.toFixed(1)}" y="${(ty + 6).toFixed(1)}" font-size="16" font-weight="700" text-anchor="middle" fill="${ink}">${pc}</text>`;
@@ -136,6 +137,7 @@ export function wbsOrangePpmNeedle(px: number, py: number, R: number): NeedlePar
 }
 
 export const WBS_M405_STYLE: VuFaceStyle = {
+  isFisam: false,
   isSifam: false,
   legend,
   vuNeedle: wbsOrangeVuNeedle,

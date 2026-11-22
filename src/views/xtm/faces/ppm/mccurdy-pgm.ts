@@ -9,8 +9,9 @@ import { ppmAngle } from '../../lib/scale-math';
 import { tickLine } from '../../lib/svg';
 
 export function renderMcCurdyPgmFace(ctx: FaceCtx): string {
-  const { P, arc, ink, isSifam } = ctx;
-  const q = (d: number) => ppmAngle((d + 12) / 24, isSifam);
+  const { P, arc, ink } = ctx;
+  const isFisam = ctx.isFisam ?? ctx.isSifam ?? false;
+  const q = (d: number) => ppmAngle((d + 12) / 24, isFisam);
   const yel = '#e3c22a';
   let m = `<g class="mc-only">`;
   m += arc(q(8), q(12), R + 9, 18, yel);
@@ -29,7 +30,7 @@ export function renderMcCurdyPgmFace(ctx: FaceCtx): string {
     const [x, y] = P(q(d), R - 42);
     m += lbl(x, y, v > 0 ? '+' + v : String(v));
   });
-  const [gx, gy] = P(ppmAngle(0.9, isSifam), R + 92);
+  const [gx, gy] = P(ppmAngle(0.9, isFisam), R + 92);
   m += lbl(gx, gy, 'PGM');
   m += `</g>`;
   return m;

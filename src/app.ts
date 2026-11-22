@@ -81,6 +81,7 @@ export async function initApp(): Promise<void> {
 
   initConsentBanner(ctx);
   restoreSavedConfig(ctx); // after every control is bound, as before
+  (window as any).applyModeMeter?.();
   initWbsProfileFiles(ctx, sync);
   initAutoSave(ctx, refs);
 

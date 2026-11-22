@@ -31,9 +31,11 @@ export class XtmModel {
 
   public set: XtmModeStateSet = { scr: 'HP' };
 
-  public meterStyle: MeterStyle = 'sifam';
+  public meterStyle: MeterStyle = 'fisam';
   public dialLamp: string = 'amber';
   public dialBg: string = 'auto';
+  public ppmLamp: string = 'unlit';
+  public ppmDialBg: string = 'auto';
   public ppmStyle: string = 'black';
   public artMode: string = 'svg';
   public vfdMetric: string = 'lufs';
@@ -438,6 +440,8 @@ export class XtmModel {
         meterStyle: this.meterStyle,
         dialLamp: this.dialLamp,
         dialBg: this.dialBg,
+        ppmLamp: this.ppmLamp,
+        ppmDialBg: this.ppmDialBg,
         ppmStyle: this.ppmStyle,
         selectedInput: this.getSelectedInput(),
         mcRangeMode: this.mcRangeMode,
@@ -463,12 +467,18 @@ export class XtmModel {
         if (obj.s) this.s = Object.assign(this.s, obj.s);
         if (obj.hp !== undefined) this.hp = obj.hp;
         if (obj.term !== undefined) this.term = obj.term;
-        if (obj.meterStyle) this.meterStyle = obj.meterStyle;
+        if (obj.meterStyle) {
+          if (obj.meterStyle === 'sifam') this.meterStyle = 'fisam';
+          else if (obj.meterStyle === 'simpson' || obj.meterStyle === 'pimsom') this.meterStyle = 'pimson';
+          else this.meterStyle = obj.meterStyle;
+        }
         if (obj.selectedInput) this.selectedInput = obj.selectedInput;
         if (obj.mcRangeMode) this.mcRangeMode = obj.mcRangeMode;
         if (typeof obj.mcAttenuatorStep === 'number') this.mcAttenuatorStep = obj.mcAttenuatorStep;
         if (obj.dialLamp) this.dialLamp = obj.dialLamp;
         if (obj.dialBg) this.dialBg = obj.dialBg;
+        if (obj.ppmLamp) this.ppmLamp = obj.ppmLamp;
+        if (obj.ppmDialBg) this.ppmDialBg = obj.ppmDialBg;
         if (obj.ppmStyle) this.ppmStyle = obj.ppmStyle;
         if (typeof obj.isLockedExpanded === 'boolean') this.isLockedExpanded = obj.isLockedExpanded;
         if (typeof obj.autoRange === 'boolean') this.autoRange = obj.autoRange;

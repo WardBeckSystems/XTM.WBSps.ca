@@ -22,8 +22,8 @@ export interface AltPpmFace {
 
 const RED = '#ef4444';
 
-export function renderAltPpmFace(f: AltPpmFace, P: PolarFn, arc: ArcFn, ink: string, isSifam: boolean): string {
-  const q = (d: number) => ppmAngle((d + 12) / 24, isSifam);
+export function renderAltPpmFace(f: AltPpmFace, P: PolarFn, arc: ArcFn, ink: string, isFisam: boolean): string {
+  const q = (d: number) => ppmAngle((d + 12) / 24, isFisam);
   const red = RED;
   const dOf = (L: number) => L - f.offset;           // engraved value -> dB about tone
   let s = arc(q(dOf(f.redFrom)), q(12), R + 8, 16, red);
