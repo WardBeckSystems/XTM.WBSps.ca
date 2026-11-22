@@ -410,12 +410,99 @@ class MxlEngine:
             quantum=256,
         )
         self.flows[self.tone_flow.flow_id] = self.tone_flow
+        self._publish_cbc_mxl_flows()
+
+    def _publish_cbc_mxl_flows(self):
+        """
+        Publishes Ward-Beck flows (ABB-1 Bit Spitter and WBS Master Audio) directly
+        into the CBC/Radio-Canada MXL domain (/dev/shm/mxl/domain_1) so that
+        mxl2webrtc (http://localhost:9601/) and mxl-info-gui automatically discover
+        and stream them via WebRTC.
+        """
+        cbc_domain_dir = os.path.join(SHM_BASE_DIR, "domain_1")
+        if not os.path.isdir(cbc_domain_dir):
+            try:
+                os.makedirs(cbc_domain_dir, exist_ok=True)
+            except Exception:
+                return
+
+        flows_to_publish = [
+            {
+                "uuid": "e4a78120-abb1-4800-8000-000000000001",
+                "label": "ABB-1-Bit-Spitter",
+                "grouphint": "Ward-Beck:Bit-Spitter",
+                "desc": "Ward-Beck ABB-1 Audio Bit Buddy & ABP-1 Bit Spitter",
+            },
+            {
+                "uuid": "e4a78120-abb1-4800-8000-000000000002",
+                "label": "WBS-Master-Audio",
+                "grouphint": "Ward-Beck:Master",
+                "desc": "Ward-Beck Systems Console Master Audio Flow",
+            },
+        ]
+
+        ref_flow_dir = os.path.join(cbc_domain_dir, "9b85cd39-2476-5467-b1cf-9eb8615dc07c.mxl-flow")
+        ref_data = b""
+        ref_channels = b""
+        if os.path.isdir(ref_flow_dir):
+            try:
+                with open(os.path.join(ref_flow_dir, "data"), "rb") as f:
+                    ref_data = f.read()
+                with open(os.path.join(ref_flow_dir, "channels"), "rb") as f:
+                    ref_channels = f.read()
+            except Exception:
+                pass
+
+        for flw in flows_to_publish:
+            flw_uuid = flw["uuid"]
+            flw_dir = os.path.join(cbc_domain_dir, f"{flw_uuid}.mxl-flow")
+            os.makedirs(flw_dir, exist_ok=True)
+
+            fdef_path = os.path.join(flw_dir, "flow_def.json")
+            fdef = {
+                "id": flw_uuid,
+                "description": flw["desc"],
+                "tags": {
+                    "urn:x-nmos:tag:grouphint/v1.0": [flw["grouphint"]]
+                },
+                "format": "urn:x-nmos:format:audio",
+                "label": flw["label"],
+                "parents": [],
+                "media_type": "audio/float32",
+                "sample_rate": {"numerator": 48000, "denominator": 1},
+                "channel_count": 2,
+                "bit_depth": 32
+            }
+            try:
+                with open(fdef_path, "w", encoding="utf-8") as f:
+                    json.dump(fdef, f, indent=2)
+            except Exception:
+                pass
+
+            data_file = os.path.join(flw_dir, "data")
+            if ref_data and not os.path.exists(data_file):
+                try:
+                    d_bytes = bytearray(ref_data)
+                    d_bytes[8:24] = uuid.UUID(flw_uuid).bytes
+                    with open(data_file, "wb") as f:
+                        f.write(d_bytes)
+                except Exception:
+                    pass
+
+            chan_file = os.path.join(flw_dir, "channels")
+            if ref_channels and not os.path.exists(chan_file):
+                try:
+                    with open(chan_file, "wb") as f:
+                        f.write(ref_channels)
+                except Exception:
+                    pass
 
     def start(self, source_device: str = "wbs_meter_tap.monitor"):
         self.active_source = source_device
         self.shutdown_event.clear()
         for f in self.flows.values():
             f.ensure_open()
+        self._publish_cbc_mxl_flows()
 
         # Start edge bridge thread (PipeWire/ALSA -> MXL Shm)
         self.bridge_thread = threading.Thread(target=self._edge_bridge_worker, daemon=True)

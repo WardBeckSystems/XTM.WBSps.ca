@@ -853,23 +853,23 @@ HTML_UI = """<!DOCTYPE html>
   * { box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, monospace; }
   body {
     margin: 0; background: #070d13; color: var(--text-light);
-    display: flex; justify-content: center; padding: 18px;
+    display: flex; justify-content: center; padding: 12px 16px;
   }
   .rack-unit {
-    width: 100%; max-width: 1200px; background: var(--wbs-blue);
-    border: 3px solid #2b547e; border-radius: 8px; padding: 22px;
-    box-shadow: 0 18px 50px rgba(0,0,0,0.85);
+    width: 100%; max-width: 1720px; background: var(--wbs-blue);
+    border: 2px solid #2b547e; border-radius: 8px; padding: 16px 20px;
+    box-shadow: 0 16px 45px rgba(0,0,0,0.85);
   }
   .header {
     display: flex; justify-content: space-between; align-items: center;
-    border-bottom: 2px solid #2b547e; padding-bottom: 14px; margin-bottom: 18px;
+    border-bottom: 2px solid #2b547e; padding-bottom: 10px; margin-bottom: 14px;
     gap: 12px; flex-wrap: wrap;
   }
-  .header h1 { margin: 0; font-size: 1.25rem; letter-spacing: 1.5px; text-transform: uppercase; color: #fff; }
+  .header h1 { margin: 0; font-size: 1.22rem; letter-spacing: 1.4px; text-transform: uppercase; color: #fff; }
   .badge-row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
   .badge {
-    background: var(--wbs-panel); padding: 5px 12px; border-radius: 4px;
-    font-size: 0.78rem; border: 1px solid #356596; font-weight: 700;
+    background: var(--wbs-panel); padding: 4px 10px; border-radius: 4px;
+    font-size: 0.74rem; border: 1px solid #356596; font-weight: 700;
   }
   .badge-active { border-color: var(--accent-green); color: var(--accent-green); }
   .badge-cyan { border-color: var(--accent-cyan); color: var(--accent-cyan); }
@@ -877,25 +877,54 @@ HTML_UI = """<!DOCTYPE html>
 
   /* Section Styling */
   .section-title {
-    font-size: 0.95rem; font-weight: 800; letter-spacing: 1.5px; text-transform: uppercase;
-    color: var(--accent-orange); margin: 24px 0 12px 0; border-left: 4px solid var(--accent-orange);
-    padding-left: 10px; display: flex; justify-content: space-between; align-items: center;
+    font-size: 0.86rem; font-weight: 800; letter-spacing: 1.2px; text-transform: uppercase;
+    color: var(--accent-orange); margin: 12px 0 8px 0; border-left: 3px solid var(--accent-orange);
+    padding-left: 8px; display: flex; justify-content: space-between; align-items: center;
   }
-  .section-subtitle { font-size: 0.75rem; color: var(--text-dim); font-weight: 400; text-transform: none; }
+  .section-subtitle { font-size: 0.72rem; color: var(--text-dim); font-weight: 400; text-transform: none; }
+
+  /* Top Monitoring Deck: 2 Columns on Desktop */
+  .top-monitoring-deck {
+    display: grid;
+    grid-template-columns: minmax(560px, 1.15fr) minmax(480px, 1fr);
+    gap: 16px;
+    margin-bottom: 14px;
+    align-items: stretch;
+  }
+  @media (max-width: 1260px) {
+    .top-monitoring-deck { grid-template-columns: 1fr; }
+  }
+  .deck-col {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+  }
+
+  /* Diagnostics & Generator Deck: 2 Columns on Desktop */
+  .diagnostics-deck {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 14px;
+  }
+  @media (max-width: 1050px) {
+    .diagnostics-deck { grid-template-columns: 1fr; }
+  }
 
   /* MXL 10-Second Continuous Polar Ring Visualizer (Scanalyzer Audio Eye Style) */
   .mxl-card {
     background: var(--wbs-bezel); border: 1px solid #23486a; border-radius: 6px;
-    padding: 18px; margin-bottom: 20px; box-shadow: inset 0 2px 8px rgba(0,0,0,0.6);
+    padding: 14px; box-shadow: inset 0 2px 8px rgba(0,0,0,0.6); flex: 1;
+    display: flex; flex-direction: column; justify-content: center;
   }
   .eye-player-main-grid {
     display: grid;
-    grid-template-columns: minmax(360px, 480px) 1fr;
-    gap: 24px;
+    grid-template-columns: 440px 1fr;
+    gap: 16px;
     align-items: center;
   }
-  @media (max-width: 900px) {
-    .eye-player-main-grid { grid-template-columns: 1fr; }
+  @media (max-width: 950px) {
+    .eye-player-main-grid { grid-template-columns: 1fr; justify-items: center; }
   }
   .eye-player-col {
     display: flex;
@@ -924,7 +953,7 @@ HTML_UI = """<!DOCTYPE html>
     gap: 8px;
     width: 100%;
     max-width: 420px;
-    margin-top: 14px;
+    margin-top: 8px;
     font-family: monospace;
     font-size: 0.72rem;
   }
@@ -961,27 +990,27 @@ HTML_UI = """<!DOCTYPE html>
   .eye-info-col {
     display: flex;
     flex-direction: column;
-    gap: 14px;
+    gap: 10px;
   }
   .eye-flow-switcher {
     background: #09141f;
     border: 1px solid #1c3b5e;
     border-radius: 6px;
-    padding: 10px 14px;
+    padding: 8px 12px;
   }
   .eye-hud-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 12px;
+    gap: 8px;
   }
   .eye-hud-card {
     background: #050b11;
     border: 1px solid #162d47;
     border-radius: 6px;
-    padding: 10px 12px;
+    padding: 8px 10px;
   }
   .eye-hud-label {
-    font-size: 0.66rem;
+    font-size: 0.64rem;
     color: #64748b;
     font-weight: 700;
     letter-spacing: 0.5px;
@@ -989,24 +1018,24 @@ HTML_UI = """<!DOCTYPE html>
   }
   .eye-hud-val {
     font-family: monospace;
-    font-size: 1.05rem;
+    font-size: 0.98rem;
     font-weight: 800;
     color: #fff;
-    margin: 4px 0 2px 0;
+    margin: 3px 0 1px 0;
   }
   .eye-hud-sub {
-    font-size: 0.68rem;
+    font-size: 0.65rem;
     color: #94a3b8;
   }
   .eye-legend-box {
     background: #09141f;
     border: 1px solid #1c3b5e;
     border-radius: 6px;
-    padding: 10px 14px;
+    padding: 8px 12px;
     display: flex;
     flex-direction: column;
-    gap: 6px;
-    font-size: 0.72rem;
+    gap: 4px;
+    font-size: 0.7rem;
     color: #cbd5e1;
   }
   .eye-legend-item {
@@ -1015,24 +1044,24 @@ HTML_UI = """<!DOCTYPE html>
     gap: 8px;
   }
   .legend-swatch {
-    width: 10px;
-    height: 10px;
+    width: 9px;
+    height: 9px;
     border-radius: 2px;
     flex-shrink: 0;
   }
 
   /* Linear Unwrap Visualizer */
   .slice-view-box {
-    margin-top: 16px; background: #050b11; border: 1px solid #1c3b5e; border-radius: 4px;
-    padding: 12px; font-size: 0.75rem; display: none;
+    margin-top: 12px; background: #050b11; border: 1px solid #1c3b5e; border-radius: 4px;
+    padding: 10px; font-size: 0.74rem; display: none;
   }
   .memory-bar {
-    height: 32px; background: #13273d; border-radius: 4px; position: relative;
-    overflow: hidden; margin: 10px 0; display: flex; border: 1px solid #2b547e;
+    height: 28px; background: #13273d; border-radius: 4px; position: relative;
+    overflow: hidden; margin: 8px 0; display: flex; border: 1px solid #2b547e;
   }
   .slice-block {
     height: 100%; display: flex; align-items: center; justify-content: center;
-    font-weight: 700; font-size: 0.7rem; color: #fff;
+    font-weight: 700; font-size: 0.68rem; color: #fff;
   }
   .slice1-block { background: #0284c7; width: 35%; }
   .headroom-block { background: #0f172a; flex: 1; color: #64748b; }
@@ -1040,56 +1069,72 @@ HTML_UI = """<!DOCTYPE html>
 
   /* 3-Layer Pipeline Grid */
   .pipeline-grid {
-    display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-    gap: 16px; margin-bottom: 20px;
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    gap: 10px; flex: 1; margin-bottom: 0;
+  }
+  @media (max-width: 700px) {
+    .pipeline-grid { grid-template-columns: 1fr; }
   }
   .pipeline-card {
-    background: var(--wbs-panel); border: 1px solid #2b547e; border-radius: 6px;
-    padding: 14px; font-size: 0.8rem;
+    background: var(--wbs-panel); border: 1px solid #23486a; border-radius: 6px;
+    padding: 10px 12px; font-size: 0.78rem; display: flex; flex-direction: column; justify-content: space-between;
   }
   .pipeline-card h3 {
-    margin: 0 0 10px 0; font-size: 0.88rem; color: #fff; display: flex;
+    margin: 0 0 8px 0; font-size: 0.82rem; color: #fff; display: flex;
     justify-content: space-between; align-items: center;
   }
   .pipeline-list {
-    list-style: none; padding: 0; margin: 0; font-size: 0.75rem; color: var(--text-dim);
-    max-height: 140px; overflow-y: auto;
+    list-style: none; padding: 0; margin: 0; font-size: 0.72rem; color: var(--text-dim);
+    max-height: 110px; overflow-y: auto; flex: 1;
   }
   .pipeline-list li {
-    padding: 4px 0; border-bottom: 1px solid #183350; white-space: nowrap;
+    padding: 3px 0; border-bottom: 1px solid #183350; white-space: nowrap;
     overflow: hidden; text-overflow: ellipsis;
+  }
+  .pipeline-list::-webkit-scrollbar, .source-grid::-webkit-scrollbar {
+    width: 5px; height: 5px;
+  }
+  .pipeline-list::-webkit-scrollbar-track, .source-grid::-webkit-scrollbar-track {
+    background: #08131d; border-radius: 2px;
+  }
+  .pipeline-list::-webkit-scrollbar-thumb, .source-grid::-webkit-scrollbar-thumb {
+    background: #23486a; border-radius: 2px;
+  }
+  .pipeline-list::-webkit-scrollbar-thumb:hover, .source-grid::-webkit-scrollbar-thumb:hover {
+    background: var(--accent-cyan);
   }
 
   /* Master VU Meters */
   .vu-stage {
-    background: var(--wbs-bezel); border: 2px solid #0f2438; border-radius: 6px;
-    padding: 20px; margin-bottom: 20px; box-shadow: inset 0 4px 15px rgba(0,0,0,0.8);
+    background: var(--wbs-bezel); border: 1px solid #162d47; border-radius: 6px;
+    padding: 10px 12px; margin-bottom: 8px; box-shadow: inset 0 2px 8px rgba(0,0,0,0.6);
   }
   .vu-meters-row {
-    display: flex; gap: 24px; justify-content: center; align-items: center; flex-wrap: wrap;
+    display: flex; gap: 14px; justify-content: center; align-items: stretch;
   }
   .vu-bezel {
-    background: #000; border: 3px solid #334155; border-radius: 6px;
-    padding: 8px; box-shadow: 0 8px 20px rgba(0,0,0,0.9);
+    background: #000; border: 2px solid #23486a; border-radius: 6px;
+    padding: 6px; box-shadow: 0 4px 12px rgba(0,0,0,0.9); flex: 1; max-width: 320px;
+    display: flex; flex-direction: column; align-items: center;
   }
   .vu-dial {
-    width: 320px; height: 195px; background: #eed5a1; border-radius: 4px;
-    position: relative; overflow: hidden;
+    width: 100%; max-width: 290px; aspect-ratio: 320 / 195; height: auto;
+    background: #eed5a1; border-radius: 4px; position: relative; overflow: hidden;
   }
   .vu-dial svg { width: 100%; height: 100%; display: block; }
   .vu-label {
-    text-align: center; margin-top: 8px; font-weight: 700; font-size: 0.85rem;
-    letter-spacing: 1px; color: var(--text-dim);
+    text-align: center; margin-top: 6px; font-weight: 700; font-size: 0.76rem;
+    letter-spacing: 0.8px; color: var(--text-dim);
   }
 
   /* Multi-Source Matrix Grid */
   .source-grid {
-    display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 14px; margin-bottom: 20px;
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 12px; margin-bottom: 14px;
   }
   .source-card {
     background: var(--wbs-panel); border: 1px solid #23486a; border-radius: 6px;
-    padding: 12px; display: flex; flex-direction: column; justify-content: space-between;
+    padding: 10px 12px; display: flex; flex-direction: column; justify-content: space-between;
     transition: all 0.15s ease;
   }
   .source-card.tapped {
@@ -1098,12 +1143,12 @@ HTML_UI = """<!DOCTYPE html>
   }
   .source-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; }
   .source-name {
-    font-size: 0.82rem; font-weight: 700; color: #fff; word-break: break-all;
-    line-height: 1.25; margin-bottom: 4px;
+    font-size: 0.8rem; font-weight: 700; color: #fff; word-break: break-all;
+    line-height: 1.25; margin-bottom: 3px;
   }
-  .source-desc { font-size: 0.72rem; color: var(--text-dim); }
+  .source-desc { font-size: 0.7rem; color: var(--text-dim); }
   .source-pill {
-    font-size: 0.65rem; padding: 2px 6px; border-radius: 3px; font-weight: 800; text-transform: uppercase;
+    font-size: 0.62rem; padding: 2px 6px; border-radius: 3px; font-weight: 800; text-transform: uppercase;
   }
   .pill-wbs { background: #0369a1; color: #fff; }
   .pill-monitor { background: #334155; color: #94a3b8; }
@@ -1112,20 +1157,20 @@ HTML_UI = """<!DOCTYPE html>
   .pill-mxl { background: #c2410c; color: #ffedd5; border: 1px solid #ea580c; }
   
   .mini-meter-track {
-    width: 100%; height: 10px; background: #08131d; border-radius: 3px;
-    overflow: hidden; margin: 10px 0 6px 0; border: 1px solid #162e47; position: relative;
+    width: 100%; height: 8px; background: #08131d; border-radius: 3px;
+    overflow: hidden; margin: 8px 0 5px 0; border: 1px solid #162e47; position: relative;
   }
   .mini-meter-fill {
     height: 100%; width: 0%; background: linear-gradient(90deg, #22c55e 60%, #eab308 85%, #ef4444 100%);
     transition: width 0.08s ease;
   }
   .meter-digits {
-    display: flex; justify-content: space-between; font-size: 0.68rem; color: #94a3b8; font-weight: 600;
+    display: flex; justify-content: space-between; font-size: 0.66rem; color: #94a3b8; font-weight: 600;
   }
 
   .btn-tap {
-    width: 100%; margin-top: 8px; padding: 7px; background: #162f47; border: 1px solid #2b547e;
-    color: #e6eef5; border-radius: 4px; font-weight: 700; font-size: 0.75rem;
+    width: 100%; margin-top: 6px; padding: 6px; background: #162f47; border: 1px solid #2b547e;
+    color: #e6eef5; border-radius: 4px; font-weight: 700; font-size: 0.74rem;
     cursor: pointer; transition: all 0.15s ease;
   }
   .btn-tap:hover { background: #23486a; color: #fff; }
@@ -1133,12 +1178,13 @@ HTML_UI = """<!DOCTYPE html>
 
   /* Buttons & Controls */
   .controls-bar {
-    display: flex; gap: 12px; flex-wrap: wrap; margin-top: 14px;
-    background: var(--wbs-panel); padding: 12px; border-radius: 6px; border: 1px solid #23486a;
+    display: flex; gap: 10px; flex-wrap: wrap; margin-top: 10px;
+    background: var(--wbs-panel); padding: 10px 14px; border-radius: 6px; border: 1px solid #23486a;
+    align-items: center;
   }
   .ctrl-btn {
-    padding: 8px 16px; background: #1b3a5a; border: 1px solid #356596; border-radius: 4px;
-    color: #fff; font-weight: 700; font-size: 0.78rem; cursor: pointer; transition: all 0.15s ease;
+    padding: 6px 14px; background: #1b3a5a; border: 1px solid #356596; border-radius: 4px;
+    color: #fff; font-weight: 700; font-size: 0.75rem; cursor: pointer; transition: all 0.15s ease;
   }
   .ctrl-btn:hover { background: #26507c; border-color: var(--accent-cyan); }
   .ctrl-btn.active { background: var(--accent-green); color: #000; border-color: #4ade80; }
@@ -1147,32 +1193,33 @@ HTML_UI = """<!DOCTYPE html>
 
   .offline-banner {
     display: none; background: #7f1d1d; border: 2px solid #ef4444; border-radius: 6px;
-    padding: 14px; text-align: center; font-weight: 700; font-size: 0.95rem; margin-bottom: 16px;
+    padding: 12px; text-align: center; font-weight: 700; font-size: 0.92rem; margin-bottom: 14px;
     color: #fff;
   }
   /* ABB-1 Audio Bit Buddy & ABP-1 Bit Spitter Styling */
   .abb-card {
-    background: var(--wbs-panel); border: 2px solid #1e3d5f; border-radius: 8px;
-    padding: 16px; margin-bottom: 24px; box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+    background: var(--wbs-panel); border: 1px solid #23486a; border-radius: 6px;
+    padding: 12px 14px; margin-bottom: 0; box-shadow: 0 4px 14px rgba(0,0,0,0.5);
+    display: flex; flex-direction: column; justify-content: space-between;
   }
   .abb-grid {
-    display: grid; grid-template-columns: 240px 1fr 1fr; gap: 16px; align-items: start;
+    display: grid; grid-template-columns: 1fr 1.15fr 1fr; gap: 12px; align-items: start;
   }
-  @media (max-width: 900px) {
+  @media (max-width: 800px) {
     .abb-grid { grid-template-columns: 1fr; }
   }
   .abb-col {
-    display: flex; flex-direction: column; gap: 8px;
+    display: flex; flex-direction: column; gap: 6px;
   }
   .abb-title {
-    font-size: 0.72rem; font-weight: 800; color: var(--accent-cyan);
-    letter-spacing: 1px; text-transform: uppercase;
+    font-size: 0.68rem; font-weight: 800; color: var(--accent-cyan);
+    letter-spacing: 0.8px; text-transform: uppercase;
   }
   .abb-led-rack {
-    display: flex; gap: 6px; flex-wrap: wrap; margin-top: 6px;
+    display: flex; gap: 5px; flex-wrap: wrap; margin-top: 4px;
   }
   .abb-led-pill {
-    padding: 3px 8px; border-radius: 3px; font-size: 0.65rem; font-weight: 800;
+    padding: 3px 7px; border-radius: 3px; font-size: 0.62rem; font-weight: 800;
     background: #09131d; border: 1px solid #1a324b; color: #475569; letter-spacing: 0.5px;
     transition: all 0.15s ease;
   }
@@ -1189,7 +1236,7 @@ HTML_UI = """<!DOCTYPE html>
   <div class="header">
     <div>
       <h1>WARD BECK TAP // Signal Tap &amp; MXL Controller</h1>
-      <div style="font-size: 0.78rem; color: var(--text-dim); margin-top: 3px;">
+      <div style="font-size: 0.74rem; color: var(--text-dim); margin-top: 2px;">
         Non-Destructive Signal Tap · Virtual Audio Patchbay · EBU DMF / MXL Shared Memory · Native 60 FPS Meter Telemetry
       </div>
     </div>
@@ -1207,394 +1254,406 @@ HTML_UI = """<!DOCTYPE html>
     ROUTER OFFLINE: Hardware audio sink has been cleanly restored. WBS virtual null-sinks unloaded.
   </div>
 
-  <!-- SECTION 1: EBU DMF / MXL Continuous 10-Second Circular Ring Buffer Visualizer (Scanalyzer Audio Eye Style) -->
-  <div class="section-title">
-    <span>EBU DMF / MXL 10-Second Continuous Circular Ring Buffer (Float32 Stereo)</span>
-    <div class="section-subtitle">
-      <button class="ctrl-btn" style="padding: 4px 10px; font-size: 0.7rem;" onclick="toggleSliceView()">Toggle Memory Slice View</button>
-      <button class="ctrl-btn" style="padding: 4px 10px; font-size: 0.7rem;" onclick="testSliceWrap()">Test Wrap-Around Slice (480k)</button>
-    </div>
-  </div>
-
-  <div class="mxl-card">
-    <div class="eye-player-main-grid">
-      <!-- Left Column: Scanalyzer Eye Player Canvas & Correlation Bar -->
-      <div class="eye-player-col">
-        <div class="eye-canvas-container">
-          <canvas id="eye-player-canvas" width="440" height="440"></canvas>
+  <!-- TOP MONITORING DECK: Scanalyzer Audio Eye Visualizer + Precision VU Meters & Pipeline Topology -->
+  <div class="top-monitoring-deck">
+    <!-- LEFT PANE: EBU DMF / MXL Continuous 10-Second Circular Ring Buffer -->
+    <div class="deck-col">
+      <div class="section-title">
+        <span>EBU DMF / MXL 10-Second Continuous Circular Ring Buffer (Float32 Stereo)</span>
+        <div class="section-subtitle">
+          <button class="ctrl-btn" style="padding: 3px 8px; font-size: 0.68rem;" onclick="toggleSliceView()">Toggle Memory Slice View</button>
+          <button class="ctrl-btn" style="padding: 3px 8px; font-size: 0.68rem;" onclick="testSliceWrap()">Test Wrap-Around Slice (480k)</button>
         </div>
-        <!-- Scanalyzer Style Correlation & Phase Bar -->
-        <div class="scanalyzer-phase-bar-wrapper">
-          <span class="phase-lbl">L</span>
-          <div class="phase-track">
-            <div class="phase-marker-scale">
-              <span>-1 out of phase</span>
-              <span id="corr-val-readout">corr +0.00</span>
-              <span>mono +1</span>
+      </div>
+
+      <div class="mxl-card">
+        <div class="eye-player-main-grid">
+          <!-- Scanalyzer Eye Player Canvas & Correlation Bar -->
+          <div class="eye-player-col">
+            <div class="eye-canvas-container">
+              <canvas id="eye-player-canvas" width="440" height="440"></canvas>
             </div>
-            <div class="phase-needle" id="phase-needle" style="left: 50%;"></div>
+            <!-- Scanalyzer Style Correlation & Phase Bar -->
+            <div class="scanalyzer-phase-bar-wrapper">
+              <span class="phase-lbl">L</span>
+              <div class="phase-track">
+                <div class="phase-marker-scale">
+                  <span>-1 out of phase</span>
+                  <span id="corr-val-readout">corr +0.00</span>
+                  <span>mono +1</span>
+                </div>
+                <div class="phase-needle" id="phase-needle" style="left: 50%;"></div>
+              </div>
+              <span class="phase-lbl">R</span>
+            </div>
           </div>
-          <span class="phase-lbl">R</span>
-        </div>
-      </div>
 
-      <!-- Right Column: Real-time Telemetry, NTP Clock & Flow Inspector -->
-      <div class="eye-info-col">
-        <!-- Flow Selector -->
-        <div class="eye-flow-switcher">
-          <div style="font-size: 0.75rem; color: var(--text-dim); margin-bottom: 6px; text-transform: uppercase; font-weight: 700;">Monitored MXL Shared-Memory Flow:</div>
-          <div class="badge-row" id="eye-flow-buttons">
-            <button id="btn-flow-master" class="ctrl-btn active" style="font-size: 0.75rem; padding: 4px 12px;" onclick="switchEyeFlow('wbs-flow-master-stereo')">Master Bus (Live Audio)</button>
-            <button id="btn-flow-tone" class="ctrl-btn" style="font-size: 0.75rem; padding: 4px 12px;" onclick="switchEyeFlow('wbs-flow-ref-tone')">Calibrated 1kHz Ref Tone</button>
-            <button id="btn-flow-cbc-audio" class="ctrl-btn" style="font-size: 0.75rem; padding: 4px 12px;" onclick="switchEyeFlow('9b85cd39-2476-5467-b1cf-9eb8615dc07c')">CBC Test-Audio-1 (exercise-4)</button>
+          <!-- Real-time Telemetry, NTP Clock & Flow Inspector -->
+          <div class="eye-info-col">
+            <!-- Flow Selector -->
+            <div class="eye-flow-switcher">
+              <div style="font-size: 0.7rem; color: var(--text-dim); margin-bottom: 5px; text-transform: uppercase; font-weight: 700;">Monitored MXL Shared-Memory Flow:</div>
+              <div class="badge-row" id="eye-flow-buttons">
+                <button id="btn-flow-master" class="ctrl-btn active" style="font-size: 0.72rem; padding: 3px 10px;" onclick="switchEyeFlow('wbs-flow-master-stereo')">Master Bus (Live Audio)</button>
+                <button id="btn-flow-tone" class="ctrl-btn" style="font-size: 0.72rem; padding: 3px 10px;" onclick="switchEyeFlow('wbs-flow-ref-tone')">Calibrated 1kHz Ref Tone</button>
+                <button id="btn-flow-cbc-audio" class="ctrl-btn" style="font-size: 0.72rem; padding: 3px 10px;" onclick="switchEyeFlow('9b85cd39-2476-5467-b1cf-9eb8615dc07c')">CBC Test-Audio-1 (exercise-4)</button>
+              </div>
+            </div>
+
+            <!-- Telemetry Cards -->
+            <div class="eye-hud-grid">
+              <div class="eye-hud-card">
+                <div class="eye-hud-label">NTP TIME (UTC / SMPTE 2059-1)</div>
+                <div class="eye-hud-val accent-cyan" id="eye-ntp-clock">00:00:00.000</div>
+                <div class="eye-hud-sub" id="eye-tai-ns">TAI: 0 ns</div>
+              </div>
+              <div class="eye-hud-card">
+                <div class="eye-hud-label">10-SECOND BUFFER PHASE</div>
+                <div class="eye-hud-val accent-orange" id="eye-sec-10">0.000 s / 10.000 s</div>
+                <div class="eye-hud-sub">0s @ Far Right (3 o'clock) · Clockwise</div>
+              </div>
+              <div class="eye-hud-card">
+                <div class="eye-hud-label">ACTIVE WRITE HEAD</div>
+                <div class="eye-hud-val" id="eye-head-index">HEAD: 0</div>
+                <div class="eye-hud-sub" id="eye-head-sec">0.000s / 480,000 frames</div>
+              </div>
+              <div class="eye-hud-card">
+                <div class="eye-hud-label">BUFFER CAPACITY &amp; SHM</div>
+                <div class="eye-hud-val" style="color: #4ade80;">480,000 FRAMES (10.0s)</div>
+                <div class="eye-hud-sub">Float32 Stereo · 3.84 MB POSIX Shm</div>
+              </div>
+            </div>
+
+            <!-- Channel Legend & Spec -->
+            <div class="eye-legend-box">
+              <div class="eye-legend-item">
+                <span class="legend-swatch" style="background: #22c55e;"></span>
+                <span>CH 0: LEFT (Outer Radial Band, Float32 @ 48 kHz)</span>
+              </div>
+              <div class="eye-legend-item">
+                <span class="legend-swatch" style="background: #38bdf8;"></span>
+                <span>CH 1: RIGHT (Inner Radial Band, Float32 @ 48 kHz)</span>
+              </div>
+              <div class="eye-legend-item">
+                <span class="legend-swatch" style="background: #d946ef;"></span>
+                <span>Center Pointer &amp; NTP Sweep Playhead (Scanalyzer Style)</span>
+              </div>
+              <div class="eye-legend-item">
+                <span class="legend-swatch" style="background: #ef4444;"></span>
+                <span>0.0s Marker @ Far Right (3 O'clock) &amp; Top-of-Second Ticks</span>
+              </div>
+            </div>
           </div>
         </div>
 
-        <!-- Telemetry Cards -->
-        <div class="eye-hud-grid">
-          <div class="eye-hud-card">
-            <div class="eye-hud-label">NTP TIME (UTC / SMPTE 2059-1)</div>
-            <div class="eye-hud-val accent-cyan" id="eye-ntp-clock">00:00:00.000</div>
-            <div class="eye-hud-sub" id="eye-tai-ns">TAI: 0 ns</div>
+        <!-- Memory Slice Unwrap View -->
+        <div id="slice-view-box" class="slice-view-box">
+          <div style="font-weight: 700; color: var(--accent-cyan); margin-bottom: 6px;">
+            mxlFlowReaderGetSamples() 10-Second Contiguous Memory Layout (wrappedMultiBufferSlice)
           </div>
-          <div class="eye-hud-card">
-            <div class="eye-hud-label">10-SECOND BUFFER PHASE</div>
-            <div class="eye-hud-val accent-orange" id="eye-sec-10">0.000 s / 10.000 s</div>
-            <div class="eye-hud-sub">0s @ Far Right (3 o'clock) · Clockwise</div>
+          <div class="memory-bar">
+            <div class="slice-block slice2-block" id="slice2-visual">Part 2: Seam Wrap (Frames 0..156)</div>
+            <div class="slice-block headroom-block">Contiguous Unread Memory Buffer (480,000 Frames Headroom)</div>
+            <div class="slice-block slice1-block" id="slice1-visual">Part 1: Tail Boundary (Frames 479900..479999)</div>
           </div>
-          <div class="eye-hud-card">
-            <div class="eye-hud-label">ACTIVE WRITE HEAD</div>
-            <div class="eye-hud-val" id="eye-head-index">HEAD: 0</div>
-            <div class="eye-hud-sub" id="eye-head-sec">0.000s / 480,000 frames</div>
-          </div>
-          <div class="eye-hud-card">
-            <div class="eye-hud-label">BUFFER CAPACITY &amp; SHM</div>
-            <div class="eye-hud-val" style="color: #4ade80;">480,000 FRAMES (10.0s)</div>
-            <div class="eye-hud-sub">Float32 Stereo · 3.84 MB POSIX Shm</div>
-          </div>
-        </div>
-
-        <!-- Channel Legend & Spec -->
-        <div class="eye-legend-box">
-          <div class="eye-legend-item">
-            <span class="legend-swatch" style="background: #22c55e;"></span>
-            <span>CH 0: LEFT (Outer Radial Band, Float32 @ 48 kHz)</span>
-          </div>
-          <div class="eye-legend-item">
-            <span class="legend-swatch" style="background: #38bdf8;"></span>
-            <span>CH 1: RIGHT (Inner Radial Band, Float32 @ 48 kHz)</span>
-          </div>
-          <div class="eye-legend-item">
-            <span class="legend-swatch" style="background: #d946ef;"></span>
-            <span>Center Pointer &amp; NTP Sweep Playhead (Scanalyzer Style)</span>
-          </div>
-          <div class="eye-legend-item">
-            <span class="legend-swatch" style="background: #ef4444;"></span>
-            <span>0.0s Marker @ Far Right (3 O'clock) &amp; Top-of-Second Ticks</span>
+          <div id="slice-json-details" style="font-family: monospace; font-size: 0.7rem; color: #cbd5e1; background: #000; padding: 8px; border-radius: 4px;">
+            Awaiting slice test...
           </div>
         </div>
       </div>
     </div>
 
-    <!-- Memory Slice Unwrap View -->
-    <div id="slice-view-box" class="slice-view-box">
-      <div style="font-weight: 700; color: var(--accent-cyan); margin-bottom: 6px;">
-        mxlFlowReaderGetSamples() 10-Second Contiguous Memory Layout (wrappedMultiBufferSlice)
-      </div>
-      <div class="memory-bar">
-        <div class="slice-block slice2-block" id="slice2-visual">Part 2: Seam Wrap (Frames 0..156)</div>
-        <div class="slice-block headroom-block">Contiguous Unread Memory Buffer (480,000 Frames Headroom)</div>
-        <div class="slice-block slice1-block" id="slice1-visual">Part 1: Tail Boundary (Frames 479900..479999)</div>
-      </div>
-      <div id="slice-json-details" style="font-family: monospace; font-size: 0.7rem; color: #cbd5e1; background: #000; padding: 8px; border-radius: 4px;">
-        Awaiting slice test...
-      </div>
-    </div>
-  </div>
-
-  <!-- SECTION 2: Linux Audio 3-Layer Pipeline Architecture -->
-  <div class="section-title">
-    <span>Layered Linux Audio Pipeline &amp; Graph Topology</span>
-    <div class="section-subtitle">Kernel ALSA · Graph PipeWire · Shared-Memory MXL</div>
-  </div>
-
-  <div class="pipeline-grid">
-    <!-- Layer 1: ALSA -->
-    <div class="pipeline-card">
-      <h3>
-        <span>1. ALSA Hardware Layer</span>
-        <span class="badge badge-cyan" id="alsa-card-count">0 CARDS</span>
-      </h3>
-      <ul class="pipeline-list" id="alsa-card-list">
-        <li>Detecting soundcards...</li>
-      </ul>
-      <div style="margin-top: 10px; font-size: 0.72rem; color: var(--text-dim);" id="alsa-mixers">
-        Master: 49% | Capture: 42%
-      </div>
-    </div>
-
-    <!-- Layer 2: PipeWire Graph -->
-    <div class="pipeline-card">
-      <h3>
-        <span>2. PipeWire &amp; WirePlumber</span>
-        <span class="badge badge-active" id="pw-quantum-badge">256 / 48kHz</span>
-      </h3>
-      <ul class="pipeline-list" id="pw-stream-list">
-        <li>Querying active multimedia graph links...</li>
-      </ul>
-      <div style="margin-top: 10px; font-size: 0.72rem; color: var(--text-dim);" id="pw-status-footer">
-        Latency: 5.33 ms | Routing: Active
-      </div>
-    </div>
-
-    <!-- Layer 3: MXL Shared-Memory -->
-    <div class="pipeline-card">
-      <h3>
-        <span>3. EBU DMF / MXL Layer</span>
-        <span class="badge badge-orange">/dev/shm/mxl</span>
-      </h3>
-      <ul class="pipeline-list" id="mxl-flow-list">
-        <li>domain-wbs-dmf-01 (Active)</li>
-        <li>wbs-flow-master-stereo (Float32 Stereo)</li>
-        <li>wbs-flow-ref-tone (1kHz Calibrated Sine)</li>
-      </ul>
-      <div style="margin-top: 10px; font-size: 0.72rem; color: var(--text-dim);" id="mxl-status-footer">
-        Epoch: SMPTE 2059-1 (TAI) | Lock-Free PROT_READ
-      </div>
-    </div>
-  </div>
-
-  <!-- SECTION 3: Ward-Beck Electromechanical Master VU Meters -->
-  <div class="section-title">
-    <span>Ward-Beck Precision Electromechanical VU Meters</span>
-    <div class="section-subtitle">Calibrated 1 kHz @ 0 VU (-18 dBFS) Reference</div>
-  </div>
-
-  <div class="vu-stage">
-    <div class="vu-meters-row">
-      <!-- LEFT VU METER -->
-      <div class="vu-bezel">
-        <div class="vu-dial">
-          <svg viewBox="0 0 320 195">
-            <!-- Scale background -->
-            <path d="M 30 150 A 130 130 0 0 1 290 150" fill="none" stroke="#222" stroke-width="2" />
-            <!-- Red zone -->
-            <path d="M 235 62 A 130 130 0 0 1 285 125" fill="none" stroke="#c0392b" stroke-width="8" />
-            <!-- Scale Ticks -->
-            <path d="M 45 130 L 55 125 M 65 105 L 75 103 M 95 85 L 103 86 M 130 70 L 135 75 M 175 65 L 175 72 M 220 70 L 217 76 M 255 85 L 248 90 M 275 110 L 268 112" fill="none" stroke="#222" stroke-width="1.5" />
-            <!-- Dial Markings -->
-            <text x="50" y="145" font-size="11" font-weight="bold" fill="#222">-20</text>
-            <text x="90" y="105" font-size="11" font-weight="bold" fill="#222">-10</text>
-            <text x="135" y="88" font-size="11" font-weight="bold" fill="#222">-7</text>
-            <text x="175" y="82" font-size="11" font-weight="bold" fill="#222">-3</text>
-            <text x="215" y="88" font-size="13" font-weight="bold" fill="#222">0</text>
-            <text x="250" y="105" font-size="12" font-weight="bold" fill="#c0392b">+1</text>
-            <text x="270" y="130" font-size="12" font-weight="bold" fill="#c0392b">+3</text>
-            <text x="160" y="125" text-anchor="middle" font-size="16" font-weight="900" letter-spacing="3" fill="#222">VU</text>
-            <text x="160" y="142" text-anchor="middle" font-size="9" font-weight="bold" letter-spacing="1" fill="#666">WARD-BECK SYSTEMS</text>
-            <!-- Teardrop Needle Left -->
-            <g id="needle-l" transform="rotate(-42 160 195)" style="transition: transform 0.07s cubic-bezier(0.1, 0.9, 0.2, 1);">
-              <!-- Needle body with teardrop counter-balance and pointer -->
-              <path d="M 158.5 195 L 159.5 45 C 159.5 40 160.5 40 160.5 45 L 161.5 195 Z" fill="#111" />
-              <!-- Teardrop tip -->
-              <path d="M 157.5 45 Q 160 30 160 25 Q 160 30 162.5 45 Z" fill="#111" />
-              <!-- Pivot Boss -->
-              <circle cx="160" cy="195" r="16" fill="#111" />
-              <circle cx="160" cy="195" r="6" fill="#555" />
-            </g>
-          </svg>
-        </div>
-        <div class="vu-label">CHANNEL 1 // LEFT (<span id="txt-vu-l">-42.0</span> VU)</div>
+    <!-- RIGHT PANE: Dual Studio VU Meters & Layered Linux Audio Pipeline -->
+    <div class="deck-col">
+      <!-- Precision Electromechanical VU Meters -->
+      <div class="section-title">
+        <span>Ward-Beck Precision Electromechanical VU Meters</span>
+        <div class="section-subtitle">Calibrated 1 kHz @ 0 VU (-18 dBFS) Reference</div>
       </div>
 
-      <!-- RIGHT VU METER -->
-      <div class="vu-bezel">
-        <div class="vu-dial">
-          <svg viewBox="0 0 320 195">
-            <!-- Scale background -->
-            <path d="M 30 150 A 130 130 0 0 1 290 150" fill="none" stroke="#222" stroke-width="2" />
-            <!-- Red zone -->
-            <path d="M 235 62 A 130 130 0 0 1 285 125" fill="none" stroke="#c0392b" stroke-width="8" />
-            <!-- Scale Ticks -->
-            <path d="M 45 130 L 55 125 M 65 105 L 75 103 M 95 85 L 103 86 M 130 70 L 135 75 M 175 65 L 175 72 M 220 70 L 217 76 M 255 85 L 248 90 M 275 110 L 268 112" fill="none" stroke="#222" stroke-width="1.5" />
-            <!-- Dial Markings -->
-            <text x="50" y="145" font-size="11" font-weight="bold" fill="#222">-20</text>
-            <text x="90" y="105" font-size="11" font-weight="bold" fill="#222">-10</text>
-            <text x="135" y="88" font-size="11" font-weight="bold" fill="#222">-7</text>
-            <text x="175" y="82" font-size="11" font-weight="bold" fill="#222">-3</text>
-            <text x="215" y="88" font-size="13" font-weight="bold" fill="#222">0</text>
-            <text x="250" y="105" font-size="12" font-weight="bold" fill="#c0392b">+1</text>
-            <text x="270" y="130" font-size="12" font-weight="bold" fill="#c0392b">+3</text>
-            <text x="160" y="125" text-anchor="middle" font-size="16" font-weight="900" letter-spacing="3" fill="#222">VU</text>
-            <text x="160" y="142" text-anchor="middle" font-size="9" font-weight="bold" letter-spacing="1" fill="#666">WARD-BECK SYSTEMS</text>
-            <!-- Teardrop Needle Right -->
-            <g id="needle-r" transform="rotate(-42 160 195)" style="transition: transform 0.07s cubic-bezier(0.1, 0.9, 0.2, 1);">
-              <path d="M 158.5 195 L 159.5 45 C 159.5 40 160.5 40 160.5 45 L 161.5 195 Z" fill="#111" />
-              <path d="M 157.5 45 Q 160 30 160 25 Q 160 30 162.5 45 Z" fill="#111" />
-              <circle cx="160" cy="195" r="16" fill="#111" />
-              <circle cx="160" cy="195" r="6" fill="#555" />
-            </g>
-          </svg>
-        </div>
-        <div class="vu-label">CHANNEL 2 // RIGHT (<span id="txt-vu-r">-42.0</span> VU)</div>
-      </div>
-    </div>
-  </div>
+      <div class="vu-stage">
+        <div class="vu-meters-row">
+          <!-- LEFT VU METER -->
+          <div class="vu-bezel">
+            <div class="vu-dial">
+              <svg viewBox="0 0 320 195">
+                <!-- Scale background -->
+                <path d="M 30 150 A 130 130 0 0 1 290 150" fill="none" stroke="#222" stroke-width="2" />
+                <!-- Red zone -->
+                <path d="M 235 62 A 130 130 0 0 1 285 125" fill="none" stroke="#c0392b" stroke-width="8" />
+                <!-- Scale Ticks -->
+                <path d="M 45 130 L 55 125 M 65 105 L 75 103 M 95 85 L 103 86 M 130 70 L 135 75 M 175 65 L 175 72 M 220 70 L 217 76 M 255 85 L 248 90 M 275 110 L 268 112" fill="none" stroke="#222" stroke-width="1.5" />
+                <!-- Dial Markings -->
+                <text x="50" y="145" font-size="11" font-weight="bold" fill="#222">-20</text>
+                <text x="90" y="105" font-size="11" font-weight="bold" fill="#222">-10</text>
+                <text x="135" y="88" font-size="11" font-weight="bold" fill="#222">-7</text>
+                <text x="175" y="82" font-size="11" font-weight="bold" fill="#222">-3</text>
+                <text x="215" y="88" font-size="13" font-weight="bold" fill="#222">0</text>
+                <text x="250" y="105" font-size="12" font-weight="bold" fill="#c0392b">+1</text>
+                <text x="270" y="130" font-size="12" font-weight="bold" fill="#c0392b">+3</text>
+                <text x="160" y="125" text-anchor="middle" font-size="16" font-weight="900" letter-spacing="3" fill="#222">VU</text>
+                <text x="160" y="142" text-anchor="middle" font-size="9" font-weight="bold" letter-spacing="1" fill="#666">WARD-BECK SYSTEMS</text>
+                <!-- Teardrop Needle Left -->
+                <g id="needle-l" transform="rotate(-42 160 195)" style="transition: transform 0.07s cubic-bezier(0.1, 0.9, 0.2, 1);">
+                  <path d="M 158.5 195 L 159.5 45 C 159.5 40 160.5 40 160.5 45 L 161.5 195 Z" fill="#111" />
+                  <path d="M 157.5 45 Q 160 30 160 25 Q 160 30 162.5 45 Z" fill="#111" />
+                  <circle cx="160" cy="195" r="16" fill="#111" />
+                  <circle cx="160" cy="195" r="6" fill="#555" />
+                </g>
+              </svg>
+            </div>
+            <div class="vu-label">CHANNEL 1 // LEFT (<span id="txt-vu-l">-42.0</span> VU)</div>
+          </div>
 
-  <!-- SECTION 4: ABB-1 Audio Bit Buddy & ABP-1 Bit Spitter Diagnostics & Test Generator -->
-  <div class="section-title">
-    <span>ABB-1 Audio Bit Buddy &amp; ABP-1 Bit Spitter</span>
-    <div class="section-subtitle">AES/EBU &amp; S/PDIF Digital Audio Diagnostic Set · PRBS / Walking 1s / Polarity Generator</div>
-  </div>
-
-  <div class="abb-card">
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid #1a324b;">
-      <div style="display: flex; align-items: center; gap: 10px;">
-        <span class="badge badge-cyan" style="font-weight: 900;">ABB-1</span>
-        <strong style="color: #f1f5f9; font-size: 0.88rem; letter-spacing: 0.5px;">AUDIO BIT BUDDY // ABP-1 BIT SPITTER</strong>
-      </div>
-      <button class="ctrl-btn" id="btn-toggle-bitbuddy" onclick="toggleBitBuddy()">○ TRANSMIT BIT SPITTER</button>
-    </div>
-
-    <div class="abb-grid">
-      <!-- Bit Pattern Selection -->
-      <div class="abb-col">
-        <div class="abb-title">TEST BIT PATTERN</div>
-        <div style="display: flex; gap: 6px; flex-wrap: wrap;">
-          <button class="ctrl-btn" id="btn-abb-tone" onclick="setBitBuddyPattern('tone')">Cal Tone (1k)</button>
-          <button class="ctrl-btn" id="btn-abb-walk1s" onclick="setBitBuddyPattern('walk1s')">Walking 1s</button>
-          <button class="ctrl-btn active" id="btn-abb-prbs" onclick="setBitBuddyPattern('prbs')">PRBS-15</button>
-          <button class="ctrl-btn" id="btn-abb-minmax" onclick="setBitBuddyPattern('minmax')">Min/Max Polarity</button>
+          <!-- RIGHT VU METER -->
+          <div class="vu-bezel">
+            <div class="vu-dial">
+              <svg viewBox="0 0 320 195">
+                <!-- Scale background -->
+                <path d="M 30 150 A 130 130 0 0 1 290 150" fill="none" stroke="#222" stroke-width="2" />
+                <!-- Red zone -->
+                <path d="M 235 62 A 130 130 0 0 1 285 125" fill="none" stroke="#c0392b" stroke-width="8" />
+                <!-- Scale Ticks -->
+                <path d="M 45 130 L 55 125 M 65 105 L 75 103 M 95 85 L 103 86 M 130 70 L 135 75 M 175 65 L 175 72 M 220 70 L 217 76 M 255 85 L 248 90 M 275 110 L 268 112" fill="none" stroke="#222" stroke-width="1.5" />
+                <!-- Dial Markings -->
+                <text x="50" y="145" font-size="11" font-weight="bold" fill="#222">-20</text>
+                <text x="90" y="105" font-size="11" font-weight="bold" fill="#222">-10</text>
+                <text x="135" y="88" font-size="11" font-weight="bold" fill="#222">-7</text>
+                <text x="175" y="82" font-size="11" font-weight="bold" fill="#222">-3</text>
+                <text x="215" y="88" font-size="13" font-weight="bold" fill="#222">0</text>
+                <text x="250" y="105" font-size="12" font-weight="bold" fill="#c0392b">+1</text>
+                <text x="270" y="130" font-size="12" font-weight="bold" fill="#c0392b">+3</text>
+                <text x="160" y="125" text-anchor="middle" font-size="16" font-weight="900" letter-spacing="3" fill="#222">VU</text>
+                <text x="160" y="142" text-anchor="middle" font-size="9" font-weight="bold" letter-spacing="1" fill="#666">WARD-BECK SYSTEMS</text>
+                <!-- Teardrop Needle Right -->
+                <g id="needle-r" transform="rotate(-42 160 195)" style="transition: transform 0.07s cubic-bezier(0.1, 0.9, 0.2, 1);">
+                  <path d="M 158.5 195 L 159.5 45 C 159.5 40 160.5 40 160.5 45 L 161.5 195 Z" fill="#111" />
+                  <path d="M 157.5 45 Q 160 30 160 25 Q 160 30 162.5 45 Z" fill="#111" />
+                  <circle cx="160" cy="195" r="16" fill="#111" />
+                  <circle cx="160" cy="195" r="6" fill="#555" />
+                </g>
+              </svg>
+            </div>
+            <div class="vu-label">CHANNEL 2 // RIGHT (<span id="txt-vu-r">-42.0</span> VU)</div>
+          </div>
         </div>
       </div>
 
-      <!-- Channel Status Flags -->
-      <div class="abb-col">
-        <div class="abb-title">CHANNEL STATUS &amp; SAMPLE RATE</div>
-        <div style="display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 6px;">
-          <button class="ctrl-btn active" id="btn-abb-pro" onclick="setBitBuddyPro(true)">Pro (EBU)</button>
-          <button class="ctrl-btn" id="btn-abb-cons" onclick="setBitBuddyPro(false)">Consumer</button>
-          <button class="ctrl-btn active" id="btn-abb-audio" onclick="setBitBuddyAudio(true)">PCM Audio</button>
-          <button class="ctrl-btn" id="btn-abb-data" onclick="setBitBuddyAudio(false)">Non-Audio Data</button>
-        </div>
-        <div style="display: flex; gap: 6px;">
-          <button class="ctrl-btn active" id="btn-abb-sr-48" onclick="setBitBuddySr(48000)">48 kHz</button>
-          <button class="ctrl-btn" id="btn-abb-sr-96" onclick="setBitBuddySr(96000)">96 kHz</button>
-          <button class="ctrl-btn" id="btn-abb-sr-44" onclick="setBitBuddySr(44100)">44.1 kHz</button>
-        </div>
+      <!-- Layered Linux Audio Pipeline & Graph Topology -->
+      <div class="section-title">
+        <span>Layered Linux Audio Pipeline &amp; Topology</span>
+        <div class="section-subtitle">Kernel ALSA · Graph PipeWire · Shared-Memory MXL</div>
       </div>
 
-      <!-- Real-Time Diagnostic LEDs -->
-      <div class="abb-col">
-        <div class="abb-title">DIAGNOSTIC STATUS LEDS</div>
-        <div class="abb-led-rack">
-          <span class="abb-led-pill lit-green" id="led-abb-lock">LOCK</span>
-          <span class="abb-led-pill" id="led-abb-err">NO LOCK</span>
-          <span class="abb-led-pill lit-green" id="led-abb-sr">48k</span>
-          <span class="abb-led-pill lit-cyan" id="led-abb-fmt">PRO</span>
-          <span class="abb-led-pill lit-green" id="led-abb-type">AUDIO</span>
-          <span class="abb-led-pill lit-orange" id="led-abb-parity">PARITY OK</span>
-          <span class="abb-led-pill" id="led-abb-slip">SLIP: 0</span>
-          <span class="abb-led-pill" id="led-abb-spitting">SPITTING</span>
+      <div class="pipeline-grid">
+        <!-- Layer 1: ALSA -->
+        <div class="pipeline-card">
+          <h3>
+            <span>1. ALSA Hardware</span>
+            <span class="badge badge-cyan" id="alsa-card-count">0 CARDS</span>
+          </h3>
+          <ul class="pipeline-list" id="alsa-card-list">
+            <li>Detecting soundcards...</li>
+          </ul>
+          <div style="margin-top: 8px; font-size: 0.7rem; color: var(--text-dim);" id="alsa-mixers">
+            Master: 49% | Capture: 42%
+          </div>
+        </div>
+
+        <!-- Layer 2: PipeWire Graph -->
+        <div class="pipeline-card">
+          <h3>
+            <span>2. PipeWire / WP</span>
+            <span class="badge badge-active" id="pw-quantum-badge">256 / 48kHz</span>
+          </h3>
+          <ul class="pipeline-list" id="pw-stream-list">
+            <li>Querying multimedia graph links...</li>
+          </ul>
+          <div style="margin-top: 8px; font-size: 0.7rem; color: var(--text-dim);" id="pw-status-footer">
+            Latency: 5.33 ms | Routing: Active
+          </div>
+        </div>
+
+        <!-- Layer 3: MXL Shared-Memory -->
+        <div class="pipeline-card">
+          <h3>
+            <span>3. EBU DMF / MXL</span>
+            <span class="badge badge-orange">/dev/shm/mxl</span>
+          </h3>
+          <ul class="pipeline-list" id="mxl-flow-list">
+            <li>domain-wbs-dmf-01 (Active)</li>
+            <li>wbs-flow-master-stereo (Float32 Stereo)</li>
+            <li>wbs-flow-ref-tone (1kHz Calibrated Sine)</li>
+          </ul>
+          <div style="margin-top: 8px; font-size: 0.7rem; color: var(--text-dim);" id="mxl-status-footer">
+            Epoch: SMPTE 2059-1 (TAI) | Lock-Free PROT_READ
+          </div>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- SECTION 5: CBC Radio-Canada MXL Test Generator & Pattern Studio -->
-  <div class="section-title">
-    <span>CBC / Radio-Canada MXL Test Generator &amp; Pattern Studio</span>
-    <div class="section-subtitle">Real-time SMPTE Video Test Patterns &amp; Calibrated Audio Tone Generator · Port 9600 (:9601 WebRTC Receiver / :9699 MXL Info GUI)</div>
-  </div>
-
-  <div class="abb-card" id="cbc-studio-card" style="border-left: 4px solid var(--accent-orange); margin-bottom: 24px;">
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid #1a324b; flex-wrap: wrap; gap: 8px;">
-      <div style="display: flex; align-items: center; gap: 10px;">
-        <span class="badge badge-orange" style="font-weight: 900;">CBC MXL</span>
-        <strong style="color: #f1f5f9; font-size: 0.88rem; letter-spacing: 0.5px;">EBU DMF SHARED-MEMORY TEST PATTERN GENERATOR</strong>
-        <span class="badge" id="badge-cbc-status">POLLING :9600...</span>
+  <!-- MID DECK: Diagnostic & Generator Suite (2 Columns on Desktop) -->
+  <div class="diagnostics-deck">
+    <!-- LEFT: ABB-1 Audio Bit Buddy & ABP-1 Bit Spitter -->
+    <div class="deck-col">
+      <div class="section-title">
+        <span>ABB-1 Audio Bit Buddy &amp; ABP-1 Bit Spitter</span>
+        <div class="section-subtitle">AES/EBU &amp; S/PDIF Diagnostics · PRBS / Walking 1s</div>
       </div>
-      <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-        <a href="http://localhost:9601" target="_blank" class="ctrl-btn active" style="text-decoration: none; font-size: 0.75rem; padding: 4px 10px; display: inline-flex; align-items: center; gap: 4px;">📺 Launch WebRTC Player (:9601)</a>
-        <a href="http://localhost:9699" target="_blank" class="ctrl-btn" style="text-decoration: none; font-size: 0.75rem; padding: 4px 10px; display: inline-flex; align-items: center; gap: 4px;">📊 Open MXL Info GUI (:9699)</a>
-        <button class="ctrl-btn" id="btn-cbc-eye-view" onclick="switchEyeFlow('9b85cd39-2476-5467-b1cf-9eb8615dc07c')" style="font-size: 0.75rem; padding: 4px 10px;">👁️ Monitor Flow in Audio Eye</button>
+
+      <div class="abb-card">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; padding-bottom: 6px; border-bottom: 1px solid #1a324b;">
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <span class="badge badge-cyan" style="font-weight: 900;">ABB-1</span>
+            <strong style="color: #f1f5f9; font-size: 0.84rem; letter-spacing: 0.5px;">AUDIO BIT BUDDY // ABP-1 BIT SPITTER</strong>
+          </div>
+          <button class="ctrl-btn" id="btn-toggle-bitbuddy" onclick="toggleBitBuddy()">○ TRANSMIT BIT SPITTER</button>
+        </div>
+
+        <div class="abb-grid">
+          <!-- Bit Pattern Selection -->
+          <div class="abb-col">
+            <div class="abb-title">TEST BIT PATTERN</div>
+            <div style="display: flex; gap: 4px; flex-wrap: wrap;">
+              <button class="ctrl-btn" id="btn-abb-tone" onclick="setBitBuddyPattern('tone')">Cal Tone</button>
+              <button class="ctrl-btn" id="btn-abb-walk1s" onclick="setBitBuddyPattern('walk1s')">Walk 1s</button>
+              <button class="ctrl-btn active" id="btn-abb-prbs" onclick="setBitBuddyPattern('prbs')">PRBS-15</button>
+              <button class="ctrl-btn" id="btn-abb-minmax" onclick="setBitBuddyPattern('minmax')">Min/Max</button>
+            </div>
+          </div>
+
+          <!-- Channel Status Flags -->
+          <div class="abb-col">
+            <div class="abb-title">CHANNEL STATUS &amp; SAMPLE RATE</div>
+            <div style="display: flex; gap: 4px; flex-wrap: wrap; margin-bottom: 4px;">
+              <button class="ctrl-btn active" id="btn-abb-pro" onclick="setBitBuddyPro(true)">Pro (EBU)</button>
+              <button class="ctrl-btn" id="btn-abb-cons" onclick="setBitBuddyPro(false)">Consumer</button>
+              <button class="ctrl-btn active" id="btn-abb-audio" onclick="setBitBuddyAudio(true)">PCM</button>
+              <button class="ctrl-btn" id="btn-abb-data" onclick="setBitBuddyAudio(false)">Data</button>
+            </div>
+            <div style="display: flex; gap: 4px;">
+              <button class="ctrl-btn active" id="btn-abb-sr-48" onclick="setBitBuddySr(48000)">48 kHz</button>
+              <button class="ctrl-btn" id="btn-abb-sr-96" onclick="setBitBuddySr(96000)">96 kHz</button>
+              <button class="ctrl-btn" id="btn-abb-sr-44" onclick="setBitBuddySr(44100)">44.1k</button>
+            </div>
+          </div>
+
+          <!-- Real-Time Diagnostic LEDs -->
+          <div class="abb-col">
+            <div class="abb-title">DIAGNOSTIC STATUS LEDS</div>
+            <div class="abb-led-rack">
+              <span class="abb-led-pill lit-green" id="led-abb-lock">LOCK</span>
+              <span class="abb-led-pill" id="led-abb-err">NO LOCK</span>
+              <span class="abb-led-pill lit-green" id="led-abb-sr">48k</span>
+              <span class="abb-led-pill lit-cyan" id="led-abb-fmt">PRO</span>
+              <span class="abb-led-pill lit-green" id="led-abb-type">AUDIO</span>
+              <span class="abb-led-pill lit-orange" id="led-abb-parity">PARITY OK</span>
+              <span class="abb-led-pill" id="led-abb-slip">SLIP: 0</span>
+              <span class="abb-led-pill" id="led-abb-spitting">SPITTING</span>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
 
-    <div class="abb-grid">
-      <!-- Video Pattern Selector -->
-      <div class="abb-col">
-        <div class="abb-title">VIDEO TEST PATTERNS (25 PATTERNS)</div>
-        <div style="margin-bottom: 6px;">
-          <select id="cbc-video-pattern-select" class="ctrl-btn" style="width: 100%; text-align: left;" onchange="setCbcVideoPattern(this.value)">
-            <option value="100% bars" selected>100% Color Bars (Default)</option>
-            <option value="SMPTE 75%">SMPTE 75% Color Bars</option>
-            <option value="SMPTE">SMPTE Bars</option>
-            <option value="SMPTE RP-219">SMPTE RP-219 High Definition</option>
-            <option value="Snow">Snow / Static Noise</option>
-            <option value="Zone Plate">Zone Plate</option>
-            <option value="Chroma Zone Plate">Chroma Zone Plate</option>
-            <option value="Gamut">Gamut Test Pattern</option>
-            <option value="Checkers 1">Checkers 1</option>
-            <option value="Checkers 2">Checkers 2</option>
-            <option value="Checkers 4">Checkers 4</option>
-            <option value="Checkers 8">Checkers 8</option>
-            <option value="Circular">Circular Pattern</option>
-            <option value="Blink">Blink Alternator</option>
-            <option value="Ball">Bouncing Ball</option>
-            <option value="Bar">Scrolling Bar</option>
-            <option value="Pinwheel">Rotating Pinwheel</option>
-            <option value="Spokes">Siemens Spokes</option>
-            <option value="Gradient">Smooth Luma Gradient</option>
-            <option value="Black">Black Screen</option>
-            <option value="White">White 100% Field</option>
-            <option value="Red">Red Pure Primary</option>
-            <option value="Green">Green Pure Primary</option>
-            <option value="Blue">Blue Pure Primary</option>
-            <option value="Solid Color">Solid Custom Color</option>
-          </select>
-        </div>
-        <div style="font-size: 0.72rem; color: var(--text-dim);" id="cbc-video-flow-info">
-          Flow: 6b5d8d68... · 1920x1080 @ 30 fps · Timecode Active
-        </div>
+    <!-- RIGHT: CBC Radio-Canada MXL Test Generator & Pattern Studio -->
+    <div class="deck-col">
+      <div class="section-title">
+        <span>CBC / Radio-Canada MXL Test Generator &amp; Pattern Studio</span>
+        <div class="section-subtitle">Real-time SMPTE Video Test Patterns &amp; Calibrated Audio Tone Generator</div>
       </div>
 
-      <!-- Audio Pattern Selector -->
-      <div class="abb-col">
-        <div class="abb-title">AUDIO TEST PATTERNS (13 WAVEFORMS)</div>
-        <div style="margin-bottom: 6px;">
-          <select id="cbc-audio-pattern-select" class="ctrl-btn" style="width: 100%; text-align: left;" onchange="setCbcAudioPattern(this.value)">
-            <option value="1 kHz tone" selected>Calibrated 1 kHz Sine Tone</option>
-            <option value="Pink Noise">Pink Noise (-3 dB/octave)</option>
-            <option value="White Noise">White Noise (Flat Spectral)</option>
-            <option value="Square">Square Wave (Odd Harmonics)</option>
-            <option value="Saw">Sawtooth Wave (All Harmonics)</option>
-            <option value="Triangle">Triangle Wave</option>
-            <option value="Sine Table">Sine Table Synthesizer</option>
-            <option value="Ticks">Synchronous Audio Ticks</option>
-            <option value="Gaussian Noise">Gaussian Distribution Noise</option>
-            <option value="Red Noise">Red / Brownian Noise (-6 dB/oct)</option>
-            <option value="Blue Noise">Blue Noise (+3 dB/oct)</option>
-            <option value="Violet Noise">Violet Noise (+6 dB/oct)</option>
-            <option value="Silence">Full Digital Silence (0.0)</option>
-          </select>
+      <div class="abb-card" id="cbc-studio-card" style="border-left: 3px solid var(--accent-orange);">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; padding-bottom: 6px; border-bottom: 1px solid #1a324b; flex-wrap: wrap; gap: 6px;">
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <span class="badge badge-orange" style="font-weight: 900;">CBC MXL</span>
+            <strong style="color: #f1f5f9; font-size: 0.84rem; letter-spacing: 0.5px;">EBU DMF TEST PATTERN GENERATOR</strong>
+            <span class="badge" id="badge-cbc-status" style="font-size: 0.68rem; padding: 2px 6px;">POLLING :9600...</span>
+          </div>
+          <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+            <a href="http://localhost:9601" target="_blank" class="ctrl-btn active" style="text-decoration: none; font-size: 0.7rem; padding: 3px 8px; display: inline-flex; align-items: center; gap: 4px;">📺 WebRTC (:9601)</a>
+            <a href="http://localhost:9699" target="_blank" class="ctrl-btn" style="text-decoration: none; font-size: 0.7rem; padding: 3px 8px; display: inline-flex; align-items: center; gap: 4px;">📊 MXL GUI (:9699)</a>
+            <button class="ctrl-btn" id="btn-cbc-eye-view" onclick="switchEyeFlow('9b85cd39-2476-5467-b1cf-9eb8615dc07c')" style="font-size: 0.7rem; padding: 3px 8px;">👁️ Eye Monitor</button>
+          </div>
         </div>
-        <div style="font-size: 0.72rem; color: var(--text-dim);" id="cbc-audio-flow-info">
-          Flow: 9b85cd39... · 2 Channels Float32 @ 48 kHz
-        </div>
-      </div>
 
-      <!-- Level & Presets -->
-      <div class="abb-col">
-        <div class="abb-title">CALIBRATED OUTPUT LEVEL (dBFS)</div>
-        <div style="display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 6px;">
-          <button class="ctrl-btn active" id="btn-cbc-lvl-m20" onclick="setCbcAudioLevel(-20.0)">-20 dBFS (EBU)</button>
-          <button class="ctrl-btn" id="btn-cbc-lvl-m18" onclick="setCbcAudioLevel(-18.0)">-18 dBFS (0 VU)</button>
-          <button class="ctrl-btn" id="btn-cbc-lvl-m12" onclick="setCbcAudioLevel(-12.0)">-12 dBFS</button>
-          <button class="ctrl-btn" id="btn-cbc-lvl-0" onclick="setCbcAudioLevel(0.0)">0 dBFS</button>
-        </div>
-        <div style="font-size: 0.72rem; color: var(--accent-orange);" id="cbc-level-readout">
-          Current Level: -20.0 dBFS (Peak 0.1000)
+        <div class="abb-grid">
+          <!-- Video Pattern Selector -->
+          <div class="abb-col">
+            <div class="abb-title">VIDEO TEST PATTERNS (25 PATTERNS)</div>
+            <div style="margin-bottom: 4px;">
+              <select id="cbc-video-pattern-select" class="ctrl-btn" style="width: 100%; text-align: left; padding: 4px 8px;" onchange="setCbcVideoPattern(this.value)">
+                <option value="100% bars" selected>100% Color Bars (Default)</option>
+                <option value="SMPTE 75%">SMPTE 75% Color Bars</option>
+                <option value="SMPTE">SMPTE Bars</option>
+                <option value="SMPTE RP-219">SMPTE RP-219 HD</option>
+                <option value="Snow">Snow / Static Noise</option>
+                <option value="Zone Plate">Zone Plate</option>
+                <option value="Chroma Zone Plate">Chroma Zone Plate</option>
+                <option value="Gamut">Gamut Test Pattern</option>
+                <option value="Checkers 1">Checkers 1</option>
+                <option value="Checkers 2">Checkers 2</option>
+                <option value="Checkers 4">Checkers 4</option>
+                <option value="Checkers 8">Checkers 8</option>
+                <option value="Circular">Circular Pattern</option>
+                <option value="Blink">Blink Alternator</option>
+                <option value="Ball">Bouncing Ball</option>
+                <option value="Bar">Scrolling Bar</option>
+                <option value="Pinwheel">Rotating Pinwheel</option>
+                <option value="Spokes">Siemens Spokes</option>
+                <option value="Gradient">Smooth Luma Gradient</option>
+                <option value="Black">Black Screen</option>
+                <option value="White">White 100% Field</option>
+                <option value="Red">Red Primary</option>
+                <option value="Green">Green Primary</option>
+                <option value="Blue">Blue Primary</option>
+                <option value="Solid Color">Solid Custom Color</option>
+              </select>
+            </div>
+            <div style="font-size: 0.68rem; color: var(--text-dim);" id="cbc-video-flow-info">
+              Flow: 6b5d8d68... · 1920x1080 @ 30 fps
+            </div>
+          </div>
+
+          <!-- Audio Pattern Selector -->
+          <div class="abb-col">
+            <div class="abb-title">AUDIO TEST PATTERNS (13 WAVEFORMS)</div>
+            <div style="margin-bottom: 4px;">
+              <select id="cbc-audio-pattern-select" class="ctrl-btn" style="width: 100%; text-align: left; padding: 4px 8px;" onchange="setCbcAudioPattern(this.value)">
+                <option value="1 kHz tone" selected>Calibrated 1 kHz Sine Tone</option>
+                <option value="Pink Noise">Pink Noise (-3 dB/oct)</option>
+                <option value="White Noise">White Noise (Flat Spectral)</option>
+                <option value="Square">Square Wave</option>
+                <option value="Saw">Sawtooth Wave</option>
+                <option value="Triangle">Triangle Wave</option>
+                <option value="Sine Table">Sine Table Synth</option>
+                <option value="Ticks">Synchronous Ticks</option>
+                <option value="Gaussian Noise">Gaussian Noise</option>
+                <option value="Red Noise">Red / Brownian Noise</option>
+                <option value="Blue Noise">Blue Noise</option>
+                <option value="Violet Noise">Violet Noise</option>
+                <option value="Silence">Full Digital Silence</option>
+              </select>
+            </div>
+            <div style="font-size: 0.68rem; color: var(--text-dim);" id="cbc-audio-flow-info">
+              Flow: 9b85cd39... · 2 Ch Float32 @ 48 kHz
+            </div>
+          </div>
+
+          <!-- Level & Presets -->
+          <div class="abb-col">
+            <div class="abb-title">CALIBRATED OUTPUT LEVEL</div>
+            <div style="display: flex; gap: 4px; flex-wrap: wrap; margin-bottom: 4px;">
+              <button class="ctrl-btn active" id="btn-cbc-lvl-m20" onclick="setCbcAudioLevel(-20.0)">-20 dBFS</button>
+              <button class="ctrl-btn" id="btn-cbc-lvl-m18" onclick="setCbcAudioLevel(-18.0)">-18 dBFS</button>
+              <button class="ctrl-btn" id="btn-cbc-lvl-m12" onclick="setCbcAudioLevel(-12.0)">-12 dBFS</button>
+              <button class="ctrl-btn" id="btn-cbc-lvl-0" onclick="setCbcAudioLevel(0.0)">0 dBFS</button>
+            </div>
+            <div style="font-size: 0.68rem; color: var(--accent-orange);" id="cbc-level-readout">
+              Current Level: -20.0 dBFS
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -1612,6 +1671,9 @@ HTML_UI = """<!DOCTYPE html>
 
   <!-- Bottom Global Actions -->
   <div class="controls-bar">
+    <button class="ctrl-btn active" id="btn-route-speakers" onclick="forceRouteSpeakers()" style="background: #052e16; border-color: #22c55e; color: #86efac; font-weight: 800;">
+      🔊 ROUTE THIS TO THE SPEAKERS (MONITOR 1 OUTPUT)
+    </button>
     <button class="ctrl-btn" id="btn-tone" onclick="toggleTone()">1 kHz Tone: OFF</button>
     <button class="ctrl-btn" id="btn-bar-bitbuddy" onclick="toggleBitBuddy()">Bit Buddy: OFF</button>
     <select id="tone-freq-select" class="ctrl-btn" onchange="changeToneFreq(this.value)">
@@ -1957,6 +2019,14 @@ async function pollStatus() {
       toneBtn.textContent = `1 kHz Tone: OFF`;
     }
 
+    // 3a. Update Route to Speakers / Monitor 1 button
+    const btnRouteSpk = document.getElementById('btn-route-speakers');
+    if (btnRouteSpk) {
+      const active = Boolean(data.routes && data.routes.speaker_split);
+      btnRouteSpk.className = active ? 'ctrl-btn active' : 'ctrl-btn';
+      btnRouteSpk.textContent = active ? `🔊 ROUTED TO MONITOR 1 (${data.physical_sink ? 'ALSA HW' : 'ACTIVE'})` : '🔊 ROUTE THIS TO THE SPEAKERS';
+    }
+
     // 3b. Update Bit Buddy Controls & Diagnostic LEDs
     if (data.bit_buddy) {
       const bb = data.bit_buddy;
@@ -2291,6 +2361,11 @@ async function setBitBuddySr(sr) {
   pollStatus();
 }
 
+async function forceRouteSpeakers() {
+  await fetch('/api/force_speakers', {method: 'POST'});
+  pollStatus();
+}
+
 async function fullRestart() {
   if (abandoned) return;
   document.getElementById('tapped-info').textContent = 'RESTARTING BUSES...';
@@ -2613,6 +2688,18 @@ class WBSHandler(http.server.BaseHTTPRequestHandler):
             self.wfile.write(json.dumps({
                 "active": BITBUDDY_ACTIVE,
                 "config": BITBUDDY_CONFIG
+            }).encode("utf-8"))
+        elif parsed.path == "/api/force_speakers":
+            with STATE_LOCK:
+                ACTIVE_ROUTES["speaker_split"] = True
+                apply_routes()
+            self.send_response(200)
+            self.send_header("Content-Type", "application/json")
+            self.end_headers()
+            self.wfile.write(json.dumps({
+                "status": "ok",
+                "speaker_split": True,
+                "physical_sink": PHYSICAL_SINK
             }).encode("utf-8"))
         elif parsed.path == "/api/cbc/pattern":
             data = json.loads(body)

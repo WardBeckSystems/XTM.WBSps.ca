@@ -55,6 +55,12 @@ export class RoutingCanvasView {
   pod33Engaged: boolean = false;
   bitBuddyEngaged: boolean = false;
 
+  // Cached needle SVG elements for 60 FPS updates
+  inNeedlesL: (SVGElement | null)[] = [];
+  inNeedlesR: (SVGElement | null)[] = [];
+  outNeedlesL: (SVGElement | null)[] = [];
+  outNeedlesR: (SVGElement | null)[] = [];
+
   // XMXL Dynamic Instances & Flow Discovery
   detectedInstances: XmxlInstance[] = [];
   selectedPort: number = 8467;
@@ -76,9 +82,20 @@ export class RoutingCanvasView {
     this.ctx = ctx;
     if (!this.container) return;
     this.container.innerHTML = this.renderHtml();
+    this.cacheNeedles();
     this.attachEvents();
     this.initXmxlBinding();
     this.isBuilt = true;
+  }
+
+  private cacheNeedles(): void {
+    if (!this.container) return;
+    for (let i = 0; i < 5; i++) {
+      this.inNeedlesL[i] = this.container.querySelector(`#rcInNeedleL${i}`) as SVGElement | null;
+      this.inNeedlesR[i] = this.container.querySelector(`#rcInNeedleR${i}`) as SVGElement | null;
+      this.outNeedlesL[i] = this.container.querySelector(`#rcOutNeedleL${i}`) as SVGElement | null;
+      this.outNeedlesR[i] = this.container.querySelector(`#rcOutNeedleR${i}`) as SVGElement | null;
+    }
   }
 
   private renderHtml(): string {
@@ -225,7 +242,12 @@ export class RoutingCanvasView {
             <!-- Bottom: Crosspoint Matrix Grid (Zero Spaghetti Wires) -->
             <div class="rc-matrix-card">
               <div class="rc-matrix-header">
-                <span>BROADCAST CROSSPOINT ROUTING MATRIX</span>
+                <div class="rc-matrix-header-left">
+                  <span>BROADCAST CROSSPOINT ROUTING MATRIX</span>
+                  <button type="button" class="rc-btn-master-speakers active" id="btnRouteThisToSpeakers" title="Force route selected input directly to physical speakers">
+                    🔊 ROUTE THIS TO THE SPEAKERS (MONITOR 1 OUTPUT)
+                  </button>
+                </div>
                 <div class="rc-matrix-presets">
                   <button type="button" class="rc-btn-preset" data-preset="broadcast">Default</button>
                   <button type="button" class="rc-btn-preset" data-preset="pod33">1kHz Cal</button>
@@ -267,9 +289,9 @@ export class RoutingCanvasView {
             <div class="rc-channel-strips" id="rcOutputStrips">
               ${this.renderOutputStrip(0, 'OUT 1', 'XTM-4 Master', 'VU + PPM Visualizer', true)}
               ${this.renderOutputStrip(1, 'OUT 2', 'POD-22 Loudness', 'ITU-R BS.1770 Bar', true)}
-              ${this.renderOutputStrip(2, 'OUT 3', 'Monitor Speakers', 'Physical Hardware Out', true)}
+              ${this.renderOutputStrip(2, 'OUT 3', 'MONITOR 1 OUTPUT', 'Speakers // Physical ALSA HW', true)}
               ${this.renderOutputStrip(3, 'OUT 4', 'Studio Cue / HP', 'Control Room Listen', false)}
-              ${this.renderOutputStrip(4, 'OUT 5', 'WBS Test Point', 'DARS / Analyzer Tap', false)}
+              ${this.renderOutputStrip(4, 'OUT 5', 'Ward-Beck Tap', 'WBS Test Point Tap', false)}
             </div>
           </div>
         </div>
@@ -431,31 +453,107 @@ export class RoutingCanvasView {
     `;
   }
 
+  private renderThemeMeterPair(prefix: 'rcIn' | 'rcOut', idx: number): string {
+    return `
+      <!-- Miniature Broadcast Theme VU Meters (Stereo L / R) -->
+      <div class="rc-theme-meters-wrap">
+        <svg class="rc-theme-meter-svg" viewBox="0 0 200 44" width="100%" height="44" preserveAspectRatio="xMidYMid meet">
+          <!-- LEFT METER (x: 2..96, cx: 49, cy: 42, r: 30) -->
+          <g class="rc-meter-subgroup" id="${prefix}MeterL${idx}">
+            <rect x="2" y="2" width="94" height="40" rx="3" class="rc-meter-bezel" />
+            <rect x="4" y="4" width="90" height="36" rx="2" class="rc-meter-face" />
+
+            <!-- Channel Tag & Brand -->
+            <text x="8" y="13" class="rc-meter-ch-lbl">L</text>
+            <text x="49" y="37" class="rc-meter-vu-lbl" text-anchor="middle">VU</text>
+
+            <!-- Scale Arcs: Normal (-42° to +16°) and Overload (+16° to +42°) -->
+            <path d="M 28.9 19.7 A 30 30 0 0 1 57.3 13.2" class="rc-meter-arc-norm" />
+            <path d="M 57.3 13.2 A 30 30 0 0 1 69.1 19.7" class="rc-meter-arc-over" />
+
+            <!-- Key Ticks: -20, -10, -7, -3, 0, +3 -->
+            <line x1="32.5" y1="19.3" x2="30.2" y2="16.1" class="rc-meter-tick" />
+            <line x1="37.6" y1="16.4" x2="36.0" y2="12.8" class="rc-meter-tick" />
+            <line x1="41.3" y1="15.1" x2="40.2" y2="11.2" class="rc-meter-tick" />
+            <line x1="49.0" y1="14.0" x2="49.0" y2="10.0" class="rc-meter-tick" />
+            <line x1="56.7" y1="15.1" x2="57.8" y2="11.2" class="rc-meter-tick-red" />
+            <line x1="67.7" y1="21.2" x2="70.4" y2="18.2" class="rc-meter-tick-red" />
+
+            <!-- Scale Numerals -->
+            <text x="27" y="25" class="rc-meter-tick-lbl" text-anchor="middle">-20</text>
+            <text x="49" y="8.5" class="rc-meter-tick-lbl" text-anchor="middle">-3</text>
+            <text x="58.5" y="9.5" class="rc-meter-tick-lbl-red" text-anchor="middle">0</text>
+            <text x="73" y="25" class="rc-meter-tick-lbl-red" text-anchor="middle">+3</text>
+
+            <!-- Needle -->
+            <g id="${prefix}NeedleL${idx}" class="rc-needle-group" transform="rotate(-42 49 42)">
+              <line x1="49" y1="42" x2="49" y2="13" class="rc-meter-needle" />
+              <circle cx="49" cy="42" r="2.5" class="rc-meter-hub" />
+            </g>
+          </g>
+
+          <!-- RIGHT METER (x: 104..198, cx: 151, cy: 42, r: 30) -->
+          <g class="rc-meter-subgroup" id="${prefix}MeterR${idx}">
+            <rect x="104" y="2" width="94" height="40" rx="3" class="rc-meter-bezel" />
+            <rect x="106" y="4" width="90" height="36" rx="2" class="rc-meter-face" />
+
+            <!-- Channel Tag & Brand -->
+            <text x="110" y="13" class="rc-meter-ch-lbl">R</text>
+            <text x="151" y="37" class="rc-meter-vu-lbl" text-anchor="middle">VU</text>
+
+            <!-- Scale Arcs: Normal (-42° to +16°) and Overload (+16° to +42°) -->
+            <path d="M 130.9 19.7 A 30 30 0 0 1 159.3 13.2" class="rc-meter-arc-norm" />
+            <path d="M 159.3 13.2 A 30 30 0 0 1 171.1 19.7" class="rc-meter-arc-over" />
+
+            <!-- Key Ticks: -20, -10, -7, -3, 0, +3 -->
+            <line x1="134.5" y1="19.3" x2="132.2" y2="16.1" class="rc-meter-tick" />
+            <line x1="139.6" y1="16.4" x2="138.0" y2="12.8" class="rc-meter-tick" />
+            <line x1="143.3" y1="15.1" x2="142.2" y2="11.2" class="rc-meter-tick" />
+            <line x1="151.0" y1="14.0" x2="151.0" y2="10.0" class="rc-meter-tick" />
+            <line x1="158.7" y1="15.1" x2="159.8" y2="11.2" class="rc-meter-tick-red" />
+            <line x1="169.7" y1="21.2" x2="172.4" y2="18.2" class="rc-meter-tick-red" />
+
+            <!-- Scale Numerals -->
+            <text x="129" y="25" class="rc-meter-tick-lbl" text-anchor="middle">-20</text>
+            <text x="151" y="8.5" class="rc-meter-tick-lbl" text-anchor="middle">-3</text>
+            <text x="160.5" y="9.5" class="rc-meter-tick-lbl-red" text-anchor="middle">0</text>
+            <text x="175" y="25" class="rc-meter-tick-lbl-red" text-anchor="middle">+3</text>
+
+            <!-- Needle -->
+            <g id="${prefix}NeedleR${idx}" class="rc-needle-group" transform="rotate(-42 151 42)">
+              <line x1="151" y1="42" x2="151" y2="13" class="rc-meter-needle" />
+              <circle cx="151" cy="42" r="2.5" class="rc-meter-hub" />
+            </g>
+          </g>
+        </svg>
+      </div>
+    `;
+  }
+
   private renderInputStrip(idx: number, chTag: string, name: string, sub: string, pillClass: string, isDefault = false): string {
     const isSelected = this.activeInput === idx;
+    const isRoutedToSpeakers = this.matrix[idx][2];
     return `
       <div class="rc-strip rc-in-strip ${isSelected ? 'selected' : ''}" id="rcInStrip${idx}">
         <div class="rc-strip-top">
           <span class="rc-strip-tag">${chTag}</span>
-          <span class="rc-strip-pill ${pillClass}">${name}</span>
+          <span class="rc-strip-pill ${pillClass}">INPUT</span>
         </div>
         <div class="rc-strip-name">${name}</div>
         <div class="rc-strip-sub">${sub}</div>
 
-        <!-- Mini Stereo Meter -->
-        <div class="rc-mini-meters">
-          <div class="rc-meter-bar-track">
-            <div class="rc-meter-bar-fill" id="rcInMeterL${idx}" style="width: 0%;"></div>
-          </div>
-          <div class="rc-meter-bar-track">
-            <div class="rc-meter-bar-fill" id="rcInMeterR${idx}" style="width: 0%;"></div>
-          </div>
-        </div>
+        <!-- Miniature Broadcast Theme VU Meters -->
+        ${this.renderThemeMeterPair('rcIn', idx)}
         <div class="rc-strip-digits" id="rcInDb${idx}">-60.0 dBFS</div>
 
-        <button type="button" class="rc-btn-engage ${isSelected ? 'engaged' : ''}" data-in-idx="${idx}">
-          ${isSelected ? '● ROUTED' : 'ENGAGE IN'}
-        </button>
+        <div class="rc-in-actions">
+          <button type="button" class="rc-btn-engage ${isSelected ? 'engaged' : ''}" data-in-idx="${idx}">
+            ${isSelected ? '● ROUTED' : 'ENGAGE IN'}
+          </button>
+          <button type="button" class="rc-btn-to-speakers ${isRoutedToSpeakers ? 'active' : ''}" data-to-speakers="${idx}" title="Route ${name} directly to Monitor 1 Output (Speakers)">
+            🔊 ROUTE TO SPEAKERS
+          </button>
+        </div>
       </div>
     `;
   }
@@ -465,20 +563,13 @@ export class RoutingCanvasView {
       <div class="rc-strip rc-out-strip" id="rcOutStrip${idx}">
         <div class="rc-strip-top">
           <span class="rc-strip-tag">${chTag}</span>
-          <span class="rc-strip-pill pill-out">DEST</span>
+          <span class="rc-strip-pill pill-out">DEST BUS</span>
         </div>
         <div class="rc-strip-name">${name}</div>
         <div class="rc-strip-sub">${sub}</div>
 
-        <!-- Mini Stereo Meter -->
-        <div class="rc-mini-meters">
-          <div class="rc-meter-bar-track">
-            <div class="rc-meter-bar-fill" id="rcOutMeterL${idx}" style="width: 0%;"></div>
-          </div>
-          <div class="rc-meter-bar-track">
-            <div class="rc-meter-bar-fill" id="rcOutMeterR${idx}" style="width: 0%;"></div>
-          </div>
-        </div>
+        <!-- Miniature Broadcast Theme VU Meters -->
+        ${this.renderThemeMeterPair('rcOut', idx)}
         <div class="rc-strip-digits" id="rcOutDb${idx}">-60.0 dBFS</div>
 
         <div class="rc-out-btns">
@@ -659,6 +750,68 @@ export class RoutingCanvasView {
           this.ctx.audio.setMonitorVolume(this.outDims[2] ? 0.1 : 0.8);
         }
       });
+    });
+
+    // 7. Route to Speakers / Monitor 1 Output Buttons
+    const btnRouteSpk = this.container.querySelector('#btnRouteThisToSpeakers');
+    if (btnRouteSpk) {
+      btnRouteSpk.addEventListener('click', () => {
+        this.forceRouteToSpeakers(this.activeInput);
+      });
+    }
+
+    this.container.querySelectorAll('[data-to-speakers]').forEach((btn) => {
+      btn.addEventListener('click', (e) => {
+        const target = e.currentTarget as HTMLElement;
+        const idx = parseInt(target.getAttribute('data-to-speakers') || '0', 10);
+        this.forceRouteToSpeakers(idx);
+      });
+    });
+  }
+
+  public forceRouteToSpeakers(idx: number = this.activeInput): void {
+    if (this.activeInput !== idx) {
+      this.selectInputSource(idx);
+    }
+    // Connect to OUT 3 (Monitor 1 Output / Speakers)
+    this.matrix[idx][2] = true;
+    this.outMutes[2] = false;
+
+    if (this.ctx && this.ctx.audio) {
+      const audio = this.ctx.audio;
+      if (audio.ctx && audio.ctx.state === 'suspended') {
+        audio.ctx.resume().catch(() => {});
+      }
+      audio.setMonitor(true, this.outDims[2] ? 0.1 : 0.8);
+    }
+
+    // Ping backend python daemon if available to ensure physical hardware ALSA sink
+    try {
+      fetch('/api/force_speakers', { method: 'POST' }).catch(() => {
+        fetch('http://localhost:8467/api/force_speakers', { method: 'POST' }).catch(() => {});
+      });
+    } catch {}
+
+    this.updateMatrixVisuals();
+    this.updateStripVisuals();
+    this.updateSpeakerBtnState();
+  }
+
+  private updateSpeakerBtnState(): void {
+    if (!this.container) return;
+    const isSpeakersActive = this.matrix[this.activeInput][2] && !this.outMutes[2];
+    const btnRouteSpk = this.container.querySelector('#btnRouteThisToSpeakers');
+    if (btnRouteSpk) {
+      btnRouteSpk.className = `rc-btn-master-speakers ${isSpeakersActive ? 'active' : 'inactive'}`;
+      btnRouteSpk.textContent = isSpeakersActive
+        ? '🔊 ROUTED TO SPEAKERS (MONITOR 1 OUTPUT)'
+        : '🔊 ROUTE THIS TO THE SPEAKERS (MONITOR 1 OUTPUT)';
+    }
+
+    this.container.querySelectorAll('[data-to-speakers]').forEach((btn) => {
+      const idx = parseInt(btn.getAttribute('data-to-speakers') || '0', 10);
+      const active = this.matrix[idx][2] && !this.outMutes[2];
+      btn.className = `rc-btn-to-speakers ${active ? 'active' : ''}`;
     });
   }
 
@@ -842,6 +995,7 @@ export class RoutingCanvasView {
       const isConnected = this.matrix[row][col];
       btn.className = `rc-matrix-btn ${isConnected ? 'connected' : ''}`;
     });
+    this.updateSpeakerBtnState();
   }
 
   private updateStripVisuals(): void {
@@ -858,6 +1012,7 @@ export class RoutingCanvasView {
         engageBtn.textContent = isSelected ? '● ROUTED' : 'ENGAGE IN';
       }
     }
+    this.updateSpeakerBtnState();
   }
 
   /**
@@ -873,9 +1028,27 @@ export class RoutingCanvasView {
       this.ringHead = (this.ringHead + this.QUANTUM) % this.RING_CAPACITY;
     }
 
-    // 1. Draw Left & Right Continuous Ring Buffers
-    this.drawRing('rcRingCanvas0', this.ringHead, '#38bdf8');
-    this.drawRing('rcRingCanvas1', this.ringHead, '#f97316');
+    // Detect active theme for data stream styling
+    const isMcDark = document.body.classList.contains('theme-mccurdy-dark');
+    const isMcLight = document.body.classList.contains('theme-mccurdy') || document.body.classList.contains('theme-mccurdy-light');
+    const isWbsCa = document.body.classList.contains('theme-wbs-ca');
+
+    let ringColor0 = '#38bdf8';
+    let ringColor1 = '#f97316';
+    if (isMcDark) {
+      ringColor0 = '#3892d4'; // McCurdy Slate Blue
+      ringColor1 = '#f59e0b'; // McCurdy Warm Amber
+    } else if (isMcLight) {
+      ringColor0 = '#1e3a5f'; // McCurdy Navy
+      ringColor1 = '#b91c1c'; // McCurdy Burgundy
+    } else if (isWbsCa) {
+      ringColor0 = '#f97316'; // WBS Vintage Orange
+      ringColor1 = '#d97706'; // WBS Vintage Amber
+    }
+
+    // 1. Draw Left & Right Continuous Ring Buffers (Theme-Colored)
+    this.drawRing('rcRingCanvas0', this.ringHead, ringColor0, isMcDark, isMcLight, isWbsCa);
+    this.drawRing('rcRingCanvas1', this.ringHead, ringColor1, isMcDark, isMcLight, isWbsCa);
 
     // 2. Update telemetry tags
     const head0El = this.container.querySelector('#rcCh0Head');
@@ -890,40 +1063,67 @@ export class RoutingCanvasView {
       sliceEl.textContent = `Tail: ${tail} .. Head: ${this.ringHead}${taiInfo}`;
     }
 
-    // 3. Update Mini Stereo Meters on Active Input & Master Outputs
+    // 3. Update Miniature Broadcast Theme VU Meters on Inputs
     const vuL = levels?.vuDb ? levels.vuDb[0] : -60.0;
     const vuR = levels?.vuDb ? levels.vuDb[1] : -60.0;
+    const clampDb = (db: number) => Math.max(-60, Math.min(3, isFinite(db) ? db : -60));
 
-    const clampDb = (db: number) => Math.max(-60, Math.min(0, isFinite(db) ? db : -60));
-    const pctOf = (db: number) => Math.max(0, Math.min(100, ((clampDb(db) + 60) / 60) * 100));
+    for (let inIdx = 0; inIdx < 5; inIdx++) {
+      let dbL = -60.0;
+      let dbR = -60.0;
+      if (inIdx === this.activeInput) {
+        dbL = vuL;
+        dbR = vuR;
+      }
+      const angleL = this.vuDbToAngle(dbL);
+      const angleR = this.vuDbToAngle(dbR);
+      const needleL = this.inNeedlesL[inIdx] || (this.container.querySelector(`#rcInNeedleL${inIdx}`) as SVGElement | null);
+      const needleR = this.inNeedlesR[inIdx] || (this.container.querySelector(`#rcInNeedleR${inIdx}`) as SVGElement | null);
+      if (needleL) needleL.setAttribute('transform', `rotate(${angleL.toFixed(1)} 49 42)`);
+      if (needleR) needleR.setAttribute('transform', `rotate(${angleR.toFixed(1)} 151 42)`);
 
-    // Active Input Strip meter
-    const inFillL = this.container.querySelector(`#rcInMeterL${this.activeInput}`) as HTMLElement;
-    const inFillR = this.container.querySelector(`#rcInMeterR${this.activeInput}`) as HTMLElement;
-    const inDbEl = this.container.querySelector(`#rcInDb${this.activeInput}`);
-    if (inFillL && inFillR) {
-      inFillL.style.width = `${pctOf(vuL)}%`;
-      inFillR.style.width = `${pctOf(vuR)}%`;
+      const inDbEl = this.container.querySelector(`#rcInDb${inIdx}`);
+      if (inDbEl) {
+        if (dbL > -55 || dbR > -55) {
+          inDbEl.textContent = `L:${clampDb(dbL).toFixed(1)} R:${clampDb(dbR).toFixed(1)} dB`;
+        } else {
+          inDbEl.textContent = `-60.0 dBFS`;
+        }
+      }
     }
-    if (inDbEl) {
-      inDbEl.textContent = `L:${clampDb(vuL).toFixed(1)} R:${clampDb(vuR).toFixed(1)} dB`;
-    }
 
-    // Outputs 0 (XTM-4) & 1 (POD-22)
-    for (const outIdx of [0, 1]) {
-      const outFillL = this.container.querySelector(`#rcOutMeterL${outIdx}`) as HTMLElement;
-      const outFillR = this.container.querySelector(`#rcOutMeterR${outIdx}`) as HTMLElement;
+    // 4. Update Miniature Broadcast Theme VU Meters on Outputs (including OUT 5: Ward-Beck Tap)
+    for (let outIdx = 0; outIdx < 5; outIdx++) {
+      const isConnected = this.matrix[this.activeInput] ? this.matrix[this.activeInput][outIdx] : false;
+      const isMuted = this.outMutes[outIdx];
+      const isDimmed = this.outDims[outIdx];
+
+      let dbL = -60.0;
+      let dbR = -60.0;
+      if (isConnected && !isMuted) {
+        const dimOffset = isDimmed ? -20 : 0;
+        dbL = clampDb(vuL + dimOffset);
+        dbR = clampDb(vuR + dimOffset);
+      }
+
+      const angleL = this.vuDbToAngle(dbL);
+      const angleR = this.vuDbToAngle(dbR);
+      const needleL = this.outNeedlesL[outIdx] || (this.container.querySelector(`#rcOutNeedleL${outIdx}`) as SVGElement | null);
+      const needleR = this.outNeedlesR[outIdx] || (this.container.querySelector(`#rcOutNeedleR${outIdx}`) as SVGElement | null);
+      if (needleL) needleL.setAttribute('transform', `rotate(${angleL.toFixed(1)} 49 42)`);
+      if (needleR) needleR.setAttribute('transform', `rotate(${angleR.toFixed(1)} 151 42)`);
+
       const outDbEl = this.container.querySelector(`#rcOutDb${outIdx}`);
-      if (outFillL && outFillR) {
-        outFillL.style.width = `${pctOf(vuL)}%`;
-        outFillR.style.width = `${pctOf(vuR)}%`;
-      }
       if (outDbEl) {
-        outDbEl.textContent = `L:${clampDb(vuL).toFixed(1)} R:${clampDb(vuR).toFixed(1)} dB`;
+        if (dbL > -55 || dbR > -55) {
+          outDbEl.textContent = `L:${clampDb(dbL).toFixed(1)} R:${clampDb(dbR).toFixed(1)} dB`;
+        } else {
+          outDbEl.textContent = `-60.0 dBFS`;
+        }
       }
     }
 
-    // 4. Update ITU-R BS.1770 / EBU R128 LOUDNESS metrics
+    // 5. Update ITU-R BS.1770 / EBU R128 LOUDNESS metrics
     const dbfsL = levels?.dbfs ? levels.dbfs[0] : vuL;
     const dbfsR = levels?.dbfs ? levels.dbfs[1] : vuR;
     const lufsVal = Math.max(-60, Math.min(0, (dbfsL + dbfsR) / 2));
@@ -938,6 +1138,13 @@ export class RoutingCanvasView {
     if (luMomEl) luMomEl.textContent = `${(lufsVal + 0.2).toFixed(1)} LUFS`;
     if (luShortEl) luShortEl.textContent = `${(lufsVal - 0.1).toFixed(1)} LUFS`;
     if (luTpEl) luTpEl.textContent = `${truePeak.toFixed(1)} dBTP`;
+  }
+
+  private vuDbToAngle(db: number): number {
+    if (db <= -55 || !isFinite(db)) return -42;
+    const p = Math.pow(10, (Math.max(-40, Math.min(3, db)) - 3) / 20);
+    const clampedP = Math.max(0, Math.min(1.05, p));
+    return -42 + 84 * clampedP;
   }
 
   private initXmxlBinding(): void {
@@ -1047,7 +1254,7 @@ export class RoutingCanvasView {
     this.updateXmxlBar();
   }
 
-  private drawRing(canvasId: string, head: number, accentColor: string): void {
+  private drawRing(canvasId: string, head: number, accentColor: string, isMcDark = false, isMcLight = false, isWbsCa = false): void {
     const canvas = this.container?.querySelector(`#${canvasId}`) as HTMLCanvasElement;
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
@@ -1062,11 +1269,25 @@ export class RoutingCanvasView {
 
     ctx.clearRect(0, 0, w, h);
 
-    // 1. Dark circular backplate with high-tech radial gradient
+    // 1. Theme-aware circular backplate with high-tech radial gradient
     const bgGrad = ctx.createRadialGradient(cx, cy, rInner - 8, cx, cy, rOuter + 6);
-    bgGrad.addColorStop(0, '#03080e');
-    bgGrad.addColorStop(0.7, '#07121c');
-    bgGrad.addColorStop(1, '#0c1d2e');
+    if (isMcLight) {
+      bgGrad.addColorStop(0, '#ede9de');
+      bgGrad.addColorStop(0.7, '#e4e0d4');
+      bgGrad.addColorStop(1, '#dad5c7');
+    } else if (isWbsCa) {
+      bgGrad.addColorStop(0, '#d5d1c2');
+      bgGrad.addColorStop(0.7, '#cac5b4');
+      bgGrad.addColorStop(1, '#bebaa7');
+    } else if (isMcDark) {
+      bgGrad.addColorStop(0, '#0e1720');
+      bgGrad.addColorStop(0.7, '#14202c');
+      bgGrad.addColorStop(1, '#1b2a3a');
+    } else {
+      bgGrad.addColorStop(0, '#03080e');
+      bgGrad.addColorStop(0.7, '#07121c');
+      bgGrad.addColorStop(1, '#0c1d2e');
+    }
     ctx.beginPath();
     ctx.arc(cx, cy, rOuter + 4, 0, Math.PI * 2);
     ctx.fillStyle = bgGrad;
@@ -1079,6 +1300,9 @@ export class RoutingCanvasView {
     const currentNtpSec = Math.floor(nowMs / 1000) % 10;
     const ntpSubFrac = (nowMs % 1000) / 1000;
     const ntpPulse = Math.max(0, 1.0 - ntpSubFrac * 2.5); // Sharp flash on the top of the second
+
+    const defaultTickColor = isMcLight ? '#a8a396' : (isWbsCa ? '#8c897b' : (isMcDark ? '#2f475b' : '#1e3d5f'));
+    const zeroSecColor = (isMcLight || isWbsCa) ? '#dc2626' : '#ef4444';
 
     for (let s = 0; s < 10; s++) {
       const theta = s * (Math.PI * 2 / 10);
@@ -1094,21 +1318,25 @@ export class RoutingCanvasView {
 
       if (isCurrentNtp && ntpPulse > 0) {
         // NTP top-of-the-second pulse
-        ctx.strokeStyle = `rgba(56, 189, 248, ${0.4 + ntpPulse * 0.6})`;
+        ctx.strokeStyle = accentColor;
         ctx.lineWidth = 2.5 + ntpPulse * 1.5;
       } else if (is0s) {
         // 0s Far-Right anchor
-        ctx.strokeStyle = '#ef4444';
+        ctx.strokeStyle = zeroSecColor;
         ctx.lineWidth = 2.0;
       } else {
-        ctx.strokeStyle = '#1e3d5f';
+        ctx.strokeStyle = defaultTickColor;
         ctx.lineWidth = 1.0;
       }
       ctx.stroke();
 
       // Number tick labels (0s, 2s, 4s, 6s, 8s)
       if (s % 2 === 0) {
-        ctx.fillStyle = isCurrentNtp ? '#38bdf8' : (is0s ? '#f87171' : '#64748b');
+        let lblColor = isMcLight ? '#4a4740' : (isWbsCa ? '#2a2b2a' : '#64748b');
+        if (isCurrentNtp) lblColor = accentColor;
+        else if (is0s) lblColor = zeroSecColor;
+
+        ctx.fillStyle = lblColor;
         ctx.font = 'bold 7.5px monospace';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
@@ -1152,21 +1380,20 @@ export class RoutingCanvasView {
       ctx.moveTo(cx + rInner * cosB, cy + rInner * sinB);
       ctx.lineTo(cx + (rInner + barLen) * cosB, cy + (rInner + barLen) * sinB);
 
-      // Color gradation: green at base (#22c55e), transitioning to cyan (#38bdf8) or amber (#f59e0b) at tips
+      // Color gradation matching theme
       const alpha = Math.max(0.18, 1.0 - ageFrac * 0.7);
       if (amp > 0.65) {
         ctx.strokeStyle = `rgba(249, 115, 22, ${alpha})`;
       } else if (amp > 0.35) {
-        ctx.strokeStyle = `rgba(34, 197, 94, ${alpha})`;
+        ctx.strokeStyle = isMcLight ? `rgba(30, 58, 95, ${alpha})` : (isWbsCa ? `rgba(217, 119, 6, ${alpha})` : (isMcDark ? `rgba(56, 146, 212, ${alpha})` : `rgba(34, 197, 94, ${alpha})`));
       } else {
-        ctx.strokeStyle = `rgba(16, 140, 75, ${alpha * 0.8})`;
+        ctx.strokeStyle = isMcLight ? `rgba(74, 71, 64, ${alpha * 0.8})` : (isWbsCa ? `rgba(108, 112, 119, ${alpha * 0.8})` : (isMcDark ? `rgba(37, 57, 73, ${alpha * 0.8})` : `rgba(16, 140, 75, ${alpha * 0.8})`));
       }
       ctx.lineWidth = 1.6;
       ctx.stroke();
     }
 
-    // 4. Scanalyzer Center Magenta Triangle Pointer (#d946ef)
-    // Points outward in the direction of the write head
+    // 4. Center Pointer Triangle
     const triLen = 22;
     const triBaseHalf = 8;
     const cosH = Math.cos(headAngle);
@@ -1186,13 +1413,13 @@ export class RoutingCanvasView {
     ctx.lineTo(base1X, base1Y);
     ctx.lineTo(base2X, base2Y);
     ctx.closePath();
-    ctx.fillStyle = '#d946ef';
+    ctx.fillStyle = accentColor;
     ctx.fill();
-    ctx.strokeStyle = '#f0abfc';
+    ctx.strokeStyle = isMcLight ? '#ffffff' : '#ffffffd9';
     ctx.lineWidth = 1.0;
     ctx.stroke();
 
-    // 5. Scanalyzer Orange Sweep Needle & Glowing Red Tip
+    // 5. Sweep Needle & Glowing Tip
     const needleOuter = rOuter + 2;
     const needleTipX = cx + needleOuter * cosH;
     const needleTipY = cy + needleOuter * sinH;
@@ -1200,31 +1427,32 @@ export class RoutingCanvasView {
     ctx.beginPath();
     ctx.moveTo(tipX, tipY);
     ctx.lineTo(needleTipX, needleTipY);
-    ctx.strokeStyle = '#f97316';
+    ctx.strokeStyle = accentColor;
     ctx.lineWidth = 2.5;
     ctx.stroke();
 
-    // Hot red tip dot
+    // Hot tip dot
     ctx.beginPath();
     ctx.arc(needleTipX, needleTipY, 3.5, 0, Math.PI * 2);
-    ctx.fillStyle = '#ff2810';
+    ctx.fillStyle = (isMcLight || isWbsCa) ? '#dc2626' : '#ff2810';
     ctx.fill();
     ctx.strokeStyle = '#ffffff';
     ctx.lineWidth = 1.0;
     ctx.stroke();
 
     // 6. Center Hub Display
+    const hubBg = isMcLight ? '#f4f1ea' : (isWbsCa ? '#edeae0' : (isMcDark ? '#1a2632' : '#071018'));
     ctx.beginPath();
     ctx.arc(cx, cy, 14, 0, Math.PI * 2);
-    ctx.fillStyle = '#071018';
+    ctx.fillStyle = hubBg;
     ctx.fill();
-    ctx.strokeStyle = '#38bdf8';
+    ctx.strokeStyle = accentColor;
     ctx.lineWidth = 1.0;
     ctx.stroke();
 
     // Second readout in center
     const secVal = (head / 48000).toFixed(1);
-    ctx.fillStyle = '#38bdf8';
+    ctx.fillStyle = isMcLight ? '#1e3a5f' : (isWbsCa ? '#2a2b2a' : accentColor);
     ctx.font = 'bold 8.5px monospace';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';

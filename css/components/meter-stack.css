@@ -53,6 +53,18 @@
   overflow: hidden;
 }
 
+.meter-unit.routing-unit {
+  flex: 1 1 0px;
+  min-height: 180px;
+  line-height: normal;
+  border-top: 1px solid #161c28;
+  background: #09131d;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
 /* -------------------------------------------------------------
    XTM-4 Dual Meter Only Mode (No Center Section)
    Triggered by CTRL + ALT + Click on dial logo.
