@@ -5,6 +5,39 @@
  */
 
 import type { XtmAudioEngine } from '../../audio-engine';
+import { onNextGesture, resumeAudio } from '../autoplay';
+
+/**
+ * Microphone permission was refused: stop asking (every knob turn re-syncs the source)
+ * until the user interacts with the page again or flips the site permission.
+ */
+let micBlocked = false;
+
+function isPermissionDenied(err: unknown): boolean {
+  const n = (err as any)?.name;
+  return n === 'NotAllowedError' || n === 'SecurityError' || n === 'PermissionDeniedError';
+}
+
+async function micPermissionState(): Promise<PermissionState | 'unknown'> {
+  try {
+    const st = await navigator.permissions.query({ name: 'microphone' as PermissionName });
+    return st.state;
+  } catch {
+    return 'unknown';
+  }
+}
+
+function blockMic(): void {
+  if (micBlocked) return;
+  micBlocked = true;
+  onNextGesture(() => { micBlocked = false; });
+}
+
+function deniedError(): DOMException {
+  return new DOMException(
+    'Microphone blocked for this site: allow it from the padlock in the address bar (Site settings → Microphone → Allow)',
+    'NotAllowedError');
+}
 
 /**
  * Query available audio input hardware devices
@@ -70,6 +103,14 @@ export async function connectSoundCard(engine: XtmAudioEngine, deviceId: string 
     if ((checkErr as any)?.name === 'NotFoundError') throw checkErr;
   }
 
+  // Already refused: don't fire another round of getUserMedia prompts/errors.
+  const perm = await micPermissionState();
+  if (perm === 'denied' || (micBlocked && perm !== 'granted')) {
+    const err = deniedError();
+    if (engine.onStatusChange) engine.onStatusChange({ type: 'error', error: err.message });
+    throw err;
+  }
+
   const constraintList = buildSoundCardConstraints(deviceId);
 
   let stream = null;
@@ -83,8 +124,17 @@ export async function connectSoundCard(engine: XtmAudioEngine, deviceId: string 
       }
     } catch (err) {
       lastErr = err;
+      if (isPermissionDenied(err)) break; // a refusal won't change with other constraints
       console.warn('getUserMedia candidate constraint failed:', c, err);
     }
+  }
+
+  if (!stream && isPermissionDenied(lastErr)) {
+    blockMic();
+    const err = deniedError();
+    console.info('[XTM] ' + err.message);
+    if (engine.onStatusChange) engine.onStatusChange({ type: 'error', error: err.message });
+    throw err;
   }
 
   if (!stream) {
@@ -108,9 +158,7 @@ export async function connectSoundCard(engine: XtmAudioEngine, deviceId: string 
     engine.sourceType = 'mic';
     engine.setupAudioGraph(stream);
 
-    if (engine.ctx && engine.ctx.state === 'suspended') {
-      await engine.ctx.resume();
-    }
+    resumeAudio(engine.ctx);
 
     // Notify device changes with updated permission labels
     const devices = await engine.getAudioInputDevices();

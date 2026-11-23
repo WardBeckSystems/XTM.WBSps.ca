@@ -5,6 +5,7 @@
  */
 
 import type { XtmAudioEngine } from '../audio-engine';
+import { resumeAudio } from './autoplay';
 
 /** HPF corner when engaged (HPI) and the effectively-open corner when bypassed (HPO). */
 export const HPF_ON_HZ = 80;
@@ -45,9 +46,7 @@ export function updateHpfState(engine: XtmAudioEngine): void {
  * Monitor / Listen Through toggle & volume
  */
 export function setMonitor(engine: XtmAudioEngine, enabled: boolean, volume: number | null = null): void {
-  if (engine.ctx && engine.ctx.state === 'suspended' && enabled) {
-    engine.ctx.resume().catch(() => {});
-  }
+  if (enabled) resumeAudio(engine.ctx);
   engine.monitorEnabled = enabled;
   if (volume !== null) engine.monitorVolume = volume;
   updateMonitorState(engine);

@@ -8,13 +8,12 @@ import type { XtmAudioEngine } from '../../audio-engine';
 import { startSineTone } from '../generators/sine';
 import { startPinkNoise } from '../generators/pink-noise';
 import { startSweep } from '../generators/sweep';
+import { resumeAudio } from '../autoplay';
 
 const isCalTone = (type: string): boolean => type === 'sine1k' || type === 'sine400';
 
 export function startTestGenerator(engine: XtmAudioEngine, type = 'sine1k'): void {
-  if (engine.ctx && engine.ctx.state === 'suspended') {
-    engine.ctx.resume();
-  }
+  resumeAudio(engine.ctx);
   engine.stopCurrentSource();
   engine.sourceType = 'test';
   engine.testType = type;

@@ -18,6 +18,7 @@
 
 import type { XtmAudioEngine } from '../../audio-engine';
 import { ensureAudioGraph } from '../graph';
+import { resumeAudio } from '../autoplay';
 
 export interface Pod33Config {
   freq: number;            // 100, 400, 1000, 0 (silence)
@@ -94,9 +95,7 @@ function updateGeneratorEngineStatus(engine: XtmAudioEngine): void {
  * (Allows concurrent operation with Bit Spitter)
  */
 export function startPod33Generator(engine: XtmAudioEngine, config: Pod33Config = DEFAULT_POD33_CONFIG): void {
-  if (engine.ctx && engine.ctx.state === 'suspended') {
-    engine.ctx.resume().catch(() => {});
-  }
+  resumeAudio(engine.ctx);
   const bus = ensureAudioGraph(engine);
   const ctx = engine.ctx;
   if (!ctx || !bus) return;
@@ -182,9 +181,7 @@ export function stopPod33Generator(engine: XtmAudioEngine, notify = true): void 
  * (Allows concurrent operation with POD-33)
  */
 export function startBitBuddyGenerator(engine: XtmAudioEngine, config: BitBuddyConfig = DEFAULT_BITBUDDY_CONFIG): void {
-  if (engine.ctx && engine.ctx.state === 'suspended') {
-    engine.ctx.resume().catch(() => {});
-  }
+  resumeAudio(engine.ctx);
   const bus = ensureAudioGraph(engine);
   const ctx = engine.ctx;
   if (!ctx || !bus) return;

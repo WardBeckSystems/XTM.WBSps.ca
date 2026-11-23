@@ -489,12 +489,16 @@ export async function scanXmxlInstances(): Promise<XmxlInstance[]> {
 
   try {
     const probePromises = CANDIDATE_TARGETS.map((t) => probeTarget(t));
-    const [probeResults, hostNmos, directNmos, hostAoip] = await Promise.all([
+    const [probeResults, hostNmos, hostAoip] = await Promise.all([
       Promise.all(probePromises),
       probeNmosFromHost(),
-      probeDirectNmos(NMOS_TARGETS[0]),
       probeAoipFromHost(),
     ]);
+    // Direct probe of the hardware node is plain http on the LAN: an https page
+    // (ward-beck.ca) can never load it (mixed content), so only try it from an http
+    // page and only when the local daemon (localhost is exempt) reported nothing.
+    const canProbeLan = typeof location === 'undefined' || location.protocol !== 'https:';
+    const directNmos = hostNmos.length === 0 && canProbeLan ? await probeDirectNmos(NMOS_TARGETS[0]) : null;
 
     const validInstances = probeResults.filter((r): r is XmxlInstance => r !== null);
     const nmosNodes = hostNmos.length > 0 ? hostNmos : (directNmos ? [directNmos] : []);

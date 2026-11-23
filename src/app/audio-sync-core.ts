@@ -84,13 +84,16 @@ export async function syncAudioCore(
       await audio.connectSoundCard(targetId);
     } catch (err: any) {
       const isNotFound = err?.name === 'NotFoundError' || err?.message?.includes('not found') || err?.message?.includes('detected');
-      if (!isNotFound) {
+      const isDenied = err?.name === 'NotAllowedError';
+      if (!isNotFound && !isDenied) {
         console.warn('Could not connect soundcard:', err);
       }
       if (drawerSourceBadge) {
         drawerSourceBadge.textContent = isNotFound
           ? 'Source: Calibrated Internal Tone (No Audio Input Devices)'
-          : 'Source Error: ' + (err?.message || 'Failed to open soundcard');
+          : isDenied
+            ? 'Microphone blocked: allow it from the 🔒 padlock in the address bar · playing internal tone'
+            : 'Source Error: ' + (err?.message || 'Failed to open soundcard');
         drawerSourceBadge.style.color = isNotFound ? '#38bdf8' : '#ff4d4f';
       }
       // Fall back gracefully to internal calibrated test tone so meters and visualizers remain active
