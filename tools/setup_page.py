@@ -84,7 +84,7 @@ SETUP_HTML = r"""<!DOCTYPE html>
     <h2>1 · Run the TAP in Docker</h2>
     <p>The TAP drives the <em>host's</em> audio server, so the container shares the host network, your PipeWire / PulseAudio sockets, <code>/dev/shm/mxl</code>, the D-Bus system socket and <code>/dev/snd</code>. It runs as your desktop user, not root.</p>
     <h3>Build and start (Docker Compose)</h3>
-<pre><code>git clone https://github.com/WardBeckSystems/Ward-Beck-Audio-Tab.git Ward-Beck-Audio-Tap
+<pre><code>git clone https://github.com/WardBeckSystems/Ward-Beck-Audio-Tap.git
 cd Ward-Beck-Audio-Tap
 mkdir -p /dev/shm/mxl
 export UID GID=$(id -g)
