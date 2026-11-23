@@ -148,9 +148,9 @@
 
 .rc-rings-row {
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
-  gap: 16px;
+  gap: 48px;
   overflow: hidden;
 }
 
@@ -1655,7 +1655,10 @@ body.theme-mccurdy-light .rc-pipeline-graph, body.theme-mccurdy .rc-pipeline-gra
 /* Pipeline graph test points: every tappable card can be metered */
 .pg-node.pg-tappable { cursor: pointer; }
 .pg-node.pg-tappable:hover rect { stroke-width: 2; filter: brightness(1.06); }
-.pg-node.pg-tp { opacity: 1; }
+.pg-node.pg-tp, .pg-node.pg-pick { opacity: 1; }
+.pg-node.pg-pick rect { stroke: var(--pg-hub); stroke-width: 2.2; stroke-dasharray: none; }
+.pg-node.pg-pickable { cursor: pointer; }
+.pg-moip .pg-dot { fill: var(--pg-sap); } .pg-moip rect { stroke: var(--pg-sap); }
 .pg-node.pg-tp rect { stroke: #d946ef; stroke-width: 2.4; stroke-dasharray: none; }
 .pg-tp-tag { font: 700 6.6px monospace; fill: #d946ef; letter-spacing: 0.5px; }
 .pg-tp-chip { border-color: #d946ef; }

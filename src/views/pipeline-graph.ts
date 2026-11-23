@@ -15,6 +15,8 @@
  * it in the Scanalyzer eye. Clicking the clipped card again lifts the probe.
  */
 
+import type { XmxlInstance } from '../audio/engine/sources/xmxl-discovery';
+
 const DAEMON = 'http://localhost:8467';
 const POLL_MS = 4000;
 
@@ -24,9 +26,9 @@ const LANE_X = [8, 270, 532, 794];
 const NODE_H = 21;
 const NODE_GAP = 4;
 const TOP = 28;          // first node y
-const MAX_NODES = 9;     // per lane, then "+N more"
+const MAX_NODES = 18;    // per lane, then "+N more"
 
-type Kind = 'hw' | 'pw' | 'mxl' | 'dante' | 'ravenna' | 'sap' | 'nmos' | 'sip' | 'hub';
+type Kind = 'hw' | 'pw' | 'mxl' | 'dante' | 'ravenna' | 'sap' | 'nmos' | 'sip' | 'moip' | 'hub';
 
 interface GNode {
   id: string;
@@ -38,6 +40,7 @@ interface GNode {
   title?: string;
   hub?: boolean;
   tap?: { kind: 'hw' | 'pw' | 'mxl' | 'aoip'; ref: string };
+  pick?: { inst: string; flow: string };   // locally discovered node/flow: shown in the ring buffer
 }
 
 interface GEdge { from: string; to: string; clock?: boolean }
@@ -69,6 +72,9 @@ export class PipelineGraph {
   private fixDismissed = new Set<string>();
   private fixEl: HTMLElement | null = null;
   private fixTimer: number | null = null;
+  private local: XmxlInstance[] = [];
+  private picked = '';
+  private onPick?: (instId: string, flowId: string) => void;
 
   constructor(private el: HTMLElement, private onTap?: (active: boolean) => void) {
     // One delegated listener: cards are re-rendered on every poll.
@@ -80,8 +86,17 @@ export class PipelineGraph {
       }
       const g = (e.target as Element).closest?.('[data-tap]');
       const node = g ? this.taps.get(g.getAttribute('data-tap') || '') : undefined;
+      if (node?.pick) { this.onPick?.(node.pick.inst, node.pick.flow); return; }
       if (node?.tap) this.clip(node);
     });
+  }
+
+  /** Locally discovered XMXL nodes and flows (xmxl-discovery): drawn as signals in the MXL / AoIP lanes. */
+  setLocal(instances: XmxlInstance[], pickedFlow: string, onPick: (instId: string, flowId: string) => void): void {
+    this.local = instances;
+    this.picked = pickedFlow;
+    this.onPick = onPick;
+    this.draw();
   }
 
   /** Clip the test point onto a card, or lift it if that card is already clipped. */
@@ -293,6 +308,36 @@ export class PipelineGraph {
     for (const m of mc?.sip?.messages ?? [])
       nodes.push({ id: `sip_${m.method}_${m.from}`, lane: 3, kind: 'sip', live: true, label: `${m.method} ${m.from}`, sub: `SIP · ${m.source_ip} · ×${m.count}`, title: m.user_agent });
 
+    // Locally discovered nodes the daemon did not already report: MXL apps + their flows in lane 3,
+    // network gateways in lane 4. Clicking one shows that flow in the ring buffer below.
+    const base = (s: string) => s.replace(/\s*\(.*$/, '').trim().toLowerCase();
+    const seen = new Set(nodes.map((n) => base(n.label)));
+    const heardSap = (mc?.sap?.sessions ?? []).length > 0;
+    const seenFlow = new Set(flows.map((f) => f.flow_id));
+    const short = (s: string) => s.replace(/^(Ward-Beck Systems|Ward-Beck|CBC\/Radio-Canada|NMOS IS-04:|Dante:|Ravenna:|AES67:|LikeDotAudio:)\s*/i, '').replace(/^⚡\s*/, '');
+    const netKind: Partial<Record<XmxlInstance['type'], Kind>> = { 'dante-node': 'dante', 'ravenna-node': 'ravenna', 'aes67-node': 'sap', 'nmos-node': 'nmos', 'moip-node': 'moip' };
+    for (const inst of this.local) {
+      const nk = netKind[inst.type];
+      const name = short(inst.name);
+      const first = inst.flows[0]?.flowId ?? '';
+      if (nk) {
+        if (seen.has(base(name)) || (nk === 'sap' && heardSap)) continue;
+        seen.add(base(name));
+        nodes.push({ id: `loc_${inst.id}`, lane: 3, kind: nk, live: inst.status === 'online', label: name, sub: `${inst.flows.length} flow${inst.flows.length === 1 ? '' : 's'} · ${inst.latencyMs} ms`, pick: first ? { inst: inst.id, flow: first } : undefined });
+        continue;
+      }
+      if (inst.port !== 8467)
+        nodes.push({ id: `loc_${inst.id}`, lane: 2, kind: 'mxl', live: inst.status === 'online', label: name, sub: `:${inst.port} · ${inst.latencyMs} ms`, title: inst.domainId, pick: first ? { inst: inst.id, flow: first } : undefined });
+      for (const f of inst.flows) {
+        if (seenFlow.has(f.flowId)) continue;
+        seenFlow.add(f.flowId);
+        const label = short(f.label || f.flowId).replace(/\s*\(.*\)$/, '');
+        if (seen.has(base(label))) continue;
+        seen.add(base(label));
+        nodes.push({ id: `locf_${f.flowId}`, lane: 2, kind: 'mxl', live: true, label, sub: `${f.channelCount}ch · ${f.sampleRate / 1000}k`, title: f.label, pick: { inst: inst.id, flow: f.flowId } });
+      }
+    }
+
     // Edges: every card feeds the graph; graph feeds MXL; MXL bridges to the network.
     for (const n of nodes) {
       if (n.lane === 0) edges.push({ from: n.id, to: 'pw' });
@@ -364,11 +409,13 @@ export class PipelineGraph {
     const nodeSvg = shown.map((n) => {
       const p = pos.get(n.id)!;
       if (n.tap) this.taps.set(n.id, n);
+      if (n.pick) this.taps.set(n.id, n);
       const clipped = this.isClipped(n);
-      const tapAttr = n.tap ? ` data-tap="${esc(n.id)}" role="button" tabindex="0"` : '';
-      const tapHint = n.tap ? (clipped ? '\n● TEST POINT — click to lift the probe' : '\nClick to meter this point (test point)') : '';
+      const picked = !!n.pick && n.pick.flow === this.picked;
+      const tapAttr = n.tap || n.pick ? ` data-tap="${esc(n.id)}" role="button" tabindex="0"` : '';
+      const tapHint = n.pick ? '\nClick to show in the ring buffer' : n.tap ? (clipped ? '\n● TEST POINT — click to lift the probe' : '\nClick to meter this point (test point)') : '';
       return `
-        <g class="pg-node pg-${n.kind}${n.live ? ' pg-on' : ''}${n.hub ? ' pg-hub' : ''}${n.tap ? ' pg-tappable' : ''}${clipped ? ' pg-tp' : ''}"${tapAttr} transform="translate(${p.x} ${p.y})">
+        <g class="pg-node pg-${n.kind}${n.live ? ' pg-on' : ''}${n.hub ? ' pg-hub' : ''}${n.tap ? ' pg-tappable' : ''}${n.pick ? ' pg-pickable' : ''}${clipped ? ' pg-tp' : ''}${picked ? ' pg-pick' : ''}"${tapAttr} transform="translate(${p.x} ${p.y})">
           <title>${esc(n.label)}${n.sub ? ` — ${esc(n.sub)}` : ''}${n.title ? `\n${esc(n.title)}` : ''}${tapHint}</title>
           <rect width="${LANE_W}" height="${NODE_H}" rx="4"/>
           <circle class="pg-dot" cx="8" cy="${NODE_H / 2}" r="2.6"/>

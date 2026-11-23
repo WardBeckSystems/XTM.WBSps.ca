@@ -42,6 +42,7 @@ export class DataStreamView {
   activeXmxlDisconnect: (() => void) | null = null;
   liveMxlTelemetry: any = null;
   unsubscribeXmxl?: () => void;
+  graph: PipelineGraph | null = null;
 
   // Buffer Canvas animation
   ringHead: number = 0;
@@ -61,7 +62,11 @@ export class DataStreamView {
     this.startRingsPoll();
     const graphEl = this.container.querySelector('#rcPipelineGraph') as HTMLElement | null;
     // Clicking a pipeline card clips the test point there; the eye follows it.
-    if (graphEl) new PipelineGraph(graphEl, (on) => { if (on) this.setFlow('wbs-test-point'); }).start();
+    if (graphEl) {
+      this.graph = new PipelineGraph(graphEl, (on) => { if (on) this.setFlow('wbs-test-point'); });
+      this.graph.start();
+      this.updateXmxlBar();
+    }
     this.isBuilt = true;
   }
 
@@ -160,7 +165,17 @@ export class DataStreamView {
               <div class="rc-eye-hud-card">
                 <div class="rc-eye-hud-label">BUFFER CAPACITY &amp; SHM</div>
                 <div class="rc-eye-hud-val" style="color:#4ade80;">480,000 FRAMES (10.0s)</div>
-                <div class="rc-eye-hud-sub">Float32 Stereo · 3.84 MB /dev/shm</div>
+                <div class="rc-eye-hud-sub">3.84 MB /dev/shm · PROT_READ zero copy</div>
+              </div>
+              <div class="rc-eye-hud-card">
+                <div class="rc-eye-hud-label">QUANTUM</div>
+                <div class="rc-eye-hud-val">256 FRAMES</div>
+                <div class="rc-eye-hud-sub">5.33 ms @ 48 kHz</div>
+              </div>
+              <div class="rc-eye-hud-card">
+                <div class="rc-eye-hud-label">SLIP RATE</div>
+                <div class="rc-eye-hud-val" style="color:#4ade80;">0.00 ppm</div>
+                <div class="rc-eye-hud-sub">SMPTE 2059-1</div>
               </div>
             </div>
           </div>
@@ -182,7 +197,6 @@ export class DataStreamView {
                 <div class="rc-telemetry-box-body">
                   <div class="rc-telemetry-item"><span>Clock Master:</span> <strong style="color:#38bdf8;">SMPTE 2059-1 TAI (PTP Domain 0)</strong></div>
                   <div class="rc-telemetry-item"><span>Sampling Clock:</span> <strong>48,000 Hz Continuous</strong></div>
-                  <div class="rc-telemetry-item"><span>Quantum Period:</span> <strong>256 samples (5.333 ms)</strong></div>
                   <div class="rc-telemetry-item"><span>Grandmaster Skew:</span> <strong style="color:#4ade80;">&lt; 15 ns (Locked)</strong></div>
                 </div>
               </div>
@@ -190,8 +204,6 @@ export class DataStreamView {
                 <div class="rc-telemetry-box-title">ZERO-COPY RING STATUS</div>
                 <div class="rc-telemetry-box-body">
                   <div class="rc-telemetry-item"><span>SHM Domain:</span> <strong style="color:#ea580c;">/dev/shm/mxl/domain-wbs-dmf-01</strong></div>
-                  <div class="rc-telemetry-item"><span>Ring Buffer Capacity:</span> <strong>480,000 frames (10.0 s)</strong></div>
-                  <div class="rc-telemetry-item"><span>Access Mode:</span> <strong>PROT_READ (Wait-Free Atomic)</strong></div>
                   <div class="rc-telemetry-item"><span>Buffer Overruns:</span> <strong style="color:#4ade80;">0 Overruns / 0 Drops</strong></div>
                 </div>
               </div>
@@ -208,27 +220,6 @@ export class DataStreamView {
                 <span class="rc-telemetry-pill" id="rcHeadroomTag">HEADROOM: 99.5% · 0 OVERRUNS</span>
               </div>
 
-              <!-- Real-time Local XMXL Instance & Flow Discovery Bar -->
-              <div class="rc-xmxl-bar" id="rcXmxlBar">
-                <div class="rc-xmxl-bar-left">
-                  <span class="rc-xmxl-label">
-                    <span class="rc-led-indicator lit-green" id="rcLedXmxl"></span>
-                    LOCAL XMXL NODES:
-                  </span>
-                  <div class="rc-xmxl-instances" id="rcXmxlInstances">
-                    <span class="rc-xmxl-pill active">SCANNING 127.0.0.1...</span>
-                  </div>
-                </div>
-                <div class="rc-xmxl-bar-right">
-                  <span class="rc-xmxl-flows-label">ACTIVE FLOW:</span>
-                  <div class="rc-xmxl-flows" id="rcXmxlFlows">
-                    <button type="button" class="rc-xmxl-flow-btn active" data-flow="wbs-flow-master-stereo">wbs-flow-master-stereo</button>
-                    <button type="button" class="rc-xmxl-flow-btn" data-flow="wbs-flow-ref-tone">wbs-flow-ref-tone</button>
-                    <button type="button" class="rc-xmxl-flow-btn" data-flow="wbs-flow-bit-spitter">wbs-flow-bit-spitter</button>
-                  </div>
-                </div>
-              </div>
-
               <div class="rc-rings-row">
                 <!-- Channel 0: Left Ring -->
                 <div class="rc-ring-widget">
@@ -237,30 +228,6 @@ export class DataStreamView {
                     <span class="rc-ring-head" id="rcCh0Head">HEAD: #0</span>
                   </div>
                   <canvas id="rcRingCanvas0" width="180" height="180" class="rc-canvas"></canvas>
-                </div>
-
-                <!-- Center Bridge Stats -->
-                <div class="rc-buffer-bridge">
-                  <div class="rc-stat-box">
-                    <div class="rc-stat-label">CAPACITY</div>
-                    <div class="rc-stat-val">480,000 f</div>
-                    <div class="rc-stat-sub">10.0s · 3.84 MB /dev/shm</div>
-                  </div>
-                  <div class="rc-stat-box">
-                    <div class="rc-stat-label">QUANTUM</div>
-                    <div class="rc-stat-val">256 frames</div>
-                    <div class="rc-stat-sub">5.33 ms @ 48k</div>
-                  </div>
-                  <div class="rc-stat-box">
-                    <div class="rc-stat-label">SLIP RATE</div>
-                    <div class="rc-stat-val" style="color:#22c55e;">0.00 ppm</div>
-                    <div class="rc-stat-sub">SMPTE 2059-1</div>
-                  </div>
-                  <div class="rc-stat-box">
-                    <div class="rc-stat-label">LOCK TYPE</div>
-                    <div class="rc-stat-val" style="color:#38bdf8;">PROT_READ</div>
-                    <div class="rc-stat-sub">Zero Copy</div>
-                  </div>
                 </div>
 
                 <!-- Channel 1: Right Ring -->
@@ -419,8 +386,6 @@ export class DataStreamView {
   private updateXmxlBar(): void {
     if (!this.container) return;
     const badgeEl = this.container.querySelector('#rcBadgeMxl');
-    const instancesEl = this.container.querySelector('#rcXmxlInstances');
-    const flowsEl = this.container.querySelector('#rcXmxlFlows');
     const headroomEl = this.container.querySelector('#rcHeadroomTag');
 
     if (badgeEl) {
@@ -436,71 +401,17 @@ export class DataStreamView {
       }
     }
 
-    if (instancesEl) {
-      if (this.detectedInstances.length === 0) {
-        instancesEl.innerHTML = '<span class="rc-xmxl-pill active">SCANNING...</span>';
-      } else {
-        instancesEl.innerHTML = this.detectedInstances
-          .map((inst) => {
-            const isNmos = inst.type === 'nmos-node';
-            const isDante = inst.type === 'dante-node';
-            const isRavenna = inst.type === 'ravenna-node';
-            const isAes67 = inst.type === 'aes67-node';
-            const isMoip = inst.type === 'moip-node';
-            const isWbsDomain = inst.id === 'xmxl-wbs-test-signals';
-            const isActive = this.selectedInstanceId ? (inst.id === this.selectedInstanceId) : (inst.port === this.selectedPort);
-
-            let portTag = `:${inst.port}`;
-            let pillClass = '';
-            if (isWbsDomain) { portTag = '⚡ WBS SIGNALS'; pillClass = 'rc-pill-wbs'; }
-            else if (isDante) { portTag = '🎵 DANTE'; pillClass = 'rc-pill-dante'; }
-            else if (isRavenna) { portTag = '📻 RAVENNA'; pillClass = 'rc-pill-ravenna'; }
-            else if (isAes67) { portTag = '🌐 AES67'; pillClass = 'rc-pill-aes67'; }
-            else if (isMoip) { portTag = '🐳 MOIP'; pillClass = 'rc-pill-moip'; }
-            else if (isNmos) { portTag = '📡 NMOS'; }
-
-            return `<button type="button" class="rc-xmxl-pill ${pillClass} ${isActive ? 'active' : ''}" data-xmxl-port="${inst.port}" data-xmxl-id="${inst.id}">
-              <span class="rc-led-dot ${isActive ? (isNmos || isDante ? 'lit-cyan' : 'lit-green') : ''}"></span>
-              ${portTag} ${inst.name.replace(/^(Ward-Beck|CBC\/Radio-Canada|NMOS IS-04:\s*|Dante:\s*|Ravenna:\s*|AES67:\s*)\s*/, '')} (${inst.latencyMs}ms)
-            </button>`;
-          })
-          .join('');
-
-        instancesEl.querySelectorAll('[data-xmxl-id]').forEach((btn) => {
-          btn.addEventListener('click', (e) => {
-            const target = e.currentTarget as HTMLElement;
-            const instId = target.getAttribute('data-xmxl-id') || '';
-            const port = parseInt(target.getAttribute('data-xmxl-port') || '8467', 10);
-            this.switchXmxlInstance(port, instId);
-          });
-        });
-      }
-    }
+    // Discovered nodes + flows are drawn as signals in the pipeline graph above.
+    this.graph?.setLocal(this.detectedInstances, this.selectedFlowId, (instId, flowId) => {
+      const inst = this.detectedInstances.find((i) => i.id === instId);
+      if (!inst) return;
+      if (instId !== this.selectedInstanceId) this.switchXmxlInstance(inst.port, instId);
+      this.selectedFlowId = flowId;
+      this.updateXmxlBar();
+      this.meterFlow(inst.port, flowId);
+    });
 
     const curInst = (this.selectedInstanceId ? this.detectedInstances.find((i) => i.id === this.selectedInstanceId) : null) || this.detectedInstances.find((i) => i.port === this.selectedPort) || this.detectedInstances[0];
-    if (flowsEl && curInst) {
-      const flows = curInst.flows || [];
-      if (flows.length > 0) {
-        flowsEl.innerHTML = flows
-          .map((f) => {
-            const isActive = f.flowId === this.selectedFlowId;
-            return `<button type="button" class="rc-xmxl-flow-btn ${isActive ? 'active' : ''}" data-xmxl-flow="${f.flowId}">${f.label || f.flowId}</button>`;
-          })
-          .join('');
-
-        flowsEl.querySelectorAll('[data-xmxl-flow]').forEach((btn) => {
-          btn.addEventListener('click', (e) => {
-            const flowId = (e.currentTarget as HTMLElement).getAttribute('data-xmxl-flow') || '';
-            this.selectedFlowId = flowId;
-            this.updateXmxlBar();
-            this.meterFlow(curInst.port, flowId);
-          });
-        });
-      } else {
-        flowsEl.innerHTML = `<span style="font-size:0.65rem;color:#64748b;font-family:monospace;">${curInst.domainId || 'DMF Domain'}</span>`;
-      }
-    }
-
     if (headroomEl && curInst) {
       headroomEl.textContent = `DOMAIN: ${curInst.domainId || 'domain-wbs-dmf-01'} · LATENCY: ${curInst.latencyMs}ms · 0 OVERRUNS`;
     }
