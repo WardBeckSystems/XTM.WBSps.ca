@@ -354,14 +354,12 @@ export class PipelineGraph {
 
   private tpChip(): string {
     const tp = this.testPoint;
-    if (!tp) return '<span class="pg-chip pg-chip-off" title="Click any card to meter it"><i></i>test point · click a card</span>';
+    if (!tp) return '';
     const state = tp.status === 'running' ? 'on' : tp.status === 'error' ? 'err' : 'off';
-    const ring = !tp.ring_frames ? ''
-      : tp.ring_frames / tp.packet_frames <= 64 ? ` · ring ${tp.ring_frames} fr = 10 × ${tp.packet_frames} (${tp.ring_ms} ms)`
-      : ` · ring ${(tp.ring_ms / 1000).toFixed(0)} s (${tp.ring_frames.toLocaleString()} fr · ${tp.packet_frames}-fr packets)`;
+    const ring = tp.ring_ms ? `${(tp.ring_ms / 1000).toFixed(0)} s ring · ${tp.ring_frames.toLocaleString()} fr · ${tp.packet_frames}-fr packets` : '';
     const lost = tp.lost_packets ? ` · ${tp.lost_packets} lost` : '';
-    const why = tp.error || tp.hint || tp.source || '';
-    return `<span class="pg-chip pg-chip-${state} pg-tp-chip" title="${esc(why)}"><i></i>TP ${esc(trunc(tp.label, 24))} · ${esc(tp.status)}${ring}${lost}</span>`
+    const why = [tp.status, ring, tp.source, tp.error || tp.hint].filter(Boolean).join('\n');
+    return `<span class="pg-chip pg-chip-${state} pg-tp-chip" title="${esc(why)}"><i></i>TP ${esc(trunc(tp.label, 24))}${lost}</span>`
       + (tp.error || tp.hint ? `<span class="pg-tp-why">${esc(tp.error || tp.hint)}</span>` : '')
       + (tp.fix ? `<button type="button" class="pg-fix-open" data-fix-open>Fix…</button>` : '');
   }
@@ -461,14 +459,14 @@ export class PipelineGraph {
       const text = !mc ? 'n/a'
         : l?.mode === 'passive' ? (l.listening ? `passive · ${l.clocks?.length ?? 0} clocks` : 'passive · broker down')
         : l?.listening ? `${l.packets ?? 0} pkts` : 'not listening';
-      return `<span class="pg-chip pg-chip-${state}" title="${esc(l?.error ?? (mc ? '' : 'daemon has no multicast listener'))}"><i></i>${name} ${text}</span>`;
+      const tip = [text, mc?.iface ? `iface ${mc.iface}` : '', l?.error ?? (mc ? '' : 'daemon has no multicast listener')].filter(Boolean).join(' · ');
+      return `<span class="pg-chip pg-chip-${state}" title="${esc(tip)}"><i></i>${name}</span>`;
     };
 
     this.el.innerHTML = `
       <div class="pg-status">
-        <span class="pg-chip ${this.online ? 'pg-chip-on' : 'pg-chip-err'}"><i></i>daemon ${this.online ? 'online :8467' : 'offline'}</span>
+        <span class="pg-chip ${this.online ? 'pg-chip-on' : 'pg-chip-err'}" title="TAP daemon ${this.online ? 'online :8467' : 'offline'}"><i></i>TAP</span>
         ${chip('SAP', mc?.sap)}${chip('PTP', mc?.ptp)}${chip('SIP', mc?.sip)}
-        ${mc?.iface ? `<span class="pg-iface">iface ${esc(mc.iface)}</span>` : ''}
         ${this.online ? '' : `<span class="pg-iface">Run the TAP: <code>docker compose up -d</code> in Ward-Beck-Audio-Tab · guide at <a href="${DAEMON}/setup" target="_blank" rel="noopener">:8467/setup</a></span>`}
         ${this.tpChip()}
       </div>
