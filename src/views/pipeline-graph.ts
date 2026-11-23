@@ -467,7 +467,7 @@ export class PipelineGraph {
       <div class="pg-status">
         <span class="pg-chip ${this.online ? 'pg-chip-on' : 'pg-chip-err'}" title="TAP daemon ${this.online ? 'online :8467' : 'offline'}"><i></i>TAP</span>
         ${chip('SAP', mc?.sap)}${chip('PTP', mc?.ptp)}${chip('SIP', mc?.sip)}
-        ${this.online ? '' : `<span class="pg-iface">Run the TAP: <code>docker compose up -d</code> in Ward-Beck-Audio-Tab · guide at <a href="${DAEMON}/setup" target="_blank" rel="noopener">:8467/setup</a></span>`}
+        ${this.online ? '' : `<span class="pg-iface">Run the TAP: <code>docker compose up -d</code> in Ward-Beck-Audio-Tap · guide at <a href="${DAEMON}/setup" target="_blank" rel="noopener">:8467/setup</a></span>`}
         ${this.tpChip()}
       </div>
       <svg class="pg-svg" viewBox="0 0 ${W} ${H}" role="img" aria-label="Audio pipeline signal flow: ALSA to PipeWire to MXL to network AoIP">

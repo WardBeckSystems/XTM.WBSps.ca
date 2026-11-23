@@ -84,8 +84,8 @@ SETUP_HTML = r"""<!DOCTYPE html>
     <h2>1 · Run the TAP in Docker</h2>
     <p>The TAP drives the <em>host's</em> audio server, so the container shares the host network, your PipeWire / PulseAudio sockets, <code>/dev/shm/mxl</code>, the D-Bus system socket and <code>/dev/snd</code>. It runs as your desktop user, not root.</p>
     <h3>Build and start (Docker Compose)</h3>
-<pre><code>git clone https://github.com/WardBeckSystems/Ward-Beck-Audio-Tab.git
-cd Ward-Beck-Audio-Tab
+<pre><code>git clone https://github.com/WardBeckSystems/Ward-Beck-Audio-Tab.git Ward-Beck-Audio-Tap
+cd Ward-Beck-Audio-Tap
 mkdir -p /dev/shm/mxl
 export UID GID=$(id -g)
 docker compose up -d --build</code></pre>
@@ -137,7 +137,7 @@ docker run -d --name wbs-tap --restart unless-stopped \
     <h2>3 · CBC / Radio-Canada MXL test set</h2>
     <p>The CBC containers publish video and audio test flows into the shared MXL domain <code>/dev/shm/mxl/domain_1</code>. The TAP reads them, and its own Ward-Beck test-signal domain is cross-published there. They ship in the same repository.</p>
     <h3>Start</h3>
-<pre><code>cd Ward-Beck-Audio-Tab
+<pre><code>cd Ward-Beck-Audio-Tap
 ./start-mxl-demo.sh</code></pre>
     <p>That script creates <code>/dev/shm/mxl/domain_1</code>, copies in <code>domain_def.json</code> and the demo clip <code>sizzle.ts</code>, and runs <code>docker compose -f docker-compose.mxl-demo.yml up -d</code>. The images are pulled from <code>ghcr.io/cbcrc/*</code> and are <code>linux/amd64</code> only.</p>
     <table>
