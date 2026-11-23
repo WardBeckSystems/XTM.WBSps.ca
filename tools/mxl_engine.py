@@ -1143,6 +1143,64 @@ class MxlEngine:
             domains[dom_meta["label"]] = dom_meta
         return domains
 
+    def get_flow_pcm(self, flow_id: str, since: int, max_frames: int = 9600):
+        """
+        New audio of one flow since the caller's cursor, as planar little-endian Float32
+        (ch0 frames, then ch1 ...). Returns (payload, next_cursor, channels, sample_rate, frames),
+        or None when the flow is unknown. since < 0 starts at "now" with no frames.
+        Engine flows read their shared-memory ring; Test Signals grains are played on a wall
+        clock (cursor = absolute frame count) so every viewer hears the same position.
+        """
+        max_frames = max(256, min(int(max_frames), 48000))
+        if flow_id in self.flows:
+            f = self.flows[flow_id]
+            f.ensure_open()
+            L, w, nch = f.buffer_length, f.write_head, f.channel_count
+            if since < 0:
+                return b"", w, nch, f.sample_rate, 0
+            avail = (w - since) % L
+            if avail > max_frames:  # fell behind: keep the newest window
+                since, avail = (w - max_frames) % L, max_frames
+            out = bytearray()
+            for c in range(nch):
+                base = c * L * 4
+                if since + avail <= L:
+                    out += self._reader_mm_of(f)[base + since * 4: base + (since + avail) * 4]
+                else:
+                    l1 = L - since
+                    mm = self._reader_mm_of(f)
+                    out += mm[base + since * 4: base + L * 4] + mm[base: base + (avail - l1) * 4]
+            return bytes(out), w, nch, f.sample_rate, avail
+
+        self.get_flow_levels(flow_id)  # fills / refreshes the grain cache
+        entry = getattr(self, "_ext_level_cache", {}).get(flow_id)
+        if not entry or not entry["chans"]:
+            return None
+        sr, chans = entry["sr"], entry["chans"]
+        now = int(time.time() * sr)
+        if since < 0:
+            return b"", now, len(chans), sr, 0
+        avail = now - since
+        if avail <= 0:
+            return b"", now, len(chans), sr, 0
+        if avail > max_frames:
+            since, avail = now - max_frames, max_frames
+        out = bytearray()
+        for ch in chans:
+            n = len(ch)
+            start = since % n
+            seg = []
+            while len(seg) < avail:
+                take = min(avail - len(seg), n - start)
+                seg.extend(ch[start:start + take])
+                start = 0
+            out += struct.pack(f"<{avail}f", *seg)
+        return bytes(out), now, len(chans), sr, avail
+
+    @staticmethod
+    def _reader_mm_of(flow):
+        return flow._reader_mm
+
     def get_flow_levels(self, flow_id: str) -> dict:
         """
         Per-channel peak / RMS (dBFS) of one MXL flow, for driving the console meters.
