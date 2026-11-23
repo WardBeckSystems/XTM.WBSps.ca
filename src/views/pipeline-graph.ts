@@ -21,10 +21,10 @@ const POLL_MS = 4000;
 const W = 1000;          // viewBox width
 const LANE_W = 214;
 const LANE_X = [8, 270, 532, 794];
-const NODE_H = 30;
-const NODE_GAP = 8;
-const TOP = 46;          // first node y
-const MAX_NODES = 7;     // per lane, then "+N more"
+const NODE_H = 21;
+const NODE_GAP = 4;
+const TOP = 28;          // first node y
+const MAX_NODES = 9;     // per lane, then "+N more"
 
 type Kind = 'hw' | 'pw' | 'mxl' | 'dante' | 'ravenna' | 'sap' | 'nmos' | 'sip' | 'hub';
 
@@ -336,8 +336,8 @@ export class PipelineGraph {
         extra.push({ lane, n: inLane.length - MAX_NODES, y: TOP + MAX_NODES * (NODE_H + NODE_GAP) });
     }
     const rows = Math.max(1, ...[0, 1, 2, 3].map((l) => Math.min(MAX_NODES + 1, nodes.filter((n) => n.lane === l).length || 1)));
-    const clockY = TOP + rows * (NODE_H + NODE_GAP) + 10;
-    const H = clockY + 44;
+    const clockY = TOP + rows * (NODE_H + NODE_GAP) + 6;
+    const H = clockY + 30;
 
     // Network nodes hang off the MXL hub, and off the PTP band when a clock exists.
     const mxlPos = pos.get('mxl');
@@ -370,15 +370,15 @@ export class PipelineGraph {
       return `
         <g class="pg-node pg-${n.kind}${n.live ? ' pg-on' : ''}${n.hub ? ' pg-hub' : ''}${n.tap ? ' pg-tappable' : ''}${clipped ? ' pg-tp' : ''}"${tapAttr} transform="translate(${p.x} ${p.y})">
           <title>${esc(n.label)}${n.sub ? ` — ${esc(n.sub)}` : ''}${n.title ? `\n${esc(n.title)}` : ''}${tapHint}</title>
-          <rect width="${LANE_W}" height="${NODE_H}" rx="5"/>
-          <circle class="pg-dot" cx="10" cy="${NODE_H / 2}" r="3.5"/>
-          <text class="pg-label" x="20" y="12.5">${esc(trunc(n.label, 30))}</text>
-          ${n.sub ? `<text class="pg-sub" x="20" y="24">${esc(trunc(n.sub, clipped ? 24 : 38))}</text>` : ''}
-          ${clipped ? `<text class="pg-tp-tag" x="${LANE_W - 6}" y="24" text-anchor="end">● TEST POINT</text>` : ''}
+          <rect width="${LANE_W}" height="${NODE_H}" rx="4"/>
+          <circle class="pg-dot" cx="8" cy="${NODE_H / 2}" r="2.6"/>
+          <text class="pg-label" x="15" y="9">${esc(trunc(n.label, 40))}</text>
+          ${n.sub ? `<text class="pg-sub" x="15" y="17.5">${esc(trunc(n.sub, clipped ? 34 : 50))}</text>` : ''}
+          ${clipped ? `<text class="pg-tp-tag" x="${LANE_W - 5}" y="17.5" text-anchor="end">● TP</text>` : ''}
         </g>`;
     }).join('');
 
-    const more = extra.map((e) => `<text class="pg-more" x="${LANE_X[e.lane] + 8}" y="${e.y + 14}">+${e.n} more</text>`).join('');
+    const more = extra.map((e) => `<text class="pg-more" x="${LANE_X[e.lane] + 8}" y="${e.y + 10}">+${e.n} more</text>`).join('');
 
     // PTP clock band: one chip per grandmaster, dashed to the MXL hub (TAI) and the AoIP lane.
     const bandX = LANE_X[2], bandW = LANE_X[3] + LANE_W - bandX;
@@ -391,21 +391,21 @@ export class PipelineGraph {
           return `
             <g class="pg-clock pg-v${c.version}${contested ? ' pg-contested' : ''}" transform="translate(${x} ${clockY})">
               <title>Grandmaster ${esc(c.identity)}${c.source_ip ? ` from ${esc(c.source_ip)}` : ''}${contested ? '\nContested: more than one grandmaster on this domain' : ''}</title>
-              <rect width="${chipW}" height="30" rx="15"/>
-              <text class="pg-label" x="12" y="12.5">⏱ ${esc(trunc(label, 30))}</text>
-              <text class="pg-sub" x="12" y="24">${contested ? '⚠ contested · ' : ''}GM ${esc(trunc(String(c.identity), contested ? 18 : 28))}</text>
+              <rect width="${chipW}" height="21" rx="10.5"/>
+              <text class="pg-label" x="10" y="9">⏱ ${esc(trunc(label, 40))}</text>
+              <text class="pg-sub" x="10" y="17.5">${contested ? '⚠ contested · ' : ''}GM ${esc(trunc(String(c.identity), contested ? 26 : 38))}</text>
             </g>`;
         }).join('')
-      : `<text class="pg-sub" x="${bandX + 4}" y="${clockY + 18}">${mc ? (mc.ptp?.mode === 'passive' ? 'No PTP master reported by apk-ptp yet' : 'No PTP grandmaster heard on 224.0.1.129 yet') : 'PTP: waiting for daemon multicast listener'}</text>`;
+      : `<text class="pg-sub" x="${bandX + 4}" y="${clockY + 13}">${mc ? (mc.ptp?.mode === 'passive' ? 'No PTP master reported by apk-ptp yet' : 'No PTP grandmaster heard on 224.0.1.129 yet') : 'PTP: waiting for daemon multicast listener'}</text>`;
     const clockLink = mxlPos ? `<path class="pg-edge pg-clock-edge" d="M ${mxlPos.x + LANE_W / 2} ${clockY} V ${TOP + NODE_H}"/>` : '';
 
     const laneHead = ['1 · ALSA HARDWARE', '2 · PIPEWIRE GRAPH', '3 · MXL SHARED MEMORY', '4 · NETWORK AoIP'];
     const heads = laneHead.map((t, i) => `
       <rect class="pg-lane" x="${LANE_X[i] - 4}" y="4" width="${LANE_W + 8}" height="${H - 8}" rx="7"/>
-      <text class="pg-head" x="${LANE_X[i] + 4}" y="26">${t}</text>`).join('');
+      <text class="pg-head" x="${LANE_X[i] + 4}" y="17">${t}</text>`).join('');
 
     const empty = (lane: number, msg: string) =>
-      nodes.some((n) => n.lane === lane) ? '' : `<text class="pg-sub" x="${LANE_X[lane] + 6}" y="${TOP + 18}">${msg}</text>`;
+      nodes.some((n) => n.lane === lane) ? '' : `<text class="pg-sub" x="${LANE_X[lane] + 6}" y="${TOP + 12}">${msg}</text>`;
 
     const chip = (name: string, l: (Listener & { mode?: string; clocks?: unknown[] }) | undefined) => {
       const state = !mc ? 'off' : l?.listening ? 'on' : 'err';
