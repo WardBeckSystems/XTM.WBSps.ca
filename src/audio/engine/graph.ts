@@ -2,7 +2,7 @@
 /**
  * Web Audio processing graph: wiring source -> trim -> HPF -> monitor / meter
  * processor, and tearing down the active source. Supports multi-source summing
- * for concurrent POD-33 Tone & ABP-1 Bit Spitter flows.
+ * for concurrent POD-33 Tone & ABS-1 Bit Spitter flows.
  */
 
 import type { XtmAudioEngine } from '../audio-engine';
@@ -108,6 +108,7 @@ export function setupAudioGraph(engine: XtmAudioEngine, sourceObj: any, isDirect
  * Stop current audio stream or test generator
  */
 export function stopCurrentSource(engine: XtmAudioEngine): void {
+  if (engine.tabInfo) engine.tabInfo.live = false;
   if (engine.sweepTimer) {
     clearInterval(engine.sweepTimer);
     engine.sweepTimer = null;

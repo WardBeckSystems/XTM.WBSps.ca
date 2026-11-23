@@ -4,6 +4,46 @@
  */
 
 import type { XtmAudioEngine } from '../../audio-engine';
+import type { BrowserTabInfo } from '../../../../WebRouter/src';
+
+/** A track label that is only an internal capture id, not a human name. */
+const isOpaqueLabel = (l: string) => !l || /^(web-contents-media-stream|screen:|window:)/i.test(l) || /^[0-9a-f-]{20,}$/i.test(l);
+
+/**
+ * Everything the browser tells us about the shared surface: the tab / window title
+ * (from the video track label), the tab's origin (Capture Handle, when the page exposes it),
+ * the surface type and the audio format.
+ */
+function describeSharedSurface(stream: MediaStream): BrowserTabInfo {
+  const v = stream.getVideoTracks()[0];
+  const a = stream.getAudioTracks()[0];
+  const vs: any = v?.getSettings?.() || {};
+  const as: any = a?.getSettings?.() || {};
+  let origin: string | undefined;
+  try {
+    const h = (v as any)?.getCaptureHandle?.();
+    if (h?.origin) origin = h.origin.replace(/^https?:\/\//, '');
+  } catch (_) {}
+  const surface: string = vs.displaySurface || 'browser';
+  const label = v?.label || '';
+  const title = !isOpaqueLabel(label) ? label
+    : origin ? origin
+    : surface === 'browser' ? 'Shared browser tab'
+    : surface === 'window' ? 'Shared window'
+    : 'Entire screen';
+  return {
+    title,
+    surface,
+    origin,
+    audioLabel: a?.label || undefined,
+    sampleRate: as.sampleRate,
+    channelCount: as.channelCount,
+    width: vs.width,
+    height: vs.height,
+    startedAt: Date.now(),
+    live: !!a && a.readyState === 'live',
+  };
+}
 
 /**
  * Connect to System Audio Output
@@ -40,10 +80,13 @@ export async function connectSystemAudio(
 
     const stream: MediaStream = await displayPromise;
 
+    const audioTracks = stream.getAudioTracks();
+    // Read what was shared before the video track goes away
+    const info = describeSharedSurface(stream);
+
     // Stop unused video track immediately to save battery and GPU cycles
     stream.getVideoTracks().forEach(track => track.stop());
 
-    const audioTracks = stream.getAudioTracks();
     if (audioTracks.length === 0) {
       throw new Error('No audio track selected. When prompted, ensure "Share audio" is checked.');
     }
@@ -56,14 +99,16 @@ export async function connectSystemAudio(
     engine.activeDeviceId = null;
     engine.sourceType = 'system';
     engine.setupAudioGraph(stream);
+    engine.tabInfo = info;
 
     // Track ends when user stops sharing in browser toolbar
     audioTracks[0].onended = () => {
+      info.live = false;
       engine.stopCurrentSource();
       if (engine.onStatusChange) engine.onStatusChange({ type: 'disconnected', label: 'Audio Stopped' });
     };
 
-    if (engine.onStatusChange) engine.onStatusChange({ type: 'system', label: audioTracks[0].label || 'Computer System Audio' });
+    if (engine.onStatusChange) engine.onStatusChange({ type: 'system', label: `${info.surface === 'browser' ? 'Browser Tab' : info.surface === 'window' ? 'Window' : 'Screen'}: ${info.title}`, info });
     return true;
   } catch (err: any) {
     if (err?.name === 'NotAllowedError') {

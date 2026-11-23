@@ -113,6 +113,8 @@ export class XtmAudioEngine {
 
   // Listeners for device changes & status
   onStatusChange: ((status: any) => void) | null = null;
+  /** What the shared browser tab / window / screen is (set by connectSystemAudio). */
+  tabInfo: import('../../WebRouter/src').BrowserTabInfo | null = null;
   onDevicesChange: ((devices: MediaDeviceInfo[], activeId?: string | null) => void) | null = null;
 
   workletLoaded: boolean = false;
@@ -183,7 +185,7 @@ export class XtmAudioEngine {
   startPod33Generator(config?: Pod33Config): void { pod33Gen.startPod33Generator(this, config); }
   stopPod33Generator(): void { pod33Gen.stopPod33Generator(this); }
 
-  /** WBS ABB-1 Audio Bit Buddy / ABP-1 Bit Spitter Generator */
+  /** WBS ABB-1 Audio Bit Buddy / ABS-1 Bit Spitter Generator */
   startBitBuddyGenerator(config?: BitBuddyConfig): void { pod33Gen.startBitBuddyGenerator(this, config); }
   stopBitBuddyGenerator(): void { pod33Gen.stopBitBuddyGenerator(this); }
 

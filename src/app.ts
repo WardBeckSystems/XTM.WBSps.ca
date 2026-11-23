@@ -11,7 +11,9 @@ import { audio } from './audio/audio-engine';
 import { XtmView } from './views/xtm-view';
 import { Pod22View } from './views/pod22-view';
 import { DbfsView } from './views/dbfs-view';
-import { RoutingCanvasView } from './views/routing-view';
+import { DataStreamView } from './views/data-stream-view';
+import { GeneratorsView } from './views/generators-view';
+import { WebRouter } from '../WebRouter/src';
 import type { AppContext } from './app/app-context';
 import { queryDrawerControls } from './app/dom-refs';
 import { initSettingsDrawer } from './app/settings-drawer';
@@ -48,14 +50,21 @@ export async function initApp(): Promise<void> {
   view.build(model);
   const podView = new Pod22View(podStageEl);
   const dbfsView = dbfsStageEl ? new DbfsView(dbfsStageEl) : null;
-  const routingStageEl = document.getElementById('routingStage');
-  const routingView = routingStageEl ? new RoutingCanvasView(routingStageEl) : null;
-  const ctx: AppContext = { model, audio, view, podView, dbfsView, routingView };
-  if (routingView) routingView.build(ctx);
+  const dataStageEl = document.getElementById('dataStage');
+  const dataView = dataStageEl ? new DataStreamView(dataStageEl) : null;
+  const routerStageEl = document.getElementById('routerStage');
+  const webRouter = routerStageEl
+    ? new WebRouter(routerStageEl, { audio, onFlowHint: (flow) => dataView?.setFlow(flow) }).mount()
+    : null;
+  const generatorsStageEl = document.getElementById('generatorsStage');
+  if (generatorsStageEl && webRouter) new GeneratorsView(generatorsStageEl, webRouter).build();
+  const ctx: AppContext = { model, audio, view, podView, dbfsView, dataView, webRouter };
+  if (dataView) dataView.build(ctx);
   (window as any).xtmModel = model;
   (window as any).xtmAudio = audio;
   (window as any).xtmView = view;
-  (window as any).xtmRoutingView = routingView;
+  (window as any).xtmDataView = dataView;
+  (window as any).xtmWebRouter = webRouter;
   (window as any).xtmCtx = ctx;
 
   initSettingsDrawer();

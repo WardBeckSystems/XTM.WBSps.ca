@@ -107,337 +107,14 @@
 .rc-badge-orange { border-color: #f97316; color: #f97316; }
 
 /* 3-Bay Console Layout */
-.routing-console-bays {
-  display: grid;
-  grid-template-columns: 240px 1fr 240px;
-  gap: 16px;
-  align-items: stretch;
-}
-
-@media (max-width: 1024px) {
-  .routing-console-bays {
-    grid-template-columns: 1fr;
-  }
-}
-
-.rc-bay {
-  background: #060e16;
-  border: 1px solid #183350;
-  border-radius: 6px;
-  padding: 12px;
-  display: flex;
-  flex-direction: column;
-}
-
-.rc-bay-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-size: 0.78rem;
-  font-weight: 800;
-  letter-spacing: 1px;
-  color: #38bdf8;
-  border-bottom: 1px solid #142c44;
-  padding-bottom: 6px;
-  margin-bottom: 10px;
-}
-
-.rc-bay-sub {
-  font-size: 0.65rem;
-  color: #64748b;
-}
 
 /* Channel Strips (Inputs & Outputs) */
-.rc-channel-strips {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  flex: 1;
-  overflow-y: auto;
-  max-height: 840px;
-  padding-right: 2px;
-}
-
-.rc-strip {
-  background: #0a1624;
-  border: 1px solid #1a385a;
-  border-radius: 5px;
-  padding: 8px;
-  transition: all 0.15s ease;
-}
-
-.rc-strip.selected {
-  border-color: #f97316;
-  background: #0f2237;
-  box-shadow: 0 0 10px rgba(249, 115, 22, 0.25);
-}
-
-.rc-strip-top {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 4px;
-}
-
-.rc-strip-tag {
-  font-size: 0.65rem;
-  font-weight: 800;
-  color: #64748b;
-  font-family: monospace;
-}
-
-.rc-strip-pill {
-  font-size: 0.62rem;
-  padding: 1px 5px;
-  border-radius: 3px;
-  font-weight: 700;
-  text-transform: uppercase;
-}
-
-.pill-mic { background: #b45309; color: #fff; }
-.pill-sys { background: #0284c7; color: #fff; }
-.pill-pod { background: #15803d; color: #fff; }
-.pill-abb { background: #7c3aed; color: #fff; }
-.pill-noise { background: #be185d; color: #fff; }
-.pill-out { background: #334155; color: #94a3b8; }
-
-.rc-strip-name {
-  font-size: 0.8rem;
-  font-weight: 700;
-  color: #ffffff;
-}
-
-.rc-strip-sub {
-  font-size: 0.68rem;
-  color: #94a3b8;
-  margin-bottom: 6px;
-}
 
 /* Mini Stereo Theme Meters */
-.rc-theme-meters-wrap {
-  width: 100%;
-  margin: 6px 0 4px 0;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.rc-theme-meter-svg {
-  width: 100%;
-  height: 44px;
-  display: block;
-}
-
-.rc-meter-subgroup {
-  user-select: none;
-}
 
 /* Default Miniature Theme VU Meter Elements */
-.rc-meter-bezel {
-  fill: #0c1520;
-  stroke: #1a324c;
-  stroke-width: 1;
-}
-
-.rc-meter-face {
-  fill: #14202d;
-  stroke: #1e3d5f;
-  stroke-width: 0.8;
-}
-
-.rc-meter-ch-lbl {
-  fill: #38bdf8;
-  font-size: 7px;
-  font-weight: 800;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-}
-
-.rc-meter-vu-lbl {
-  fill: #64748b;
-  font-size: 6px;
-  font-weight: 900;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  letter-spacing: 0.8px;
-}
-
-.rc-meter-arc-norm {
-  stroke: #94a3b8;
-  stroke-width: 1.2;
-  fill: none;
-}
-
-.rc-meter-arc-over {
-  stroke: #ef4444;
-  stroke-width: 1.4;
-  fill: none;
-}
-
-.rc-meter-tick {
-  stroke: #94a3b8;
-  stroke-width: 0.8;
-}
-
-.rc-meter-tick-red {
-  stroke: #ef4444;
-  stroke-width: 1.0;
-}
-
-.rc-meter-tick-lbl {
-  fill: #94a3b8;
-  font-size: 5px;
-  font-weight: bold;
-  font-family: monospace;
-}
-
-.rc-meter-tick-lbl-red {
-  fill: #ef4444;
-  font-size: 5.5px;
-  font-weight: 900;
-  font-family: monospace;
-}
-
-.rc-needle-group {
-  transition: transform 0.04s ease-out;
-}
-
-.rc-meter-needle {
-  stroke: #facc15;
-  stroke-width: 1.2;
-  stroke-linecap: round;
-}
-
-.rc-meter-hub {
-  fill: #22c55e;
-  stroke: #0f172a;
-  stroke-width: 0.6;
-}
 
 /* Fallback legacy mini meters */
-.rc-mini-meters {
-  display: flex;
-  flex-direction: column;
-  gap: 3px;
-  margin: 6px 0 4px 0;
-}
-
-.rc-meter-bar-track {
-  width: 100%;
-  height: 6px;
-  background: #04080d;
-  border-radius: 2px;
-  overflow: hidden;
-  border: 1px solid #14293f;
-}
-
-.rc-meter-bar-fill {
-  height: 100%;
-  width: 0%;
-  background: linear-gradient(90deg, #22c55e 65%, #eab308 85%, #ef4444 100%);
-  transition: width 0.06s linear;
-}
-
-.rc-strip-digits {
-  font-size: 0.65rem;
-  font-family: monospace;
-  color: #64748b;
-  text-align: right;
-  margin-bottom: 6px;
-}
-
-.rc-btn-engage {
-  width: 100%;
-  padding: 5px;
-  background: #142a42;
-  border: 1px solid #234c75;
-  color: #cbd5e1;
-  border-radius: 4px;
-  font-size: 0.72rem;
-  font-weight: 700;
-  cursor: pointer;
-  transition: all 0.15s ease;
-}
-
-.rc-btn-engage:hover {
-  background: #1c3b5d;
-  color: #fff;
-}
-
-.rc-btn-engage.engaged {
-  background: #f97316;
-  border-color: #fb923c;
-  color: #000;
-  box-shadow: 0 0 8px rgba(249, 115, 22, 0.4);
-}
-
-.rc-in-actions {
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
-  margin-top: 4px;
-}
-
-.rc-btn-to-speakers {
-  width: 100%;
-  padding: 4px 6px;
-  background: #091a29;
-  border: 1px solid #1c3c5e;
-  color: #93c5fd;
-  border-radius: 3px;
-  font-size: 0.65rem;
-  font-weight: 800;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 4px;
-  transition: all 0.12s ease;
-}
-
-.rc-btn-to-speakers:hover {
-  background: #132f4c;
-  border-color: #38bdf8;
-  color: #ffffff;
-}
-
-.rc-btn-to-speakers.active {
-  background: #064e3b;
-  border-color: #22c55e;
-  color: #86efac;
-  box-shadow: 0 0 6px rgba(34, 197, 94, 0.4);
-}
-
-.rc-out-btns {
-  display: flex;
-  gap: 6px;
-}
-
-.rc-btn-out-tool {
-  flex: 1;
-  padding: 4px;
-  background: #102133;
-  border: 1px solid #1c3b5d;
-  color: #94a3b8;
-  border-radius: 3px;
-  font-size: 0.65rem;
-  font-weight: 700;
-  cursor: pointer;
-}
-
-.rc-btn-out-tool:hover { background: #1a3857; color: #fff; }
-
-.rc-btn-mute.active {
-  background: #7f1d1d !important;
-  border-color: #ef4444 !important;
-  color: #fca5a5 !important;
-  box-shadow: 0 0 8px rgba(239, 68, 68, 0.5) !important;
-}
-
-.rc-btn-dim.active {
-  background: #7c2d12 !important;
-  border-color: #f97316 !important;
-  color: #fed7aa !important;
-  box-shadow: 0 0 8px rgba(249, 115, 22, 0.5) !important;
-}
 
 /* Center Bay: Ring Buffer Card */
 .rc-buffer-card {
@@ -588,162 +265,8 @@
 .rc-slice-active { background: #f97316; }
 
 /* Crosspoint Matrix Grid (Zero Spaghetti) */
-.rc-matrix-card {
-  background: #07121c;
-  border: 1px solid #1a3a5e;
-  border-radius: 6px;
-  padding: 12px;
-}
-
-.rc-matrix-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-size: 0.78rem;
-  font-weight: 800;
-  color: #38bdf8;
-  letter-spacing: 0.8px;
-  margin-bottom: 10px;
-  flex-wrap: wrap;
-  gap: 10px;
-}
-
-.rc-matrix-header-left {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  flex-wrap: wrap;
-}
-
-.rc-btn-master-speakers {
-  background: #064e3b;
-  border: 1px solid #22c55e;
-  color: #86efac;
-  font-weight: 800;
-  font-size: 0.72rem;
-  letter-spacing: 0.5px;
-  padding: 5px 12px;
-  border-radius: 4px;
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  box-shadow: 0 0 8px rgba(34, 197, 94, 0.35);
-  transition: all 0.15s ease;
-}
-
-.rc-btn-master-speakers:hover {
-  background: #047857;
-  color: #fff;
-  box-shadow: 0 0 12px rgba(34, 197, 94, 0.6);
-}
-
-.rc-btn-master-speakers.active {
-  background: #15803d;
-  border-color: #4ade80;
-  color: #ffffff;
-}
-
-.rc-btn-master-speakers.inactive {
-  background: #1e293b;
-  border-color: #475569;
-  color: #94a3b8;
-  box-shadow: none;
-}
-
-.rc-matrix-presets {
-  display: flex;
-  gap: 6px;
-}
-
-.rc-btn-preset {
-  padding: 3px 8px;
-  background: #0d1e30;
-  border: 1px solid #224c75;
-  color: #cbd5e1;
-  border-radius: 3px;
-  font-size: 0.68rem;
-  font-weight: 700;
-  cursor: pointer;
-}
-
-.rc-btn-preset:hover { background: #173759; color: #fff; }
-
-.rc-matrix-table-wrap {
-  overflow-x: auto;
-}
-
-.rc-matrix-table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 0.72rem;
-}
-
-.rc-matrix-table th {
-  padding: 6px 8px;
-  text-align: center;
-  color: #94a3b8;
-  border-bottom: 1px solid #183350;
-  font-weight: 700;
-}
-
-.rc-th-blank { text-align: left !important; }
-.rc-th-sub { font-size: 0.6rem; color: #64748b; font-weight: normal; }
-
-.rc-th-row {
-  text-align: left;
-  padding: 6px 8px;
-  color: #cbd5e1;
-  font-weight: 700;
-  white-space: nowrap;
-  border-bottom: 1px solid #11253a;
-}
-
-.rc-td-crosspoint {
-  text-align: center;
-  padding: 4px;
-  border-bottom: 1px solid #11253a;
-}
 
 /* Authentic Illuminated Square Broadcast Crosspoint Button */
-.rc-matrix-btn {
-  width: 32px;
-  height: 32px;
-  background: #0c1724;
-  border: 2px solid #1a3654;
-  border-radius: 4px;
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.12s ease;
-  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.6);
-}
-
-.rc-matrix-btn:hover {
-  border-color: #38bdf8;
-  background: #14263a;
-}
-
-.rc-matrix-led {
-  width: 10px;
-  height: 10px;
-  background: #1e3a5a;
-  border-radius: 2px;
-  display: block;
-  transition: all 0.12s ease;
-}
-
-.rc-matrix-btn.connected {
-  background: #064e3b;
-  border-color: #10b981;
-  box-shadow: 0 0 8px rgba(16, 185, 129, 0.4);
-}
-
-.rc-matrix-btn.connected .rc-matrix-led {
-  background: #34d399;
-  box-shadow: 0 0 6px #34d399;
-}
 
 /* Lower Bay: POD-33 & ABB-1 Panels */
 .routing-aux-panels {
@@ -1128,94 +651,6 @@ body.theme-mccurdy-dark .rc-badge-cyan {
   color: #7dd3fc;
 }
 
-body.theme-mccurdy-dark .rc-bay {
-  background: #121c25;
-  border-color: #25394a;
-}
-
-body.theme-mccurdy-dark .rc-bay-header {
-  color: #7dd3fc;
-  border-bottom-color: #223444;
-}
-
-body.theme-mccurdy-dark .rc-bay-sub {
-  color: #94a3b8;
-}
-
-body.theme-mccurdy-dark .rc-strip {
-  background: #182633;
-  border-color: #2a3f52;
-}
-
-body.theme-mccurdy-dark .rc-strip.selected {
-  background: #203445;
-  border-color: #3892d4;
-  box-shadow: 0 0 10px rgba(56, 146, 212, 0.35);
-}
-
-body.theme-mccurdy-dark .rc-strip-tag {
-  color: #7dd3fc;
-}
-
-body.theme-mccurdy-dark .rc-strip-pill.pill-sys {
-  background: #233b50;
-  border-color: #3892d4;
-  color: #7dd3fc;
-}
-
-body.theme-mccurdy-dark .rc-strip-name {
-  color: #f8fafc;
-}
-
-body.theme-mccurdy-dark .rc-strip-sub {
-  color: #94a3b8;
-}
-
-body.theme-mccurdy-dark .rc-strip-digits {
-  color: #94a3b8;
-}
-
-body.theme-mccurdy-dark .rc-btn-engage {
-  background: #203344;
-  border-color: #2f475b;
-  color: #cbd5e1;
-}
-
-body.theme-mccurdy-dark .rc-btn-engage:hover {
-  background: #284055;
-  color: #fff;
-}
-
-body.theme-mccurdy-dark .rc-btn-engage.engaged {
-  background: #3892d4;
-  border-color: #7dd3fc;
-  color: #0b151e;
-  box-shadow: 0 0 8px rgba(56, 146, 212, 0.4);
-}
-
-body.theme-mccurdy-dark .rc-btn-out-tool {
-  background: #203344;
-  border-color: #2f475b;
-  color: #cbd5e1;
-}
-
-body.theme-mccurdy-dark .rc-btn-out-tool:hover {
-  background: #284055;
-  color: #fff;
-}
-
-body.theme-mccurdy-dark .rc-btn-mute.active {
-  background: #dc2626;
-  border-color: #ef4444;
-  color: #fff;
-}
-
-body.theme-mccurdy-dark .rc-btn-dim.active {
-  background: #f59e0b;
-  border-color: #fbbf24;
-  color: #000;
-}
-
 body.theme-mccurdy-dark .rc-buffer-card {
   background: #121c25;
   border-color: #25394a;
@@ -1309,67 +744,6 @@ body.theme-mccurdy-dark .rc-loudness-val {
   color: #3892d4;
 }
 
-body.theme-mccurdy-dark .rc-matrix-card {
-  background: #121c25;
-  border-color: #25394a;
-}
-
-body.theme-mccurdy-dark .rc-matrix-header {
-  color: #cbd5e1;
-  border-bottom-color: #223444;
-}
-
-body.theme-mccurdy-dark .rc-btn-preset {
-  background: #1c2b38;
-  border-color: #2f475b;
-  color: #cbd5e1;
-}
-
-body.theme-mccurdy-dark .rc-btn-preset:hover {
-  background: #284055;
-  color: #fff;
-}
-
-body.theme-mccurdy-dark .rc-matrix-table th {
-  background: #182633;
-  border-color: #2a3f52;
-  color: #7dd3fc;
-}
-
-body.theme-mccurdy-dark .rc-th-row {
-  background: #182633;
-  color: #cbd5e1;
-  border-color: #2a3f52;
-}
-
-body.theme-mccurdy-dark .rc-td-crosspoint {
-  border-color: #2a3f52;
-}
-
-body.theme-mccurdy-dark .rc-matrix-btn {
-  background: #182633;
-  border-color: #2a3f52;
-}
-
-body.theme-mccurdy-dark .rc-matrix-btn:hover {
-  background: #233748;
-  border-color: #3892d4;
-}
-
-body.theme-mccurdy-dark .rc-matrix-btn.connected {
-  background: #3892d4;
-  border-color: #7dd3fc;
-}
-
-body.theme-mccurdy-dark .rc-matrix-led {
-  background: #2a3f52;
-}
-
-body.theme-mccurdy-dark .rc-matrix-btn.connected .rc-matrix-led {
-  background: #facc15;
-  box-shadow: 0 0 6px #facc15;
-}
-
 body.theme-mccurdy-dark .rc-pod-panel,
 body.theme-mccurdy-dark .rc-abb-panel {
   background: #121c25;
@@ -1415,76 +789,6 @@ body.theme-mccurdy-dark .rc-btn-sel.active {
 }
 
 /* McCurdy Dark Miniature Theme Meters (Warm Amber / Yellow Dial matching top meters!) */
-body.theme-mccurdy-dark .rc-meter-bezel {
-  fill: #15222d;
-  stroke: #2d4559;
-  stroke-width: 1;
-}
-
-body.theme-mccurdy-dark .rc-meter-face {
-  fill: #eed584;
-  stroke: #c8b060;
-  stroke-width: 0.8;
-}
-
-body.theme-mccurdy-dark .rc-meter-ch-lbl {
-  fill: #1a2228;
-  font-weight: 800;
-  font-size: 7px;
-}
-
-body.theme-mccurdy-dark .rc-meter-vu-lbl {
-  fill: #1a2228;
-  font-weight: 900;
-  font-size: 6px;
-  letter-spacing: 0.8px;
-}
-
-body.theme-mccurdy-dark .rc-meter-arc-norm {
-  stroke: #1a2228;
-  stroke-width: 1.2;
-  fill: none;
-}
-
-body.theme-mccurdy-dark .rc-meter-arc-over {
-  stroke: #dc2626;
-  stroke-width: 1.4;
-  fill: none;
-}
-
-body.theme-mccurdy-dark .rc-meter-tick {
-  stroke: #1a2228;
-  stroke-width: 0.8;
-}
-
-body.theme-mccurdy-dark .rc-meter-tick-red {
-  stroke: #dc2626;
-  stroke-width: 1.0;
-}
-
-body.theme-mccurdy-dark .rc-meter-tick-lbl {
-  fill: #1a2228;
-  font-size: 5px;
-  font-weight: bold;
-}
-
-body.theme-mccurdy-dark .rc-meter-tick-lbl-red {
-  fill: #dc2626;
-  font-size: 5.5px;
-  font-weight: 900;
-}
-
-body.theme-mccurdy-dark .rc-meter-needle {
-  stroke: #0f172a;
-  stroke-width: 1.2;
-  stroke-linecap: round;
-}
-
-body.theme-mccurdy-dark .rc-meter-hub {
-  fill: #1e293b;
-  stroke: #0f172a;
-  stroke-width: 0.6;
-}
 
 /* -----------------------------------------------------------------------------
    2. Theme: McCurdy ATS-100 Light Studio (body.theme-mccurdy, body.theme-mccurdy-light)
@@ -1530,78 +834,6 @@ body.theme-mccurdy-light .routing-header-sub {
 body.theme-mccurdy .rc-badge,
 body.theme-mccurdy-light .rc-badge {
   background: #dedad0;
-  border-color: #b5b1a6;
-  color: #232325;
-}
-
-body.theme-mccurdy .rc-bay,
-body.theme-mccurdy-light .rc-bay {
-  background: #dedad0;
-  border-color: #b5b1a6;
-}
-
-body.theme-mccurdy .rc-bay-header,
-body.theme-mccurdy-light .rc-bay-header {
-  color: #1e3a5f;
-  border-bottom-color: #c5c0b4;
-}
-
-body.theme-mccurdy .rc-bay-sub,
-body.theme-mccurdy-light .rc-bay-sub {
-  color: #68655d;
-}
-
-body.theme-mccurdy .rc-strip,
-body.theme-mccurdy-light .rc-strip {
-  background: #f4f1ea;
-  border-color: #b5b1a6;
-}
-
-body.theme-mccurdy .rc-strip.selected,
-body.theme-mccurdy-light .rc-strip.selected {
-  background: #ffffff;
-  border-color: #1e3a5f;
-  box-shadow: 0 0 8px rgba(30, 58, 95, 0.25);
-}
-
-body.theme-mccurdy .rc-strip-name,
-body.theme-mccurdy-light .rc-strip-name {
-  color: #232325;
-}
-
-body.theme-mccurdy .rc-strip-sub,
-body.theme-mccurdy-light .rc-strip-sub {
-  color: #68655d;
-}
-
-body.theme-mccurdy .rc-strip-digits,
-body.theme-mccurdy-light .rc-strip-digits {
-  color: #4a4740;
-}
-
-body.theme-mccurdy .rc-btn-engage,
-body.theme-mccurdy-light .rc-btn-engage {
-  background: #e5e1d5;
-  border-color: #b5b1a6;
-  color: #232325;
-}
-
-body.theme-mccurdy .rc-btn-engage:hover,
-body.theme-mccurdy-light .rc-btn-engage:hover {
-  background: #dfdacd;
-}
-
-body.theme-mccurdy .rc-btn-engage.engaged,
-body.theme-mccurdy-light .rc-btn-engage.engaged {
-  background: #1e3a5f;
-  border-color: #2a5280;
-  color: #fff;
-  box-shadow: 0 0 8px rgba(30, 58, 95, 0.3);
-}
-
-body.theme-mccurdy .rc-btn-out-tool,
-body.theme-mccurdy-light .rc-btn-out-tool {
-  background: #e5e1d5;
   border-color: #b5b1a6;
   color: #232325;
 }
@@ -1655,61 +887,6 @@ body.theme-mccurdy-light .rc-loudness-val {
   color: #1e3a5f;
 }
 
-body.theme-mccurdy .rc-matrix-card,
-body.theme-mccurdy-light .rc-matrix-card {
-  background: #dedad0;
-  border-color: #b5b1a6;
-}
-
-body.theme-mccurdy .rc-matrix-header,
-body.theme-mccurdy-light .rc-matrix-header {
-  color: #232325;
-  border-bottom-color: #c5c0b4;
-}
-
-body.theme-mccurdy .rc-matrix-table th,
-body.theme-mccurdy-light .rc-matrix-table th {
-  background: #e5e1d5;
-  border-color: #b5b1a6;
-  color: #1e3a5f;
-}
-
-body.theme-mccurdy .rc-th-row,
-body.theme-mccurdy-light .rc-th-row {
-  background: #e5e1d5;
-  color: #232325;
-  border-color: #b5b1a6;
-}
-
-body.theme-mccurdy .rc-matrix-btn,
-body.theme-mccurdy-light .rc-matrix-btn {
-  background: #f4f1ea;
-  border-color: #b5b1a6;
-}
-
-body.theme-mccurdy .rc-matrix-btn:hover,
-body.theme-mccurdy-light .rc-matrix-btn:hover {
-  background: #e5e1d5;
-  border-color: #1e3a5f;
-}
-
-body.theme-mccurdy .rc-matrix-btn.connected,
-body.theme-mccurdy-light .rc-matrix-btn.connected {
-  background: #1e3a5f;
-  border-color: #2a5280;
-}
-
-body.theme-mccurdy .rc-matrix-led,
-body.theme-mccurdy-light .rc-matrix-led {
-  background: #c5c0b4;
-}
-
-body.theme-mccurdy .rc-matrix-btn.connected .rc-matrix-led,
-body.theme-mccurdy-light .rc-matrix-btn.connected .rc-matrix-led {
-  background: #facc15;
-  box-shadow: 0 0 6px #facc15;
-}
-
 body.theme-mccurdy .rc-pod-panel,
 body.theme-mccurdy-light .rc-pod-panel,
 body.theme-mccurdy .rc-abb-panel,
@@ -1738,87 +915,6 @@ body.theme-mccurdy-light .rc-btn-sel.active {
 }
 
 /* McCurdy Light Miniature Theme Meters (Classic Parchment Dial) */
-body.theme-mccurdy .rc-meter-bezel,
-body.theme-mccurdy-light .rc-meter-bezel {
-  fill: #d8d4c7;
-  stroke: #a39e90;
-  stroke-width: 1;
-}
-
-body.theme-mccurdy .rc-meter-face,
-body.theme-mccurdy-light .rc-meter-face {
-  fill: #faf6ea;
-  stroke: #c8c3b5;
-  stroke-width: 0.8;
-}
-
-body.theme-mccurdy .rc-meter-ch-lbl,
-body.theme-mccurdy-light .rc-meter-ch-lbl {
-  fill: #1e3a5f;
-  font-weight: 800;
-  font-size: 7px;
-}
-
-body.theme-mccurdy .rc-meter-vu-lbl,
-body.theme-mccurdy-light .rc-meter-vu-lbl {
-  fill: #232325;
-  font-weight: 900;
-  font-size: 6px;
-}
-
-body.theme-mccurdy .rc-meter-arc-norm,
-body.theme-mccurdy-light .rc-meter-arc-norm {
-  stroke: #232325;
-  stroke-width: 1.2;
-  fill: none;
-}
-
-body.theme-mccurdy .rc-meter-arc-over,
-body.theme-mccurdy-light .rc-meter-arc-over {
-  stroke: #dc2626;
-  stroke-width: 1.4;
-  fill: none;
-}
-
-body.theme-mccurdy .rc-meter-tick,
-body.theme-mccurdy-light .rc-meter-tick {
-  stroke: #232325;
-  stroke-width: 0.8;
-}
-
-body.theme-mccurdy .rc-meter-tick-red,
-body.theme-mccurdy-light .rc-meter-tick-red {
-  stroke: #dc2626;
-  stroke-width: 1.0;
-}
-
-body.theme-mccurdy .rc-meter-tick-lbl,
-body.theme-mccurdy-light .rc-meter-tick-lbl {
-  fill: #232325;
-  font-size: 5px;
-  font-weight: bold;
-}
-
-body.theme-mccurdy .rc-meter-tick-lbl-red,
-body.theme-mccurdy-light .rc-meter-tick-lbl-red {
-  fill: #dc2626;
-  font-size: 5.5px;
-  font-weight: 900;
-}
-
-body.theme-mccurdy .rc-meter-needle,
-body.theme-mccurdy-light .rc-meter-needle {
-  stroke: #1e293b;
-  stroke-width: 1.2;
-  stroke-linecap: round;
-}
-
-body.theme-mccurdy .rc-meter-hub,
-body.theme-mccurdy-light .rc-meter-hub {
-  fill: #1e3a5f;
-  stroke: #0f172a;
-  stroke-width: 0.6;
-}
 
 /* -----------------------------------------------------------------------------
    3. Theme: Ward-Beck Systems Vintage Warm Aluminum (body.theme-wbs-ca)
@@ -1857,66 +953,6 @@ body.theme-wbs-ca .routing-header-sub {
 body.theme-wbs-ca .rc-badge {
   background: #c6c3b3;
   border-color: #8c897b;
-  color: #2a2b2a;
-}
-
-body.theme-wbs-ca .rc-bay {
-  background: #c6c3b3;
-  border-color: #8c897b;
-}
-
-body.theme-wbs-ca .rc-bay-header {
-  color: #ea580c;
-  border-bottom-color: #a8a494;
-}
-
-body.theme-wbs-ca .rc-bay-sub {
-  color: #6c7077;
-}
-
-body.theme-wbs-ca .rc-strip {
-  background: #edeae0;
-  border-color: #9e9a89;
-}
-
-body.theme-wbs-ca .rc-strip.selected {
-  background: #ffffff;
-  border-color: #f97316;
-  box-shadow: 0 0 10px rgba(249, 115, 22, 0.35);
-}
-
-body.theme-wbs-ca .rc-strip-name {
-  color: #2a2b2a;
-}
-
-body.theme-wbs-ca .rc-strip-sub {
-  color: #6c7077;
-}
-
-body.theme-wbs-ca .rc-strip-digits {
-  color: #454c59;
-}
-
-body.theme-wbs-ca .rc-btn-engage {
-  background: #dedad0;
-  border-color: #9e9a89;
-  color: #2a2b2a;
-}
-
-body.theme-wbs-ca .rc-btn-engage:hover {
-  background: #d4d0c4;
-}
-
-body.theme-wbs-ca .rc-btn-engage.engaged {
-  background: #f97316;
-  border-color: #fb923c;
-  color: #000;
-  box-shadow: 0 0 8px rgba(249, 115, 22, 0.4);
-}
-
-body.theme-wbs-ca .rc-btn-out-tool {
-  background: #dedad0;
-  border-color: #9e9a89;
   color: #2a2b2a;
 }
 
@@ -1960,52 +996,6 @@ body.theme-wbs-ca .rc-loudness-val {
   color: #ea580c;
 }
 
-body.theme-wbs-ca .rc-matrix-card {
-  background: #c6c3b3;
-  border-color: #8c897b;
-}
-
-body.theme-wbs-ca .rc-matrix-header {
-  color: #2a2b2a;
-  border-bottom-color: #a8a494;
-}
-
-body.theme-wbs-ca .rc-matrix-table th {
-  background: #dcd9cb;
-  border-color: #8c897b;
-  color: #ea580c;
-}
-
-body.theme-wbs-ca .rc-th-row {
-  background: #dcd9cb;
-  color: #2a2b2a;
-  border-color: #8c897b;
-}
-
-body.theme-wbs-ca .rc-matrix-btn {
-  background: #edeae0;
-  border-color: #9e9a89;
-}
-
-body.theme-wbs-ca .rc-matrix-btn:hover {
-  background: #dcd9cb;
-  border-color: #f97316;
-}
-
-body.theme-wbs-ca .rc-matrix-btn.connected {
-  background: #f97316;
-  border-color: #fb923c;
-}
-
-body.theme-wbs-ca .rc-matrix-led {
-  background: #a8a494;
-}
-
-body.theme-wbs-ca .rc-matrix-btn.connected .rc-matrix-led {
-  background: #fef08a;
-  box-shadow: 0 0 6px #fef08a;
-}
-
 body.theme-wbs-ca .rc-pod-panel,
 body.theme-wbs-ca .rc-abb-panel {
   background: #c6c3b3;
@@ -2029,148 +1019,10 @@ body.theme-wbs-ca .rc-btn-sel.active {
 }
 
 /* Ward-Beck Vintage Miniature Theme Meters (M405 Classic Ivory Face) */
-body.theme-wbs-ca .rc-meter-bezel {
-  fill: #b3af9f;
-  stroke: #7d796b;
-  stroke-width: 1;
-}
-
-body.theme-wbs-ca .rc-meter-face {
-  fill: #faf8ed;
-  stroke: #d0cca0;
-  stroke-width: 0.8;
-}
-
-body.theme-wbs-ca .rc-meter-ch-lbl {
-  fill: #f97316;
-  font-weight: 900;
-  font-size: 7px;
-}
-
-body.theme-wbs-ca .rc-meter-vu-lbl {
-  fill: #2a2b2a;
-  font-weight: 900;
-  font-size: 6px;
-}
-
-body.theme-wbs-ca .rc-meter-arc-norm {
-  stroke: #2a2b2a;
-  stroke-width: 1.2;
-  fill: none;
-}
-
-body.theme-wbs-ca .rc-meter-arc-over {
-  stroke: #dc2626;
-  stroke-width: 1.4;
-  fill: none;
-}
-
-body.theme-wbs-ca .rc-meter-tick {
-  stroke: #2a2b2a;
-  stroke-width: 0.8;
-}
-
-body.theme-wbs-ca .rc-meter-tick-red {
-  stroke: #dc2626;
-  stroke-width: 1.0;
-}
-
-body.theme-wbs-ca .rc-meter-tick-lbl {
-  fill: #2a2b2a;
-  font-size: 5px;
-  font-weight: bold;
-}
-
-body.theme-wbs-ca .rc-meter-tick-lbl-red {
-  fill: #dc2626;
-  font-size: 5.5px;
-  font-weight: 900;
-}
-
-body.theme-wbs-ca .rc-meter-needle {
-  stroke: #1c1917;
-  stroke-width: 1.2;
-  stroke-linecap: round;
-}
-
-body.theme-wbs-ca .rc-meter-hub {
-  fill: #f97316;
-  stroke: #1c1917;
-  stroke-width: 0.6;
-}
 
 /* -----------------------------------------------------------------------------
    4. Theme: Ward-Beck Systems Modern Dark (body.theme-wbs-dark or default)
    ----------------------------------------------------------------------------- */
-body.theme-wbs-dark .rc-meter-bezel {
-  fill: #0d1117;
-  stroke: #21262d;
-  stroke-width: 1;
-}
-
-body.theme-wbs-dark .rc-meter-face {
-  fill: #161b22;
-  stroke: #30363d;
-  stroke-width: 0.8;
-}
-
-body.theme-wbs-dark .rc-meter-ch-lbl {
-  fill: #22c55e;
-  font-weight: 800;
-  font-size: 7px;
-}
-
-body.theme-wbs-dark .rc-meter-vu-lbl {
-  fill: #8b949e;
-  font-weight: 800;
-  font-size: 6px;
-}
-
-body.theme-wbs-dark .rc-meter-arc-norm {
-  stroke: #4ade80;
-  stroke-width: 1.2;
-  fill: none;
-}
-
-body.theme-wbs-dark .rc-meter-arc-over {
-  stroke: #ef4444;
-  stroke-width: 1.4;
-  fill: none;
-}
-
-body.theme-wbs-dark .rc-meter-tick {
-  stroke: #8b949e;
-  stroke-width: 0.8;
-}
-
-body.theme-wbs-dark .rc-meter-tick-red {
-  stroke: #ef4444;
-  stroke-width: 1.0;
-}
-
-body.theme-wbs-dark .rc-meter-tick-lbl {
-  fill: #8b949e;
-  font-size: 5px;
-  font-weight: bold;
-}
-
-body.theme-wbs-dark .rc-meter-tick-lbl-red {
-  fill: #ef4444;
-  font-size: 5.5px;
-  font-weight: 900;
-}
-
-body.theme-wbs-dark .rc-meter-needle {
-  stroke: #9dff3a;
-  stroke-width: 1.2;
-  stroke-linecap: round;
-}
-
-body.theme-wbs-dark .rc-meter-hub {
-  fill: #22c55e;
-  stroke: #0f172a;
-  stroke-width: 0.6;
-}
 
 /* =============================================================================
    TOP STUDIO MONITORING DECK & SCANALYZER AUDIO EYE
@@ -2335,7 +1187,7 @@ body.theme-wbs-dark .rc-meter-hub {
   display: flex;
   flex-direction: column;
   gap: 10px;
-  justify-content: space-between;
+  justify-content: flex-start;
 }
 
 .rc-pipeline-grid {
@@ -2641,4 +1493,170 @@ body.theme-wbs-dark .rc-studio-needle-tip {
   fill: #9dff3a;
 }
 
+/* Scanalyzer eye legend: buffer write head vs meter read head */
+.rc-eye-legend {
+  display: flex;
+  justify-content: center;
+  gap: 14px;
+  font: 600 0.6rem monospace;
+  color: #94a3b8;
+  letter-spacing: 0.04em;
+}
+.rc-eye-key {
+  display: inline-block;
+  width: 14px;
+  height: 3px;
+  margin-right: 5px;
+  vertical-align: middle;
+  border-radius: 2px;
+}
+.rc-eye-key-write { background: #f97316; box-shadow: 0 0 4px #f97316; }
+.rc-eye-key-meter { background: #d946ef; box-shadow: 0 0 4px #d946ef; }
 
+/* One ring + meter per declared generator flow */
+.rc-gen-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(104px, 1fr));
+  gap: 6px;
+  width: 100%;
+}
+.rc-gen-empty {
+  grid-column: 1 / -1;
+  font: 0.62rem monospace;
+  color: #64748b;
+  text-align: center;
+  padding: 6px;
+}
+.rc-gen-card {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 3px;
+  padding: 4px;
+  background: #02060b;
+  border: 1px solid #102338;
+  border-radius: 5px;
+  cursor: pointer;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+}
+.rc-gen-card.active { border-color: #d946ef; box-shadow: 0 0 6px rgba(217, 70, 239, 0.35); }
+.rc-gen-ring { width: 100%; height: auto; aspect-ratio: 1 / 1; display: block; }
+.rc-gen-meter { display: flex; flex-direction: column; gap: 1px; }
+.rc-gen-ch { display: flex; align-items: center; gap: 3px; height: 5px; }
+.rc-gen-chl, .rc-gen-db {
+  font: 5px/5px monospace;
+  color: #64748b;
+  flex: none;
+}
+.rc-gen-chl { width: 5px; }
+.rc-gen-db { width: 18px; text-align: right; }
+.rc-gen-bar {
+  position: relative;
+  flex: 1;
+  height: 3px;
+  background: #0b1726;
+  border-radius: 1px;
+  overflow: hidden;
+}
+.rc-gen-rms {
+  position: absolute;
+  inset: 0;
+  clip-path: inset(0 100% 0 0);
+  background: linear-gradient(90deg, #22c55e 0%, #22c55e 70%, #eab308 85%, #ef4444 100%);
+}
+.rc-gen-pk {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 1px;
+  background: #f8fafc;
+}
+.rc-gen-ch.over .rc-gen-pk { background: #ef4444; }
+.rc-gen-name {
+  font: 600 0.55rem monospace;
+  color: #94a3b8;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+body.theme-mccurdy .rc-gen-card,
+body.theme-mccurdy-light .rc-gen-card,
+body.theme-wbs-ca .rc-gen-card { background: #f4f1e8; border-color: #c8c4b7; }
+body.theme-mccurdy .rc-gen-bar,
+body.theme-mccurdy-light .rc-gen-bar,
+body.theme-wbs-ca .rc-gen-bar { background: #ddd8cb; }
+body.theme-mccurdy .rc-gen-pk,
+body.theme-mccurdy-light .rc-gen-pk,
+body.theme-wbs-ca .rc-gen-pk { background: #1e293b; }
+
+/* Data tab: ring buffer card sits below the monitoring deck. */
+.rc-data-buffer { margin-top: 16px; }
+
+/* ==================================================================
+   Pipeline signal-flow graph (data tab) — pipeline-graph.ts
+   ================================================================== */
+.rc-pipeline-graph {
+  --pg-bg: #060e16; --pg-lane: #08131f; --pg-lane-line: #142c44;
+  --pg-node: #0a1624; --pg-node-line: #1a385a; --pg-text: #e2e8f0; --pg-sub: #7b8ca3;
+  --pg-edge: #1f4c75; --pg-flow: #38bdf8; --pg-clock: #f59e0b;
+  --pg-hw: #22d3ee; --pg-pw: #a78bfa; --pg-mxl: #f97316; --pg-dante: #e11d48;
+  --pg-ravenna: #a855f7; --pg-sap: #22c55e; --pg-nmos: #eab308; --pg-sip: #ec4899; --pg-hub: #38bdf8;
+  background: var(--pg-bg); border: 1px solid var(--pg-lane-line); border-radius: 6px; padding: 8px;
+}
+body.theme-mccurdy-light .rc-pipeline-graph, body.theme-mccurdy .rc-pipeline-graph {
+  --pg-bg: #f4f1e8; --pg-lane: #ece8dc; --pg-lane-line: #c8c4b7;
+  --pg-node: #fbfaf6; --pg-node-line: #c8c4b7; --pg-text: #1e293b; --pg-sub: #64748b;
+  --pg-edge: #b8b2a2; --pg-flow: #1e3a5f; --pg-clock: #b45309;
+}
+.pg-status { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin-bottom: 6px; font: 600 0.66rem/1 monospace; }
+.pg-chip { display: inline-flex; align-items: center; gap: 5px; padding: 4px 8px; border-radius: 999px; border: 1px solid var(--pg-lane-line); color: var(--pg-text); }
+.pg-chip i { width: 7px; height: 7px; border-radius: 50%; background: #64748b; }
+.pg-chip-on i { background: #22c55e; box-shadow: 0 0 6px #22c55e; }
+.pg-chip-err i { background: #ef4444; }
+.pg-iface { color: var(--pg-sub); }
+.pg-svg { width: 100%; height: auto; display: block; font-family: monospace; }
+.pg-lane { fill: var(--pg-lane); stroke: var(--pg-lane-line); }
+.pg-head { fill: var(--pg-flow); font-size: 11px; font-weight: 800; letter-spacing: 1px; }
+.pg-node rect { fill: var(--pg-node); stroke: var(--pg-node-line); }
+.pg-node.pg-hub rect { stroke-width: 1.5; }
+.pg-label { fill: var(--pg-text); font-size: 10.5px; font-weight: 700; }
+.pg-sub { fill: var(--pg-sub); font-size: 9px; }
+.pg-more { fill: var(--pg-sub); font-size: 10px; font-style: italic; }
+.pg-dot { fill: #475569; }
+.pg-node:not(.pg-on) { opacity: 0.6; }
+.pg-node:not(.pg-on) rect { stroke-dasharray: 3 3; }
+.pg-on.pg-hw .pg-dot { fill: var(--pg-hw); } .pg-on.pg-hw rect { stroke: var(--pg-hw); }
+.pg-on.pg-pw .pg-dot { fill: var(--pg-pw); }
+.pg-on.pg-mxl .pg-dot { fill: var(--pg-mxl); }
+.pg-on.pg-hub .pg-dot { fill: var(--pg-hub); } .pg-on.pg-hub rect { stroke: var(--pg-hub); }
+.pg-dante .pg-dot { fill: var(--pg-dante); } .pg-dante rect { stroke: var(--pg-dante); }
+.pg-ravenna .pg-dot { fill: var(--pg-ravenna); } .pg-ravenna rect { stroke: var(--pg-ravenna); }
+.pg-sap .pg-dot { fill: var(--pg-sap); } .pg-sap rect { stroke: var(--pg-sap); }
+.pg-nmos .pg-dot { fill: var(--pg-nmos); } .pg-nmos rect { stroke: var(--pg-nmos); }
+.pg-sip .pg-dot { fill: var(--pg-sip); } .pg-sip rect { stroke: var(--pg-sip); }
+.pg-edge { fill: none; stroke: var(--pg-edge); stroke-width: 1.4; }
+.pg-edge.pg-live { stroke: var(--pg-flow); stroke-opacity: 0.7; stroke-dasharray: 6 5; animation: pgFlow 0.9s linear infinite; }
+.pg-clock-edge { stroke: var(--pg-clock); stroke-dasharray: 2 4; stroke-opacity: 0.8; }
+.pg-clock rect { fill: var(--pg-node); stroke: var(--pg-clock); stroke-width: 1.4; }
+.pg-clock.pg-v1 rect { stroke: var(--pg-dante); }
+.pg-errors { margin-top: 6px; font: 0.66rem/1.4 monospace; color: #f87171; }
+.pg-errors b { color: var(--pg-text); margin-right: 6px; }
+@keyframes pgFlow { to { stroke-dashoffset: -11; } }
+@media (prefers-reduced-motion: reduce) { .pg-edge.pg-live { animation: none; } }
+
+/* Generators tab: the CBC studio spans the full width under POD-33 / ABB-1. */
+.routing-aux-panels .rc-cbc-studio-panel { grid-column: 1 / -1; }
+#generatorsStage .routing-aux-panels { border-top: 0; padding-top: 0; }
+.pg-clock.pg-contested rect { stroke: #ef4444; stroke-dasharray: 5 3; }
+
+/* Pipeline graph test points: every tappable card can be metered */
+.pg-node.pg-tappable { cursor: pointer; }
+.pg-node.pg-tappable:hover rect { stroke-width: 2; filter: brightness(1.06); }
+.pg-node.pg-tp { opacity: 1; }
+.pg-node.pg-tp rect { stroke: #d946ef; stroke-width: 2.4; stroke-dasharray: none; }
+.pg-tp-tag { font: 700 8px monospace; fill: #d946ef; letter-spacing: 0.5px; }
+.pg-tp-chip { border-color: #d946ef; }
+.pg-tp-why { font: 10px monospace; color: #e11d48; margin-left: 6px; }

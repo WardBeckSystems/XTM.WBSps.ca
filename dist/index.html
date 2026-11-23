@@ -61,8 +61,8 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Ward-Beck Systems">
-  <script type="module" crossorigin src="./assets/index-6HmJ56LN.js"></script>
-  <link rel="stylesheet" crossorigin href="./assets/index-bKxJ2aaY.css">
+  <script type="module" crossorigin src="./assets/index-zOn2WNbN.js"></script>
+  <link rel="stylesheet" crossorigin href="./assets/index-Be4uMVJE.css">
 </head>
 <body class="">
   <!-- <div id="audioStartOverlay" style="position:fixed; top:0; left:0; width:100%; height:100%; background:#0a0b0d; z-index:9999; display:flex; align-items:center; justify-content:center;">
@@ -128,8 +128,12 @@
         <div class="meter-unit pod22" id="pod22Stage"></div>
       </div>
 
-      <!-- Unit 3: WBS Broadcast Routing Console Canvas & POD-33 / Bit Buddy Matrix -->
-      <div class="meter-unit routing-unit" id="routingStage" style="display: none;"></div>
+      <!-- Unit 3: lower-bay tabs (footer: loudness · data · routing; generators sit under the router) -->
+      <div class="meter-unit routing-unit" id="dataStage" style="display: none;"></div>
+      <div class="meter-unit routing-unit" id="routingStage" style="display: none;">
+        <div id="routerStage"></div>
+        <div id="generatorsStage"></div>
+      </div>
 
       <!-- Unit 4: dBFS Over Time Real-Time Scope (APK.softapp.TEST.AUDIO.DbfsMeters) -->
       <div class="meter-unit dbfs-unit" id="dbfsStage" style="display: flex;"></div>
@@ -155,16 +159,19 @@
           <span class="drawer-gear-label">Settings</span>
         </div>
 
-        <!-- Center: Loudness vs Data Stream View Switcher -->
-        <div class="footer-view-switcher" id="footerViewSwitcher" onclick="event.stopPropagation();" role="tablist" aria-label="loudness vs data stream">
-          <button type="button" class="footer-view-btn active" id="btnViewLoudness" role="tab" aria-selected="true" title="Switch lower bay to Loudness Scope (dBFS &amp; ITU-R BS.1770 LUFS over time)">
-            <span class="footer-view-led lit-green" id="ledViewLoudness"></span>
+        <!-- Center: lower-bay view tabs (loudness is always the default on load) -->
+        <div class="footer-view-switcher" id="footerViewSwitcher" onclick="event.stopPropagation();" role="tablist" aria-label="lower bay view">
+          <button type="button" class="footer-view-btn active" id="btnViewLoudness" data-view="loudness" role="tab" aria-selected="true" title="Loudness Scope (dBFS &amp; ITU-R BS.1770 LUFS over time)">
+            <span class="footer-view-led lit-green"></span>
             <span class="footer-view-name">loudness</span>
           </button>
-          <span class="footer-view-vs">vs</span>
-          <button type="button" class="footer-view-btn" id="btnViewStream" role="tab" aria-selected="false" title="Switch lower bay to Data Stream View (EBU DMF / MXL Continuous Circular Ring Buffer &amp; Routing Matrix)">
-            <span class="footer-view-led" id="ledViewStream"></span>
-            <span class="footer-view-name">data stream</span>
+          <button type="button" class="footer-view-btn" id="btnViewData" data-view="data" role="tab" aria-selected="false" title="Data Stream (Scanalyzer Audio Eye, EBU DMF / MXL ring buffers &amp; pipeline)">
+            <span class="footer-view-led"></span>
+            <span class="footer-view-name">data</span>
+          </button>
+          <button type="button" class="footer-view-btn" id="btnViewRouting" data-view="routing" role="tab" aria-selected="false" title="Web Router (inputs × outputs grid) and signal generators (POD-33, CBC MXL, ABS-1 → ABB-1)">
+            <span class="footer-view-led"></span>
+            <span class="footer-view-name">routing</span>
           </button>
         </div>
 
@@ -217,7 +224,7 @@
             </svg>
             <span class="footer-btn-text mc-com-text">McCurdyRadio.com</span>
           </button>
-          <span class="build-stamp" style="font-size: 0.7em; opacity: 0.6; margin-left: 12px;">v2.0.73</span>
+          <span class="build-stamp" style="font-size: 0.7em; opacity: 0.6; margin-left: 12px;">v2.0.85</span>
         </div>
       </summary>
 

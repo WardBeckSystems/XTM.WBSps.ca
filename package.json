@@ -1,11 +1,12 @@
 {
   "name": "xtm.wbsps.ca",
-  "version": "2.0.73",
+  "version": "2.0.85",
   "description": "A standalone, broadcast-accurate implementation of the **Ward-Beck Systems XTM-4 Extended Range Test Meter** paired with the **POD-22 Stereo Loudness Meter** in a unified equipment rack.",
   "main": "sw.js",
   "type": "module",
   "scripts": {
     "build:wasm": "asc assembly/index.ts --config asconfig.json && node tools/stamp-copyright.mjs",
+    "sync:tab": "python3 -c \"import shutil, os; src='../Ward-Beck-Audio-Tab'; [shutil.copy2(os.path.join(src, f), d) for f in ['ward-beck-audio-tab.py', 'mxl_engine.py', 'pipeline_inspector.py', 'docker-compose.mxl-demo.yml'] for d in ['tools', 'public/tools', 'dist/tools'] if os.path.exists(os.path.join(src, f))]; print('✔ Audio Tab files synced.')\"",
     "build": "npm run build:wasm && vite build",
     "dev": "vite",
     "preview": "vite preview",

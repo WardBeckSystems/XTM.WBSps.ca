@@ -1,13 +1,13 @@
 /*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.ca). All rights reserved. */
 /**
  * WBS POD-33 Digital Audio Reference & Precision Tone Generator
- * and ABB-1 Audio Bit Buddy / ABP-1 Bit Spitter Generator.
+ * and ABB-1 Audio Bit Buddy / ABS-1 Bit Spitter Generator.
  *
  * Implements authentic Ward-Beck Systems calibration reference generators:
  * - POD-33: 100 Hz, 400 Hz, 1000 Hz (1 kHz) reference sine wave, digital silence,
  *   calibrated output levels (0 to -60 dBFS), genlock reference clock hierarchy,
  *   and stereo/left/right/inverted-phase (Ø 180°) channel routing.
- * - ABB-1 / ABP-1: AES3 Channel Status Bit Spitter, Professional vs Consumer mode,
+ * - ABB-1 / ABS-1: AES3 Channel Status Bit Spitter, Professional vs Consumer mode,
  *   walking-1s, PRBS-15 pseudo-random sequences, and polarity stress test patterns.
  *
  * Supports simultaneous concurrent operation ("Dual Flow Spitting") where both
@@ -28,9 +28,17 @@ export interface Pod33Config {
 
 export interface BitBuddyConfig {
   pattern: 'tone' | 'walk1s' | 'prbs' | 'minmax';
-  sampleRate: 48000 | 96000 | 44100;
-  proMode: boolean;        // true = Professional AES3, false = Consumer S/PDIF
-  audioData: 'audio' | 'data'; // 'audio' (PCM) or 'data' (bitstream)
+  sampleRate: 48000 | 44100 | 32000 | 96000;
+  proMode: boolean;            // true = Professional AES3, false = Consumer S/PDIF
+  audioData: 'audio' | 'data'; // PCM audio or non-audio bitstream
+  /* ABS-1 Bit Spitter front panel (abs1v103.asm PROCESS) */
+  level: 0 | -12 | -20 | null; // AUDIO LEVEL lamps: 0 / -12 / -20 dBFS, null = OFF
+  tone: 1000 | 400;            // TONE: 1KHz / 400Hz
+  ext: boolean;                // SAMPLE RATE stepped to EXT (lock to an AES reference)
+  cycle: boolean;              // CHB CYCLE: channel B on/off every ~0.5 s
+  invert: boolean;             // CHB INVERT: channel B out of phase
+  bOff: boolean;               // CHB OFF: channel B muted
+  invalid: boolean;            // INVALID: validity bit set on the AES stream
 }
 
 export const DEFAULT_POD33_CONFIG: Pod33Config = {
@@ -44,7 +52,14 @@ export const DEFAULT_BITBUDDY_CONFIG: BitBuddyConfig = {
   pattern: 'tone',
   sampleRate: 48000,
   proMode: true,
-  audioData: 'audio'
+  audioData: 'audio',
+  level: -20,
+  tone: 1000,
+  ext: false,
+  cycle: false,
+  invert: false,
+  bOff: false,
+  invalid: false,
 };
 
 function updateGeneratorEngineStatus(engine: XtmAudioEngine): void {
@@ -55,7 +70,7 @@ function updateGeneratorEngineStatus(engine: XtmAudioEngine): void {
     engine.sourceType = 'test';
     engine.onStatusChange?.({
       type: 'test',
-      label: `POD-33 Tone & ABP-1 Bit Spitter (Dual Concurrent Flows Active)`
+      label: `POD-33 Tone & ABS-1 Bit Spitter (Dual Concurrent Flows Active)`
     });
   } else if (hasPod33) {
     engine.sourceType = 'test';
@@ -69,7 +84,7 @@ function updateGeneratorEngineStatus(engine: XtmAudioEngine): void {
     const cfg = (engine as any).bitBuddyNode?.config || DEFAULT_BITBUDDY_CONFIG;
     engine.onStatusChange?.({
       type: 'test',
-      label: `ABP-1 Bit Spitter (${cfg.pattern.toUpperCase()} · ${cfg.proMode ? 'PRO' : 'CONS'})`
+      label: `ABS-1 Bit Spitter (${cfg.pattern.toUpperCase()} · ${cfg.proMode ? 'PRO' : 'CONS'})`
     });
   }
 }
@@ -163,7 +178,7 @@ export function stopPod33Generator(engine: XtmAudioEngine, notify = true): void 
 }
 
 /**
- * Start the ABB-1 Audio Bit Buddy / ABP-1 Bit Spitter Generator
+ * Start the ABB-1 Audio Bit Buddy / ABS-1 Bit Spitter Generator
  * (Allows concurrent operation with POD-33)
  */
 export function startBitBuddyGenerator(engine: XtmAudioEngine, config: BitBuddyConfig = DEFAULT_BITBUDDY_CONFIG): void {
@@ -184,18 +199,46 @@ export function startBitBuddyGenerator(engine: XtmAudioEngine, config: BitBuddyC
   const masterGain = ctx.createGain();
   masterGain.gain.value = 0.5;
 
+  // ABS-1 channel A / channel B. B follows the CHB buttons:
+  // OFF mutes it, INVERT flips its polarity, CYCLE switches it on and off
+  // (REFRESH toggles RC7 every 7 x 255 main-loop passes, about 0.52 s).
+  const chA = ctx.createGain();
+  const chB = ctx.createGain();
+  const extras: AudioScheduledSourceNode[] = [];
+  chA.connect(merger, 0, 0);
+  if (!config.bOff) {
+    const polarity = ctx.createGain();
+    polarity.gain.value = config.invert ? -1 : 1;
+    chB.connect(polarity);
+    polarity.connect(merger, 0, 1);
+    if (config.cycle) {
+      chB.gain.value = 0.5;
+      const lfo = ctx.createOscillator();
+      lfo.type = 'square';
+      lfo.frequency.value = 1 / (2 * 0.52);
+      const depth = ctx.createGain();
+      depth.gain.value = 0.5;
+      lfo.connect(depth);
+      depth.connect(chB.gain);
+      lfo.start();
+      extras.push(lfo);
+    }
+  }
+  // EXT with no AES reference in the browser: the ABS-1 stops its clock and mutes.
+  if (config.ext) masterGain.gain.value = 0;
+
   let sourceNode: OscillatorNode | AudioBufferSourceNode | null = null;
 
   if (config.pattern === 'tone') {
-    // 1 kHz Calibrated Reference Tone with AES framing clock
+    // ABS-1 TONE (1KHz / 400Hz) at the AUDIO LEVEL lamp (0 / -12 / -20 dBFS, OFF)
     const osc = ctx.createOscillator();
     osc.type = 'sine';
-    osc.frequency.value = 1000;
+    osc.frequency.value = config.tone;
     const toneGain = ctx.createGain();
-    toneGain.gain.value = Math.pow(10, -18 / 20); // -18 dBFS
+    toneGain.gain.value = config.level === null ? 0 : Math.pow(10, config.level / 20);
     osc.connect(toneGain);
-    toneGain.connect(merger, 0, 0);
-    toneGain.connect(merger, 0, 1);
+    toneGain.connect(chA);
+    toneGain.connect(chB);
     osc.start();
     sourceNode = osc;
   } else if (config.pattern === 'walk1s') {
@@ -214,8 +257,8 @@ export function startBitBuddyGenerator(engine: XtmAudioEngine, config: BitBuddyC
 
     osc.connect(filter);
     filter.connect(gain);
-    gain.connect(merger, 0, 0);
-    gain.connect(merger, 0, 1);
+    gain.connect(chA);
+    gain.connect(chB);
 
     osc.start();
     sourceNode = osc;
@@ -239,8 +282,8 @@ export function startBitBuddyGenerator(engine: XtmAudioEngine, config: BitBuddyC
     const prbsSource = ctx.createBufferSource();
     prbsSource.buffer = noiseBuffer;
     prbsSource.loop = true;
-    prbsSource.connect(merger, 0, 0);
-    prbsSource.connect(merger, 0, 1);
+    prbsSource.connect(chA);
+    prbsSource.connect(chB);
     prbsSource.start();
     sourceNode = prbsSource;
   } else if (config.pattern === 'minmax') {
@@ -251,8 +294,8 @@ export function startBitBuddyGenerator(engine: XtmAudioEngine, config: BitBuddyC
     const gain = ctx.createGain();
     gain.gain.value = 0.95; // Near 0 dBFS peak square
     osc.connect(gain);
-    gain.connect(merger, 0, 0);
-    gain.connect(merger, 0, 1);
+    gain.connect(chA);
+    gain.connect(chB);
     osc.start();
     sourceNode = osc;
   }
@@ -260,7 +303,7 @@ export function startBitBuddyGenerator(engine: XtmAudioEngine, config: BitBuddyC
   merger.connect(masterGain);
   masterGain.connect(bus);
 
-  (engine as any).bitBuddyNode = { source: sourceNode, merger, masterGain, config };
+  (engine as any).bitBuddyNode = { source: sourceNode, extras, merger, masterGain, config };
   if (!(engine as any).pod33Node) {
     (engine as any).testOsc = sourceNode;
     (engine as any).testGain = masterGain;
@@ -278,6 +321,9 @@ export function stopBitBuddyGenerator(engine: XtmAudioEngine, notify = true): vo
     if (node.source) {
       try { node.source.stop(); } catch (_) {}
       try { node.source.disconnect(); } catch (_) {}
+    }
+    for (const x of node.extras || []) {
+      try { x.stop(); } catch (_) {}
     }
     if (node.masterGain) {
       try { node.masterGain.disconnect(); } catch (_) {}

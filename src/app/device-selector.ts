@@ -15,6 +15,45 @@ let linuxHostAvailable = false;
 let linuxHostSse: EventSource | null = null;
 let xmxlDisconnect: (() => void) | null = null;
 
+/**
+ * Polls one MXL flow's per-channel peak / RMS from the host (/api/mxl/flow/<id>/levels)
+ * and hands it on in the same shape as the /api/stream/meters SSE events.
+ */
+function connectFlowLevels(baseUrl: string, flowId: string, onUpdate: (d: any) => void): () => void {
+  let stopped = false;
+  let busy = false;
+  const tick = () => {
+    if (stopped || busy) return;
+    busy = true;
+    fetch(`${baseUrl}/api/mxl/flow/${encodeURIComponent(flowId)}/levels`)
+      .then((r) => (r.ok ? r.json() : null))
+      .then((d) => {
+        if (stopped || !d || !Array.isArray(d.peak_db) || d.peak_db.length === 0) return;
+        const pkL = d.peak_db[0];
+        const pkR = d.peak_db[1] ?? pkL;
+        const rmsL = d.rms_db[0];
+        const rmsR = d.rms_db[1] ?? rmsL;
+        onUpdate({
+          left_db: rmsL,
+          right_db: rmsR,
+          left_peak_db: pkL,
+          right_peak_db: pkR,
+          // Same VU alignment as the host tap: 0 VU = -18 dBFS RMS
+          left_vu: rmsL + 18,
+          right_vu: rmsR + 18,
+        });
+      })
+      .catch(() => {})
+      .finally(() => { busy = false; });
+  };
+  tick();
+  const timer = window.setInterval(tick, 33);
+  return () => {
+    stopped = true;
+    window.clearInterval(timer);
+  };
+}
+
 /** Probes local Linux host daemon (WARD BECK TAP) on port 8467 */
 export async function probeLinuxHost(): Promise<boolean> {
   try {
@@ -230,6 +269,24 @@ export function initDeviceSelector(ctx: AppContext, refs: DrawerControls, sync: 
 
   if (!selectDevice) return;
 
+  // Clicking an MXL flow (Data Stream view) puts that flow on the meters.
+  window.addEventListener('xtm:meter-flow', (e: Event) => {
+    const { port, flowId } = (e as CustomEvent).detail || {};
+    if (!port || !flowId) return;
+    const value = `__XMXL_${port}_${flowId}__`;
+    if (!Array.from(selectDevice.options).some((o) => o.value === value)) {
+      const flow = getActiveXmxlInstances().filter((i) => i.port === port).flatMap((i) => i.flows || []).find((f) => f.flowId === flowId);
+      const opt = document.createElement('option');
+      opt.value = value;
+      opt.textContent = `🎛️ [XMXL ${port}] ${flow?.label || flowId}`;
+      opt.style.color = '#22c55e';
+      opt.style.fontWeight = 'bold';
+      selectDevice.appendChild(opt);
+    }
+    selectDevice.value = value;
+    selectDevice.dispatchEvent(new Event('change'));
+  });
+
   selectDevice.addEventListener('change', async () => {
     const selectedId = selectDevice.value || null;
     sync.isAudioStarted = true;
@@ -299,13 +356,17 @@ export function initDeviceSelector(ctx: AppContext, refs: DrawerControls, sync: 
       let port = 8467;
       let flowTag = '';
       if (isCustomXmxl) {
-        const parts = selectedId.replace(/^__XMXL_/, '').replace(/__$/, '').split('_');
-        port = parseInt(parts[0], 10) || 8467;
-        flowTag = parts[1] || '';
+        const body = selectedId.replace(/^__XMXL_/, '').replace(/__$/, '');
+        const cut = body.indexOf('_');
+        port = parseInt(cut >= 0 ? body.slice(0, cut) : body, 10) || 8467;
+        flowTag = cut >= 0 ? body.slice(cut + 1) : '';
       }
 
+      const flowInfo = flowTag
+        ? getActiveXmxlInstances().filter((i) => i.port === port).flatMap((i) => i.flows || []).find((f) => f.flowId === flowTag)
+        : undefined;
       if (drawerSourceBadge) {
-        drawerSourceBadge.textContent = `Source: 🎛️ XMXL Node :${port} ${flowTag ? `(${flowTag})` : ''} · Shared Memory Ring Buffer`;
+        drawerSourceBadge.textContent = `Source: 🎛️ XMXL Node :${port} ${flowTag ? `(${flowInfo?.label || flowTag})` : ''} · Shared Memory Ring Buffer`;
         drawerSourceBadge.style.color = '#22c55e';
       }
       if (model.mode !== 'A') {
@@ -328,7 +389,7 @@ export function initDeviceSelector(ctx: AppContext, refs: DrawerControls, sync: 
         lastSeen: Date.now(),
       };
 
-      xmxlDisconnect = connectXmxlStream(instance as any, (d: any) => {
+      const applyLevels = (d: any) => {
         if (audio.currentLevels) {
           const vuL = typeof d.left_vu === 'number' ? d.left_vu : -42;
           const vuR = typeof d.right_vu === 'number' ? d.right_vu : -42;
@@ -339,17 +400,24 @@ export function initDeviceSelector(ctx: AppContext, refs: DrawerControls, sync: 
           audio.currentLevels.vu[1] = Math.pow(10, vuR / 20);
           audio.currentLevels.vuDb[0] = vuL;
           audio.currentLevels.vuDb[1] = vuR;
-          audio.currentLevels.ppm[0] = Math.pow(10, dbL / 20);
-          audio.currentLevels.ppm[1] = Math.pow(10, dbR / 20);
-          audio.currentLevels.ppmDb[0] = dbL;
-          audio.currentLevels.ppmDb[1] = dbR;
+          const pkL = typeof d.left_peak_db === 'number' ? d.left_peak_db : dbL;
+          const pkR = typeof d.right_peak_db === 'number' ? d.right_peak_db : dbR;
+          audio.currentLevels.ppm[0] = Math.pow(10, pkL / 20);
+          audio.currentLevels.ppm[1] = Math.pow(10, pkR / 20);
+          audio.currentLevels.ppmDb[0] = pkL;
+          audio.currentLevels.ppmDb[1] = pkR;
           audio.currentLevels.rmsDb[0] = dbL;
           audio.currentLevels.rmsDb[1] = dbR;
-          audio.currentLevels.dbfs[0] = dbL;
-          audio.currentLevels.dbfs[1] = dbR;
+          audio.currentLevels.dbfs[0] = pkL;
+          audio.currentLevels.dbfs[1] = pkR;
           audio.currentLevels.hasAudio = true;
         }
-      });
+      };
+      // The master bus comes off the host tap's SSE stream; any other flow is metered
+      // straight from its MXL ring / grain buffer.
+      xmxlDisconnect = flowTag && flowTag !== 'wbs-flow-master-stereo' && port === 8467
+        ? connectFlowLevels(instance.baseUrl, flowTag, applyLevels)
+        : connectXmxlStream(instance as any, applyLevels);
       return;
     }
 

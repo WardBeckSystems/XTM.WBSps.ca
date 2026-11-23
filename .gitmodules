@@ -1,0 +1,3 @@
+[submodule "WebRouter"]
+	path = WebRouter
+	url = https://github.com/LikeDotAudio/WebRouter.git

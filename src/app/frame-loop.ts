@@ -5,7 +5,7 @@ import type { AppContext } from './app-context';
 import type { TelemetryRecorder } from './telemetry-log';
 
 export function startFrameLoop(ctx: AppContext, recorder: TelemetryRecorder): void {
-  const { model, audio, view, podView, dbfsView, routingView } = ctx;
+  const { model, audio, view, podView, dbfsView, dataView, webRouter } = ctx;
   const viewportEl = document.querySelector('.console-viewport');
   let frameCount = 0;
   let lastTime = performance.now();
@@ -36,7 +36,8 @@ export function startFrameLoop(ctx: AppContext, recorder: TelemetryRecorder): vo
     view.renderSecondary(model, levels);
     podView.render(model, levels);
     if (dbfsView) dbfsView.render(model, levels);
-    if (routingView) routingView.render(model, levels);
+    if (dataView) dataView.render(model, levels);
+    if (webRouter) webRouter.render(levels);
 
     // Requirement 13: Record Telemetry for CSV export
     recorder.recordTelemetry(levels, now);

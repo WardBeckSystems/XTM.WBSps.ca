@@ -132,7 +132,11 @@ def inspect_pipewire() -> dict:
     }
 
 
-def inspect_aoip() -> dict:
+_AOIP_CACHE = {}
+_AOIP_CACHE_TIME = 0.0
+
+
+def inspect_aoip(use_cache: bool = True) -> dict:
     """
     Inspects Audio-over-IP (AoIP) Network Announcements & Multicast Streams:
     - Dante (mDNS _netaudio-arc, _netaudio-dbc, _netaudio-chan, _netaudio-cmc)
@@ -142,6 +146,11 @@ def inspect_aoip() -> dict:
     - SIP (_sip._udp, _sip._tcp)
     - LikeDotAudio MoipBuddy & Dante Docker Plugin Ecosystem
     """
+    global _AOIP_CACHE, _AOIP_CACHE_TIME
+    now = time.time()
+    if use_cache and _AOIP_CACHE and (now - _AOIP_CACHE_TIME < 15.0):
+        return _AOIP_CACHE
+
     dante_devices = []
     dante_channels = []
     ravenna_streams = []
@@ -266,7 +275,7 @@ def inspect_aoip() -> dict:
         "clock_sync": "PTP IEEE 1588-2008 (SMPTE 2059-2)",
     })
 
-    return {
+    result = {
         "status": "online",
         "dante": {
             "device_count": len(dante_devices),
@@ -294,6 +303,9 @@ def inspect_aoip() -> dict:
             "supported_protocols": ["Dante", "Ravenna", "AES67", "SMPTE-ST-2110-30", "SAP", "SIP", "NMOS-IS04/05"],
         },
     }
+    _AOIP_CACHE = result
+    _AOIP_CACHE_TIME = time.time()
+    return result
 
 
 def inspect_full_pipeline(mxl_engine=None) -> dict:

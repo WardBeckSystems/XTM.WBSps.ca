@@ -48,6 +48,9 @@ export async function syncAudioCore(
 
     let targetId = selectDevice ? selectDevice.value : null;
 
+    // MXL flows / NMOS nodes are metered by the device selector, not a soundcard
+    if (targetId && (targetId.startsWith('__XMXL_') || targetId.startsWith('__NMOS_'))) return;
+
     if (targetId === '__WBS_LINUX_HOST__') {
       if (drawerSourceBadge) {
         drawerSourceBadge.textContent = 'Source: 🐧 Linux Host (PipeWire & MXL Bridge · Banner-Free)';
