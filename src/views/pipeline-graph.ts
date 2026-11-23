@@ -66,10 +66,18 @@ export class PipelineGraph {
   private online = false;
   private testPoint: any = null;
   private taps = new Map<string, GNode>();
+  private fixDismissed = new Set<string>();
+  private fixEl: HTMLElement | null = null;
+  private fixTimer: number | null = null;
 
   constructor(private el: HTMLElement, private onTap?: (active: boolean) => void) {
     // One delegated listener: cards are re-rendered on every poll.
     this.el.addEventListener('click', (e) => {
+      if ((e.target as Element).closest?.('[data-fix-open]')) {
+        if (this.testPoint?.fix) this.fixDismissed.delete(this.fixKey(this.testPoint.fix));
+        this.syncFixPrompt();
+        return;
+      }
       const g = (e.target as Element).closest?.('[data-tap]');
       const node = g ? this.taps.get(g.getAttribute('data-tap') || '') : undefined;
       if (node?.tap) this.clip(node);
@@ -91,6 +99,96 @@ export class PipelineGraph {
     }
     this.onTap?.(!!this.testPoint);
     this.draw();
+  }
+
+  // ───────────────────────── runtime prompt ─────────────────────────
+  // When the daemon finds something only the user can do (e.g. open the firewall), it
+  // returns point.fix = {title, why, options:[{label, note, command}]}. Ask for it right
+  // then: a prompt with the command(s) to paste into a terminal. The probe keeps
+  // listening, so the prompt closes by itself once the point starts metering.
+
+  private fixKey(fix: any): string {
+    return `${fix.title}|${(fix.options ?? []).map((o: any) => o.command).join('|')}`;
+  }
+
+  private syncFixPrompt(): void {
+    const fix = this.testPoint?.fix;
+    if (!fix || this.fixDismissed.has(this.fixKey(fix))) {
+      const resolved = this.fixEl && !fix && this.testPoint?.status === 'running';
+      this.closeFixPrompt(resolved ? `${this.testPoint.label} is metering` : '');
+      return;
+    }
+    if (this.fixEl?.dataset.key === this.fixKey(fix)) return;
+    this.closeFixPrompt('');
+    const el = document.createElement('div');
+    el.className = 'pg-fix-backdrop';
+    el.dataset.key = this.fixKey(fix);
+    el.innerHTML = `
+      <div class="pg-fix" role="dialog" aria-modal="true" aria-labelledby="pgFixTitle">
+        <div class="pg-fix-kicker">Test point · ${esc(this.testPoint.label)}</div>
+        <h3 id="pgFixTitle">${esc(fix.title)}</h3>
+        <p class="pg-fix-why">${esc(fix.why)}</p>
+        ${(fix.options ?? []).map((o: any, i: number) => `
+          <div class="pg-fix-opt">
+            <div class="pg-fix-opt-head"><b>${esc(o.label)}</b>${o.note ? `<span>${esc(o.note)}</span>` : ''}</div>
+            <div class="pg-fix-cmd"><code>${esc(o.command)}</code><button type="button" data-fix-copy="${i}">Copy</button></div>
+          </div>`).join('')}
+        <p class="pg-fix-how">Paste it into a terminal and press Enter (it asks for your password).
+          The test point is still listening: this prompt closes by itself when audio arrives.</p>
+        <div class="pg-fix-status" aria-live="polite">Waiting for audio…</div>
+        <div class="pg-fix-actions"><button type="button" data-fix-dismiss>Not now</button></div>
+      </div>`;
+    el.addEventListener('click', (e) => {
+      const t = e.target as HTMLElement;
+      const copy = t.closest('[data-fix-copy]') as HTMLElement | null;
+      if (copy) {
+        const cmd = fix.options[Number(copy.dataset.fixCopy)]?.command ?? '';
+        const done = () => { copy.textContent = 'Copied'; setTimeout(() => (copy.textContent = 'Copy'), 1500); };
+        navigator.clipboard?.writeText(cmd).then(done, () => this.selectCode(copy));
+        return;
+      }
+      if (t.closest('[data-fix-dismiss]') || t === el) {
+        this.fixDismissed.add(el.dataset.key || '');
+        this.closeFixPrompt('');
+      }
+    });
+    document.body.appendChild(el);
+    this.fixEl = el;
+    (el.querySelector('[data-fix-copy]') as HTMLElement | null)?.focus();
+    // Poll quickly while the user is in the terminal, so the prompt reacts as soon as audio flows.
+    const poll = async () => {
+      const t = await getJson('/api/testpoint');
+      this.testPoint = t?.point ?? null;
+      this.draw();
+      if (this.fixEl) this.fixTimer = window.setTimeout(poll, 1000);
+    };
+    this.fixTimer = window.setTimeout(poll, 1000);
+  }
+
+  private selectCode(btn: HTMLElement): void {
+    const code = btn.parentElement?.querySelector('code');
+    if (!code) return;
+    const r = document.createRange();
+    r.selectNodeContents(code);
+    const sel = window.getSelection();
+    sel?.removeAllRanges();
+    sel?.addRange(r);
+    btn.textContent = 'Ctrl+C';
+  }
+
+  private closeFixPrompt(success: string): void {
+    if (this.fixTimer !== null) clearTimeout(this.fixTimer);
+    this.fixTimer = null;
+    const el = this.fixEl;
+    if (!el) return;
+    this.fixEl = null;
+    if (success) {
+      const st = el.querySelector('.pg-fix-status');
+      if (st) { st.textContent = `✓ Receiving — ${success}`; st.classList.add('ok'); }
+      setTimeout(() => el.remove(), 1400);
+    } else {
+      el.remove();
+    }
   }
 
   private isClipped(n: GNode): boolean {
@@ -217,7 +315,8 @@ export class PipelineGraph {
     const lost = tp.lost_packets ? ` · ${tp.lost_packets} lost` : '';
     const why = tp.error || tp.hint || tp.source || '';
     return `<span class="pg-chip pg-chip-${state} pg-tp-chip" title="${esc(why)}"><i></i>TP ${esc(trunc(tp.label, 24))} · ${esc(tp.status)}${ring}${lost}</span>`
-      + (tp.error || tp.hint ? `<span class="pg-tp-why">${esc(tp.error || tp.hint)}</span>` : '');
+      + (tp.error || tp.hint ? `<span class="pg-tp-why">${esc(tp.error || tp.hint)}</span>` : '')
+      + (tp.fix ? `<button type="button" class="pg-fix-open" data-fix-open>Fix…</button>` : '');
   }
 
   private draw(): void {
@@ -321,14 +420,16 @@ export class PipelineGraph {
         <span class="pg-chip ${this.online ? 'pg-chip-on' : 'pg-chip-err'}"><i></i>daemon ${this.online ? 'online :8467' : 'offline'}</span>
         ${chip('SAP', mc?.sap)}${chip('PTP', mc?.ptp)}${chip('SIP', mc?.sip)}
         ${mc?.iface ? `<span class="pg-iface">iface ${esc(mc.iface)}</span>` : ''}
+        ${this.online ? '' : `<span class="pg-iface">Run the TAP: <code>docker compose up -d</code> in Ward-Beck-Audio-Tab · guide at <a href="${DAEMON}/setup" target="_blank" rel="noopener">:8467/setup</a></span>`}
         ${this.tpChip()}
       </div>
       <svg class="pg-svg" viewBox="0 0 ${W} ${H}" role="img" aria-label="Audio pipeline signal flow: ALSA to PipeWire to MXL to network AoIP">
         ${heads}${edgeSvg}${clockLink}${nodeSvg}${more}${clockSvg}
-        ${empty(0, this.online ? 'no ALSA cards reported' : 'start ward-beck-audio-tab.py')}
+        ${empty(0, this.online ? 'no ALSA cards reported' : 'TAP offline: docker compose up -d')}
         ${empty(3, mc ? 'nothing heard or announced' : 'no AoIP data')}
       </svg>
       ${[mc?.sap, mc?.ptp, mc?.sip].some((l) => l?.error) ? `<div class="pg-errors">${[['SAP', mc.sap], ['PTP', mc.ptp], ['SIP', mc.sip]].filter(([, l]) => l?.error).map(([n, l]) => `<div><b>${n}</b> ${esc(l.error)}</div>`).join('')}</div>` : ''}
     `;
+    this.syncFixPrompt();
   }
 }

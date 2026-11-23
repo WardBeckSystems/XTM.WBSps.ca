@@ -52,6 +52,27 @@ def _pw_objects():
         return []
 
 
+def _ufw_enabled() -> bool:
+    try:
+        with open("/etc/ufw/ufw.conf") as f:
+            return any(l.strip().upper() == "ENABLED=YES" for l in f)
+    except OSError:
+        return False
+
+
+def _route_iface(group: str) -> str:
+    out = _run(["ip", "-o", "route", "get", group]).split()
+    return out[out.index("dev") + 1] if "dev" in out else ""
+
+
+def _mcast_count(iface: str) -> int:
+    try:
+        with open(f"/sys/class/net/{iface}/statistics/multicast") as f:
+            return int(f.read().strip())
+    except (OSError, ValueError):
+        return -1
+
+
 def _graph_quantum(objs=None) -> int:
     """The PipeWire graph quantum in frames (the PipeWire 'packet')."""
     out = _run(["pw-metadata", "-n", "settings", "0"])
@@ -136,6 +157,7 @@ class TestPoint:
         self.status = "starting"
         self.error = None
         self.hint = None
+        self.fix = None           # {title, why, options:[{label, note, command}]}: only the user can run it
         self.ring = None
         self.sample_rate = 48000
         self.channels = 2
@@ -311,6 +333,12 @@ class TestPoint:
 
     def _run_rtp(self):
         s = self._resolve_sdp()
+        deadline = time.time() + 40.0  # SAP re-announces every ~30 s: wait for one before giving up
+        while not s and time.time() < deadline and not self.stop_event.is_set():
+            self.status, self.hint = "waiting", "waiting for a SAP announcement of this stream"
+            self.stop_event.wait(1.0)
+            s = self._resolve_sdp()
+        self.hint = None
         if not s or not s.get("multicast_ip") or not s.get("port"):
             raise LookupError(f"no SDP heard for {self.label}: Dante-native audio cannot be received "
                               "(enable AES67 on the device) and RAVENNA/NMOS streams need a SAP announcement")
@@ -333,6 +361,11 @@ class TestPoint:
         except OSError:
             pass
         sock.setsockopt(socket.SOL_SOCKET, socket.SO_RCVBUF, 1 << 20)
+        iface = _route_iface(grp)
+        mc0, t0 = _mcast_count(iface), time.time()  # NIC multicast rate before the join
+        time.sleep(1.0)
+        base_rate = (_mcast_count(iface) - mc0) / max(0.1, time.time() - t0) if mc0 >= 0 else -1
+        mc1, t1 = _mcast_count(iface), time.time()
         sock.bind((grp, port))  # bound to the group: only this stream, not every group on :port
         joined = 0
         for idx, _name in socket.if_nameindex():
@@ -356,9 +389,8 @@ class TestPoint:
                 try:
                     pkt = sock.recv(9000)
                 except socket.timeout:
-                    if self.ring.packets == 0 and time.time() - self.started > 2.0:
-                        self.hint = (f"joined {grp} but no RTP has reached the socket: if the NIC is receiving it, "
-                                     f"a host firewall is dropping it (e.g. sudo ufw allow proto udp to {grp} port {port})")
+                    if self.ring.packets == 0 and time.time() - t1 > 2.0 and self.fix is None:
+                        self._diagnose_rtp(grp, port, iface, base_rate, mc1, t1)
                     continue
                 if len(pkt) < 12 or (pkt[0] >> 6) != 2:
                     continue
@@ -396,15 +428,48 @@ class TestPoint:
                     self.ring.write([f[c::N] for c in range(N)])
                     self.status = "running"
                     self.hint = None
+                    self.fix = None
         finally:
             sock.close()
+
+    def _diagnose_rtp(self, grp, port, iface, base_rate, mc1, t1):
+        """Joined but silent: tell the user why, and the one command that fixes it if there is one."""
+        rate = (_mcast_count(iface) - mc1) / max(0.1, time.time() - t1) if mc1 >= 0 and base_rate >= 0 else -1
+        arriving = rate >= 0 and rate - base_rate > 50
+        nic = (f"{iface} is receiving {rate:.0f} multicast frames/s since the join (was {base_rate:.0f}/s), "
+               "so the stream reaches this machine" if arriving else
+               f"{iface} shows no extra multicast traffic since the join" if rate >= 0 else "")
+        if _ufw_enabled():
+            self.hint = f"{grp}:{port} is blocked by the UFW firewall"
+            self.fix = {
+                "title": "Allow AES67 / RAVENNA audio through the firewall",
+                "why": (f"{nic}, but UFW (incoming policy DROP) discards it before the socket. "
+                        "Opening it needs your password, so run one of these in a terminal."),
+                "options": [
+                    {"label": "This session only", "note": "the rule is gone at the next reboot",
+                     "command": (f"sudo iptables -I INPUT{' -i ' + iface if iface else ''} -p udp "
+                                 f"-d 239.0.0.0/8 --dport {port} -j ACCEPT")},
+                    {"label": "Permanently", "note": "saved as a UFW rule",
+                     "command": f"sudo ufw allow in on {iface or 'any'} proto udp to 239.0.0.0/8 port {port}"},
+                ],
+            }
+        elif arriving:
+            self.hint = f"{grp}:{port} reaches {iface} but not the socket"
+            self.fix = {
+                "title": "Check the host firewall",
+                "why": f"{nic}, but nothing reaches the socket; a firewall rule is dropping it. List the rules:",
+                "options": [{"label": "List firewall rules", "note": "read-only", "command": "sudo nft list ruleset"}],
+            }
+        else:
+            self.hint = (f"no RTP for {grp}:{port} on {iface or 'any interface'}: the sender may be stopped, "
+                         "or the switch is not forwarding this group (IGMP)")
 
     # -- views --
     def info(self) -> dict:
         sr = self.sample_rate
         return {
             "kind": self.kind, "ref": self.ref, "label": self.label, "source": self.source,
-            "status": self.status, "error": self.error, "hint": self.hint,
+            "status": self.status, "error": self.error, "hint": self.hint, "fix": self.fix,
             "sample_rate": sr, "channel_count": self.channels,
             "packet_frames": self.packet_frames,
             "packet_ms": round(1000.0 * self.packet_frames / sr, 3) if self.packet_frames else None,

@@ -1660,3 +1660,24 @@ body.theme-mccurdy-light .rc-pipeline-graph, body.theme-mccurdy .rc-pipeline-gra
 .pg-tp-tag { font: 700 8px monospace; fill: #d946ef; letter-spacing: 0.5px; }
 .pg-tp-chip { border-color: #d946ef; }
 .pg-tp-why { font: 10px monospace; color: #e11d48; margin-left: 6px; }
+
+/* Runtime prompt: something only the user can run in a terminal (pipeline-graph.ts) */
+.pg-fix-open { margin-left: 6px; font: 700 10px monospace; color: #fff; background: #d946ef; border: 0; border-radius: 3px; padding: 2px 8px; cursor: pointer; }
+.pg-fix-backdrop { position: fixed; inset: 0; z-index: 10000; display: flex; align-items: center; justify-content: center; padding: 16px; background: rgba(2, 6, 12, 0.62); }
+.pg-fix { width: min(640px, 100%); max-height: calc(100vh - 32px); overflow: auto; background: #0b1622; color: #e2e8f0; border: 1px solid #d946ef; border-radius: 8px; padding: 20px 22px; box-shadow: 0 18px 60px rgba(0,0,0,0.55); font: 13px/1.5 system-ui, sans-serif; }
+.pg-fix-kicker { font: 700 10px monospace; letter-spacing: 0.8px; text-transform: uppercase; color: #d946ef; }
+.pg-fix h3 { margin: 4px 0 8px; font-size: 17px; color: #fff; }
+.pg-fix-why, .pg-fix-how { margin: 0 0 12px; color: #cbd5e1; }
+.pg-fix-how { font-size: 12px; color: #94a3b8; margin-top: 4px; }
+.pg-fix-opt { margin-bottom: 10px; }
+.pg-fix-opt-head { display: flex; gap: 8px; align-items: baseline; margin-bottom: 4px; }
+.pg-fix-opt-head span { font-size: 11px; color: #94a3b8; }
+.pg-fix-cmd { display: flex; gap: 8px; align-items: stretch; }
+.pg-fix-cmd code { flex: 1; min-width: 0; white-space: pre-wrap; word-break: break-all; background: #020617; border: 1px solid #1e3a5a; border-radius: 4px; padding: 8px 10px; font: 12px monospace; color: #7df9ff; user-select: all; }
+.pg-fix-cmd button, .pg-fix-actions button { font: 700 12px system-ui, sans-serif; border-radius: 4px; cursor: pointer; padding: 0 14px; }
+.pg-fix-cmd button { background: #d946ef; color: #fff; border: 0; min-width: 72px; }
+.pg-fix-cmd button:focus-visible, .pg-fix-actions button:focus-visible { outline: 2px solid #7df9ff; outline-offset: 2px; }
+.pg-fix-status { font: 12px monospace; color: #eab308; margin-bottom: 12px; }
+.pg-fix-status.ok { color: #22c55e; }
+.pg-fix-actions { display: flex; justify-content: flex-end; }
+.pg-fix-actions button { background: transparent; color: #cbd5e1; border: 1px solid #334155; padding: 8px 14px; }
