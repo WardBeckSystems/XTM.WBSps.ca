@@ -30,7 +30,7 @@ import time
 from array import array
 
 RING_PACKETS = 10
-AOIP_RING_SECONDS = 10.0   # AES67 / RAVENNA / Dante (AES67) streams: 10 s ring
+RING_SECONDS = 10.0   # every test point (ALSA, PipeWire, MXL, AoIP): 10 s ring
 MAX_CHANNELS = 16
 FLOW_ID = "wbs-test-point"
 
@@ -298,7 +298,7 @@ class TestPoint:
         self.channels = max(1, min(ch, MAX_CHANNELS))
         self.packet_frames = _graph_quantum(objs)
         self.source = desc
-        self.ring = TapRing(self.channels, self.packet_frames, self.sample_rate)
+        self.ring = TapRing(self.channels, self.packet_frames, self.sample_rate, RING_SECONDS)
         lat_ms = max(1, int(1000 * self.packet_frames / self.sample_rate))
         self.proc = subprocess.Popen(
             ["parec", *dev_args, "--format=float32le", f"--rate={self.sample_rate}",
@@ -328,7 +328,7 @@ class TestPoint:
         self.channels = flow.channel_count
         self.packet_frames = flow.quantum
         self.source = f"{flow.flow_id} · {flow.domain_id} (shared memory)"
-        self.ring = TapRing(self.channels, self.packet_frames, self.sample_rate)
+        self.ring = TapRing(self.channels, self.packet_frames, self.sample_rate, RING_SECONDS)
         self.status = "running"
         cursor = flow.write_head
         L = flow.buffer_length
@@ -390,7 +390,7 @@ class TestPoint:
         ptime = s.get("ptime") or 1.0
         self.source = f"{s.get('session_name')} · {grp}:{port} · {self.channels}ch {enc} @ {self.sample_rate / 1000:g}k · ptime {ptime} ms"
         self.packet_frames = max(1, int(round(self.sample_rate * ptime / 1000.0)))
-        self.ring = TapRing(self.channels, self.packet_frames, self.sample_rate, AOIP_RING_SECONDS)
+        self.ring = TapRing(self.channels, self.packet_frames, self.sample_rate, RING_SECONDS)
 
         sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
         sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
@@ -450,7 +450,7 @@ class TestPoint:
                 if not sized and frames != self.packet_frames:  # measured packet beats SDP ptime
                     with _LOCK:
                         self.packet_frames = frames
-                        self.ring = TapRing(N, frames, self.sample_rate, AOIP_RING_SECONDS)
+                        self.ring = TapRing(N, frames, self.sample_rate, RING_SECONDS)
                 sized = True
                 payload = payload[: frames * bps * N]
                 if bps == 3:

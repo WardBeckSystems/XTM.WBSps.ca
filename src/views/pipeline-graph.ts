@@ -11,7 +11,7 @@
  * Nothing is synthesized: an empty lane means the daemon reported nothing.
  *
  * Every card is a test point: clicking it clips the daemon's test point onto it
- * (POST /api/testpoint), which rings that point at 10 x its packet time and meters
+ * (POST /api/testpoint), which holds that point in a 10 s ring buffer and meters
  * it in the Scanalyzer eye. Clicking the clipped card again lifts the probe.
  */
 
