@@ -12,7 +12,7 @@ import { XtmView } from './views/xtm-view';
 import { Pod22View } from './views/pod22-view';
 import { DbfsView } from './views/dbfs-view';
 import { DataStreamView } from './views/data-stream-view';
-import { GeneratorsView } from './views/generators-view';
+import { GeneratorsView } from '../Generators/web';
 import { WebRouter } from '../WebRouter/src';
 import type { AppContext } from './app/app-context';
 import { queryDrawerControls } from './app/dom-refs';

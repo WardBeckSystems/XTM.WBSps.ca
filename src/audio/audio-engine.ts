@@ -32,10 +32,12 @@ import * as ppm from './engine/ballistics/ppm';
 import type { PpmTypeInput } from './engine/ballistics/ppm-standards';
 import * as soundcard from './engine/sources/soundcard';
 import { connectSystemAudio } from './engine/sources/system-audio';
-import * as testGen from './engine/sources/test-generator';
-import * as pod33Gen from './engine/sources/pod33-generator';
-import type { Pod33Config, BitBuddyConfig } from './engine/sources/pod33-generator';
+import { testGen, pod33Gen, configureGenerators, type Pod33Config, type BitBuddyConfig } from '../../Generators/web';
+import { resumeAudio } from './engine/autoplay';
 import * as graph from './engine/graph';
+
+// The generators (Generators submodule) feed XTM's summing bus and follow its autoplay rules.
+configureGenerators({ ensureAudioGraph: graph.ensureAudioGraph, resumeAudio });
 import * as chain from './engine/signal-chain';
 import * as reference from './engine/reference';
 import { resetLoudness } from './engine/loudness';

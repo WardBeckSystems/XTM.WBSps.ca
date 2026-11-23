@@ -1,3 +1,6 @@
 [submodule "WebRouter"]
 	path = WebRouter
 	url = https://github.com/LikeDotAudio/WebRouter.git
+[submodule "Generators"]
+	path = Generators
+	url = https://github.com/LikeDotAudio/Ward-Beck-Generators.git
