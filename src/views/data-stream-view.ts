@@ -324,7 +324,7 @@ export class DataStreamView {
         if (headIdxEl) headIdxEl.textContent = `HEAD: #${eyeFlow.write_head}`;
         if (headSecEl) headSecEl.textContent = `${(eyeFlow.write_head / sr).toFixed(3)}s / ${len.toLocaleString()} frames`;
         if (lblEl) lblEl.textContent = eyeFlow.kind === 'testpoint'
-          ? `${eyeFlow.label} · ${eyeFlow.source || ''} · ring 10 × ${eyeFlow.packet_frames} fr (${eyeFlow.ring_ms} ms)${eyeFlow.status !== 'running' ? ' · ' + String(eyeFlow.status).toUpperCase() : ''}`
+          ? `${eyeFlow.label} · ${eyeFlow.source || ''} · ring ${eyeFlow.buffer_length / eyeFlow.packet_frames <= 64 ? `10 × ${eyeFlow.packet_frames} fr` : `${(eyeFlow.ring_ms / 1000).toFixed(0)} s`} (${eyeFlow.ring_frames.toLocaleString()} fr)${eyeFlow.status !== 'running' ? ' · ' + String(eyeFlow.status).toUpperCase() : ''}`
           : `${eyeFlow.label} · ${eyeFlow.channel_count}ch Float32 @ ${sr / 1000}kHz`;
       } else {
         if (secEl) secEl.textContent = '—';
@@ -583,7 +583,9 @@ export class DataStreamView {
     }
     // Spokes: one per second, or one per packet for a test-point ring (10 x packet time).
     const sr = flow?.sample_rate || 48000;
-    const pkt = flow?.packet_frames || 0;
+    // Packet spokes only when the ring is a handful of packets (10 x packet); a long ring
+    // (AoIP test points: 10 s of 1 ms packets) keeps one spoke per second.
+    const pkt = flow?.packet_frames && flow.buffer_length / flow.packet_frames <= 64 ? flow.packet_frames : 0;
     const dur = flow ? (flow.buffer_length / sr) : 10;
     const secs = pkt ? Math.max(1, Math.round(flow.buffer_length / pkt)) : Math.max(1, Math.round(dur));
     const spokeLabel = (s: number) => {

@@ -356,7 +356,9 @@ export class PipelineGraph {
     const tp = this.testPoint;
     if (!tp) return '<span class="pg-chip pg-chip-off" title="Click any card to meter it"><i></i>test point · click a card</span>';
     const state = tp.status === 'running' ? 'on' : tp.status === 'error' ? 'err' : 'off';
-    const ring = tp.ring_frames ? ` · ring ${tp.ring_frames} fr = 10 × ${tp.packet_frames} (${tp.ring_ms} ms)` : '';
+    const ring = !tp.ring_frames ? ''
+      : tp.ring_frames / tp.packet_frames <= 64 ? ` · ring ${tp.ring_frames} fr = 10 × ${tp.packet_frames} (${tp.ring_ms} ms)`
+      : ` · ring ${(tp.ring_ms / 1000).toFixed(0)} s (${tp.ring_frames.toLocaleString()} fr · ${tp.packet_frames}-fr packets)`;
     const lost = tp.lost_packets ? ` · ${tp.lost_packets} lost` : '';
     const why = tp.error || tp.hint || tp.source || '';
     return `<span class="pg-chip pg-chip-${state} pg-tp-chip" title="${esc(why)}"><i></i>TP ${esc(trunc(tp.label, 24))} · ${esc(tp.status)}${ring}${lost}</span>`
