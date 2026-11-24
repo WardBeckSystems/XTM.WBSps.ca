@@ -99,7 +99,7 @@ export class TimingView {
     this.el.addEventListener('click', (e) => {
       const t = e.target as HTMLElement;
       if (t.closest('[data-fix-open]')) this.syncFix(true);
-      if (t.closest('[data-ntp-fix]') && this.ntp?.fix) this.showFix(this.ntp.fix, 'ntp', 'This closes by itself once the clock takes its time from the NRC.');
+      if (t.closest('[data-ntp-fix]') && this.ntp?.fix) this.showFix(this.ntp.fix, 'ntp', this.ntp.nrc ? 'This closes by itself once timesyncd polls every 45 s.' : 'This closes by itself once the clock takes its time from the NRC.');
     });
     this.el.addEventListener('change', (e) => {
       const t = e.target as HTMLInputElement;
@@ -301,7 +301,7 @@ export class TimingView {
       .map(([k, v]) => cell(k, (v as string[]).join(' '))).join('');
     host.innerHTML = `
       <div class="tm-head">NTP</div>
-      <div class="pg-status"><span class="pg-chip pg-chip-${n.synchronized ? 'on' : 'off'}"><i></i>${n.synchronized ? 'synchronized' : n.enabled ? 'not synchronized' : 'NTP off'}</span><span class="pg-iface">${esc(n.daemon)}${n.timezone ? ` · ${esc(n.timezone)}` : ''}${n.nrc ? ' · NRC' : ''}</span>${n.fix ? '<button type="button" class="pg-fix-open" data-ntp-fix title="Take time from the National Research Council Canada">Use NRC time…</button>' : ''}</div>
+      <div class="pg-status"><span class="pg-chip pg-chip-${n.synchronized ? 'on' : 'off'}"><i></i>${n.synchronized ? 'synchronized' : n.enabled ? 'not synchronized' : 'NTP off'}</span><span class="pg-iface">${esc(n.daemon)}${n.timezone ? ` · ${esc(n.timezone)}` : ''}${n.nrc ? ' · NRC' : ''}</span>${n.fix ? `<button type="button" class="pg-fix-open" data-ntp-fix title="${esc(n.fix.title)}">${n.nrc ? 'Poll every 45 s…' : 'Use NRC time…'}</button>` : ''}</div>
       <div class="tm-kv">
         ${cell('server', st.server)}${cell('stratum', st.stratum)}${cell('offset', st.offset)}${cell('delay', st.delay)}
         ${cell('jitter', st.jitter)}${cell('poll', st.poll_interval)}${cell('root distance', st.root_distance)}${cell('leap', st.leap)}

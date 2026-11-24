@@ -117,7 +117,7 @@ export async function initApp(): Promise<void> {
   if (webRouter) {
     model.pod33 = {
       read: () => ({ freq: webRouter.pod33Config.freq, levelDb: webRouter.pod33Config.levelDb }),
-      set: (p) => webRouter.setPod33Output(webRouter.pod33Out, p),
+      set: (p) => webRouter.setPod33Output(webRouter.pod33Out, p.freq !== undefined ? { ...p, freqR: null } : p),
     };
   }
   (window as any).xtmCtx = ctx;

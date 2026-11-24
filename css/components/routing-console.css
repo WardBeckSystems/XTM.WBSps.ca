@@ -1785,3 +1785,8 @@ body.theme-mccurdy-light .rc-pipeline-graph, body.theme-mccurdy .rc-pipeline-gra
 .rc-pod-grid:has(> .rc-pod-col:only-child) { grid-template-columns: 1fr; }
 /* An MXL flow being written (its write head moves): green, like a lit signal LED */
 .pg-node.pg-writing .pg-dot { fill: #22c55e; filter: drop-shadow(0 0 2px #22c55e); }
+/* POD-33 runs the full width (its four outputs carry seven frequencies); labels stay on one line */
+.routing-aux-panels > .rc-pod-panel { grid-column: 1 / -1; }
+.rc-pod-outs .rc-btn-sel { white-space: nowrap; }
+.rc-pod-outs { width: auto; }
+.rc-pod-outs td { padding-right: 18px; }
