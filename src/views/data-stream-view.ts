@@ -86,6 +86,8 @@ export class DataStreamView {
     // Clicking a pipeline card clips the test point there; the eye follows it.
     if (graphEl) {
       this.graph = new PipelineGraph(graphEl, (on) => { if (on) this.setFlow('wbs-test-point'); });
+      // The telemetry cards fill the ALSA lane's free space
+      this.graph.setDock(this.container.querySelector('.rc-eye-hud-grid') as HTMLElement | null);
       this.graph.start();
       this.updateXmxlBar();
     }

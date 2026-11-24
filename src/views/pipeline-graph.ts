@@ -84,6 +84,13 @@ export class PipelineGraph {
   private picked = '';
   private onPick?: (instId: string, flowId: string) => void;
 
+  /** HTML docked in the ALSA lane's free space under its cards (the data tab's telemetry cards). */
+  private dock: HTMLElement | null = null;
+  setDock(el: HTMLElement | null): void {
+    this.dock = el;
+    el?.classList.add('pg-dock');
+  }
+
   constructor(private el: HTMLElement, private onTap?: (active: boolean) => void) {
     // One delegated listener: cards are re-rendered on every poll.
     this.el.addEventListener('click', (e) => {
@@ -440,7 +447,7 @@ export class PipelineGraph {
     const shown: GNode[] = [];
     const extra: { lane: number; n: number; y: number }[] = [];
     const groupOf = (n: GNode) => `${n.domain ?? ''}|${n.hub ? '' : n.label.replace(/[^a-z0-9]/gi, '').slice(0, 4).toUpperCase()}`;
-    let bottom = TOP;
+    let bottom = TOP, alsaBottom = TOP;
     for (let lane = 0; lane < 4; lane++) {
       let y = TOP, prev: string | null = null;
       for (const n of nodes.filter((n) => n.lane === lane)) {
@@ -452,7 +459,12 @@ export class PipelineGraph {
         y += NODE_H + NODE_GAP;
       }
       bottom = Math.max(bottom, y);
+      if (lane === 0) alsaBottom = y;
     }
+    // The ALSA lane is short: the docked cards sit under its cards, and the lanes grow to hold them.
+    const scale = (this.el.clientWidth || W) / W;
+    const dockH = this.dock ? (this.dock.offsetHeight || 330) / scale : 0;
+    if (this.dock) bottom = Math.max(bottom, alsaBottom + 6 + dockH + 4);
     const H = Math.max(bottom, TOP + NODE_H + NODE_GAP) + 6; // PTP clocks live in the Timing tab
 
     // Network nodes hang off the MXL hub.
@@ -518,6 +530,20 @@ export class PipelineGraph {
       </svg>
       ${[mc?.sap, mc?.sip].some((l) => l?.error) ? `<div class="pg-errors">${[['SAP', mc.sap], ['SIP', mc.sip]].filter(([, l]) => l?.error).map(([n, l]) => `<div><b>${n}</b> ${esc(l.error)}</div>`).join('')}</div>` : ''}
     `;
+    if (this.dock) {
+      const svg = this.el.querySelector('.pg-svg') as SVGSVGElement | null;
+      if (svg) {
+        const k = svg.getBoundingClientRect().width / W;
+        this.el.style.position = 'relative';
+        Object.assign(this.dock.style, {
+          position: 'absolute',
+          left: `${LANE_X[0] * k}px`,
+          top: `${svg.getBoundingClientRect().top - this.el.getBoundingClientRect().top + (alsaBottom + 6) * k}px`,
+          width: `${LANE_W * k}px`,
+        });
+        this.el.appendChild(this.dock);
+      }
+    }
     this.syncFixPrompt();
   }
 }

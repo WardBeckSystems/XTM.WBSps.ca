@@ -1790,3 +1790,7 @@ body.theme-mccurdy-light .rc-pipeline-graph, body.theme-mccurdy .rc-pipeline-gra
 .rc-pod-outs .rc-btn-sel { white-space: nowrap; }
 .rc-pod-outs { width: auto; }
 .rc-pod-outs td { padding-right: 18px; }
+/* Telemetry cards docked in the pipeline's ALSA lane: one column, the lane's look */
+.rc-eye-hud-grid.pg-dock { grid-template-columns: 1fr; max-width: none; margin: 0; z-index: 1; }
+.pg-dock .rc-eye-hud-card { background: var(--pg-node); border-color: var(--pg-node-line); }
+.pg-dock .rc-eye-hud-val { color: var(--pg-text); }
