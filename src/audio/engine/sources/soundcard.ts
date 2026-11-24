@@ -56,8 +56,10 @@ export async function getAudioInputDevices(): Promise<MediaDeviceInfo[]> {
 const RAW_AUDIO = {
   echoCancellation: false,
   noiseSuppression: false,
-  autoGainControl: false
-};
+  autoGainControl: false,
+  // as little capture buffering as the browser allows
+  latency: { ideal: 0 }
+} as MediaTrackConstraints;
 
 /**
  * Linux loopbacks (PulseAudio Loopback / Monitor of Sink, PipeWire, ALSA snd-aloop)

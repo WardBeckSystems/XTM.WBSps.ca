@@ -88,7 +88,7 @@ export function processJsBlock(engine: XtmAudioEngine, inputL: Float32Array, inp
 
   // ITU-R BS.1770 / EBU R128 Loudness Integration
   const st = engine.lufsState;
-  integrateMomentaryShort(engine, sumSqK_L / len, sumSqK_R / len, hasSignal);
+  integrateMomentaryShort(engine, sumSqK_L / len, sumSqK_R / len, hasSignal, len);
 
   const lufsM = toLufs(st.meanSquareM_L + st.meanSquareM_R);
   const lufsS = toLufs(st.meanSquareS_L + st.meanSquareS_R);

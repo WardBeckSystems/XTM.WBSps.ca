@@ -55,25 +55,32 @@ export function loudnessRange(st: LufsState): number {
   return 0;
 }
 
-/** Advance M/S mean-square integrators (JS path). */
-export function integrateMomentaryShort(engine: XtmAudioEngine, zBlockL: number, zBlockR: number, hasSignal: boolean): void {
+/** Advance M/S mean-square integrators (JS path) by one block of `frames` samples. */
+export function integrateMomentaryShort(engine: XtmAudioEngine, zBlockL: number, zBlockR: number, hasSignal: boolean, frames = 1024): void {
   const st = engine.lufsState;
+  // Time constants from the real block length (the meter block is one render quantum now)
+  const dt = frames / (engine.ctx?.sampleRate || 48000);
+  const aM = 1.0 - Math.exp(-dt / 0.400), aS = 1.0 - Math.exp(-dt / 3.000);
+  engine.lufsAlphaM = aM;
+  engine.lufsAlphaS = aS;
   if (hasSignal) {
-    st.meanSquareM_L += engine.lufsAlphaM * (zBlockL - st.meanSquareM_L);
-    st.meanSquareM_R += engine.lufsAlphaM * (zBlockR - st.meanSquareM_R);
+    st.meanSquareM_L += aM * (zBlockL - st.meanSquareM_L);
+    st.meanSquareM_R += aM * (zBlockR - st.meanSquareM_R);
 
-    st.meanSquareS_L += engine.lufsAlphaS * (zBlockL - st.meanSquareS_L);
-    st.meanSquareS_R += engine.lufsAlphaS * (zBlockR - st.meanSquareS_R);
+    st.meanSquareS_L += aS * (zBlockL - st.meanSquareS_L);
+    st.meanSquareS_R += aS * (zBlockR - st.meanSquareS_R);
 
     const blockTotalZ = zBlockL + zBlockR;
     if (blockTotalZ > LUFS_ABSOLUTE_GATE_Z) { // > -70 LUFS threshold gate
       accumulateIntegrated(st, blockTotalZ);
     }
   } else {
-    st.meanSquareM_L *= 0.92;
-    st.meanSquareM_R *= 0.92;
-    st.meanSquareS_L *= 0.97;
-    st.meanSquareS_R *= 0.97;
+    // the same fall per second whatever the block length (0.92 / 0.97 per 1024 samples)
+    const k = frames / 1024, dM = Math.pow(0.92, k), dS = Math.pow(0.97, k);
+    st.meanSquareM_L *= dM;
+    st.meanSquareM_R *= dM;
+    st.meanSquareS_L *= dS;
+    st.meanSquareS_R *= dS;
   }
 }
 

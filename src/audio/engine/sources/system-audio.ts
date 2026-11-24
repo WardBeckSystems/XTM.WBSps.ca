@@ -81,7 +81,8 @@ export async function connectSystemAudio(
       audio: {
         echoCancellation: false,
         noiseSuppression: false,
-        autoGainControl: false
+        autoGainControl: false,
+        latency: { ideal: 0 }
       },
       systemAudio: 'include',
       surfaceSwitching: 'include',

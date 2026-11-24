@@ -16,16 +16,19 @@ const KEY = 'xtm.inputAssign';
 const DEFAULTS = ['dev:', 'tab', 'bitbuddy', 'pod33']; // the tone is input 4 (the XTM-4's TEST GEN button)
 const BUILTIN: InputChoice[] = [
   { id: 'tab', name: 'Browser Tab', short: 'TAB', group: 'Console' },
-  { id: 'pod33', name: 'POD-33 Tone', short: 'POD-33', group: 'Console' },
+  { id: 'pod33', name: 'POD-33 AES1', short: 'POD-33', group: 'Console' },
+  { id: 'pod33:2', name: 'POD-33 AES2', short: 'POD-33 AES2', group: 'Console' },
+  { id: 'pod33:3', name: 'POD-33 AES3', short: 'POD-33 AES3', group: 'Console' },
+  { id: 'pod33:4', name: 'POD-33 AES4', short: 'POD-33 AES4', group: 'Console' },
   { id: 'bitbuddy', name: 'Bit Buddy', short: 'BIT BUDDY', group: 'Console' },
   { id: 'pink', name: 'Pink Noise', short: 'PINK', group: 'Console' },
   { id: 'netrx', name: 'Network Receiver (CH 9)', short: 'NETWORK', group: 'AoIP' },
   { id: 'moiprx', name: 'MoIP Receiver (CH 10)', short: 'MOIP', group: 'AoIP' },
 ];
 /** Router input index for the built-in generators and the tab. */
-const ROUTER_IDX: Record<string, number> = { tab: 1, pod33: 2, bitbuddy: 6, pink: 7, netrx: 8, moiprx: 9 };
+const ROUTER_IDX: Record<string, number> = { tab: 1, pod33: 2, 'pod33:2': 3, 'pod33:3': 4, 'pod33:4': 5, bitbuddy: 6, pink: 7, netrx: 8, moiprx: 9 };
 /** Web Router input rows (CH 1-10) as button assignments: CH 1 Soundcard In is the default input; CH 3-6 are POD-33 AES1-4; CH 9 / 10 the network and MoIP receivers. */
-const ROUTER_ROWS = ['dev:', 'tab', 'pod33', 'pod33', 'pod33', 'pod33', 'bitbuddy', 'pink', 'netrx', 'moiprx'];
+const ROUTER_ROWS = ['dev:', 'tab', 'pod33', 'pod33:2', 'pod33:3', 'pod33:4', 'bitbuddy', 'pink', 'netrx', 'moiprx'];
 const assignListeners = new Set<() => void>();
 
 let assigned: string[] = load();
@@ -89,7 +92,7 @@ export function inputAssignment(n: number): string {
 
 /** The TAP's MXL ring that carries input `id`, or null (browser tab, a sound card, pink noise). */
 export function inputFlowId(id: string): string | null {
-  if (id === 'pod33') return 'wbs-flow-ref-tone';
+  if (id.startsWith('pod33')) return 'wbs-flow-ref-tone';
   if (id === 'bitbuddy') return 'wbs-flow-bit-spitter';
   if (id === 'netrx') return 'wbs-network-rx';
   if (id === 'moiprx') return 'wbs-moip-rx';
@@ -126,7 +129,7 @@ export function selectAssignedInput(ctx: AppContext, sync: AudioSync, n: number)
   model.saveEEPROM();
 
   // One input at a time: the TAP's tone or Bit Buddy would otherwise keep playing under this input.
-  if (webRouter && id !== 'pod33' && webRouter.pod33Engaged) webRouter.setPod33(false);
+  if (webRouter && !id.startsWith('pod33') && webRouter.pod33Engaged) webRouter.setPod33(false);
   if (webRouter && id !== 'bitbuddy' && webRouter.bitBuddyEngaged) webRouter.setBitBuddy(false);
 
   if (id.startsWith('dev:')) {
