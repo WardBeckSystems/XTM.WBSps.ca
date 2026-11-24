@@ -5,7 +5,11 @@
  */
 
 import '../css/xtm.css';
+import { installLocalNetworkFetch } from './core/local-network';
 import { initApp } from './app';
+
+// Before anything polls the TAP on localhost (Chrome Local Network Access).
+installLocalNetworkFetch();
 
 if (document.readyState === 'loading') {
 } else {

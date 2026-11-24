@@ -42,6 +42,7 @@ interface GNode {
   tap?: { kind: 'hw' | 'pw' | 'mxl' | 'aoip'; ref: string };
   pick?: { inst: string; flow: string };   // locally discovered node/flow: shown in the ring buffer
   gone?: boolean;        // seen earlier, not reported now: inactive placeholder
+  badges?: string[];     // how it was heard (SAP, SIP), drawn on the node instead of a global chip
 }
 
 interface GEdge { from: string; to: string; clock?: boolean }
@@ -294,7 +295,7 @@ export class PipelineGraph {
       heardIps.add(s.origin_ip);
       nodes.push({
         id: `sap_${s.id}`, lane: 3, kind: 'sap', live: true, label: s.session_name || s.multicast_ip,
-        sub: `SAP · ${s.multicast_ip}:${s.port} · ${s.channels ?? '?'}ch ${s.encoding ?? ''}`,
+        sub: `${s.multicast_ip}:${s.port} · ${s.channels ?? '?'}ch ${s.encoding ?? ''}`, badges: ['SAP'],
         title: `origin ${s.origin_ip}\nPTP GM ${s.ptp_grandmaster ?? '—'} (domain ${s.ptp_domain ?? '—'})`,
         tap: { kind: 'aoip', ref: s.id },
       });
@@ -305,11 +306,11 @@ export class PipelineGraph {
     for (const d of aoip.dante?.devices ?? [])
       nodes.push({ id: `dante_${d.ip}_${d.name}`, lane: 3, kind: 'dante', live: heardIps.has(d.ip), label: d.name, sub: `Dante · ${d.ip}`, title: `${d.manufacturer ?? ''} ${d.engine ?? ''} ${d.version ?? ''}`, tap: { kind: 'aoip', ref: d.ip } });
     for (const r of aoip.ravenna?.streams ?? [])
-      nodes.push({ id: `rav_${r.ip}_${r.name}`, lane: 3, kind: 'ravenna', live: heardIps.has(r.ip), label: r.name, sub: `RAVENNA · ${r.ip}`, title: r.url, tap: { kind: 'aoip', ref: sapNames.has(r.name) ? r.name : r.ip } });
+      nodes.push({ id: `rav_${r.ip}_${r.name}`, lane: 3, kind: 'ravenna', live: heardIps.has(r.ip), label: r.name, sub: `RAVENNA · ${r.ip}`, title: r.url, tap: { kind: 'aoip', ref: sapNames.has(r.name) ? r.name : r.ip }, badges: sapNames.has(r.name) ? ['SAP'] : undefined });
     for (const n of aoip.nmos?.nodes ?? [])
       nodes.push({ id: `nmos_${n.ip}_${n.name}`, lane: 3, kind: 'nmos', live: heardIps.has(n.ip), label: n.name, sub: `NMOS IS-04 · ${n.ip}`, tap: { kind: 'aoip', ref: n.ip } });
     for (const m of mc?.sip?.messages ?? [])
-      nodes.push({ id: `sip_${m.method}_${m.from}`, lane: 3, kind: 'sip', live: true, label: `${m.method} ${m.from}`, sub: `SIP · ${m.source_ip} · ×${m.count}`, title: m.user_agent });
+      nodes.push({ id: `sip_${m.method}_${m.from}`, lane: 3, kind: 'sip', live: true, label: `${m.method} ${m.from}`, sub: `${m.source_ip} · ×${m.count}`, title: m.user_agent, badges: ['SIP'] });
 
     // Locally discovered nodes the daemon did not already report: MXL apps + their flows in lane 3,
     // network gateways in lane 4. Clicking one shows that flow in the ring buffer below.
@@ -448,7 +449,8 @@ export class PipelineGraph {
           <title>${esc(n.label)}${n.sub ? ` — ${esc(n.sub)}` : ''}${n.title ? `\n${esc(n.title)}` : ''}${tapHint}</title>
           <rect width="${LANE_W}" height="${NODE_H}" rx="4"/>
           <circle class="pg-dot" cx="8" cy="${NODE_H / 2}" r="2.6"/>
-          <text class="pg-label" x="15" y="9">${esc(trunc(n.label, 40))}</text>
+          <text class="pg-label" x="15" y="9">${esc(trunc(n.label, n.badges?.length ? 34 : 40))}</text>
+          ${n.badges?.length ? `<text class="pg-badge" x="${LANE_W - 5}" y="9" text-anchor="end">${esc(n.badges.join(' '))}</text>` : ''}
           ${n.sub ? `<text class="pg-sub" x="15" y="17.5">${esc(trunc(n.sub, clipped ? 34 : 50))}</text>` : ''}
           ${clipped ? `<text class="pg-tp-tag" x="${LANE_W - 5}" y="17.5" text-anchor="end">● TP</text>` : ''}
         </g>`;
@@ -465,26 +467,14 @@ export class PipelineGraph {
     const empty = (lane: number, msg: string) =>
       nodes.some((n) => n.lane === lane) ? '' : `<text class="pg-sub" x="${LANE_X[lane] + 6}" y="${TOP + 12}">${msg}</text>`;
 
-    const chip = (name: string, l: (Listener & { mode?: string; clocks?: unknown[] }) | undefined) => {
-      const state = !mc ? 'off' : l?.listening ? 'on' : 'err';
-      const text = !mc ? 'n/a'
-        : l?.mode === 'passive' ? (l.listening ? `passive · ${l.clocks?.length ?? 0} clocks` : 'passive · broker down')
-        : l?.listening ? `${l.packets ?? 0} pkts` : 'not listening';
-      const tip = [text, mc?.iface ? `iface ${mc.iface}` : '', l?.error ?? (mc ? '' : 'daemon has no multicast listener')].filter(Boolean).join(' · ');
-      return `<span class="pg-chip pg-chip-${state}" title="${esc(tip)}"><i></i>${name}</span>`;
-    };
-
     this.el.innerHTML = `
       <div class="pg-status">
-        <span class="pg-chip ${this.online ? 'pg-chip-on' : 'pg-chip-err'}" title="TAP daemon ${this.online ? 'online :8467' : 'offline'}"><i></i>TAP</span>
-        ${chip('SAP', mc?.sap)}${chip('SIP', mc?.sip)}
         ${this.online ? '' : `<span class="pg-iface">TAP offline: <a href="https://github.com/WardBeckSystems/Ward-Beck-Audio-Tap" target="_blank" rel="noopener">download the Ward-Beck Audio Tap</a>, then <code>./run.sh</code> · guide at <a href="${DAEMON}/setup" target="_blank" rel="noopener">:8467/setup</a></span>`}
         ${this.tpChip()}
       </div>
       <svg class="pg-svg" viewBox="0 0 ${W} ${H}" role="img" aria-label="Audio pipeline signal flow: ALSA to PipeWire to MXL to network AoIP">
         ${heads}${edgeSvg}${nodeSvg}${more}
-        ${empty(0, this.online ? 'no ALSA cards reported' : 'TAP offline: docker compose up -d')}
-        ${empty(3, mc ? 'nothing heard or announced' : 'no AoIP data')}
+        ${this.online ? empty(0, 'no ALSA cards reported') : ''}
       </svg>
       ${[mc?.sap, mc?.sip].some((l) => l?.error) ? `<div class="pg-errors">${[['SAP', mc.sap], ['SIP', mc.sip]].filter(([, l]) => l?.error).map(([n, l]) => `<div><b>${n}</b> ${esc(l.error)}</div>`).join('')}</div>` : ''}
     `;

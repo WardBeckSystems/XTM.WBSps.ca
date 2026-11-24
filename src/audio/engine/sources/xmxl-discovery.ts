@@ -69,6 +69,9 @@ let changeCallbacks: Array<(instances: XmxlInstance[]) => void> = [];
 let discoveryTimer: any = null;
 let activeEventSource: EventSource | null = null;
 let isScanning = false;
+/** Ports that answered nothing, and when to try them again. */
+const deadUntil = new Map<number, number>();
+const DEAD_PORT_RETRY_MS = 60_000;
 
 /** Returns the currently cached active XMXL instances */
 export function getActiveXmxlInstances(): XmxlInstance[] {
@@ -488,7 +491,18 @@ export async function scanXmxlInstances(): Promise<XmxlInstance[]> {
   isScanning = true;
 
   try {
-    const probePromises = CANDIDATE_TARGETS.map((t) => probeTarget(t));
+    // A port with nothing on it is re-probed once a minute, not every pass: each probe from
+    // a public page is a Local Network Access request. The TAP (8467) is always probed.
+    const now = Date.now();
+    const probePromises = CANDIDATE_TARGETS.map((t) =>
+      t.port !== 8467 && (deadUntil.get(t.port) ?? 0) > now
+        ? Promise.resolve(null)
+        : probeTarget(t).then((r) => {
+            if (r) deadUntil.delete(t.port);
+            else deadUntil.set(t.port, Date.now() + DEAD_PORT_RETRY_MS);
+            return r;
+          }),
+    );
     const [probeResults, hostNmos, hostAoip] = await Promise.all([
       Promise.all(probePromises),
       probeNmosFromHost(),

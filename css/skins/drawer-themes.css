@@ -18,7 +18,7 @@ body.theme-wbs-ca .guide-card { border-top: 3px solid #b45309; }
 body.theme-wbs-ca .drawer-card h4 { color: #2a2b2a; }
 body.theme-wbs-ca .drawer-section-sub { color: #6c7077; border-color: #a39f90; }
 body.theme-wbs-ca .drawer-card label,
-body.theme-wbs-ca .drawer-row label { color: #2a2b2a; }
+body.theme-wbs-ca .drawer-row label, body.theme-wbs-ca .drawer-row .drawer-label { color: #2a2b2a; }
 body.theme-wbs-ca .drawer-card { color: #454c59; }
 
 /* Controls: cream plates with ink, like the meter scale cards */

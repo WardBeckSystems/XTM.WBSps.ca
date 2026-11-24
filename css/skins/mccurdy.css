@@ -37,7 +37,7 @@ body.theme-mccurdy .wbs-bottom-text { color: #232325; }
 body.theme-mccurdy .drawer-grid { background: #dedad0; }
 body.theme-mccurdy .drawer-card { background: #e5e1d5; border-color: #b5b1a6; }
 body.theme-mccurdy .drawer-card h4,
-body.theme-mccurdy .drawer-row label { color: #232325; }
+body.theme-mccurdy .drawer-row label, body.theme-mccurdy .drawer-row .drawer-label { color: #232325; }
 body.theme-mccurdy .drawer-section-sub { color: #68655d; border-color: #b5b1a6; }
 body.theme-mccurdy .ctrl-select { background: #f4f1e8; color: #232325; border-color: #b5b1a6; }
 body.theme-mccurdy .ctrl-hint { color: #4a4740; }

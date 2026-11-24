@@ -177,9 +177,8 @@ export class DataStreamView {
               <div class="rc-telemetry-box">
                 <div class="rc-telemetry-box-title">STREAM CLOCK &amp; TIMING</div>
                 <div class="rc-telemetry-box-body">
-                  <div class="rc-telemetry-item"><span>Clock Master:</span> <strong class="rc-tone-cyan">SMPTE 2059-1 TAI (PTP Domain 0)</strong></div>
+                  <div class="rc-telemetry-item"><span>Clock Master:</span> <strong class="rc-tone-cyan" id="rcClockMaster">—</strong></div>
                   <div class="rc-telemetry-item"><span>Sampling Clock:</span> <strong>48,000 Hz Continuous</strong></div>
-                  <div class="rc-telemetry-item"><span>Grandmaster Skew:</span> <strong class="rc-tone-ok">&lt; 15 ns (Locked)</strong></div>
                 </div>
               </div>
               <div class="rc-telemetry-box">
@@ -383,6 +382,9 @@ export class DataStreamView {
     if (this.mxlRingsPollTimer !== null) return;
     const poll = () => {
       if (!this.container || !this.container.isConnected) return;
+      // Only while a ring is on screen (data or transmitters tab): 10 polls a second otherwise
+      // hit the TAP for nothing, and from a public page each one is a Local Network Access request.
+      if (!this.container.offsetParent && !this.ringsHost?.offsetParent) return;
       const port = this.selectedPort || 8467;
       fetch(`http://localhost:${port}/api/mxl/rings?bins=360`)
         .then((r) => (r.ok ? r.json() : null))
@@ -420,6 +422,11 @@ export class DataStreamView {
   private setAes67(d: any): void {
     this.aes67 = Object.fromEntries(d.transmitters.map((t: any) => [t.flow_id, t]));
     this.aes67At = performance.now();
+    // The PTP leader the AES67 SDPs name; without PTP the streams run on this machine's (NTP) clock.
+    const cm = this.container?.querySelector('#rcClockMaster');
+    const l = d.ptp_leader;
+    const text = l ? `PTP domain ${l.domain} · GM ${l.identity}` : 'system clock (NTP)';
+    if (cm && cm.textContent !== text) cm.textContent = text;
   }
 
   /** Generator panel (generators tab) that feeds each MXL flow. */

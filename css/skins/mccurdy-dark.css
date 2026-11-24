@@ -58,7 +58,7 @@ body.theme-mccurdy-dark .drawer-card {
 }
 
 body.theme-mccurdy-dark .drawer-card h4,
-body.theme-mccurdy-dark .drawer-row label { color: #f8fafc; }
+body.theme-mccurdy-dark .drawer-row label, body.theme-mccurdy-dark .drawer-row .drawer-label { color: #f8fafc; }
 body.theme-mccurdy-dark .drawer-section-sub { color: #94a3b8; border-color: #384e61; }
 body.theme-mccurdy-dark .ctrl-select {
   background: #1c2b37;

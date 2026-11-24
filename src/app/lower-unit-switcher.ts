@@ -46,11 +46,10 @@ export function initLowerUnitSwitcher(): void {
   });
   // Settings is its own page: its cards leave the footer drawer for the lower bay, so only
   // one page shows at a time and the footer bar stays put.
-  const drawerEl = document.getElementById('auxDrawer') as HTMLDetailsElement | null;
+  const drawerEl = document.getElementById('auxDrawer') as HTMLElement | null;
   const settingsStage = document.getElementById('settingsStage');
   const drawerGrid = drawerEl?.querySelector(':scope > .drawer-grid');
   if (settingsStage && drawerGrid) settingsStage.appendChild(drawerGrid);
-  if (drawerEl) drawerEl.open = false;
   document.addEventListener('click', (e) => {
     const t = e.target as Node;
     if (isOpen() && !menu?.contains(t) && !trigger?.contains(t)) setOpen(false);

@@ -128,8 +128,8 @@
     </div>
 
     <!-- Minimalist Bottom Controls Drawer (Auxiliary Settings) -->
-    <details class="aux-drawer" id="auxDrawer">
-      <summary class="drawer-toggle">
+    <div class="aux-drawer" id="auxDrawer">
+      <div class="drawer-toggle">
         <div class="drawer-toggle-left" id="drawerToggleLeft">
           <!-- WBSps.ca Link (placed to the left of the settings wheel) -->
           <a href="https://wbsps.ca" target="_blank" rel="noopener noreferrer" class="footer-style-btn wbsps-btn" id="linkWbspsCa" title="Ward-Beck Systems Preservation Society (WBSps.ca)" onclick="event.stopPropagation();">
@@ -229,7 +229,7 @@
             <span class="footer-btn-text mc-com-text">McCurdyRadio.com</span>
           </button>
         </div>
-      </summary>
+      </div>
 
       <div class="drawer-grid">
         <!-- 1. AUDIO SETTINGS -->
@@ -485,7 +485,7 @@
             </label>
           </div>
           <div class="drawer-row">
-            <label>Front Key Reference</label>
+            <span class="drawer-label">Front Key Reference</span>
             <span class="ctrl-hint">Press <strong>MODE</strong> to cycle Analog/Digital/Test<br>Press <strong>SOURCE</strong> to toggle input source</span>
           </div>
           </div>
@@ -496,7 +496,7 @@
           <h4>Display for Chart</h4>
           <div class="drawer-section-sub">TIME SCALE &amp; CAPTURE</div>
           <div class="drawer-row">
-            <label>Time Scale</label>
+            <span class="drawer-label">Time Scale</span>
             <div class="scope-tabs-group">
               <button type="button" class="scope-tab-btn scope-tab-icon active" id="btnScopeLog" title="Log" aria-label="Log"><svg class="scope-tab-ico" viewBox="0 0 28 16" aria-hidden="true"><path d="M2 14 C12 14 20 12 26 2"/></svg></button>
               <button type="button" class="scope-tab-btn scope-tab-icon" id="btnScopeSuperLog" title="Super transient log" aria-label="Super transient log"><svg class="scope-tab-ico" viewBox="0 0 28 16" aria-hidden="true"><path d="M2 14 C20 14 25 12 26 2"/><path d="M22 2h4v4"/></svg></button>
@@ -609,7 +609,7 @@
 
           <div class="drawer-section-sub">DATA EXPORT</div>
           <div class="drawer-row">
-            <label>Telemetry Data Export</label>
+            <span class="drawer-label">Telemetry Data Export</span>
             <div style="display:flex;gap:8px;flex-wrap:wrap;">
               <button type="button" class="scope-clear-btn" id="btnExportCsvTest" style="background:#1e293b;border-color:#38bdf8;color:#38bdf8;padding:4px 10px;">EXPORT CSV (TEST)</button>
               <button type="button" class="scope-clear-btn" id="btnExportTransientLog" style="background:#1e293b;border-color:#22c55e;color:#22c55e;padding:4px 10px;">SUPER TRANSIENT LOG</button>
@@ -623,12 +623,12 @@
             </label>
           </div>
           <div class="drawer-row">
-            <label>Version</label>
-            <span class="build-stamp">v2.0.136</span>
+            <span class="drawer-label">Version</span>
+            <span class="build-stamp">v2.0.139</span>
           </div>
         </div>
       </div>
-    </details>
+    </div>
 
     <!-- Side bar: reference material (design & hardware guides), kept out of the Settings menu -->
     <aside class="xtm-sidebar" id="xtmSidebar" aria-label="Design &amp; hardware guides">

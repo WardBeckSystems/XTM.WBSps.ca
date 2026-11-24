@@ -76,7 +76,9 @@ export class TimingView {
         <div id="tmPtp"></div><div id="tmOffset"></div><div id="tmEvents"></div><div id="tmNtp"></div>
       </div></div>`;
     this.el.addEventListener('click', (e) => {
-      if ((e.target as HTMLElement).closest('[data-fix-open]')) this.syncFix(true);
+      const t = e.target as HTMLElement;
+      if (t.closest('[data-fix-open]')) this.syncFix(true);
+      if (t.closest('[data-ntp-fix]') && this.ntp?.fix) this.showFix(this.ntp.fix, 'ntp', 'This closes by itself once the clock takes its time from the NRC.');
     });
     this.el.addEventListener('change', (e) => {
       const t = e.target as HTMLInputElement;
@@ -107,19 +109,28 @@ export class TimingView {
     this.fixEl = null;
   }
 
-  /** Ask once per fix; it closes by itself when the daemon stops reporting it. */
+  /** PTP: ask once per fix; it closes by itself when the daemon stops reporting it. */
   private syncFix(force = false): void {
+    if (this.fixEl?.dataset.src === 'ntp') {
+      if (!this.ntp?.fix) this.closeFix(); // NRC now in use
+      return;
+    }
     const fix = this.online ? this.ptp?.fix : null;
     if (!fix) return this.closeFix();
+    if (this.fixEl?.dataset.key === this.fixKey(fix) || (!force && this.fixDismissed.has(this.fixKey(fix)))) return;
+    this.showFix(fix, 'ptp', 'This closes by itself once the TAP can hear the clocks.');
+  }
+
+  private showFix(fix: any, src: 'ptp' | 'ntp', closes: string): void {
     const key = this.fixKey(fix);
-    if (this.fixEl?.dataset.key === key || (!force && this.fixDismissed.has(key))) return;
     this.closeFix();
     const el = document.createElement('div');
     el.className = 'pg-fix-backdrop';
     el.dataset.key = key;
+    el.dataset.src = src;
     el.innerHTML = `
       <div class="pg-fix" role="dialog" aria-modal="true" aria-labelledby="tmFixTitle">
-        <div class="pg-fix-kicker">Timing · PTP</div>
+        <div class="pg-fix-kicker">Timing · ${src.toUpperCase()}</div>
         <h3 id="tmFixTitle">${esc(fix.title)}</h3>
         <p class="pg-fix-why">${esc(fix.why)}</p>
         ${(fix.options ?? []).map((o: any, i: number) => `
@@ -128,7 +139,7 @@ export class TimingView {
             <div class="pg-fix-cmd"><code>${esc(o.command)}</code><button type="button" data-fix-copy="${i}">Copy</button></div>
           </div>`).join('')}
         <p class="pg-fix-how">Paste it into a terminal and press Enter (it asks for your password).
-          This closes by itself once the TAP can hear the clocks.</p>
+          ${esc(closes)}</p>
         <div class="pg-fix-actions"><button type="button" data-fix-dismiss>Not now</button></div>
       </div>`;
     el.addEventListener('click', (e) => {
@@ -269,7 +280,7 @@ export class TimingView {
       .map(([k, v]) => cell(k, (v as string[]).join(' '))).join('');
     host.innerHTML = `
       <div class="tm-head">NTP</div>
-      <div class="pg-status"><span class="pg-chip pg-chip-${n.synchronized ? 'on' : 'off'}"><i></i>${n.synchronized ? 'synchronized' : n.enabled ? 'not synchronized' : 'NTP off'}</span><span class="pg-iface">${esc(n.daemon)}${n.timezone ? ` · ${esc(n.timezone)}` : ''}</span></div>
+      <div class="pg-status"><span class="pg-chip pg-chip-${n.synchronized ? 'on' : 'off'}"><i></i>${n.synchronized ? 'synchronized' : n.enabled ? 'not synchronized' : 'NTP off'}</span><span class="pg-iface">${esc(n.daemon)}${n.timezone ? ` · ${esc(n.timezone)}` : ''}${n.nrc ? ' · NRC' : ''}</span>${n.fix ? '<button type="button" class="pg-fix-open" data-ntp-fix title="Take time from the National Research Council Canada">Use NRC time…</button>' : ''}</div>
       <div class="tm-kv">
         ${cell('server', st.server)}${cell('stratum', st.stratum)}${cell('offset', st.offset)}${cell('delay', st.delay)}
         ${cell('jitter', st.jitter)}${cell('poll', st.poll_interval)}${cell('root distance', st.root_distance)}${cell('leap', st.leap)}
