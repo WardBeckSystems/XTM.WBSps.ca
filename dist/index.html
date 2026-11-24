@@ -61,8 +61,8 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Ward-Beck Systems">
-  <script type="module" crossorigin src="./assets/index-sFYwG69R.js"></script>
-  <link rel="stylesheet" crossorigin href="./assets/index-CCQuwX8P.css">
+  <script type="module" crossorigin src="./assets/index-glNricFI.js"></script>
+  <link rel="stylesheet" crossorigin href="./assets/index-BYoY7ECG.css">
 </head>
 <body class="">
   <!-- <div id="audioStartOverlay" style="position:fixed; top:0; left:0; width:100%; height:100%; background:#0a0b0d; z-index:9999; display:flex; align-items:center; justify-content:center;">
@@ -637,7 +637,7 @@
           </div>
           <div class="drawer-row">
             <span class="drawer-label">Version</span>
-            <span class="build-stamp">v2.0.166</span>
+            <span class="build-stamp">v2.0.167</span>
           </div>
         </div>
       </div>
@@ -834,6 +834,9 @@
       localStorage.setItem("xtm.mode", mode);
       localStorage.setItem("xtm.mccurdy", mode === "mccurdy-light" ? "1" : "0");
     } catch (e) {}
+    // The address carries the skin as well as the view: #routing/wbs-ca
+    var view = location.hash.slice(1).split("/")[0] || "loudness";
+    history.replaceState(null, "", location.pathname + location.search + "#" + view + "/" + mode);
     if (typeof window.applyModeMeter === "function") {
       window.applyModeMeter();
     }
@@ -1076,7 +1079,10 @@
     applyMode('mccurdy-dark');
   } else {
     try {
-      var saved = localStorage.getItem("xtm.mode");
+      // A link's skin (#view/skin) wins over the one this browser last used
+      var fromLink = (location.hash.match(/\/(wbs-ca|wbs-dark|mccurdy-dark|mccurdy-light)\b/) || [])[1];
+      if (fromLink) localStorage.setItem("xtm.mode", fromLink);
+      var saved = fromLink || localStorage.getItem("xtm.mode");
       if (!saved) {
         saved = localStorage.getItem("xtm.mccurdy") === "1" ? "mccurdy-light" : "wbs-ca";
       }
