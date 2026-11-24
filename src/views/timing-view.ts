@@ -13,7 +13,12 @@ const TAP_DOWNLOAD = 'https://github.com/WardBeckSystems/Ward-Beck-Audio-Tap';
 const esc = (v: unknown) =>
   String(v ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]!));
 
-const ptpName = (c: any) => `${c.version === 1 ? 'PTPv1' : 'PTPv2'} ${c.version === 1 ? c.domain : 'd' + c.domain}`;
+/** PTPv1 has subdomain names, not numbers: _DFLT is domain 0, _ALT1..3 are 1..3. */
+const V1_DOMAIN: Record<string, number> = { _DFLT: 0, _ALT1: 1, _ALT2: 2, _ALT3: 3 };
+const domainNo = (c: any) => (c.version === 1 ? V1_DOMAIN[c.domain] ?? c.domain : c.domain);
+const ptpName = (c: any) => `${c.version === 1 ? 'PTPv1' : 'PTPv2'} domain ${domainNo(c)}`;
+/** The network port (NIC) a clock was heard on. */
+const portOf = (c: any) => c.interface || '';
 
 export class TimingView {
   private timer: number | null = null;
@@ -123,8 +128,8 @@ export class TimingView {
       for (const c of list) { const k = key(c); now.add(k); seen.set(k, c); }
       return [...seen].map(([k, c]) => (now.has(k) ? c : { ...c, gone: true }));
     };
-    const gmKey = (c: any) => `${ptpName(c)} · ${c.network} · ${c.identity}`;
-    const clockKey = (c: any) => `${c.network} · ${ptpName(c)} · ${c.clock_identity}`;
+    const gmKey = (c: any) => `${ptpName(c)} · ${portOf(c)} · ${c.network} · ${c.identity}`;
+    const clockKey = (c: any) => `${portOf(c)} · ${c.network} · ${ptpName(c)} · ${c.clock_identity}`;
     const gms: any[] = keep(this.seenGms, p.grandmasters ?? [], gmKey).sort((a, b) => abc(gmKey(a), gmKey(b)));
     const clocks: any[] = keep(this.seenClocks, p.clocks ?? [], clockKey);
 
@@ -140,9 +145,9 @@ export class TimingView {
       ? gms.map((c) => {
           const contested = c.sync_health === 'contested';
           return `
-            <div class="tm-gm tm-v${c.version}${contested ? ' tm-contested' : ''}${c.gone ? ' tm-gone' : ''}" title="Grandmaster ${esc(c.identity)}${c.source_ip ? ` from ${esc(c.source_ip)}` : ''}${contested ? '\nContested: more than one grandmaster on this domain' : ''}${c.gone ? '\nNot heard now: kept as a placeholder' : ''}">
+            <div class="tm-gm tm-v${c.version}${contested ? ' tm-contested' : ''}${c.gone ? ' tm-gone' : ''}" title="Grandmaster ${esc(c.identity)}${c.source_ip ? ` from ${esc(c.source_ip)}` : ''}${portOf(c) ? ` on port ${esc(portOf(c))}` : ''}${c.version === 1 ? ` (subdomain ${esc(c.domain)})` : ''}${contested ? '\nContested: more than one grandmaster on this domain and port' : ''}${c.gone ? '\nNot heard now: kept as a placeholder' : ''}">
               <div class="tm-gm-name">⏱ ${esc(ptpName(c))} · ${esc(c.network)}${c.priority1 != null ? ` · p1 ${esc(c.priority1)}` : ''}</div>
-              <div class="tm-gm-id">${contested ? '⚠ contested · ' : ''}GM ${esc(c.identity)}</div>
+              <div class="tm-gm-id">${contested ? '⚠ contested · ' : ''}GM ${esc(c.identity)}${portOf(c) ? ` · ${esc(portOf(c))}` : ''}</div>
             </div>`;
         }).join('')
       : `<div class="tm-empty">${this.online ? 'No PTP grandmaster heard yet' : 'Waiting for the TAP daemon'}</div>`;
@@ -155,6 +160,7 @@ export class TimingView {
         <td>${esc(c.vendor || '—')}</td>
         <td>${esc(ptpName(c))}</td>
         <td>${esc(c.network)}</td>
+        <td class="tm-mono">${esc(portOf(c) || '—')}</td>
         <td class="tm-num">${esc(c.priority1 ?? '—')} / ${esc(c.priority2 ?? '—')}</td>
         <td class="tm-num">${esc(c.clock_class ?? '—')}</td>
         <td>${esc(c.clock_accuracy || '—')}</td>
@@ -170,7 +176,7 @@ export class TimingView {
       ${clocks.length ? `
       <div class="tm-head">CLOCKS</div>
       <div class="tm-table-wrap"><table class="tm-table">
-        <thead><tr><th></th><th>Identity</th><th>Vendor</th><th>PTP</th><th>Network</th><th>P1 / P2</th><th>Class</th><th>Accuracy</th><th>Time source</th><th>Health</th><th>Seen</th></tr></thead>
+        <thead><tr><th></th><th>Identity</th><th>Vendor</th><th>PTP</th><th>Network</th><th>Port</th><th>P1 / P2</th><th>Class</th><th>Accuracy</th><th>Time source</th><th>Health</th><th>Seen</th></tr></thead>
         <tbody>${rows}</tbody>
       </table></div>` : ''}`;
   }
