@@ -8,9 +8,10 @@
  * - generators: POD-33, ABS-1 Bit Spitter → ABB-1 Bit Buddy
  * - mxl:        one EBU DMF / MXL ring buffer per transmitter, then the CBC MXL test generator
  * - timing:     PTP grandmasters and clocks
+ * - logging:    telemetry export and the TAP's live log
  */
 
-export type LowerUnitMode = 'loudness' | 'data' | 'routing' | 'generators' | 'mxl' | 'timing' | 'settings';
+export type LowerUnitMode = 'loudness' | 'data' | 'routing' | 'generators' | 'mxl' | 'timing' | 'logging' | 'settings';
 
 const STAGES: Record<LowerUnitMode, { ids: string[]; display: string }> = {
   loudness: { ids: ['dbfsStage'], display: 'flex' },
@@ -19,6 +20,7 @@ const STAGES: Record<LowerUnitMode, { ids: string[]; display: string }> = {
   generators: { ids: ['generatorsStage'], display: 'block' },
   mxl: { ids: ['mxlStage'], display: 'block' },
   timing: { ids: ['timingStage'], display: 'block' },
+  logging: { ids: ['loggingStage'], display: 'block' },
   // Settings is a page like the others: the drawer is its body, open only while it is the view
   settings: { ids: ['settingsStage'], display: 'block' },
 };

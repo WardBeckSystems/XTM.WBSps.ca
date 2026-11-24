@@ -67,3 +67,16 @@ body.theme-wbs-ca .tm-timing, body.theme-mccurdy .tm-timing, body.theme-mccurdy-
 .tm-ev.tm-shade { color: var(--tm-c); box-shadow: inset 3px 0 0 var(--tm-c); padding-left: 6px; }
 /* NTP log: one row per answer the clock took, newest first */
 .tm-ntp-log { max-height: 220px; overflow-y: auto; }
+/* Logging tab (logging-view.ts): export controls, then the TAP log */
+.lg-logging { font: 600 0.62rem/1.3 monospace; color: var(--pg-text); }
+.lg-export .drawer-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 4px 0; border-bottom: 1px solid var(--pg-lane-line); font-family: system-ui, sans-serif; font-size: 0.8rem; }
+.lg-tap-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
+.lg-tools { display: inline-flex; align-items: center; gap: 12px; font-weight: 500; letter-spacing: 0; color: var(--pg-sub); }
+.lg-filter { font: inherit; padding: 2px 6px; border: 1px solid var(--pg-lane-line); border-radius: 3px; background: var(--pg-lane); color: var(--pg-text); width: 160px; }
+.lg-btn { color: var(--pg-clock); text-decoration: none; border: 1px solid currentColor; border-radius: 3px; padding: 1px 8px; }
+.lg-log { max-height: 420px; overflow-y: auto; background: var(--pg-lane); border: 1px solid var(--pg-lane-line); border-radius: 3px; padding: 4px 6px; font-weight: 500; }
+.lg-line { white-space: pre-wrap; word-break: break-word; padding: 1px 0; }
+.lg-t { color: var(--pg-sub); margin-right: 8px; }
+.lg-area { display: inline-block; min-width: 64px; margin-right: 8px; color: var(--pg-flow); font-weight: 700; }
+.lg-warn { color: var(--pg-clock); }
+.lg-err { color: #ef4444; }

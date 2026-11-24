@@ -12,6 +12,7 @@ import { XtmView } from './views/xtm-view';
 import { Pod22View } from './views/pod22-view';
 import { DbfsView } from './views/dbfs-view';
 import { DataStreamView } from './views/data-stream-view';
+import { LoggingView } from './views/logging-view';
 import { GeneratorsView } from '../Generators/web';
 import { WebRouter } from '../WebRouter/src';
 import { MX, PY, R } from './views/xtm/layout/wbs-layout';
@@ -108,6 +109,8 @@ export async function initApp(): Promise<void> {
   }
   const timingStageEl = document.getElementById('timingStage');
   if (timingStageEl) new TimingView(timingStageEl).build();
+  const loggingStageEl = document.getElementById('loggingStage');
+  if (loggingStageEl) new LoggingView(loggingStageEl).build();
   const ctx: AppContext = { model, audio, view, podView, dbfsView, dataView, webRouter };
   if (dataView) dataView.build(ctx);
   (window as any).xtmModel = model;

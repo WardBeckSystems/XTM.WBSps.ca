@@ -120,6 +120,9 @@
       <!-- Timing: PTP grandmasters and clocks (moved here from the data tab's pipeline graph) -->
       <div class="meter-unit routing-unit" id="timingStage" style="display: none;"></div>
 
+      <!-- Logging: data export (moved here from Settings) and the TAP's live log -->
+      <div class="meter-unit routing-unit" id="loggingStage" style="display: none;"></div>
+
       <!-- Settings: a page like the others; the drawer's cards are moved in here at start-up -->
       <div class="routing-unit settings-unit" id="settingsStage" style="display: none;"></div>
 
@@ -170,6 +173,10 @@
           <button type="button" class="footer-view-btn" id="btnViewTiming" data-view="timing" role="menuitemradio" aria-checked="false" title="Timing (PTP grandmasters and clocks)">
             <span class="footer-view-led"></span>
             <span class="footer-view-name">timing</span>
+          </button>
+          <button type="button" class="footer-view-btn" id="btnViewLogging" data-view="logging" role="menuitemradio" aria-checked="false" title="Logging (telemetry export and the TAP's log)">
+            <span class="footer-view-led"></span>
+            <span class="footer-view-name">logging</span>
           </button>
             <div class="footer-view-sep" role="separator"></div>
             <button type="button" class="footer-view-btn footer-view-settings" id="btnMenuSettings" data-view="settings" role="menuitemradio" aria-checked="false" title="Settings (Calibration, Monitoring &amp; Ballistics)">
@@ -607,15 +614,15 @@
             </div>
           </div>
 
-          <div class="drawer-section-sub">DATA EXPORT</div>
-          <div class="drawer-row">
+          <div class="drawer-section-sub" data-logging-move>DATA EXPORT</div>
+          <div class="drawer-row" data-logging-move>
             <span class="drawer-label">Telemetry Data Export</span>
             <div style="display:flex;gap:8px;flex-wrap:wrap;">
               <button type="button" class="scope-clear-btn" id="btnExportCsvTest" style="background:#1e293b;border-color:#38bdf8;color:#38bdf8;padding:4px 10px;">EXPORT CSV (TEST)</button>
               <button type="button" class="scope-clear-btn" id="btnExportTransientLog" style="background:#1e293b;border-color:#22c55e;color:#22c55e;padding:4px 10px;">SUPER TRANSIENT LOG</button>
             </div>
           </div>
-          <div class="drawer-row">
+          <div class="drawer-row" data-logging-move>
             <label for="chkAutoExportHourly">Hourly Telemetry Log</label>
             <label class="chk-label">
               <input type="checkbox" id="chkAutoExportHourly">
