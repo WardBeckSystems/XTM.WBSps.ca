@@ -151,16 +151,10 @@ export async function syncAudioCore(
       audio.startTestGenerator('sine1k');
     }
   } else if (m.mode === 'S') {
-    // TEST OSCILLATOR MODE
-    const waves = ['', 'sine1k', 'pink', 'sine400', 'sweep'];
-    const waveNames = ['', '1 kHz Sine Tone', 'Pink Noise', '400 Hz Lineup Tone', '20Hz-20kHz Sweep'];
-    const wave = waves[m.s.pair[0]] || 'sine1k';
-    const waveName = waveNames[m.s.pair[0]] || '1 kHz Sine Tone';
-
-    if (drawerSourceBadge) {
-      drawerSourceBadge.textContent = 'Source: ' + waveName;
-    }
-    audio.setToneCalibration(m.toneCalLevels[m.toneCalIdx]);
-    audio.startTestGenerator(wave);
+    // TEST GEN = the POD-33 (through the router, so the TAP's tone and the meters follow)
+    const wr = (window as any).xtmWebRouter;
+    if (drawerSourceBadge) drawerSourceBadge.textContent = 'Source: POD-33 Tone';
+    if (wr) wr.selectInput(2 + (wr.pod33Out ?? 0));
+    else audio.startTestGenerator('sine1k');
   }
 }

@@ -15,7 +15,7 @@ export function mcRangeText(model: XtmModel): string {
   } else if (model.mode === 'D') {
     v = model.lvlDb(model.d.lvl);
   } else if (model.mode === 'S') {
-    v = model.toneCalLevels[model.toneCalIdx] ?? 0;
+    v = model.pod33?.read()?.levelDb ?? null;
   }
   if (v === null) return '--';
   const a = Math.min(99, Math.abs(Math.round(v)));

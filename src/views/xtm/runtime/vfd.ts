@@ -79,7 +79,7 @@ export function modeTitle(model: XtmModel, signalLost: boolean): string {
   if (signalLost) return '⚠ LOSS OF SIGNAL (NO AUDIO DETECTED)';
   if (model) {
     if (model.mode === 'D') return 'COMPUTER AUDIO OUTPUT';
-    if (model.mode === 'S') return 'TEST OSCILLATOR';
+    if (model.mode === 'S') return 'POD-33 TONE GENERATOR';
     if (model.mode === 'SET') return 'SETUP & CALIBRATION';
   }
   return 'SOUNDCARD INPUT';

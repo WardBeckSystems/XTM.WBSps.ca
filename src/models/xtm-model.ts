@@ -61,6 +61,30 @@ export class XtmModel {
 
   public onChange: ((model: XtmModel) => void) | null = null;
 
+  /**
+   * TEST GEN (mode S) is the POD-33: SOURCE steps its frequency, ▲/▼ its level, on the
+   * POD-33 output being played. The app plugs the router's POD-33 in here; the XTM-4 has
+   * no tone or calibration of its own.
+   */
+  public pod33: { read: () => { freq: number; levelDb: number } | null; set: (p: { freq?: number; levelDb?: number }) => void } | null = null;
+
+  private pod33Text(): string {
+    const st = this.pod33?.read();
+    if (!st) return 'POD-33  ';
+    const f = st.freq === 1000 ? '1k' : st.freq ? String(st.freq) : 'OFF';
+    const l = st.levelDb <= -100 ? 'OFF' : (st.levelDb > 0 ? '+' : '') + st.levelDb + 'dB';
+    const t = f + ' ' + l;
+    return (t.length > 8 ? t.replace('dB', '') : t).padEnd(8).substring(0, 8);
+  }
+
+  private stepPod33(dir: 1 | -1): void {
+    const st = this.pod33?.read();
+    if (!st) return;
+    const levelDb = Math.max(-40, Math.min(0, Math.round(st.levelDb) + dir));
+    this.pod33!.set({ levelDb });
+    this.flash(this.pod33Text());
+  }
+
   constructor() {
     this.toneCalIdx = this.toneCalLevels.indexOf(-18);
     if (this.toneCalIdx < 0) this.toneCalIdx = 42;
@@ -115,19 +139,7 @@ export class XtmModel {
       return 'SYS ' + lvlStr + hpCh;
     }
 
-    if (this.mode === 'S') {
-      const p = this.s.pair[0] ?? 1;
-      if (p === 1 || p === 3) {
-        const cal = this.toneCalLevels[this.toneCalIdx] ?? 0;
-        const prefix = p === 3 ? '400 ' : '1k ';
-        if (cal === 0) return (prefix + '0dBFS').padEnd(8).substring(0, 8);
-        return (prefix + (cal >= 0 ? '+' : '') + cal + 'dB').padEnd(8).substring(0, 8);
-      }
-      const names = ['', '1kHZ REF', 'PINK NOIS', '400H TONE', 'SWEP TONE'];
-      const n = names[p];
-      if (n) return n;
-      return 'TEST ' + p + '  ';
-    }
+    if (this.mode === 'S') return this.pod33Text();
 
     return 'XTM4    ';
   }
@@ -144,19 +156,7 @@ export class XtmModel {
       const sens = (db >= 0 ? '+' : '') + db + 'dB';
       return ('SYS ' + sens).padEnd(8).substring(0, 8);
     }
-    if (this.mode === 'S') {
-      const p = this.s.pair[0] ?? 1;
-      if (p === 1 || p === 3) {
-        const cal = this.toneCalLevels[this.toneCalIdx] ?? 0;
-        const prefix = p === 3 ? '400 ' : '1k ';
-        if (cal === 0) return (prefix + '0dBFS').padEnd(8).substring(0, 8);
-        return (prefix + (cal >= 0 ? '+' : '') + cal + 'dB').padEnd(8).substring(0, 8);
-      }
-      const names = ['', '1kHZ REF', 'PINK NOIS', '400H TONE', 'SWEP TONE'];
-      const n = names[p];
-      if (n) return n.padEnd(8).substring(0, 8);
-      return ('TEST ' + p).padEnd(8).substring(0, 8);
-    }
+    if (this.mode === 'S') return this.pod33Text();
     return 'A1 +4dB ';
   }
 
@@ -171,7 +171,7 @@ export class XtmModel {
         this.flash('SYST OUT');
       } else if (this.mode === 'D') {
         this.mode = 'S';
-        this.flash('TEST GEN');
+        this.flash('POD-33  ');
       } else {
         this.mode = 'A';
         this.flash('CARD IN ');
@@ -207,12 +207,13 @@ export class XtmModel {
       this.d.src = this.d.src === 0 ? 1 : 0;
       this.flash(this.d.src === 1 ? 'SYST OUT' : '1kHZ TONE');
     } else if (this.mode === 'S') {
-      let p = (this.s.pair[0] ?? 1) + 1;
-      if (p > 4) p = 1;
-      this.s.pair[0] = p;
-      const testNames = ['', '1kHZ REF', 'PINK NOIS', '400H TONE', 'SWEP TONE'];
-      const tn = testNames[p];
-      if (tn) this.flash(tn);
+      // POD-33 frequency: 1 kHz → 400 Hz → 100 Hz
+      const st = this.pod33?.read();
+      if (st) {
+        const steps = [1000, 400, 100];
+        this.pod33!.set({ freq: steps[(steps.indexOf(st.freq) + 1) % steps.length] });
+        this.flash(this.pod33Text());
+      }
     }
     this.selectedInput = this.getSelectedInput();
     this.saveEEPROM();
@@ -363,15 +364,7 @@ export class XtmModel {
       if (this.d.lvl > 0) this.d.lvl--;
       this.flash('SENS ' + this.lvlChars(this.d.lvl));
     } else if (this.mode === 'S') {
-      const p = this.s.pair[0] ?? 1;
-      if (p === 1 || p === 3) {
-        if (this.toneCalIdx > 0) {
-          this.toneCalIdx--;
-          const cal = this.toneCalLevels[this.toneCalIdx] ?? 0;
-          const prefix = p === 3 ? '400 ' : '1k ';
-          this.flash((prefix + (cal >= 0 ? '+' : '') + cal + 'dB').padEnd(8).substring(0, 8));
-        }
-      }
+      this.stepPod33(-1);
     }
     this.saveEEPROM();
     this.notify();
@@ -401,15 +394,7 @@ export class XtmModel {
       if (this.d.lvl < 90) this.d.lvl++;
       this.flash('SENS ' + this.lvlChars(this.d.lvl));
     } else if (this.mode === 'S') {
-      const p = this.s.pair[0] ?? 1;
-      if (p === 1 || p === 3) {
-        if (this.toneCalIdx < this.toneCalLevels.length - 1) {
-          this.toneCalIdx++;
-          const cal = this.toneCalLevels[this.toneCalIdx] ?? 0;
-          const prefix = p === 3 ? '400 ' : '1k ';
-          this.flash((prefix + (cal >= 0 ? '+' : '') + cal + 'dB').padEnd(8).substring(0, 8));
-        }
-      }
+      this.stepPod33(1);
     }
     this.saveEEPROM();
     this.notify();

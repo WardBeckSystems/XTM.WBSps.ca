@@ -29,7 +29,6 @@ import { applyInitialAudioState, bindModelChange, bindFrontPanel, bindAudioUnloc
 import { bindAudioCallbacks, initDeviceScan, initDeviceSelector } from './app/device-selector';
 import { initInputMonitor } from './app/input-monitor';
 import { initMeterStyle, applyModeMeter } from './app/meter-style';
-import { initToneCal } from './app/tone-cal';
 import { initLampMemory } from './app/lamp-memory';
 import { initFilterTerm } from './app/filter-term';
 import { initPpmStandard } from './app/ppm-standard';
@@ -98,14 +97,6 @@ export async function initApp(): Promise<void> {
   const generatorsStageEl = document.getElementById('generatorsStage');
   if (generatorsStageEl && webRouter) {
     new GeneratorsView(generatorsStageEl, webRouter, document.getElementById('mxlCbcStage')).build();
-    // The XTM-4's own 1 kHz reference tone level sits with the generators, not in Settings
-    const toneCalRow = document.getElementById('toneCalRow');
-    const rack = generatorsStageEl.querySelector('.routing-console-rack');
-    if (toneCalRow && rack) {
-      toneCalRow.className = 'rc-tone-cal-row';
-      toneCalRow.querySelector('label')!.textContent = 'XTM-4 1 kHz reference tone';
-      rack.prepend(toneCalRow);
-    }
   }
   const timingStageEl = document.getElementById('timingStage');
   if (timingStageEl) new TimingView(timingStageEl).build();
@@ -122,6 +113,13 @@ export async function initApp(): Promise<void> {
   const hardwareStageEl = document.getElementById('hardwareStage');
   if (webRouter && hardwareStageEl) webRouter.mountHardware(hardwareStageEl);
   (window as any).xtmWebRouter = webRouter;
+  // The XTM-4's TEST GEN is the POD-33 (the output being played): SOURCE = frequency, ▲/▼ = level
+  if (webRouter) {
+    model.pod33 = {
+      read: () => ({ freq: webRouter.pod33Config.freq, levelDb: webRouter.pod33Config.levelDb }),
+      set: (p) => webRouter.setPod33Output(webRouter.pod33Out, p),
+    };
+  }
   (window as any).xtmCtx = ctx;
 
   initSettingsDrawer();
@@ -153,7 +151,6 @@ export async function initApp(): Promise<void> {
 
   initInputMonitor(ctx, refs);
   initMeterStyle(ctx, refs);
-  initToneCal(ctx, refs);
   initLampMemory(ctx, refs);
   initFilterTerm(ctx, refs);
   initPodScaleAndHold(ctx, refs);

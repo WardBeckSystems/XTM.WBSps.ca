@@ -17,17 +17,13 @@ export function applyInitialAudioState(ctx: AppContext): void {
 
 export function bindModelChange(ctx: AppContext, refs: DrawerControls, sync: AudioSync): void {
   const { model, audio } = ctx;
-  const { selectToneCal, chkHpf, chkTerm, selectLampColor, selectDialBg, selectPpmLampColor, selectPpmDialBg, selectMeterStyle, drawerSourceBadge } = refs;
+  const { chkHpf, chkTerm, selectLampColor, selectDialBg, selectPpmLampColor, selectPpmDialBg, selectMeterStyle } = refs;
 
   model.onChange = (m: any) => {
     const isDigital = (m.mode === 'D');
     audio.setReferenceLevel(m.getActiveReferenceLevel(), isDigital);
     audio.setHighPass(m.hp === 1);
     audio.setVuStyle(m.meterStyle);
-    const cal = m.toneCalLevels[m.toneCalIdx];
-    audio.setToneCalibration(cal);
-
-    if (selectToneCal) selectToneCal.value = String(cal);
     if (chkHpf) chkHpf.checked = m.hp === 1;
     if (chkTerm) chkTerm.checked = m.term === 1;
     if (selectLampColor) selectLampColor.value = m.dialLamp;
@@ -35,14 +31,6 @@ export function bindModelChange(ctx: AppContext, refs: DrawerControls, sync: Aud
     if (selectPpmLampColor) selectPpmLampColor.value = m.ppmLamp;
     if (selectPpmDialBg) selectPpmDialBg.value = m.ppmDialBg;
     if (selectMeterStyle) selectMeterStyle.value = m.meterStyle;
-
-    if (drawerSourceBadge && m.mode === 'S') {
-      const p = m.s.pair[0] ?? 1;
-      if (p === 1 || p === 3) {
-        const freq = p === 3 ? '400 Hz' : '1 kHz';
-        drawerSourceBadge.textContent = `Source: ${freq} Digital Lineup Tone (${cal >= 0 ? '+' : ''}${cal} dBFS)`;
-      }
-    }
 
     sync.syncAudioWithHardwareMode(m);
     saveAppConfig(ctx, m);
