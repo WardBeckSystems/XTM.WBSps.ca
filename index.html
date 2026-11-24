@@ -106,13 +106,13 @@
         <div class="meter-unit pod22" id="pod22Stage"></div>
       </div>
 
-      <!-- Unit 3: lower-bay views (Settings drop-up: loudness · data · routing · generators · mxl transmitters · timing) -->
+      <!-- Unit 3: lower-bay views (Settings drop-up: loudness · data · routing · generators · transmitters · timing) -->
       <div class="meter-unit routing-unit" id="dataStage" style="display: none;"></div>
       <div class="meter-unit routing-unit" id="routingStage" style="display: none;">
         <div id="routerStage"></div>
       </div>
       <div class="meter-unit routing-unit" id="generatorsStage" style="display: none;"></div>
-      <!-- MXL transmitters: one EBU DMF / MXL ring buffer per flow (moved here from the data tab by DataStreamView) -->
+      <!-- Transmitters: one EBU DMF / MXL ring buffer per flow (moved here from the data tab by DataStreamView) -->
       <div class="meter-unit routing-unit" id="mxlStage" style="display: none;">
         <div class="routing-console-rack"><div id="mxlRingsStage"></div><div id="mxlCbcStage"></div></div>
       </div>
@@ -163,9 +163,9 @@
             <span class="footer-view-led"></span>
             <span class="footer-view-name">generators</span>
           </button>
-          <button type="button" class="footer-view-btn" id="btnViewMxl" data-view="mxl" role="menuitemradio" aria-checked="false" title="MXL (CBC test generator, one EBU DMF / MXL ring buffer per flow)">
+          <button type="button" class="footer-view-btn" id="btnViewMxl" data-view="mxl" role="menuitemradio" aria-checked="false" title="Transmitters (one MXL flow per transmitter, AES67 out; CBC MXL test generator)">
             <span class="footer-view-led"></span>
-            <span class="footer-view-name">mxl transmitters</span>
+            <span class="footer-view-name">transmitters</span>
           </button>
           <button type="button" class="footer-view-btn" id="btnViewTiming" data-view="timing" role="menuitemradio" aria-checked="false" title="Timing (PTP grandmasters and clocks)">
             <span class="footer-view-led"></span>
@@ -624,7 +624,7 @@
           </div>
           <div class="drawer-row">
             <label>Version</label>
-            <span class="build-stamp">v2.0.129</span>
+            <span class="build-stamp">v2.0.131</span>
           </div>
         </div>
       </div>

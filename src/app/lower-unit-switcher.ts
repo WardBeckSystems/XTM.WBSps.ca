@@ -1,7 +1,7 @@
 /*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.ca). All rights reserved. */
 /**
  * Lower Console Bay views, picked from the Settings cog's drop-up menu:
- * loudness · data · routing · generators · mxl transmitters · timing (then Settings).
+ * loudness · data · routing · generators · transmitters · timing (then Settings).
  * - loudness:   dBFS / BS.1770 LUFS scope (always the view on load)
  * - data:       Scanalyzer Audio Eye & pipeline graph
  * - routing:    Web Router (inputs × outputs grid)

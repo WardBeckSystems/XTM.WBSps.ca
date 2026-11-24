@@ -60,7 +60,7 @@ export async function initApp(): Promise<void> {
   const webRouter = routerStageEl
     ? new WebRouter(routerStageEl, { audio, onFlowHint: (flow) => dataView?.setFlow(flow),
         onMeterInput: (meter, input) => onMeterInput?.(meter, input),
-        // An MXL transmitter column opens that flow in the MXL transmitters tab
+        // An MXL transmitter column opens that flow in the Transmitters tab
         onOpenFlow: (flow) => {
           dataView?.setFlow(flow);
           (window as any).setLowerUnitMode?.('mxl');

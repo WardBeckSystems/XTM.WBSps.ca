@@ -55,7 +55,7 @@ export class DataStreamView {
   private flowCards: any[] = [];
   ringsHost: HTMLElement | null = null;
 
-  /** Query the data tab, then the MXL ring card that was moved into the MXL transmitters tab. */
+  /** Query the data tab, then the MXL ring card that was moved into the Transmitters tab. */
   private $(sel: string): HTMLElement | null {
     return (this.container?.querySelector(sel) ?? this.ringsHost?.querySelector(sel) ?? null) as HTMLElement | null;
   }
@@ -74,7 +74,7 @@ export class DataStreamView {
     this.ctx = ctx;
     if (!this.container) return;
     this.container.innerHTML = this.renderHtml();
-    // The MXL ring buffers live in their own tab: MXL transmitters (#mxlStage).
+    // The MXL ring buffers live in their own tab: Transmitters (#mxlStage).
     const ringsHost = document.getElementById('mxlRingsStage');
     const buffer = this.container.querySelector('.rc-data-buffer');
     if (ringsHost && buffer) { ringsHost.appendChild(buffer); this.ringsHost = ringsHost; }
@@ -469,7 +469,7 @@ export class DataStreamView {
   private copyAes67Sdp(btn: HTMLElement): void {
     const t = this.aes67For(btn.dataset.aes67Sdp || '');
     if (!t?.sdp) return;
-    const done = (ok: boolean) => { btn.textContent = ok ? '✓' : '✕'; setTimeout(() => { btn.textContent = '⧉'; }, 1500); };
+    const done = (ok: boolean) => { btn.textContent = ok ? '✓' : '✕'; setTimeout(() => { btn.textContent = 'SDP'; }, 1500); };
     navigator.clipboard?.writeText(t.sdp).then(() => done(true), () => done(false)) ?? done(false);
   }
 
@@ -511,7 +511,7 @@ export class DataStreamView {
             <div class="rc-flow-ring-head">
               <span class="rc-flow-ring-name">${esc(String(f.label).replace(/^Ward-Beck\s+/, '').replace(/\s*\([^)]*\)\s*$/, ''))}</span>
               <span class="rc-ring-head" id="rcFlowHead${i}">#0</span>
-              <button type="button" class="rc-flow-copy" data-flow-copy="${esc(f.flow_id)}" title="Copy connection info" aria-label="Copy connection info for ${esc(f.label)}">⧉</button>
+              <button type="button" class="rc-flow-copy" data-flow-copy="${esc(f.flow_id)}" title="Copy MXL flow ID ${esc(f.flow_id)}\n\n${esc(this.connectionInfo(f))}" aria-label="Copy MXL flow ID for ${esc(f.label)}">MXL ID</button>
             </div>
             <div class="rc-flow-ring-chs">
               <canvas id="rcFlowRing${i}" width="220" height="220" class="rc-flow-eye"></canvas>
@@ -522,7 +522,7 @@ export class DataStreamView {
               <span class="rc-aes67-tag">AES67</span>
               <span class="rc-aes67-addr"></span>
               <button type="button" class="rc-aes67-btn" data-aes67-tx="${esc(f.flow_id)}">TX</button>
-              <button type="button" class="rc-flow-copy" data-aes67-sdp="${esc(f.flow_id)}" title="Copy SDP" aria-label="Copy AES67 SDP for ${esc(f.label)}">⧉</button>
+              <button type="button" class="rc-flow-copy" data-aes67-sdp="${esc(f.flow_id)}" title="Copy AES67 SDP (ts-refclk names the PTP leader)" aria-label="Copy AES67 SDP for ${esc(f.label)}">SDP</button>
             </div>` : ''}
           </div>`).join('');
       grid.querySelectorAll('[data-flow-ring]').forEach((card) => {
@@ -596,8 +596,8 @@ export class DataStreamView {
   private copyConnectionInfo(btn: HTMLElement): void {
     const f = this.flowCards.find((x: any) => x.flow_id === btn.dataset.flowCopy);
     if (!f) return;
-    const text = this.connectionInfo(f);
-    const done = (ok: boolean) => { btn.textContent = ok ? '✓' : '✕'; btn.title = ok ? 'Copied' : text; setTimeout(() => { btn.textContent = '⧉'; btn.title = 'Copy connection info'; }, 1500); };
+    const text = f.flow_id;
+    const done = (ok: boolean) => { btn.textContent = ok ? '✓' : '✕'; setTimeout(() => { btn.textContent = 'MXL ID'; }, 1500); };
     navigator.clipboard?.writeText(text).then(() => done(true), () => done(false)) ?? done(false);
   }
 

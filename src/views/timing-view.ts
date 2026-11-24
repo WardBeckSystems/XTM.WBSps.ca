@@ -1,13 +1,14 @@
 /*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.ca). All rights reserved. */
 /**
- * Timing tab: PTP grandmasters and every clock the TAP daemon hears (apk-ptp MQTT,
- * or the 224.0.1.129 listener), from GET /api/aoip/multicast. Grandmasters lead as
+ * Timing tab: PTP grandmasters and every clock the TAP daemon hears (its built-in
+ * apk-ptp sniffer, or apk-ptp over MQTT), from GET /api/aoip/multicast. Grandmasters lead as
  * chips, one per network/domain; the clock table follows. Theme colours are the
  * pipeline graph's --pg-* tokens (the container carries .rc-pipeline-graph).
  */
 
 const DAEMON = 'http://localhost:8467';
 const POLL_MS = 2000;
+const TAP_DOWNLOAD = 'https://github.com/WardBeckSystems/Ward-Beck-Audio-Tap';
 
 const esc = (v: unknown) =>
   String(v ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]!));
@@ -21,11 +22,17 @@ export class TimingView {
   /** Grandmasters and clocks seen this session: a dropout stays as an inactive placeholder. */
   private seenGms = new Map<string, any>();
   private seenClocks = new Map<string, any>();
+  /** Runtime prompt (pg-fix styles) when the sniffer needs something only the user can grant. */
+  private fixEl: HTMLElement | null = null;
+  private fixDismissed = new Set<string>();
 
   constructor(private el: HTMLElement) {}
 
   build(): this {
     this.el.innerHTML = '<div class="routing-console-rack"><div class="rc-pipeline-graph tm-timing" id="tmTiming"></div></div>';
+    this.el.addEventListener('click', (e) => {
+      if ((e.target as HTMLElement).closest('[data-fix-open]')) this.syncFix(true);
+    });
     this.poll();
     this.timer = window.setInterval(() => this.poll(), POLL_MS);
     return this;
@@ -34,6 +41,60 @@ export class TimingView {
   destroy(): void {
     if (this.timer !== null) window.clearInterval(this.timer);
     this.timer = null;
+    this.closeFix();
+  }
+
+  private fixKey(fix: any): string {
+    return `${fix.title}|${(fix.options ?? []).map((o: any) => o.command).join('|')}`;
+  }
+
+  private closeFix(): void {
+    this.fixEl?.remove();
+    this.fixEl = null;
+  }
+
+  /** Ask once per fix; it closes by itself when the daemon stops reporting it. */
+  private syncFix(force = false): void {
+    const fix = this.online ? this.ptp?.fix : null;
+    if (!fix) return this.closeFix();
+    const key = this.fixKey(fix);
+    if (this.fixEl?.dataset.key === key || (!force && this.fixDismissed.has(key))) return;
+    this.closeFix();
+    const el = document.createElement('div');
+    el.className = 'pg-fix-backdrop';
+    el.dataset.key = key;
+    el.innerHTML = `
+      <div class="pg-fix" role="dialog" aria-modal="true" aria-labelledby="tmFixTitle">
+        <div class="pg-fix-kicker">Timing · PTP</div>
+        <h3 id="tmFixTitle">${esc(fix.title)}</h3>
+        <p class="pg-fix-why">${esc(fix.why)}</p>
+        ${(fix.options ?? []).map((o: any, i: number) => `
+          <div class="pg-fix-opt">
+            <div class="pg-fix-opt-head"><b>${esc(o.label)}</b>${o.note ? `<span>${esc(o.note)}</span>` : ''}</div>
+            <div class="pg-fix-cmd"><code>${esc(o.command)}</code><button type="button" data-fix-copy="${i}">Copy</button></div>
+          </div>`).join('')}
+        <p class="pg-fix-how">Paste it into a terminal and press Enter (it asks for your password).
+          This closes by itself once the TAP can hear the clocks.</p>
+        <div class="pg-fix-actions"><button type="button" data-fix-dismiss>Not now</button></div>
+      </div>`;
+    el.addEventListener('click', (e) => {
+      const t = e.target as HTMLElement;
+      const copy = t.closest('[data-fix-copy]') as HTMLElement | null;
+      if (copy) {
+        const cmd = fix.options[Number(copy.dataset.fixCopy)]?.command ?? '';
+        navigator.clipboard?.writeText(cmd).then(() => {
+          copy.textContent = 'Copied';
+          setTimeout(() => (copy.textContent = 'Copy'), 1500);
+        });
+        return;
+      }
+      if (t.closest('[data-fix-dismiss]') || t === el) {
+        this.fixDismissed.add(key);
+        this.closeFix();
+      }
+    });
+    document.body.appendChild(el);
+    this.fixEl = el;
   }
 
   private async poll(): Promise<void> {
@@ -48,6 +109,7 @@ export class TimingView {
       this.ptp = this.ptp ?? {};
     }
     this.draw();
+    if (this.el.offsetParent) this.syncFix();
   }
 
   private draw(): void {
@@ -67,10 +129,12 @@ export class TimingView {
     const clocks: any[] = keep(this.seenClocks, p.clocks ?? [], clockKey);
 
     const state = !this.online ? 'err' : p.listening ? 'on' : 'err';
-    const src = p.mode === 'passive' ? `passive · ${esc(p.source || 'apk-ptp')}` : 'listening on 224.0.1.129';
+    const src = p.mode === 'passive' ? `MQTT · ${p.source || 'apk-ptp'}` : p.mode === 'apk-ptp' ? 'apk-ptp' : '224.0.1.129';
+    // Offline, or an older TAP still waiting on the APK MQTT broker: point at the download.
+    const getTap = !this.online || p.mode === 'passive';
     const status = !this.online
-      ? 'TAP offline: start the Ward-Beck Audio Tap (:8467)'
-      : p.listening ? `${src} · ${clocks.length} clock${clocks.length === 1 ? '' : 's'}` : (p.error || 'PTP listener not running');
+      ? 'TAP offline'
+      : p.listening ? `${src} · ${clocks.length} clock${clocks.length === 1 ? '' : 's'}${p.error ? ` · ${p.error}` : ''}` : (p.error || 'PTP listener not running');
 
     const chips = gms.length
       ? gms.map((c) => {
@@ -81,7 +145,7 @@ export class TimingView {
               <div class="tm-gm-id">${contested ? '⚠ contested · ' : ''}GM ${esc(c.identity)}</div>
             </div>`;
         }).join('')
-      : `<div class="tm-empty">${this.online ? (p.mode === 'passive' ? 'No PTP master reported by apk-ptp yet' : 'No PTP grandmaster heard on 224.0.1.129 yet') : 'Waiting for the TAP daemon'}</div>`;
+      : `<div class="tm-empty">${this.online ? 'No PTP grandmaster heard yet' : 'Waiting for the TAP daemon'}</div>`;
 
     const sorted = clocks.slice().sort((a, b) => abc(clockKey(a), clockKey(b)));
     const rows = sorted.map((c) => `
@@ -100,7 +164,7 @@ export class TimingView {
       </tr>`).join('');
 
     host.innerHTML = `
-      <div class="pg-status"><span class="pg-chip pg-chip-${state}"><i></i>PTP</span><span class="pg-iface">${esc(status)}</span></div>
+      <div class="pg-status"><span class="pg-chip pg-chip-${state}"><i></i>PTP</span><span class="pg-iface">${esc(status)}${getTap ? ` · <a href="${TAP_DOWNLOAD}" target="_blank" rel="noopener">${this.online ? 'update' : 'download'} the Ward-Beck Audio Tap</a> to hear PTP clocks` : ''}</span>${p.fix && this.online ? '<button type="button" class="pg-fix-open" data-fix-open>Fix…</button>' : ''}</div>
       <div class="tm-head">GRANDMASTERS</div>
       <div class="tm-gms">${chips}</div>
       ${clocks.length ? `
