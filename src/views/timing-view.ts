@@ -19,6 +19,7 @@ const NTP_POLL_MS = 10000;
 /** PTP − NTP history per leader: 300 polls × 2 s = 10 minutes. */
 const OFFSET_KEEP = 300;
 const OPTS_KEY = 'xtm_timing_opts';
+const CLOCK_ID = /[0-9A-F]{2}(?:-[0-9A-F]{2}){7}/i; // a PTP clock identity inside an event's text
 type Opts = { ntp: boolean; events: boolean; offset: boolean };
 const TAP_DOWNLOAD = 'https://github.com/WardBeckSystems/Ward-Beck-Audio-Tap/releases/latest';
 
@@ -58,7 +59,24 @@ export class TimingView {
   /** PTP − NTP samples per leader key, oldest first. */
   private offsets = new Map<string, { t: number; v: number }[]>();
 
+  /** Each PTP clock's own hue, kept for the session: its chip, row, plot and events share it. */
+  private hues = new Map<string, number>();
+
   constructor(private el: HTMLElement) {}
+
+  /** style attribute giving a clock its shade (golden-angle hues: neighbours never look alike). */
+  private shade(identity: unknown): string {
+    const id = String(identity ?? '').toUpperCase();
+    if (!id) return '';
+    let h = this.hues.get(id);
+    if (h === undefined) { h = Math.round((this.hues.size * 137.508 + 18) % 360); this.hues.set(id, h); }
+    return ` style="--tm-hue:${h}"`;
+  }
+
+  /** Give every clock heard a shade, in identity order the first time they are seen together. */
+  private learnShades(ids: unknown[]): void {
+    [...new Set(ids.map((i) => String(i ?? '').toUpperCase()).filter(Boolean))].sort().forEach((i) => this.shade(i));
+  }
 
   build(): this {
     try { Object.assign(this.opts, JSON.parse(configManager.storageGet(OPTS_KEY) || '{}')); } catch { /* default off */ }
@@ -73,7 +91,10 @@ export class TimingView {
             ${box('offset', 'PTP − NTP', 'Each PTP leader against this machine’s NTP clock, plotted')}
           </div>
         </div>
-        <div id="tmPtp"></div><div id="tmOffset"></div><div id="tmEvents"></div><div id="tmNtp"></div>
+        <div class="tm-split">
+          <div class="tm-left" id="tmNtp"></div>
+          <div class="tm-right"><div id="tmPtp"></div><div id="tmOffset"></div><div id="tmEvents"></div></div>
+        </div>
       </div></div>`;
     this.el.addEventListener('click', (e) => {
       const t = e.target as HTMLElement;
@@ -219,7 +240,7 @@ export class TimingView {
         const g = (this.ptp.grandmasters as any[]).find((x) => TimingView.gmKey(x) === k);
         const o = g?.ptp_offset ?? {};
         return `
-        <div class="tm-off-row" title="Leader time minus this machine's NTP clock, plus a few µs of network delay${o.utc_offset_applied ? '' : '\nTAI→UTC offset not announced: the figure includes it'}">
+        <div class="tm-off-row tm-shade"${this.shade(g?.identity)} title="Leader time minus this machine's NTP clock, plus a few µs of network delay${o.utc_offset_applied ? '' : '\nTAI→UTC offset not announced: the figure includes it'}">
           <div class="tm-off-name">${esc(ptpName(g))} · ${esc(portOf(g) || g.network)}<br><span>GM ${esc(g.identity)}</span></div>
           <div class="tm-off-val">${fmtNs(h[h.length - 1].v)}${o.spread_ns != null ? `<span>± ${fmtNs(o.spread_ns).slice(1)}</span>` : ''}</div>
           <canvas class="tm-off-plot" id="tmOffPlot${i}" height="54"></canvas>
@@ -235,7 +256,7 @@ export class TimingView {
     const ctx = cv.getContext('2d');
     if (!ctx) return;
     const css = getComputedStyle(cv);
-    const line = css.getPropertyValue('--pg-clock').trim() || '#b45309';
+    const line = css.getPropertyValue('--tm-c').trim() || css.getPropertyValue('--pg-clock').trim() || '#b45309';
     const grid = css.getPropertyValue('--pg-lane-line').trim() || '#8c897b';
     let lo = Math.min(...h.map((p) => p.v)), hi = Math.max(...h.map((p) => p.v));
     if (hi - lo < 1) { lo -= 1; hi += 1; }
@@ -264,7 +285,7 @@ export class TimingView {
     host.innerHTML = `
       <div class="tm-head">PTP EVENTS</div>
       <div class="tm-events">${ev.slice(-60).reverse().map((e) => `
-        <div class="tm-ev tm-ev-${esc(e.kind)}"><span class="tm-ev-t">${hms(e.t)}</span><b>${esc(e.kind)}</b> ${esc(e.text)}</div>`).join('')}
+        <div class="tm-ev tm-ev-${esc(e.kind)} tm-shade"${this.shade(e.identity ?? CLOCK_ID.exec(String(e.text ?? ''))?.[0])}><span class="tm-ev-t">${hms(e.t)}</span><b>${esc(e.kind)}</b> ${esc(e.text)}</div>`).join('')}
       </div>`;
   }
 
@@ -308,6 +329,7 @@ export class TimingView {
     const clockKey = (c: any) => `${portOf(c)} · ${c.network} · ${ptpName(c)} · ${c.clock_identity}`;
     const gms: any[] = keep(this.seenGms, p.grandmasters ?? [], gmKey).sort((a, b) => abc(gmKey(a), gmKey(b)));
     const clocks: any[] = keep(this.seenClocks, p.clocks ?? [], clockKey);
+    this.learnShades([...clocks.map((c) => c.clock_identity), ...gms.map((g) => g.identity)]);
 
     // No PTP on the wire is silence, not a fault: a grey chip and nothing below it.
     const quiet = this.online && p.listening && !clocks.length;
@@ -323,7 +345,7 @@ export class TimingView {
       ? gms.map((c) => {
           const contested = c.sync_health === 'contested';
           return `
-            <div class="tm-gm tm-v${c.version}${contested ? ' tm-contested' : ''}${c.gone ? ' tm-gone' : ''}" title="Grandmaster ${esc(c.identity)}${c.source_ip ? ` from ${esc(c.source_ip)}` : ''}${portOf(c) ? ` on port ${esc(portOf(c))}` : ''}${c.version === 1 ? ` (subdomain ${esc(c.domain)})` : ''}${contested ? '\nContested: more than one grandmaster on this domain and port' : ''}${c.gone ? '\nNot heard now: kept as a placeholder' : ''}">
+            <div class="tm-gm tm-shade tm-v${c.version}${contested ? ' tm-contested' : ''}${c.gone ? ' tm-gone' : ''}"${this.shade(c.identity)} title="Grandmaster ${esc(c.identity)}${c.source_ip ? ` from ${esc(c.source_ip)}` : ''}${portOf(c) ? ` on port ${esc(portOf(c))}` : ''}${c.version === 1 ? ` (subdomain ${esc(c.domain)})` : ''}${contested ? '\nContested: more than one grandmaster on this domain and port' : ''}${c.gone ? '\nNot heard now: kept as a placeholder' : ''}">
               <div class="tm-gm-name">⏱ ${esc(ptpName(c))} · ${esc(c.network)}${c.priority1 != null ? ` · p1 ${esc(c.priority1)}` : ''}</div>
               <div class="tm-gm-id">${contested ? '⚠ contested · ' : ''}GM ${esc(c.identity)}${portOf(c) ? ` · ${esc(portOf(c))}` : ''}</div>
             </div>`;
@@ -332,7 +354,7 @@ export class TimingView {
 
     const sorted = clocks.slice().sort((a, b) => abc(clockKey(a), clockKey(b)));
     const rows = sorted.map((c) => `
-      <tr class="${c.online === false || c.gone ? 'tm-off' : ''}${c.gone ? ' tm-gone' : ''}${c.sync_health === 'contested' ? ' tm-row-contested' : ''}">
+      <tr class="tm-shade${c.online === false || c.gone ? ' tm-off' : ''}${c.gone ? ' tm-gone' : ''}${c.sync_health === 'contested' ? ' tm-row-contested' : ''}"${this.shade(c.clock_identity)}>
         <td>${c.is_grandmaster ? '<b class="tm-gm-tag">GM</b>' : ''}</td>
         <td class="tm-mono">${esc(c.clock_identity)}</td>
         <td>${esc(c.vendor || '—')}</td>

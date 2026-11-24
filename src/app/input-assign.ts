@@ -19,11 +19,13 @@ const BUILTIN: InputChoice[] = [
   { id: 'pod33', name: 'POD-33 Tone', short: 'POD-33', group: 'Console' },
   { id: 'bitbuddy', name: 'Bit Buddy', short: 'BIT BUDDY', group: 'Console' },
   { id: 'pink', name: 'Pink Noise', short: 'PINK', group: 'Console' },
+  { id: 'netrx', name: 'Network Receiver (CH 9)', short: 'NETWORK', group: 'AoIP' },
+  { id: 'moiprx', name: 'MoIP Receiver (CH 10)', short: 'MOIP', group: 'AoIP' },
 ];
 /** Router input index for the built-in generators and the tab. */
-const ROUTER_IDX: Record<string, number> = { tab: 1, pod33: 2, bitbuddy: 6, pink: 7 };
-/** Web Router input rows (CH 1-8) as button assignments: CH 1 Soundcard In is the default input; CH 3-6 are POD-33 AES1-4. */
-const ROUTER_ROWS = ['dev:', 'tab', 'pod33', 'pod33', 'pod33', 'pod33', 'bitbuddy', 'pink'];
+const ROUTER_IDX: Record<string, number> = { tab: 1, pod33: 2, bitbuddy: 6, pink: 7, netrx: 8, moiprx: 9 };
+/** Web Router input rows (CH 1-10) as button assignments: CH 1 Soundcard In is the default input; CH 3-6 are POD-33 AES1-4; CH 9 / 10 the network and MoIP receivers. */
+const ROUTER_ROWS = ['dev:', 'tab', 'pod33', 'pod33', 'pod33', 'pod33', 'bitbuddy', 'pink', 'netrx', 'moiprx'];
 const assignListeners = new Set<() => void>();
 
 let assigned: string[] = load();
@@ -89,6 +91,8 @@ export function inputAssignment(n: number): string {
 export function inputFlowId(id: string): string | null {
   if (id === 'pod33') return 'wbs-flow-ref-tone';
   if (id === 'bitbuddy') return 'wbs-flow-bit-spitter';
+  if (id === 'netrx') return 'wbs-network-rx';
+  if (id === 'moiprx') return 'wbs-moip-rx';
   if (id === 'dev:' || id === 'dev:__WBS_LINUX_HOST__') return 'wbs-flow-master-stereo';
   const m = /^dev:__XMXL_\d+_(.+)__$/.exec(id);
   return m ? m[1] : null;
@@ -113,7 +117,7 @@ export function selectAssignedInput(ctx: AppContext, sync: AudioSync, n: number)
   // Mode follows the kind of source (reference level / meter law), and the hardware-mode sync
   // is told it is already in place so it does not connect something else over it.
   if (id === 'tab') { model.mode = 'D'; model.d.src = 1; }
-  else if (id.startsWith('dev:')) { model.mode = 'A'; model.a.src = 0; }
+  else if (id.startsWith('dev:') || id === 'netrx' || id === 'moiprx') { model.mode = 'A'; model.a.src = 0; }
   else { model.mode = 'S'; }
   sync.isAudioStarted = true;
   model.selectedInput = n;

@@ -60,6 +60,8 @@ export async function initApp(): Promise<void> {
   const webRouter = routerStageEl
     ? new WebRouter(routerStageEl, { audio, onFlowHint: (flow) => dataView?.setFlow(flow),
         onMeterInput: (meter, input) => onMeterInput?.(meter, input),
+        // CH 9 / CH 10 receivers: the TAP's receiver flow goes on the meters
+        onPlayFlow: (flowId) => window.dispatchEvent(new CustomEvent('xtm:meter-flow', { detail: { port: 8467, flowId } })),
         // An MXL transmitter column opens that flow in the Transmitters tab
         onOpenFlow: (flow) => {
           dataView?.setFlow(flow);

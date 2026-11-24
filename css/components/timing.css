@@ -45,3 +45,23 @@
 .tm-conf { margin-top: 4px; }
 .tm-conf-file { color: var(--pg-sub); }
 .tm-conf pre { margin: 2px 0 0; padding: 4px 6px; background: var(--pg-lane); border: 1px solid var(--pg-lane-line); border-radius: 3px; font: 500 0.6rem/1.35 monospace; white-space: pre-wrap; }
+/* NTP on the left half, PTP (leaders, clocks, PTP − NTP, events) on the right; PTP takes it all when NTP is off */
+.tm-split { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 0 20px; align-items: start; }
+.tm-split:has(> .tm-left:empty) { grid-template-columns: minmax(0, 1fr); }
+.tm-left:empty { display: none; }
+.tm-left { border-right: 1px solid var(--pg-lane-line); padding-right: 20px; }
+@media (max-width: 900px) {
+  .tm-split { grid-template-columns: minmax(0, 1fr); }
+  .tm-left { border-right: 0; padding-right: 0; }
+}
+/* Every PTP clock has its own shade: its chip, table row, PTP − NTP plot and events all wear it */
+.tm-timing { --tm-shade-l: 66%; }
+body.theme-wbs-ca .tm-timing, body.theme-mccurdy .tm-timing, body.theme-mccurdy-light .tm-timing { --tm-shade-l: 34%; }
+.tm-shade { --tm-c: hsl(var(--tm-hue, 30) 72% var(--tm-shade-l)); }
+.tm-gm.tm-shade { border-color: var(--tm-c); }
+.tm-gm.tm-shade .tm-gm-name { color: var(--tm-c); }
+.tm-gm.tm-contested { border: 1.4px dashed #ef4444; }
+.tm-table tr.tm-shade td:first-child { box-shadow: inset 4px 0 0 var(--tm-c); }
+.tm-table tr.tm-shade td:nth-child(2) { color: var(--tm-c); font-weight: 700; }
+.tm-off-row.tm-shade .tm-off-name, .tm-off-row.tm-shade .tm-off-val { color: var(--tm-c); }
+.tm-ev.tm-shade { color: var(--tm-c); box-shadow: inset 3px 0 0 var(--tm-c); padding-left: 6px; }

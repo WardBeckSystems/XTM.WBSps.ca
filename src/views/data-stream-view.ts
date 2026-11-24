@@ -503,7 +503,8 @@ export class DataStreamView {
     const live: any[] = this.ringsFresh() && this.mxlRings ? this.mxlRings.flows : [];
     // Four transmitters: the program bus, the generators, then the Ward-Beck Tap (test point).
     // The Tap only has a ring while a test point is set; until then its card sits idle.
-    const flows: any[] = [...live.filter((f) => f.kind !== 'testpoint'), ...live.filter((f) => f.kind === 'testpoint')];
+    // Receivers (router CH 9 / 10) are not transmitters: they show on the input rings only.
+    const flows: any[] = [...live.filter((f) => f.kind !== 'testpoint' && f.kind !== 'receiver'), ...live.filter((f) => f.kind === 'testpoint')];
     if (live.length && !flows.some((f) => f.kind === 'testpoint')) {
       flows.push({ flow_id: 'wbs-test-point', label: 'Ward-Beck Test Point Tap', kind: 'testpoint', idle: true,
         channel_count: 2, sample_rate: 48000, write_head: 0, buffer_length: this.RING_CAPACITY, channels: [] });
