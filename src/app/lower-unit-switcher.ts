@@ -91,6 +91,12 @@ export function initLowerUnitSwitcher(): void {
       btn.setAttribute('aria-checked', on ? 'true' : 'false');
       btn.querySelector('.footer-view-led')?.classList.toggle('lit-green', on);
     }
+    // Each view has its own address (#routing, #receivers …): a refresh or a shared link opens it
+    // …followed by the skin (#routing/wbs-ca), so the link reproduces the console
+    let skin = location.hash.slice(1).split('/')[1] || '';
+    try { skin = skin || localStorage.getItem('xtm.mode') || ''; } catch {}
+    const want = `#${mode}${skin ? `/${skin}` : ''}`;
+    if (location.hash !== want) history.replaceState(null, '', `${location.pathname}${location.search}${want}`);
     if (currentName) currentName.textContent = buttons.find((b) => b.dataset.view === mode)?.querySelector('.footer-view-name')?.textContent ?? mode;
     setOpen(false);
     trigger?.classList.toggle('settings-on', mode === 'settings');
@@ -123,12 +129,17 @@ export function initLowerUnitSwitcher(): void {
     });
   }
 
-  // Loudness is always the default on load; the last tab is not restored.
+  // The address names the view (#routing …); without one, loudness.
   try {
     localStorage.removeItem('xtm.lower_unit_pref');
     localStorage.removeItem('xtm.lower_unit');
   } catch {}
-  setMode('loudness');
+  const fromHash = (): LowerUnitMode => {
+    const h = location.hash.slice(1).split('/')[0] as LowerUnitMode;
+    return MODES.includes(h) ? h : 'loudness';
+  };
+  setMode(fromHash());
+  window.addEventListener('hashchange', () => { const m = fromHash(); if (m !== currentMode) setMode(m); });
 
   if (bar) {
     let raf = 0;

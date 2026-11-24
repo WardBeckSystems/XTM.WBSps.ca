@@ -386,13 +386,24 @@ export class DataStreamView {
   }
 
   /** Polls the backend for real ring-buffer state of every MXL flow. */
+  /** Other places that draw ring eyes (the receivers tab): the rings are polled while they show. */
+  private eyeHosts: HTMLElement[] = [];
+  watchEyes(host: HTMLElement): void { if (!this.eyeHosts.includes(host)) this.eyeHosts.push(host); }
+
+  /** Draw one flow's ring eye (compact) into a canvas; idle dial when the flow has no ring. */
+  drawEyeFor(canvas: HTMLCanvasElement, flowId: string): void {
+    const f = this.ringsFresh() && this.mxlRings ? this.mxlRings.flows.find((x: any) => x.flow_id === flowId) : null;
+    const b = document.body.classList;
+    this.drawScanalyzerEye(canvas, f ?? null, b.contains('theme-mccurdy-dark'), b.contains('theme-mccurdy') || b.contains('theme-mccurdy-light'), b.contains('theme-wbs-ca'), true, '');
+  }
+
   private startRingsPoll(): void {
     if (this.mxlRingsPollTimer !== null) return;
     const poll = () => {
       if (!this.container || !this.container.isConnected) return;
       // Only while a ring is on screen (data or transmitters tab): 10 polls a second otherwise
       // hit the TAP for nothing, and from a public page each one is a Local Network Access request.
-      if (!this.container.offsetParent && !this.ringsHost?.offsetParent) return;
+      if (!this.container.offsetParent && !this.ringsHost?.offsetParent && !this.eyeHosts.some((h) => h.offsetParent)) return;
       const port = this.selectedPort || 8467;
       fetch(`http://localhost:${port}/api/mxl/rings?bins=360`)
         .then((r) => (r.ok ? r.json() : null))

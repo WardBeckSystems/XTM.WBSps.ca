@@ -109,7 +109,10 @@ export async function initApp(): Promise<void> {
   (window as any).xtmView = view;
   (window as any).xtmDataView = dataView;
   const receiversStageEl = document.getElementById('receiversStage');
-  if (webRouter && receiversStageEl) webRouter.mountReceivers(receiversStageEl);
+  if (webRouter && receiversStageEl) {
+    if (dataView) dataView.watchEyes(receiversStageEl);
+    webRouter.mountReceivers(receiversStageEl, dataView ? (cv, id) => dataView.drawEyeFor(cv, id) : undefined);
+  }
   const hardwareStageEl = document.getElementById('hardwareStage');
   if (webRouter && hardwareStageEl) webRouter.mountHardware(hardwareStageEl);
   (window as any).xtmWebRouter = webRouter;
