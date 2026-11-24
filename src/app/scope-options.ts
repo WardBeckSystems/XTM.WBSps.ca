@@ -7,6 +7,7 @@ export function initScopeOptions(ctx: AppContext): void {
   const { audio, dbfsView } = ctx;
 
   if (dbfsView) {
+    dbfsView.audioEngine = audio;
     dbfsView.onClear = () => {
       audio.resetLoudness();
     };

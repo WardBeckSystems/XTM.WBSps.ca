@@ -42,6 +42,8 @@ export class DbfsView {
 
   timeMode: TimeScaleMode = 'log';
   onTimeModeChange: ((mode: TimeScaleMode) => void) | null = null;
+  /** Audio engine, for the SAMPLES time scale's raw-sample tap. */
+  audioEngine: any = null;
   beta: number = 15;
   logBetaDenom: number = Math.log(1 + 15);
 

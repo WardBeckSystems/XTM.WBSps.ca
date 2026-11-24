@@ -17,10 +17,10 @@ import { WebRouter } from '../WebRouter/src';
 import type { AppContext } from './app/app-context';
 import { queryDrawerControls } from './app/dom-refs';
 import { initSettingsDrawer } from './app/settings-drawer';
-import { initSettingsLock } from './app/settings-lock';
 import { initVfdMetric } from './app/vfd-metric';
 import { initPodExtendedRange, initPodScaleAndHold, initPodDecay } from './app/pod22-options';
 import { initCsvExport } from './app/csv-export';
+import { bindRouterMeterInputs, routerMeterInput } from './app/input-assign';
 import { createAudioSync } from './app/audio-sync';
 import { applyInitialAudioState, bindModelChange, bindFrontPanel, bindAudioUnlock } from './app/model-bindings';
 import { bindAudioCallbacks, initDeviceScan, initDeviceSelector } from './app/device-selector';
@@ -39,6 +39,8 @@ import { registerServiceWorker } from './app/service-worker';
 import { initPwaInstall } from './app/pwa-install';
 import { initTimeModule } from './time';
 import { initLowerUnitSwitcher } from './app/lower-unit-switcher';
+import { TimingView } from './views/timing-view';
+import { initMetersPreview } from './app/meters-preview';
 import { startFrameLoop } from './app/frame-loop';
 import { startXmxlDiscoveryLoop, onXmxlInstancesChanged } from './audio/engine/sources/xmxl-discovery';
 
@@ -53,11 +55,45 @@ export async function initApp(): Promise<void> {
   const dataStageEl = document.getElementById('dataStage');
   const dataView = dataStageEl ? new DataStreamView(dataStageEl) : null;
   const routerStageEl = document.getElementById('routerStage');
+  // Meter Input 1-4 crosspoints drive the XTM-4's INPUT buttons (wired once the audio sync exists)
+  let onMeterInput: ((meter: number, input: number) => void) | null = null;
   const webRouter = routerStageEl
-    ? new WebRouter(routerStageEl, { audio, onFlowHint: (flow) => dataView?.setFlow(flow) }).mount()
+    ? new WebRouter(routerStageEl, { audio, onFlowHint: (flow) => dataView?.setFlow(flow),
+        onMeterInput: (meter, input) => onMeterInput?.(meter, input),
+        // An MXL transmitter column opens that flow in the MXL transmitters tab
+        onOpenFlow: (flow) => {
+          dataView?.setFlow(flow);
+          (window as any).setLowerUnitMode?.('mxl');
+          requestAnimationFrame(() => document.querySelector(`#mxlStage [data-flow-ring="${CSS.escape(flow)}"]`)?.scrollIntoView({ block: 'nearest' }));
+        } }).mount()
     : null;
+  // Speakers fader on the router strip and Settings → Monitor Volume are one control.
+  const monSlider = document.getElementById('monitorVolSlider') as HTMLInputElement | null;
+  const monVal = document.getElementById('monitorVolVal');
+  if (webRouter && monSlider) {
+    webRouter.setSpeakerLevel(parseFloat(monSlider.value));
+    // after the Settings handler, so the -20 dB dim stays applied
+    monSlider.addEventListener('input', () => queueMicrotask(() => webRouter.setSpeakerLevel(parseFloat(monSlider.value))));
+    webRouter.onChange((r) => {
+      if (document.activeElement === monSlider) return;
+      monSlider.value = String(r.speakerLevel);
+      if (monVal) monVal.textContent = Math.round(r.speakerLevel * 100) + '%';
+    });
+  }
   const generatorsStageEl = document.getElementById('generatorsStage');
-  if (generatorsStageEl && webRouter) new GeneratorsView(generatorsStageEl, webRouter).build();
+  if (generatorsStageEl && webRouter) {
+    new GeneratorsView(generatorsStageEl, webRouter, document.getElementById('mxlCbcStage')).build();
+    // The XTM-4's own 1 kHz reference tone level sits with the generators, not in Settings
+    const toneCalRow = document.getElementById('toneCalRow');
+    const rack = generatorsStageEl.querySelector('.routing-console-rack');
+    if (toneCalRow && rack) {
+      toneCalRow.className = 'rc-tone-cal-row';
+      toneCalRow.querySelector('label')!.textContent = 'XTM-4 1 kHz reference tone';
+      rack.prepend(toneCalRow);
+    }
+  }
+  const timingStageEl = document.getElementById('timingStage');
+  if (timingStageEl) new TimingView(timingStageEl).build();
   const ctx: AppContext = { model, audio, view, podView, dbfsView, dataView, webRouter };
   if (dataView) dataView.build(ctx);
   (window as any).xtmModel = model;
@@ -68,7 +104,6 @@ export async function initApp(): Promise<void> {
   (window as any).xtmCtx = ctx;
 
   initSettingsDrawer();
-  initSettingsLock();
 
   initVfdMetric(ctx);
   initPodExtendedRange(ctx);
@@ -78,6 +113,8 @@ export async function initApp(): Promise<void> {
   applyInitialAudioState(ctx);
 
   const sync = createAudioSync(ctx, refs);
+  onMeterInput = (meter, input) => routerMeterInput(ctx, sync, meter, input);
+  bindRouterMeterInputs(ctx);
   bindModelChange(ctx, refs, sync);
   bindFrontPanel(ctx, sync);
   bindAudioUnlock(ctx, sync);
@@ -108,6 +145,7 @@ export async function initApp(): Promise<void> {
   initPwaInstall();
   initTimeModule(ctx);
   initLowerUnitSwitcher();
+  initMetersPreview();
 
   // Auto-detect local XMXL (EBU DMF shared-memory) instances across loopback
   startXmxlDiscoveryLoop(4000);

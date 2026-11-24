@@ -54,15 +54,21 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  gap: 6px;
+  font: inherit;
   opacity: 0.35;
   transition: all 0.2s ease;
 }
+/* The current view's name is part of the button: one target for icon + label */
+.btn-settings-cog .drawer-gear-label { pointer-events: none; color: #94a3b8; }
+.btn-settings-cog:has(.drawer-gear-label) { opacity: 1; }
+.btn-settings-cog:has(.drawer-gear-label) svg { opacity: 0.35; transition: transform 0.2s ease, opacity 0.2s ease; }
 
 .btn-settings-cog:hover {
   opacity: 0.95;
   color: #38bdf8;
-  transform: rotate(45deg);
 }
+.btn-settings-cog:hover svg { opacity: 0.95; transform: rotate(45deg); transition: transform 0.2s ease; }
 
 .drawer-tab-sub {
   font-size: 12px;

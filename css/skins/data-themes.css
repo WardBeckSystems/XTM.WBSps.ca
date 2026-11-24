@@ -1,0 +1,279 @@
+/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.ca). All rights reserved. */
+/* ---------------------------------------------------------------
+   DATA tab theming: MXL eye, HUD cards, generator rings, telemetry
+   and the pipeline signal-flow graph follow the active console theme.
+   - Default (wbs-dark): VFD navy, as before.
+   - Ward-Beck.ca: warm brushed aluminium deck, engraved ink, the eye in a
+     black meter aperture like the console's dB meters.
+   - McCurdy (light): cream paper, navy + burgundy ink.
+   - McCurdy dark: studio blue with slate blue + amber.
+   Canvas colours are read from the --eye-* tokens (data-stream-view.ts).
+   --------------------------------------------------------------- */
+
+/* ---------- Default tokens (wbs-dark) ---------- */
+.routing-console-rack {
+  --eye-grid: #0e2338;
+  --eye-spoke: #112942;
+  --eye-zero: #ef4444;
+  --eye-label: #94a3b8;
+  --eye-ch1: rgba(34, 197, 94, 0.9);
+  --eye-ch2: rgba(56, 189, 248, 0.9);
+  --eye-write: #f97316;
+  --eye-tip: #ff2810;
+  --eye-meter: #d946ef;
+  --eye-glow: 1;
+  --tone-cyan: #38bdf8;
+  --tone-meter: #d946ef;
+  --tone-ok: #4ade80;
+  --tone-accent: #ea580c;
+}
+.rc-tone-cyan { color: var(--tone-cyan); }
+.rc-tone-meter { color: var(--tone-meter); }
+.rc-tone-ok { color: var(--tone-ok); }
+.rc-tone-accent { color: var(--tone-accent); }
+.rc-eye-key-write { background: var(--eye-write); box-shadow: 0 0 4px var(--eye-write); }
+.rc-eye-key-meter { background: var(--eye-meter); box-shadow: 0 0 4px var(--eye-meter); }
+.rc-gen-card.active { border-color: var(--eye-meter); }
+
+/* =================================================================
+   Ward-Beck.ca — M500/M600 warm anodized brushed aluminium
+   ================================================================= */
+body.theme-wbs-ca .routing-console-rack {
+  --eye-grid: #3a3833;
+  --eye-spoke: #2c2a26;
+  --eye-zero: #dc2626;
+  --eye-label: #e8e3d3;
+  --eye-ch1: rgba(245, 165, 36, 0.95);
+  --eye-ch2: rgba(249, 115, 22, 0.9);
+  --eye-write: #f97316;
+  --eye-tip: #dc2626;
+  --eye-meter: #f4efe0;
+  --eye-glow: 0.5;
+  --tone-cyan: #2a2b2a;
+  --tone-meter: #2a2b2a;
+  --tone-ok: #15803d;
+  --tone-accent: #c2410c;
+  background: linear-gradient(180deg, #d4d2c5 0%, #c9c6b7 55%, #b3b09f 100%);
+}
+
+/* Deck + cards: aluminium panels, hairline milled edges, engraved ink */
+body.theme-wbs-ca .rc-top-monitoring-deck,
+body.theme-wbs-ca .rc-telemetry-box,
+body.theme-wbs-ca .rc-linear-unwrap,
+body.theme-wbs-ca .rc-phase-track {
+  background: linear-gradient(180deg, #d9d6c9 0%, #c6c3b3 100%);
+  border-color: #8c897b;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.55), inset 0 -1px 0 rgba(0, 0, 0, 0.12);
+}
+body.theme-wbs-ca .rc-eye-hud-card,
+body.theme-wbs-ca .rc-telemetry-pill {
+  background: #edeae0;
+  border-color: #9e9a89;
+  color: #2a2b2a;
+}
+body.theme-wbs-ca .rc-deck-header {
+  color: #2a2b2a;
+  border-bottom-color: #a39f90;
+  letter-spacing: 0.08em;
+}
+body.theme-wbs-ca .rc-deck-sub,
+body.theme-wbs-ca .rc-eye-hud-label,
+body.theme-wbs-ca .rc-telemetry-box-title,
+body.theme-wbs-ca .rc-telemetry-item span,
+body.theme-wbs-ca .rc-phase-marker-scale {
+  color: #6c7077;
+  border-bottom-color: #a39f90;
+}
+body.theme-wbs-ca .rc-eye-hud-val { color: #2a2b2a; }
+body.theme-wbs-ca .rc-eye-hud-sub,
+body.theme-wbs-ca .rc-telemetry-item,
+body.theme-wbs-ca .rc-phase-lbl,
+body.theme-wbs-ca .rc-ring-title,
+body.theme-wbs-ca .rc-unwrap-label { color: #454c59; }
+body.theme-wbs-ca .rc-ring-head { color: #c2410c; }
+
+/* The eye and the generator rings sit in black meter apertures */
+body.theme-wbs-ca .rc-eye-canvas-container,
+body.theme-wbs-ca .rc-gen-card {
+  background: radial-gradient(circle at 50% 42%, #1c1b19 0%, #121110 70%, #0b0a09 100%);
+  border: 1px solid #8c897b;
+  box-shadow: inset 0 0 0 3px #2a2926, inset 0 0 24px rgba(0, 0, 0, 0.85), 0 1px 0 rgba(255, 255, 255, 0.5);
+}
+body.theme-wbs-ca .rc-gen-name,
+body.theme-wbs-ca .rc-gen-chl,
+body.theme-wbs-ca .rc-gen-db { color: #d9d4c3; }
+body.theme-wbs-ca .rc-gen-bar { background: #2a2926; }
+body.theme-wbs-ca .rc-gen-pk { background: #f4efe0; }
+body.theme-wbs-ca .rc-gen-card.active { box-shadow: inset 0 0 0 3px #2a2926, 0 0 0 1px #f4efe0; }
+
+/* Pipeline graph: aluminium lanes, cream nodes, engraved labels, muted accents */
+body.theme-wbs-ca .rc-pipeline-graph {
+  --pg-bg: #d4d2c5; --pg-lane: #c9c6b7; --pg-lane-line: #8c897b;
+  --pg-node: #edeae0; --pg-node-line: #9e9a89; --pg-text: #2a2b2a; --pg-sub: #6c7077;
+  --pg-edge: #9e9a89; --pg-flow: #c2410c; --pg-clock: #b45309;
+  --pg-hw: #0e7490; --pg-pw: #6d28d9; --pg-mxl: #ea580c; --pg-dante: #be123c;
+  --pg-ravenna: #7e22ce; --pg-sap: #15803d; --pg-nmos: #a16207; --pg-sip: #be185d; --pg-hub: #c2410c;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.55);
+}
+
+/* =================================================================
+   McCurdy (light) — cream paper, navy + burgundy ink
+   ================================================================= */
+body.theme-mccurdy .routing-console-rack,
+body.theme-mccurdy-light .routing-console-rack {
+  --eye-grid: #c8c4b7;
+  --eye-spoke: #d6d2c6;
+  --eye-zero: #b91c1c;
+  --eye-label: #4a4740;
+  --eye-ch1: rgba(30, 58, 95, 0.9);
+  --eye-ch2: rgba(185, 28, 28, 0.85);
+  --eye-write: #b91c1c;
+  --eye-tip: #7f1d1d;
+  --eye-meter: #3892d4;
+  --eye-glow: 0;
+  --tone-cyan: #1e3a5f;
+  --tone-meter: #1e3a5f;
+  --tone-ok: #166534;
+  --tone-accent: #b91c1c;
+}
+body.theme-mccurdy .rc-top-monitoring-deck, body.theme-mccurdy-light .rc-top-monitoring-deck,
+body.theme-mccurdy .rc-telemetry-box, body.theme-mccurdy-light .rc-telemetry-box,
+body.theme-mccurdy .rc-linear-unwrap, body.theme-mccurdy-light .rc-linear-unwrap,
+body.theme-mccurdy .rc-phase-track, body.theme-mccurdy-light .rc-phase-track {
+  background: #ece8dc;
+  border-color: #b5b1a6;
+  box-shadow: none;
+}
+body.theme-mccurdy .rc-eye-canvas-container, body.theme-mccurdy-light .rc-eye-canvas-container,
+body.theme-mccurdy .rc-eye-hud-card, body.theme-mccurdy-light .rc-eye-hud-card,
+body.theme-mccurdy .rc-telemetry-pill, body.theme-mccurdy-light .rc-telemetry-pill {
+  background: #f8f6ef;
+  border-color: #b5b1a6;
+  box-shadow: inset 0 0 12px rgba(120, 110, 90, 0.12);
+}
+body.theme-mccurdy .rc-deck-header, body.theme-mccurdy-light .rc-deck-header {
+  color: #1e3a5f;
+  border-bottom-color: #c8c4b7;
+}
+body.theme-mccurdy .rc-eye-hud-val, body.theme-mccurdy-light .rc-eye-hud-val { color: #232325; }
+body.theme-mccurdy .rc-deck-sub, body.theme-mccurdy-light .rc-deck-sub,
+body.theme-mccurdy .rc-eye-hud-label, body.theme-mccurdy-light .rc-eye-hud-label,
+body.theme-mccurdy .rc-telemetry-box-title, body.theme-mccurdy-light .rc-telemetry-box-title,
+body.theme-mccurdy .rc-telemetry-item span, body.theme-mccurdy-light .rc-telemetry-item span,
+body.theme-mccurdy .rc-phase-marker-scale, body.theme-mccurdy-light .rc-phase-marker-scale {
+  color: #6b675d;
+  border-bottom-color: #c8c4b7;
+}
+body.theme-mccurdy .rc-eye-hud-sub, body.theme-mccurdy-light .rc-eye-hud-sub,
+body.theme-mccurdy .rc-telemetry-item, body.theme-mccurdy-light .rc-telemetry-item,
+body.theme-mccurdy .rc-phase-lbl, body.theme-mccurdy-light .rc-phase-lbl,
+body.theme-mccurdy .rc-gen-name, body.theme-mccurdy-light .rc-gen-name { color: #4a4740; }
+
+/* =================================================================
+   McCurdy dark — studio blue, slate blue + warm amber
+   ================================================================= */
+body.theme-mccurdy-dark .routing-console-rack {
+  --eye-grid: #1a2e40;
+  --eye-spoke: #1c3247;
+  --eye-zero: #f87171;
+  --eye-label: #9fb3c8;
+  --eye-ch1: rgba(56, 146, 212, 0.9);
+  --eye-ch2: rgba(245, 158, 11, 0.9);
+  --eye-write: #f59e0b;
+  --eye-tip: #fbbf24;
+  --eye-meter: #e2e8f0;
+  --eye-glow: 0.7;
+  --tone-cyan: #7cc0f0;
+  --tone-meter: #e2e8f0;
+  --tone-ok: #4ade80;
+  --tone-accent: #f59e0b;
+}
+body.theme-mccurdy-dark .rc-top-monitoring-deck,
+body.theme-mccurdy-dark .rc-telemetry-box,
+body.theme-mccurdy-dark .rc-linear-unwrap,
+body.theme-mccurdy-dark .rc-phase-track {
+  background: #132536;
+  border-color: #2f475b;
+}
+body.theme-mccurdy-dark .rc-eye-canvas-container,
+body.theme-mccurdy-dark .rc-eye-hud-card,
+body.theme-mccurdy-dark .rc-gen-card,
+body.theme-mccurdy-dark .rc-telemetry-pill {
+  background: #0e1a26;
+  border-color: #2f475b;
+}
+body.theme-mccurdy-dark .rc-deck-header {
+  color: #7cc0f0;
+  border-bottom-color: #2f475b;
+}
+body.theme-mccurdy-dark .rc-deck-sub,
+body.theme-mccurdy-dark .rc-eye-hud-label,
+body.theme-mccurdy-dark .rc-telemetry-box-title,
+body.theme-mccurdy-dark .rc-telemetry-item span { color: #7d93a8; border-bottom-color: #2f475b; }
+body.theme-mccurdy-dark .rc-gen-bar { background: #1b2a3a; }
+body.theme-mccurdy-dark .rc-pipeline-graph {
+  --pg-bg: #0f1c2a; --pg-lane: #132536; --pg-lane-line: #2f475b;
+  --pg-node: #16293b; --pg-node-line: #2f475b; --pg-text: #e2e8f0; --pg-sub: #9fb3c8;
+  --pg-edge: #2f5a80; --pg-flow: #3892d4; --pg-clock: #f59e0b; --pg-hub: #3892d4;
+}
+
+/* =================================================================
+   MXL eye = a meter dial. The ring wears the same lamp-lit face, ink
+   and needles as the console's VU meters in each theme: black write
+   needle, red read needle, no neon glow.
+   ================================================================= */
+.routing-console-rack {
+  --eye-face-hi: #fff6cc;          /* amber lamp, lit from the top (default VU) */
+  --eye-face-mid: #fbb024;
+  --eye-face-lo: #b85104;
+  --eye-face-light-y: 0.38;
+  --eye-bezel: #0b0c0e;
+  --eye-grid: rgba(20, 16, 8, 0.55);
+  --eye-spoke: rgba(20, 16, 8, 0.28);
+  --eye-zero: #b91c1c;
+  --eye-label: #141008;
+  --eye-ch1: rgba(20, 16, 8, 0.85);
+  --eye-ch2: rgba(153, 27, 27, 0.85);
+  --eye-write: #141008;
+  --eye-tip: #141008;
+  --eye-meter: #c1121f;
+  --eye-glow: 0;
+}
+body.theme-wbs-ca .routing-console-rack {
+  --eye-face-hi: #ffeaa0;          /* amber lamp from below the rim */
+  --eye-face-mid: #f5ad2b;
+  --eye-face-lo: #cc7408;
+  --eye-face-light-y: 0.65;
+  --eye-bezel: #2a2926;
+  --eye-grid: rgba(20, 16, 8, 0.55);
+  --eye-spoke: rgba(20, 16, 8, 0.28);
+  --eye-zero: #b91c1c;
+  --eye-label: #141008;
+  --eye-ch1: rgba(20, 16, 8, 0.85);
+  --eye-ch2: rgba(153, 27, 27, 0.85);
+  --eye-write: #141008;
+  --eye-tip: #141008;
+  --eye-meter: #c1121f;
+  --eye-glow: 0;
+}
+body.theme-mccurdy .routing-console-rack,
+body.theme-mccurdy-light .routing-console-rack,
+body.theme-mccurdy-dark .routing-console-rack {
+  --eye-face-hi: #f3e4b3;          /* McCurdy ATS cream face */
+  --eye-face-mid: #eedba1;
+  --eye-face-lo: #d5bd7b;
+  --eye-face-light-y: 0.4;
+  --eye-bezel: #2d2924;
+  --eye-grid: rgba(30, 58, 95, 0.5);
+  --eye-spoke: rgba(30, 58, 95, 0.25);
+  --eye-zero: #b91c1c;
+  --eye-label: #1e3a5f;
+  --eye-ch1: rgba(30, 58, 95, 0.85);
+  --eye-ch2: rgba(185, 28, 28, 0.8);
+  --eye-write: #1e293b;
+  --eye-tip: #1e293b;
+  --eye-meter: #b91c1c;
+  --eye-glow: 0;
+}
+body.theme-mccurdy-dark .routing-console-rack { --eye-bezel: #0f1c29; }
+

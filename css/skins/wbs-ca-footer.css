@@ -1,0 +1,29 @@
+/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.ca). All rights reserved. */
+/* Ward-Beck.ca footer + settings drawer: the same warm brushed aluminium and
+   engraved ink as the meter panel above (was the dark navy default). */
+body.theme-wbs-ca .aux-drawer { background: #c9c6b7; border-top-color: #8c897b; }
+body.theme-wbs-ca .drawer-toggle,
+body.theme-wbs-ca .drawer-toggle:hover {
+  background: linear-gradient(180deg, #d4d2c5 0%, #c9c6b7 55%, #b3b09f 100%);
+  border-top-color: #8c897b;
+}
+body.theme-wbs-ca .btn-settings-cog { color: #2a2b2a; }
+body.theme-wbs-ca .drawer-gear-label { color: #454c59; }
+body.theme-wbs-ca .wbs-ca-text,
+body.theme-wbs-ca .wbs-com-text,
+body.theme-wbs-ca .mc-ca-text,
+body.theme-wbs-ca .mc-com-text,
+body.theme-wbs-ca .wbsps-text,
+body.theme-wbs-ca .mc-toggle-text,
+body.theme-wbs-ca .build-stamp { color: #2a2b2a; }
+body.theme-wbs-ca .footer-style-btn:hover .wbs-ca-text,
+body.theme-wbs-ca .footer-style-btn:hover .wbs-com-text,
+body.theme-wbs-ca .footer-style-btn:hover .mc-ca-text,
+body.theme-wbs-ca .footer-style-btn:hover .mc-com-text,
+body.theme-wbs-ca .footer-style-btn:hover .wbsps-text { color: #c2410c; }
+body.theme-wbs-ca .wbsps-btn { color: #2a2b2a; }
+body.theme-wbs-ca .footer-logo-badge,
+body.theme-wbs-ca .footer-style-btn svg {
+  background: radial-gradient(ellipse at center, rgba(255, 255, 255, 0.5) 0%, rgba(255, 255, 255, 0.22) 55%, rgba(255, 255, 255, 0.05) 75%, transparent 100%);
+}
+body.theme-wbs-ca .drawer-grid { background: #c9c6b7; }

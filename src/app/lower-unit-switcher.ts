@@ -1,34 +1,76 @@
 /*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.ca). All rights reserved. */
 /**
- * Lower Console Bay tabs (footer): loudness · data · routing.
+ * Lower Console Bay views, picked from the Settings cog's drop-up menu:
+ * loudness · data · routing · generators · mxl transmitters · timing (then Settings).
  * - loudness:   dBFS / BS.1770 LUFS scope (always the view on load)
- * - data:       Scanalyzer Audio Eye, MXL ring buffers & pipeline
- * - routing:    Web Router (inputs × outputs grid), then the generators
- *               under it: POD-33, CBC MXL, ABS-1 Bit Spitter → ABB-1 Bit Buddy
+ * - data:       Scanalyzer Audio Eye & pipeline graph
+ * - routing:    Web Router (inputs × outputs grid)
+ * - generators: POD-33, ABS-1 Bit Spitter → ABB-1 Bit Buddy
+ * - mxl:        one EBU DMF / MXL ring buffer per transmitter, then the CBC MXL test generator
+ * - timing:     PTP grandmasters and clocks
  */
 
-export type LowerUnitMode = 'loudness' | 'data' | 'routing';
+export type LowerUnitMode = 'loudness' | 'data' | 'routing' | 'generators' | 'mxl' | 'timing' | 'settings';
 
 const STAGES: Record<LowerUnitMode, { ids: string[]; display: string }> = {
   loudness: { ids: ['dbfsStage'], display: 'flex' },
   data: { ids: ['dataStage'], display: 'block' },
-  routing: { ids: ['routingStage'], display: 'block' }, // router grid, generators below it
+  routing: { ids: ['routingStage'], display: 'block' },
+  generators: { ids: ['generatorsStage'], display: 'block' },
+  mxl: { ids: ['mxlStage'], display: 'block' },
+  timing: { ids: ['timingStage'], display: 'block' },
+  // Settings is a page like the others: the drawer is its body, open only while it is the view
+  settings: { ids: ['settingsStage'], display: 'block' },
 };
 
 const MODES = Object.keys(STAGES) as LowerUnitMode[];
 
 export function initLowerUnitSwitcher(): void {
-  const buttons = Array.from(document.querySelectorAll<HTMLElement>('#footerViewSwitcher [data-view]'));
+  const menu = document.getElementById('footerViewMenu');
+  const trigger = document.getElementById('btnOpenSettings');
+  const currentName = document.getElementById('footerViewCurrentName');
+  const buttons = Array.from(document.querySelectorAll<HTMLElement>('#footerViewMenu [data-view]'));
   let currentMode: LowerUnitMode = 'loudness';
+
+  // Settings cog opens a drop-up menu: the lower-bay views, then Settings.
+  const isOpen = () => !!menu?.classList.contains('open');
+  const setOpen = (open: boolean) => {
+    menu?.classList.toggle('open', open);
+    trigger?.classList.toggle('menu-open', open);
+    trigger?.setAttribute('aria-expanded', open ? 'true' : 'false');
+  };
+  trigger?.addEventListener('click', (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setOpen(!isOpen());
+  });
+  // Settings is its own page: its cards leave the footer drawer for the lower bay, so only
+  // one page shows at a time and the footer bar stays put.
+  const drawerEl = document.getElementById('auxDrawer') as HTMLDetailsElement | null;
+  const settingsStage = document.getElementById('settingsStage');
+  const drawerGrid = drawerEl?.querySelector(':scope > .drawer-grid');
+  if (settingsStage && drawerGrid) settingsStage.appendChild(drawerGrid);
+  if (drawerEl) drawerEl.open = false;
+  document.addEventListener('click', (e) => {
+    const t = e.target as Node;
+    if (isOpen() && !menu?.contains(t) && !trigger?.contains(t)) setOpen(false);
+  });
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && isOpen()) { setOpen(false); trigger?.focus(); }
+  });
 
   const setMode = (mode: LowerUnitMode) => {
     currentMode = mode;
     for (const btn of buttons) {
       const on = btn.dataset.view === mode;
       btn.classList.toggle('active', on);
-      btn.setAttribute('aria-selected', on ? 'true' : 'false');
+      btn.setAttribute('aria-checked', on ? 'true' : 'false');
       btn.querySelector('.footer-view-led')?.classList.toggle('lit-green', on);
     }
+    if (currentName) currentName.textContent = buttons.find((b) => b.dataset.view === mode)?.querySelector('.footer-view-name')?.textContent ?? mode;
+    setOpen(false);
+    // One page at a time
+    document.body.classList.toggle('xtm-settings-page', mode === 'settings');
     for (const m of MODES) {
       for (const id of STAGES[m].ids) {
         const el = document.getElementById(id);
@@ -36,7 +78,7 @@ export function initLowerUnitSwitcher(): void {
       }
     }
 
-    // Routing (with its generators) drives audio: make sure the context is running.
+    // Routing and generators drive audio: make sure the context is running.
     if (mode !== 'loudness') {
       try {
         const audio = (window as any).xtmAudio;
@@ -50,6 +92,7 @@ export function initLowerUnitSwitcher(): void {
 
   for (const btn of buttons) {
     btn.addEventListener('click', (e) => {
+      e.preventDefault();
       e.stopPropagation();
       setMode(btn.dataset.view as LowerUnitMode);
     });

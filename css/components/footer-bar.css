@@ -141,22 +141,41 @@ body.theme-mccurdy-dark .wbsps-btn:hover {
 }
 
 /* -------------------------------------------------------------
-   Loudness vs Data Stream View Switcher (Center Footer Drawer)
-   Recessed capsule toggle styling matching broadcast physical hardware
+   Settings cog drop-up: lower-bay views (loudness · data · routing ·
+   generators) and SETTINGS (the drawer). Opens above the cog.
    ------------------------------------------------------------- */
-.footer-view-switcher {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
+.drawer-toggle-left { position: relative; }
+#footerViewCurrentName { text-transform: uppercase; letter-spacing: 0.8px; }
+
+.footer-view-menu {
+  position: absolute;
+  left: 0;
+  bottom: calc(100% + 8px);
+  display: none;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 3px;
+  min-width: 170px;
   background: #d8d3c5;
   border: 1px solid #7c776b;
-  border-radius: 9999px;
-  padding: 3px 6px;
-  box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.45), 0 1px 2px rgba(255, 255, 255, 0.25);
+  border-radius: 10px;
+  padding: 6px;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.35), 0 8px 22px rgba(0, 0, 0, 0.45);
   user-select: none;
-  cursor: pointer;
-  z-index: 5;
+  z-index: 1000;
 }
+.footer-view-menu.open { display: flex; }
+.footer-view-menu .footer-view-btn { justify-content: flex-start; width: 100%; }
+
+.footer-view-sep {
+  height: 1px;
+  margin: 3px 4px;
+  background: #7c776b;
+  opacity: 0.6;
+}
+
+.btn-settings-cog.menu-open { color: #ff7700; }
+.btn-settings-cog.menu-open svg { transform: rotate(45deg); transition: transform 0.15s ease; }
 
 .footer-view-btn {
   background: transparent;
@@ -219,14 +238,6 @@ body.theme-mccurdy-dark .wbsps-btn:hover {
   letter-spacing: 0.5px;
   font-style: italic;
   padding: 0 3px;
-}
-
-body.theme-mccurdy .footer-view-switcher,
-body.theme-mccurdy-light .footer-view-switcher,
-body.theme-wbs-ca .footer-view-switcher {
-  background: #d8d3c5;
-  border-color: #7c776b;
-  box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.45), 0 1px 2px rgba(255, 255, 255, 0.25);
 }
 
 body.theme-mccurdy .footer-view-btn,

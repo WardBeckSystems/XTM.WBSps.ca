@@ -5,6 +5,7 @@ import { type AppContext, saveAppConfig } from './app-context';
 import type { DrawerControls } from './dom-refs';
 import type { AudioSync } from './audio-sync';
 import { getMeterKey } from './meter-style';
+import { assignInput, openInputPicker, selectAssignedInput } from './input-assign';
 
 /** Push the model's current reference level, HPF and VU style to the audio engine. */
 export function applyInitialAudioState(ctx: AppContext): void {
@@ -51,6 +52,7 @@ export function bindModelChange(ctx: AppContext, refs: DrawerControls, sync: Aud
 /** Front panel interactive buttons. */
 export function bindFrontPanel(ctx: AppContext, sync: AudioSync): void {
   const { model, view, audio } = ctx;
+  bindInputPicker(ctx, sync);
   view.onButtonPressed = async (btnName) => {
     if (btnName === 'MODE') {
       model.pressMode();
@@ -63,18 +65,13 @@ export function bindFrontPanel(ctx: AppContext, sync: AudioSync): void {
     } else if (btnName.startsWith('INPUT_')) {
       const inputNum = parseInt(btnName.replace('INPUT_', ''), 10);
       if (inputNum >= 1 && inputNum <= 4) {
-        model.setInput(inputNum);
-        if (inputNum === 3) {
-          const isTabAudioActive = audio.sourceType === 'system' && audio.stream && audio.stream.active;
-          if (!isTabAudioActive && navigator.mediaDevices && typeof (navigator.mediaDevices as any).getDisplayMedia === 'function') {
-            window.audioReady = true;
-            if (window.audioContext && window.audioContext.state === 'suspended') {
-              window.audioContext.resume().catch(() => {});
-            }
-            audio.connectSystemAudio('browser', true).catch(() => {});
-            return;
-          }
+        if (Date.now() < pickerOpenedAt + 600) return; // the hold that opened the picker
+        window.audioReady = true;
+        if (window.audioContext && window.audioContext.state === 'suspended') {
+          window.audioContext.resume().catch(() => {});
         }
+        // Each button plays whatever input is assigned to it (hold / right-click to choose)
+        selectAssignedInput(ctx, sync, inputNum);
       }
     } else if (btnName === 'CYCLE_STYLE') {
       // Revert locked expanded meters when user changes meter sets
@@ -110,7 +107,7 @@ export function bindFrontPanel(ctx: AppContext, sync: AudioSync): void {
 export function bindAudioUnlock(ctx: AppContext, sync: AudioSync): void {
   const { model } = ctx;
   document.addEventListener('pointerdown', async (e: any) => {
-    if (!sync.isAudioStarted && !e.target.closest('.aux-drawer')) {
+    if (!sync.isAudioStarted && !e.target.closest('.aux-drawer, #settingsStage')) {
       window.audioReady = true;
       if (window.audioContext && window.audioContext.state === "suspended") {
         await window.audioContext.resume();
@@ -121,4 +118,41 @@ export function bindAudioUnlock(ctx: AppContext, sync: AudioSync): void {
       }
     }
   }, { once: true, passive: true });
+}
+
+let pickerOpenedAt = 0;
+
+/** Hold (450 ms) or right-click an INPUT 1-4 button: choose which input it plays. */
+function bindInputPicker(ctx: AppContext, sync: AudioSync): void {
+  const { model, view } = ctx;
+  const btnOf = (t: EventTarget | null) => (t as Element | null)?.closest?.('[data-btn^="INPUT_"]') as Element | null;
+  const open = (btn: Element, x: number, y: number) => {
+    const n = parseInt((btn.getAttribute('data-btn') || '').replace('INPUT_', ''), 10);
+    if (!(n >= 1 && n <= 4)) return;
+    pickerOpenedAt = Date.now();
+    openInputPicker(n, x, y, (id) => {
+      assignInput(n, id);
+      view.isBuilt = false; // captions are drawn into the panel art
+      selectAssignedInput(ctx, sync, n);
+    });
+  };
+  document.addEventListener('contextmenu', (e) => {
+    const btn = btnOf(e.target);
+    if (!btn) return;
+    e.preventDefault();
+    open(btn, e.clientX, e.clientY);
+  });
+  let hold: number | undefined;
+  document.addEventListener('pointerdown', (e) => {
+    const btn = btnOf(e.target);
+    if (!btn || e.button !== 0) return;
+    const { clientX: x, clientY: y } = e;
+    clearTimeout(hold);
+    hold = window.setTimeout(() => open(btn, x, y), 450);
+  });
+  const cancel = () => clearTimeout(hold);
+  document.addEventListener('pointerup', cancel);
+  document.addEventListener('pointercancel', cancel);
+  document.addEventListener('pointermove', (e) => { if (e.buttons === 0) cancel(); });
+  void model;
 }

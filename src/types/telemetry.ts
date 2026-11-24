@@ -28,7 +28,7 @@ export interface MeterFrameTelemetry {
 export type VisualizerMode = 'A' | 'D' | 'S' | 'SET';
 export type MeterStyle = 'pimson' | 'pimsom' | 'simpson' | 'fisam' | 'sifam' | 'wbs_m405' | 'mccurdy_vu' | string;
 export type ScaleMode = 'log' | 'vu' | 'peak';
-export type TimeScaleMode = 'log' | 'super_log' | 'lin';
+export type TimeScaleMode = 'log' | 'super_log' | 'lin' | 'samples';
 
 export interface XtmModeStateA {
   src: number;

@@ -4,6 +4,7 @@ import type { TimeModeSpec } from './time-mode-spec';
 import { TIME_MODE_LOG } from './time-mode-log';
 import { TIME_MODE_SUPER_LOG } from './time-mode-super-log';
 import { TIME_MODE_LIN } from './time-mode-lin';
+import { TIME_MODE_SAMPLES } from './time-mode-samples';
 
 /* Time-scale mode lookup and shared time-axis helpers. */
 
@@ -11,12 +12,13 @@ import { TIME_MODE_LIN } from './time-mode-lin';
 export function timeModeSpec(mode: TimeScaleMode): TimeModeSpec {
   if (mode === 'super_log') return TIME_MODE_SUPER_LOG;
   if (mode === 'log') return TIME_MODE_LOG;
+  if (mode === 'samples') return TIME_MODE_SAMPLES;
   return TIME_MODE_LIN;
 }
 
 /** x is beta log-warped for every mode except 'lin'. */
 export function isWarpedMode(mode: TimeScaleMode): boolean {
-  return mode !== 'lin';
+  return mode === 'log' || mode === 'super_log';
 }
 
 /** Format Time of Day (e.g. 21:15:30) for both log and linear timelines. */

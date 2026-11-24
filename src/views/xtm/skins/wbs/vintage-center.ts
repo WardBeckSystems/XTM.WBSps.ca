@@ -6,6 +6,8 @@
  * - Lower Across Bottom: 4-gang interlocking Wink Switch Selector cluster (Input 1 2 3 4, snaps up when another is pushed).
  */
 
+import { inputCaption } from '../../../../app/input-assign';
+
 export function renderVintageWbsCenter(isPowered = true): string {
   return `<g class="wbs-ca-only" id="vintage-wbs-center">
     <!-- 1. Centered DR Vernier Dial Scale + Fluted Instrument Knob (Centered at x=1600, y=180, Scale=1.32 - 20% Larger) -->
@@ -182,12 +184,8 @@ export function renderVintageWbsCenter(isPowered = true): string {
 
 export function renderWinkSwitchCluster(isPowered = true): string {
   const font = `font-family="'Helvetica Neue', Helvetica, Arial, sans-serif"`;
-  const switches = [
-    { num: 1, sub: 'MIC' },
-    { num: 2, sub: 'LINE' },
-    { num: 3, sub: 'DIGITAL' },
-    { num: 4, sub: 'TEST GEN' }
-  ];
+  // Captions show the input assigned to each button (hold / right-click a button to choose)
+  const switches = [1, 2, 3, 4].map((num) => ({ num, sub: inputCaption(num) }));
 
   const y = 362;
   const bw = 78;

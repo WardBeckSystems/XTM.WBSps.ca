@@ -96,27 +96,6 @@
       </div>
     </aside>
 
-    <!-- Dedicated Window Prompt Banner ("if possible and available it should open asking for a window to open") -->
-    <aside id="windowPromptBanner" class="pwa-install-banner" style="display:none;" aria-label="Open in Dedicated Window">
-      <div class="pwa-banner-content">
-        <div class="pwa-icon">
-          <svg viewBox="0 0 24 24" width="28" height="20" fill="none" stroke="#22c55e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <rect x="3" y="3" width="18" height="18" rx="3" ry="3"/>
-            <line x1="3" y1="9" x2="21" y2="9"/>
-            <line x1="9" y1="21" x2="9" y2="9"/>
-          </svg>
-        </div>
-        <div class="pwa-text">
-          <div class="pwa-title">Open in dedicated window?</div>
-          <div class="pwa-sub" id="windowPromptSubText">Run Ward-Beck metering console in a clean standalone window</div>
-        </div>
-        <div class="pwa-actions">
-          <button type="button" id="btnOpenDedicatedWindow" class="btn-pwa-install" onclick="openDedicatedWindow();">Open Window</button>
-          <button type="button" id="btnDismissWindowPrompt" class="btn-pwa-dismiss" aria-label="Dismiss" onclick="dismissWindowPrompt();">✕</button>
-        </div>
-      </div>
-    </aside>
-
     <!-- Meter Stack: Borderless & Full Window Width -->
     <div class="meter-stack">
       <!-- Unit 1: Ward-Beck Systems XTM-4 Mastering Meters (VU + Black PPM) -->
@@ -127,12 +106,22 @@
         <div class="meter-unit pod22" id="pod22Stage"></div>
       </div>
 
-      <!-- Unit 3: lower-bay tabs (footer: loudness · data · routing; generators sit under the router) -->
+      <!-- Unit 3: lower-bay views (Settings drop-up: loudness · data · routing · generators · mxl transmitters · timing) -->
       <div class="meter-unit routing-unit" id="dataStage" style="display: none;"></div>
       <div class="meter-unit routing-unit" id="routingStage" style="display: none;">
         <div id="routerStage"></div>
-        <div id="generatorsStage"></div>
       </div>
+      <div class="meter-unit routing-unit" id="generatorsStage" style="display: none;"></div>
+      <!-- MXL transmitters: one EBU DMF / MXL ring buffer per flow (moved here from the data tab by DataStreamView) -->
+      <div class="meter-unit routing-unit" id="mxlStage" style="display: none;">
+        <div class="routing-console-rack"><div id="mxlRingsStage"></div><div id="mxlCbcStage"></div></div>
+      </div>
+
+      <!-- Timing: PTP grandmasters and clocks (moved here from the data tab's pipeline graph) -->
+      <div class="meter-unit routing-unit" id="timingStage" style="display: none;"></div>
+
+      <!-- Settings: a page like the others; the drawer's cards are moved in here at start-up -->
+      <div class="routing-unit settings-unit" id="settingsStage" style="display: none;"></div>
 
       <!-- Unit 4: dBFS Over Time Real-Time Scope (APK.softapp.TEST.AUDIO.DbfsMeters) -->
       <div class="meter-unit dbfs-unit" id="dbfsStage" style="display: flex;"></div>
@@ -149,29 +138,45 @@
             </svg>
             <span class="footer-btn-text wbsps-text">WBSps.ca</span>
           </a>
-          <button type="button" class="btn-settings-cog" id="btnOpenSettings" title="Settings (Calibration, Monitoring &amp; Ballistics)" aria-label="Settings">
+          <button type="button" class="btn-settings-cog" id="btnOpenSettings" title="Views &amp; Settings" aria-label="Views and settings" aria-haspopup="menu" aria-expanded="false" aria-controls="footerViewMenu">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <circle cx="12" cy="12" r="3"/>
               <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
             </svg>
+            <span class="drawer-gear-label" id="footerViewCurrentName">loudness</span>
           </button>
-          <span class="drawer-gear-label">Settings</span>
-        </div>
-
-        <!-- Center: lower-bay view tabs (loudness is always the default on load) -->
-        <div class="footer-view-switcher" id="footerViewSwitcher" onclick="event.stopPropagation();" role="tablist" aria-label="lower bay view">
-          <button type="button" class="footer-view-btn active" id="btnViewLoudness" data-view="loudness" role="tab" aria-selected="true" title="Loudness Scope (dBFS &amp; ITU-R BS.1770 LUFS over time)">
+          <!-- Settings drop-up: lower-bay views (loudness is always the default on load) + Settings drawer -->
+          <div class="footer-view-menu" id="footerViewMenu" role="menu" aria-label="lower bay view" onclick="event.stopPropagation();">
+          <button type="button" class="footer-view-btn active" id="btnViewLoudness" data-view="loudness" role="menuitemradio" aria-checked="true" title="Loudness Scope (dBFS &amp; ITU-R BS.1770 LUFS over time)">
             <span class="footer-view-led lit-green"></span>
             <span class="footer-view-name">loudness</span>
           </button>
-          <button type="button" class="footer-view-btn" id="btnViewData" data-view="data" role="tab" aria-selected="false" title="Data Stream (Scanalyzer Audio Eye, EBU DMF / MXL ring buffers &amp; pipeline)">
+          <button type="button" class="footer-view-btn" id="btnViewData" data-view="data" role="menuitemradio" aria-checked="false" title="Data Stream (Scanalyzer Audio Eye, EBU DMF / MXL ring buffers &amp; pipeline)">
             <span class="footer-view-led"></span>
             <span class="footer-view-name">data</span>
           </button>
-          <button type="button" class="footer-view-btn" id="btnViewRouting" data-view="routing" role="tab" aria-selected="false" title="Web Router (inputs × outputs grid) and signal generators (POD-33, CBC MXL, ABS-1 → ABB-1)">
+          <button type="button" class="footer-view-btn" id="btnViewRouting" data-view="routing" role="menuitemradio" aria-checked="false" title="Web Router (inputs × outputs grid)">
             <span class="footer-view-led"></span>
             <span class="footer-view-name">routing</span>
           </button>
+          <button type="button" class="footer-view-btn" id="btnViewGenerators" data-view="generators" role="menuitemradio" aria-checked="false" title="Signal generators (POD-33, ABS-1 → ABB-1)">
+            <span class="footer-view-led"></span>
+            <span class="footer-view-name">generators</span>
+          </button>
+          <button type="button" class="footer-view-btn" id="btnViewMxl" data-view="mxl" role="menuitemradio" aria-checked="false" title="MXL (CBC test generator, one EBU DMF / MXL ring buffer per flow)">
+            <span class="footer-view-led"></span>
+            <span class="footer-view-name">mxl transmitters</span>
+          </button>
+          <button type="button" class="footer-view-btn" id="btnViewTiming" data-view="timing" role="menuitemradio" aria-checked="false" title="Timing (PTP grandmasters and clocks)">
+            <span class="footer-view-led"></span>
+            <span class="footer-view-name">timing</span>
+          </button>
+            <div class="footer-view-sep" role="separator"></div>
+            <button type="button" class="footer-view-btn footer-view-settings" id="btnMenuSettings" data-view="settings" role="menuitemradio" aria-checked="false" title="Settings (Calibration, Monitoring &amp; Ballistics)">
+              <span class="footer-view-led"></span>
+              <span class="footer-view-name">settings</span>
+            </button>
+          </div>
         </div>
 
         <div class="drawer-toggle-right">
@@ -223,28 +228,8 @@
             </svg>
             <span class="footer-btn-text mc-com-text">McCurdyRadio.com</span>
           </button>
-          <span class="build-stamp" style="font-size: 0.7em; opacity: 0.6; margin-left: 12px;">v2.0.85</span>
         </div>
       </summary>
-
-      <!-- Security Lock Overlay -->
-      <div id="settingsLockOverlay" class="settings-lock-overlay">
-        <div class="lock-panel">
-          <div class="lock-icon-shield">
-            <svg width="42" height="42" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
-              <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
-            </svg>
-          </div>
-          <div class="lock-msg-main">Available to those that know...</div>
-          <div class="lock-progress-container">
-            <div class="lock-progress-bar">
-              <div id="lockProgressFill" class="lock-progress-fill"></div>
-            </div>
-            <div id="lockCountdown" class="lock-countdown">5.0s</div>
-          </div>
-        </div>
-      </div>
 
       <div class="drawer-grid">
         <!-- 1. AUDIO SETTINGS -->
@@ -303,8 +288,9 @@
             </div>
           </div>
 
-          <div class="drawer-section-sub">CALIBRATION &amp; FILTERS</div>
-          <div class="drawer-row">
+          <div class="drawer-section-sub">FILTERS</div>
+          <!-- Moved into the generators tab at start-up (app.ts): the reference tone lives with the generators -->
+          <div class="drawer-row" id="toneCalRow">
             <label for="selectToneCal">1 kHz Tone Calibration</label>
             <select id="selectToneCal" class="ctrl-select">
               <option value="0" selected>0 dBFS (Peak Full Scale Ceiling - Default)</option>
@@ -335,7 +321,16 @@
         <!-- 2. DISPLAY FOR METERS -->
         <div class="drawer-card meters-card">
           <h4>Display for Meters</h4>
-          
+
+          <!-- Live preview of the meters for the selected sub-tab (src/app/meters-preview.ts) -->
+          <div class="meters-preview" id="metersPreview" aria-hidden="true"></div>
+          <div class="meters-subtabs" role="tablist" aria-label="Meter type">
+            <button type="button" role="tab" class="meters-subtab active" data-mtab="vu" aria-selected="true">Analog VU</button>
+            <button type="button" role="tab" class="meters-subtab" data-mtab="ppm" aria-selected="false" tabindex="-1">PPM</button>
+            <button type="button" role="tab" class="meters-subtab" data-mtab="bar" aria-selected="false" tabindex="-1">Bargraph</button>
+          </div>
+
+          <div class="meters-pane" data-mpane="vu" role="tabpanel">
           <div class="drawer-section-sub">ANALOG VU METERS</div>
           <div class="drawer-row">
             <label for="selectMeterStyle">VU Meter Movement</label>
@@ -394,7 +389,9 @@
               <option value="mccurdy-light">McCurdyRadio.com · McCurdy ATS-100 Cream Enamel</option>
             </select>
           </div>
+          </div>
 
+          <div class="meters-pane" data-mpane="ppm" role="tabpanel" hidden>
           <div class="drawer-section-sub">PPM METERS (QUASI-PEAK)</div>
           <div class="drawer-row">
             <label for="selectPpmLampColor">PPM Meter Lighting</label>
@@ -442,7 +439,9 @@
               <option value="3">+3 dB (+3 dB High Sensitivity)</option>
             </select>
           </div>
+          </div>
 
+          <div class="meters-pane" data-mpane="bar" role="tabpanel" hidden>
           <div class="drawer-section-sub">BARGRAPH (POD-22 MASTERING LED BAR)</div>
           <div class="drawer-row">
             <label for="selectPodScale">Scale Mode</label>
@@ -489,6 +488,7 @@
             <label>Front Key Reference</label>
             <span class="ctrl-hint">Press <strong>MODE</strong> to cycle Analog/Digital/Test<br>Press <strong>SOURCE</strong> to toggle input source</span>
           </div>
+          </div>
         </div>
 
         <!-- 3. DISPLAY FOR CHART -->
@@ -498,9 +498,10 @@
           <div class="drawer-row">
             <label>Time Scale</label>
             <div class="scope-tabs-group">
-              <button type="button" class="scope-tab-btn active" id="btnScopeLog">LOG</button>
-              <button type="button" class="scope-tab-btn" id="btnScopeSuperLog">SUPER TRANSIENT LOG</button>
-              <button type="button" class="scope-tab-btn" id="btnScopeLin">LINEAR</button>
+              <button type="button" class="scope-tab-btn scope-tab-icon active" id="btnScopeLog" title="Log" aria-label="Log"><svg class="scope-tab-ico" viewBox="0 0 28 16" aria-hidden="true"><path d="M2 14 C12 14 20 12 26 2"/></svg></button>
+              <button type="button" class="scope-tab-btn scope-tab-icon" id="btnScopeSuperLog" title="Super transient log" aria-label="Super transient log"><svg class="scope-tab-ico" viewBox="0 0 28 16" aria-hidden="true"><path d="M2 14 C20 14 25 12 26 2"/><path d="M22 2h4v4"/></svg></button>
+              <button type="button" class="scope-tab-btn scope-tab-icon" id="btnScopeLin" title="Linear" aria-label="Linear"><svg class="scope-tab-ico" viewBox="0 0 28 16" aria-hidden="true"><path d="M2 14 L26 2"/></svg></button>
+              <button type="button" class="scope-tab-btn scope-tab-icon" id="btnScopeSamples" title="Samples" aria-label="Samples"><svg class="scope-tab-ico" viewBox="0 0 28 16" aria-hidden="true"><path d="M1 8h26" opacity=".4"/><path d="M4 8V3M10 8V5M16 8v5M22 8v3"/><circle cx="4" cy="3" r="1.6"/><circle cx="10" cy="5" r="1.6"/><circle cx="16" cy="13" r="1.6"/><circle cx="22" cy="11" r="1.6"/></svg></button>
             </div>
           </div>
           <div class="drawer-row" id="scopeLogOptionsRow">
@@ -621,100 +622,118 @@
               <span>Auto-export every 1 hr</span>
             </label>
           </div>
-        </div>
-
-        <!-- 4. STYLE GUIDES & SPECIFICATIONS -->
-        <div class="drawer-card guide-card">
-          <h4>
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
-              <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
-            </svg>
-            Design &amp; Hardware Guides
-          </h4>
-
-          <div class="drawer-section-sub">INTERACTIVE STYLEGUIDES &amp; HARDWARE SPECS</div>
-          <div class="drawer-row" style="flex-direction:column;align-items:stretch;gap:8px;">
-            <!-- 1. XTM-4 & POD-22 Styleguide -->
-            <div class="styleguide-link-btn" onclick="openGuideInModal('styleguide.html', 'XTM-4 &amp; POD-22 Mastering Visualizer Styleguide')">
-              <div class="styleguide-link-icon">
-                <span class="wbs-mini-pill" style="border-color:#22c55e;color:#22c55e;">XTM-4</span>
-              </div>
-              <div class="styleguide-link-info">
-                <strong>XTM-4 &amp; POD-22 Styleguide</strong>
-                <span>Open-aperture geometry, NO METER COVERS rule, ballistics &amp; CSS tokens</span>
-              </div>
-              <a href="styleguide.html" target="_blank" onclick="event.stopPropagation();" title="Open in new tab" style="color:#94a3b8;display:flex;align-items:center;padding:4px;">
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14L21 3"/></svg>
-              </a>
-            </div>
-
-            <!-- 2. WBS M600 Series Styleguide (Local) -->
-            <div class="styleguide-link-btn" onclick="openGuideInModal('styleguide-m600.html', 'WBS M600 Series Modular Frame &amp; Module Styleguide')">
-              <div class="styleguide-link-icon">
-                <span class="wbs-mini-pill">M600</span>
-              </div>
-              <div class="styleguide-link-info">
-                <strong>WBS M600 Series Styleguide</strong>
-                <span>MF-6B modular rack grid, anodized alloy faceplates &amp; calibration trims</span>
-              </div>
-              <a href="styleguide-m600.html" target="_blank" onclick="event.stopPropagation();" title="Open in new tab" style="color:#94a3b8;display:flex;align-items:center;padding:4px;">
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14L21 3"/></svg>
-              </a>
-            </div>
-
-            <!-- 3. McCurdy Meter Dial Cartouche Logo Styleguide (Local) -->
-            <div class="styleguide-link-btn" onclick="openGuideInModal('styleguide-mccurdy-meter-logo.html', 'McCurdy Meter Dial Cartouche Logo Styleguide')">
-              <div class="styleguide-link-icon">
-                <span class="mc-mini-pill" style="border-color:#38bdf8;color:#38bdf8;">Logo</span>
-              </div>
-              <div class="styleguide-link-info">
-                <strong>McCurdy Dial Cartouche Guide</strong>
-                <span>Faceted 6-point hex badge, McCURDY hybrid casing &amp; vector blueprint</span>
-              </div>
-              <a href="styleguide-mccurdy-meter-logo.html" target="_blank" onclick="event.stopPropagation();" title="Open in new tab" style="color:#94a3b8;display:flex;align-items:center;padding:4px;">
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14L21 3"/></svg>
-              </a>
-            </div>
-
-            <!-- 4. McCurdy ATS-100 Dual Analog Meters Guide (Local) -->
-            <div class="styleguide-link-btn" onclick="openGuideInModal('mccurdy_ats_dual_meters.html', 'McCurdy ATS-100 Dual Analog Meters &amp; Test Set')">
-              <div class="styleguide-link-icon">
-                <span class="mc-mini-pill">ATS-100</span>
-              </div>
-              <div class="styleguide-link-info">
-                <strong>McCurdy ATS-100 Meter Guide</strong>
-                <span>Dual cream/black movement, modulation &amp; 31-step attenuator</span>
-              </div>
-              <a href="mccurdy_ats_dual_meters.html" target="_blank" onclick="event.stopPropagation();" title="Open in new tab" style="color:#94a3b8;display:flex;align-items:center;padding:4px;">
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14L21 3"/></svg>
-              </a>
-            </div>
-
-            <!-- 5. DR Rotary Control & Vernier Attenuator Styleguide (Local) -->
-            <div class="styleguide-link-btn" onclick="openGuideInModal('styleguide-dr-knob.html', 'WBS DR Rotary Control &amp; Vernier Attenuator Styleguide')">
-              <div class="styleguide-link-icon">
-                <span class="wbs-mini-pill" style="border-color:#38bdf8;background:#151619;color:#38bdf8;">DR KNOB</span>
-              </div>
-              <div class="styleguide-link-info">
-                <strong>DR Vernier Attenuator Guide</strong>
-                <span>Bakelite fluting, pointer, aluminum vernier disc &amp; precision click physics</span>
-              </div>
-              <a href="styleguide-dr-knob.html" target="_blank" onclick="event.stopPropagation();" title="Open in new tab" style="color:#94a3b8;display:flex;align-items:center;padding:4px;">
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14L21 3"/></svg>
-              </a>
-            </div>
-          </div>
-
-          <div class="drawer-section-sub">QUICK REFERENCE RULES</div>
-          <div class="drawer-row" style="flex-direction:column;align-items:flex-start;gap:6px;font-size:11px;color:#94a3b8;line-height:1.45;">
-            <div>• <strong style="color:#f8fafc;">NO METER COVERS:</strong> Open viewports with flush hairline rims (<code style="color:#22c55e;">fill="none"</code>).</div>
-            <div>• <strong style="color:#f8fafc;">0 VU Reference:</strong> +4 dBu (1.228 Vrms) = –20 dBFS / –18 dBFS.</div>
-            <div>• <strong style="color:#f8fafc;">Ballistics:</strong> ANSI C16.5 (300ms VU) / IEC 60268-10 (BBC/DIN PPM).</div>
+          <div class="drawer-row">
+            <label>Version</label>
+            <span class="build-stamp">v2.0.121</span>
           </div>
         </div>
       </div>
     </details>
+
+    <!-- Side bar: reference material (design & hardware guides), kept out of the Settings menu -->
+    <aside class="xtm-sidebar" id="xtmSidebar" aria-label="Design &amp; hardware guides">
+      <button type="button" class="xtm-sidebar-tab" id="xtmSidebarTab" aria-expanded="false" aria-controls="xtmSidebarBody" title="Design &amp; hardware guides">GUIDES</button>
+      <div class="xtm-sidebar-body" id="xtmSidebarBody">
+    <div class="drawer-card guide-card">
+      <h4>
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
+          <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+        </svg>
+        Design &amp; Hardware Guides
+      </h4>
+
+      <div class="drawer-row" style="flex-direction:column;align-items:stretch;gap:8px;">
+        <!-- 1. XTM-4 & POD-22 Styleguide -->
+        <div class="styleguide-link-btn" onclick="openGuideInModal('styleguide.html', 'XTM-4 &amp; POD-22 Mastering Visualizer Styleguide')">
+          <div class="styleguide-link-icon">
+            <span class="wbs-mini-pill" style="border-color:#22c55e;color:#22c55e;">XTM-4</span>
+          </div>
+          <div class="styleguide-link-info">
+            <strong>XTM-4 &amp; POD-22 Styleguide</strong>
+            <span>Open-aperture geometry, NO METER COVERS rule, ballistics &amp; CSS tokens</span>
+          </div>
+          <a href="styleguide.html" target="_blank" onclick="event.stopPropagation();" title="Open in new tab" style="color:#94a3b8;display:flex;align-items:center;padding:4px;">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14L21 3"/></svg>
+          </a>
+        </div>
+
+        <!-- 2. WBS M600 Series Styleguide (Local) -->
+        <div class="styleguide-link-btn" onclick="openGuideInModal('styleguide-m600.html', 'WBS M600 Series Modular Frame &amp; Module Styleguide')">
+          <div class="styleguide-link-icon">
+            <span class="wbs-mini-pill">M600</span>
+          </div>
+          <div class="styleguide-link-info">
+            <strong>WBS M600 Series Styleguide</strong>
+            <span>MF-6B modular rack grid, anodized alloy faceplates &amp; calibration trims</span>
+          </div>
+          <a href="styleguide-m600.html" target="_blank" onclick="event.stopPropagation();" title="Open in new tab" style="color:#94a3b8;display:flex;align-items:center;padding:4px;">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14L21 3"/></svg>
+          </a>
+        </div>
+
+        <!-- 3. McCurdy Meter Dial Cartouche Logo Styleguide (Local) -->
+        <div class="styleguide-link-btn" onclick="openGuideInModal('styleguide-mccurdy-meter-logo.html', 'McCurdy Meter Dial Cartouche Logo Styleguide')">
+          <div class="styleguide-link-icon">
+            <span class="mc-mini-pill" style="border-color:#38bdf8;color:#38bdf8;">Logo</span>
+          </div>
+          <div class="styleguide-link-info">
+            <strong>McCurdy Dial Cartouche Guide</strong>
+            <span>Faceted 6-point hex badge, McCURDY hybrid casing &amp; vector blueprint</span>
+          </div>
+          <a href="styleguide-mccurdy-meter-logo.html" target="_blank" onclick="event.stopPropagation();" title="Open in new tab" style="color:#94a3b8;display:flex;align-items:center;padding:4px;">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14L21 3"/></svg>
+          </a>
+        </div>
+
+        <!-- 4. McCurdy ATS-100 Dual Analog Meters Guide (Local) -->
+        <div class="styleguide-link-btn" onclick="openGuideInModal('mccurdy_ats_dual_meters.html', 'McCurdy ATS-100 Dual Analog Meters &amp; Test Set')">
+          <div class="styleguide-link-icon">
+            <span class="mc-mini-pill">ATS-100</span>
+          </div>
+          <div class="styleguide-link-info">
+            <strong>McCurdy ATS-100 Meter Guide</strong>
+            <span>Dual cream/black movement, modulation &amp; 31-step attenuator</span>
+          </div>
+          <a href="mccurdy_ats_dual_meters.html" target="_blank" onclick="event.stopPropagation();" title="Open in new tab" style="color:#94a3b8;display:flex;align-items:center;padding:4px;">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14L21 3"/></svg>
+          </a>
+        </div>
+
+        <!-- 5. DR Rotary Control & Vernier Attenuator Styleguide (Local) -->
+        <div class="styleguide-link-btn" onclick="openGuideInModal('styleguide-dr-knob.html', 'WBS DR Rotary Control &amp; Vernier Attenuator Styleguide')">
+          <div class="styleguide-link-icon">
+            <span class="wbs-mini-pill" style="border-color:#38bdf8;background:#151619;color:#38bdf8;">DR KNOB</span>
+          </div>
+          <div class="styleguide-link-info">
+            <strong>DR Vernier Attenuator Guide</strong>
+            <span>Bakelite fluting, pointer, aluminum vernier disc &amp; precision click physics</span>
+          </div>
+          <a href="styleguide-dr-knob.html" target="_blank" onclick="event.stopPropagation();" title="Open in new tab" style="color:#94a3b8;display:flex;align-items:center;padding:4px;">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14L21 3"/></svg>
+          </a>
+        </div>
+      </div>
+
+      <div class="drawer-section-sub">QUICK REFERENCE RULES</div>
+      <div class="drawer-row" style="flex-direction:column;align-items:flex-start;gap:6px;font-size:11px;color:#94a3b8;line-height:1.45;">
+        <div>• <strong style="color:#f8fafc;">NO METER COVERS:</strong> Open viewports with flush hairline rims (<code style="color:#22c55e;">fill="none"</code>).</div>
+        <div>• <strong style="color:#f8fafc;">0 VU Reference:</strong> +4 dBu (1.228 Vrms) = –20 dBFS / –18 dBFS.</div>
+        <div>• <strong style="color:#f8fafc;">Ballistics:</strong> ANSI C16.5 (300ms VU) / IEC 60268-10 (BBC/DIN PPM).</div>
+      </div>
+    </div>
+      </div>
+    </aside>
+    <script>
+      (function () {
+        var bar = document.getElementById('xtmSidebar'), tab = document.getElementById('xtmSidebarTab');
+        if (!bar || !tab) return;
+        function set(open) { bar.classList.toggle('open', open); tab.setAttribute('aria-expanded', String(open)); }
+        tab.addEventListener('click', function (e) { e.stopPropagation(); set(!bar.classList.contains('open')); });
+        document.addEventListener('click', function (e) { if (!bar.contains(e.target)) set(false); });
+        document.addEventListener('keydown', function (e) { if (e.key === 'Escape') set(false); });
+      })();
+    </script>
   </main>
 
   <!-- Cookie / Local Storage Consent Banner -->
@@ -1026,65 +1045,6 @@
 
 <div id="mccurdyLogo" style="display:none;"></div>
 <script>
-  // Dedicated standalone window / Picture-in-Picture window management
-  function dismissWindowPrompt() {
-    var banner = document.getElementById("windowPromptBanner");
-    if (banner) banner.style.display = "none";
-    try { sessionStorage.setItem("xtm_window_prompt_dismissed", "1"); } catch (_) {}
-  }
-
-  function openDedicatedWindow() {
-    dismissWindowPrompt();
-    if ("documentPictureInPicture" in window) {
-      try {
-        window.documentPictureInPicture.requestWindow({
-          width: Math.min(window.screen.availWidth, 1920),
-          height: Math.min(window.screen.availHeight, 1080)
-        }).then(function(pipWin) {
-          Array.from(document.styleSheets).forEach(function(sheet) {
-            try {
-              if (sheet.href) {
-                var link = document.createElement("link");
-                link.rel = "stylesheet";
-                link.href = sheet.href;
-                pipWin.document.head.appendChild(link);
-              } else if (sheet.cssRules) {
-                var style = document.createElement("style");
-                Array.from(sheet.cssRules).forEach(function(r) { style.appendChild(document.createTextNode(r.cssText)); });
-                pipWin.document.head.appendChild(style);
-              }
-            } catch (_) {}
-          });
-          pipWin.document.body.className = document.body.className;
-          var mainConsole = document.querySelector(".console-viewport");
-          if (mainConsole) {
-            pipWin.document.body.appendChild(mainConsole);
-            pipWin.addEventListener("pagehide", function() {
-              document.body.insertBefore(mainConsole, document.body.firstChild);
-            });
-          }
-          return;
-        }).catch(function() {
-          window.open(location.href, "XtmMetersWindow", "width=1920,height=1080,menubar=no,toolbar=no,location=no,status=no");
-        });
-        return;
-      } catch (_) {}
-    }
-    window.open(location.href, "XtmMetersWindow", "width=1920,height=1080,menubar=no,toolbar=no,location=no,status=no");
-  }
-
-  // Ask to open in dedicated window if available and not already in a standalone window
-  setTimeout(function() {
-    var isStandalone = window.matchMedia && window.matchMedia("(display-mode: standalone)").matches;
-    var isPopup = window.opener != null || window.name === "XtmMetersWindow";
-    var isDismissed = false;
-    try { isDismissed = sessionStorage.getItem("xtm_window_prompt_dismissed") === "1"; } catch (_) {}
-    if (!isStandalone && !isPopup && !isDismissed) {
-      var banner = document.getElementById("windowPromptBanner");
-      if (banner) banner.style.display = "block";
-    }
-  }, 1200);
-
   // Domain self-awareness:
   // mccurdyradio.com / mccurdy.com -> McCurdy light mode (ATS-100 cream faceplate)
   // mccurdyradio.ca / mccurdy.ca -> McCurdy dark studio mode (Neutral dark broadcast charcoal, no blue)

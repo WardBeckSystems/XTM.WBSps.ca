@@ -307,12 +307,12 @@ body.theme-wbs-ca .clock-brand-wbs-vintage,
   display: inline;
 }
 
-body.theme-mccurdy-dark .clock-brand-mc,
-body.theme-mccurdy .clock-brand-mc,
-.clock-modal-overlay.theme-mccurdy-dark .clock-brand-mc,
-.clock-modal-overlay.theme-mccurdy-light .clock-brand-mc,
-.clock-svg-root.theme-mccurdy-dark .clock-brand-mc,
-.clock-svg-root.theme-mccurdy-light .clock-brand-mc {
+body.theme-mccurdy-dark .clock-brand-mc-vintage,
+.clock-modal-overlay.theme-mccurdy-dark .clock-brand-mc-vintage,
+.clock-svg-root.theme-mccurdy-dark .clock-brand-mc-vintage,
+body.theme-mccurdy .clock-brand-mc-new,
+.clock-modal-overlay.theme-mccurdy-light .clock-brand-mc-new,
+.clock-svg-root.theme-mccurdy-light .clock-brand-mc-new {
   display: inline;
 }
 
@@ -468,11 +468,11 @@ body.theme-wbs-ca .clock-nrc-srv,
   fill: #78716c !important;
 }
 
-/* 3. McCurdy Studio Dark (theme-mccurdy-dark) */
+/* 3. McCurdy Studio Dark (theme-mccurdy-dark): McCurdy-blue dial, vintage cartouche */
 body.theme-mccurdy-dark .clock-dial-plate,
 .clock-modal-overlay.theme-mccurdy-dark .clock-dial-plate,
 .clock-svg-root.theme-mccurdy-dark .clock-dial-plate {
-  fill: url(#clockDialMcCurdyDark) !important;
+  fill: url(#clockDialMcCurdyBlue) !important;
 }
 body.theme-mccurdy-dark .clock-baseline-arc,
 .clock-modal-overlay.theme-mccurdy-dark .clock-baseline-arc,
@@ -497,78 +497,78 @@ body.theme-mccurdy-dark .clock-num-warn,
 body.theme-mccurdy-dark .clock-num-24,
 .clock-modal-overlay.theme-mccurdy-dark .clock-num-24,
 .clock-svg-root.theme-mccurdy-dark .clock-num-24 {
-  fill: #627d98 !important;
+  fill: #9fb3c8 !important;
 }
 body.theme-mccurdy-dark .clock-nrc-lbl,
 .clock-modal-overlay.theme-mccurdy-dark .clock-nrc-lbl,
 .clock-svg-root.theme-mccurdy-dark .clock-nrc-lbl {
-  fill: #9fb3c8 !important;
+  fill: #d9e2ec !important;
 }
 body.theme-mccurdy-dark .clock-nrc-sub,
 .clock-modal-overlay.theme-mccurdy-dark .clock-nrc-sub,
 .clock-svg-root.theme-mccurdy-dark .clock-nrc-sub {
-  fill: #627d98 !important;
+  fill: #9fb3c8 !important;
 }
 body.theme-mccurdy-dark .clock-nrc-srv,
 .clock-modal-overlay.theme-mccurdy-dark .clock-nrc-srv,
 .clock-svg-root.theme-mccurdy-dark .clock-nrc-srv {
-  fill: #9fb3c8 !important;
+  fill: #d9e2ec !important;
 }
 
-/* 4. McCurdy ATS-100 Light Cream (theme-mccurdy / theme-mccurdy-light) */
+/* 4. McCurdy ATS (theme-mccurdy / theme-mccurdy-light): same blue dial, new wordmark */
 body.theme-mccurdy .clock-dial-plate,
 body.theme-mccurdy-light .clock-dial-plate,
 .clock-modal-overlay.theme-mccurdy-light .clock-dial-plate,
 .clock-svg-root.theme-mccurdy-light .clock-dial-plate {
-  fill: url(#clockDialMcCurdyLight) !important;
+  fill: url(#clockDialMcCurdyBlue) !important;
 }
 body.theme-mccurdy .clock-baseline-arc,
 body.theme-mccurdy-light .clock-baseline-arc,
 .clock-modal-overlay.theme-mccurdy-light .clock-baseline-arc,
 .clock-svg-root.theme-mccurdy-light .clock-baseline-arc {
-  stroke: #102a43 !important;
+  stroke: #f0f4f8 !important;
 }
 body.theme-mccurdy .clock-tick-std,
 body.theme-mccurdy-light .clock-tick-std,
 .clock-modal-overlay.theme-mccurdy-light .clock-tick-std,
 .clock-svg-root.theme-mccurdy-light .clock-tick-std {
-  stroke: #102a43 !important;
+  stroke: #f0f4f8 !important;
 }
 body.theme-mccurdy .clock-num-std,
 body.theme-mccurdy-light .clock-num-std,
 .clock-modal-overlay.theme-mccurdy-light .clock-num-std,
 .clock-svg-root.theme-mccurdy-light .clock-num-std {
-  fill: #0b1b2b !important;
+  fill: #f0f4f8 !important;
 }
 body.theme-mccurdy .clock-num-warn,
 body.theme-mccurdy-light .clock-num-warn,
 .clock-modal-overlay.theme-mccurdy-light .clock-num-warn,
 .clock-svg-root.theme-mccurdy-light .clock-num-warn {
-  fill: #c2410c !important;
+  fill: #facc15 !important;
 }
 body.theme-mccurdy .clock-num-24,
 body.theme-mccurdy-light .clock-num-24,
 .clock-modal-overlay.theme-mccurdy-light .clock-num-24,
 .clock-svg-root.theme-mccurdy-light .clock-num-24 {
-  fill: #627d98 !important;
+  fill: #9fb3c8 !important;
 }
 body.theme-mccurdy .clock-nrc-lbl,
 body.theme-mccurdy-light .clock-nrc-lbl,
 .clock-modal-overlay.theme-mccurdy-light .clock-nrc-lbl,
 .clock-svg-root.theme-mccurdy-light .clock-nrc-lbl {
-  fill: #334e68 !important;
+  fill: #d9e2ec !important;
 }
 body.theme-mccurdy .clock-nrc-sub,
 body.theme-mccurdy-light .clock-nrc-sub,
 .clock-modal-overlay.theme-mccurdy-light .clock-nrc-sub,
 .clock-svg-root.theme-mccurdy-light .clock-nrc-sub {
-  fill: #486581 !important;
+  fill: #9fb3c8 !important;
 }
 body.theme-mccurdy .clock-nrc-srv,
 body.theme-mccurdy-light .clock-nrc-srv,
 .clock-modal-overlay.theme-mccurdy-light .clock-nrc-srv,
 .clock-svg-root.theme-mccurdy-light .clock-nrc-srv {
-  fill: #486581 !important;
+  fill: #d9e2ec !important;
 }
 
 /* Interactive Timeline NOW Time Badge (dBFS Scope) */

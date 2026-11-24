@@ -44,11 +44,13 @@ export function setTimeMode(v: DbfsView, mode: TimeScaleMode): void {
   const btnLog = document.getElementById('btnScopeLog');
   const btnSuperLog = document.getElementById('btnScopeSuperLog');
   const btnLin = document.getElementById('btnScopeLin');
+  const btnSamples = document.getElementById('btnScopeSamples');
   const logOptRow = document.getElementById('scopeLogOptionsRow');
   if (btnLog && btnLin) {
     btnLog.classList.toggle('active', mode === 'log');
     if (btnSuperLog) btnSuperLog.classList.toggle('active', mode === 'super_log');
     btnLin.classList.toggle('active', mode === 'lin');
+    if (btnSamples) btnSamples.classList.toggle('active', mode === 'samples');
   }
   if (mode === 'super_log') {
     v.setBeta(60);

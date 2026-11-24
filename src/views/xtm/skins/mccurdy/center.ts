@@ -4,7 +4,7 @@
  * 1. McCurdyRadio.com (ATS-100 Cream Console):
  *    - Authentic red 2-digit LED RANGE window (xmc_digits)
  *    - UP / DOWN arrows
- *    - Blue 1 INPUT 2 box with phone jacks (Input 1 = MODE, Input 2 = SOURCE)
+ *    - Blue INPUT box with four phone jacks, one per input (INPUT_1 … INPUT_4)
  * 2. McCurdyRadio.ca (Studio Broadcast All-Blue Panel):
  *    - 31-step dual-concentric attenuator knob matching McCurdy SA14023 Model 023
  *      with outer scale (-50 to +10, yellow -20 at 9 o'clock), inner scale (-30 to +30),
@@ -14,6 +14,7 @@
  *    - Model SA14023 silkscreen marking
  *    - NO red digital RANGE digits (reserved strictly for .com ATS-100 look)
  */
+import { inputCaption } from '../../../../app/input-assign';
 import { MC_WIN } from '../../layout/mccurdy-layout';
 
 function buildFlutedPath(baseR: number, fluteDepth: number, count: number): string {
@@ -54,19 +55,18 @@ export function renderMcCurdyComCenter(): string {
       <!-- UP / DOWN arrows either side of the moved buttons -->
       <path class="mc-range-arrow" d="M1522 248 V214 M1514 224 L1522 212 L1530 224" stroke="#232325" stroke-width="3" fill="none"/>
       <path class="mc-range-arrow" d="M1678 212 V246 M1670 236 L1678 248 L1686 236" stroke="#232325" stroke-width="3" fill="none"/>
-      <!-- 1 INPUT 2 box: the two jacks ARE the input buttons here (1 = MODE, 2 = SOURCE) -->
+      <!-- INPUT box: four jacks, one per input (same INPUT_n buttons as the .ca selectors) -->
       <rect class="mc-input-box" x="1430" y="274" width="340" height="120" rx="8" fill="url(#mc_blue)" stroke="#1b1c1e" stroke-width="2.5"/>
-      <text class="mc-input-text" x="1530" y="300" text-anchor="middle" ${font} font-size="17" fill="#181b1e">1</text>
-      <text class="mc-input-text" x="1600" y="300" text-anchor="middle" ${font} font-size="17" fill="#181b1e">INPUT</text>
-      <text class="mc-input-text" x="1670" y="300" text-anchor="middle" ${font} font-size="17" fill="#181b1e">2</text>
-      <g class="xtm-btn mc-jack" data-btn="MODE" style="cursor:pointer">
-        <title>Input 1 (MODE)</title>
-        <circle cx="1530" cy="346" r="27" fill="url(#mc_jack)" stroke="#1b1c1e" stroke-width="2"/>
-      </g>
-      <g class="xtm-btn mc-jack" data-btn="SOURCE" style="cursor:pointer">
-        <title>Input 2 (SOURCE)</title>
-        <circle cx="1670" cy="346" r="27" fill="url(#mc_jack)" stroke="#1b1c1e" stroke-width="2"/>
-      </g>
+      <text class="mc-input-text" x="1600" y="296" text-anchor="middle" ${font} font-size="16" fill="#181b1e">INPUT</text>
+      ${[1, 2, 3, 4].map((i) => {
+        const jx = 1600 + (i - 2.5) * 80;
+        return `
+      <text class="mc-input-text" x="${jx}" y="386" text-anchor="middle" ${font} font-size="15" fill="#181b1e">${i}</text>
+      <g class="xtm-btn mc-jack" id="mc_jack_${i}" data-btn="INPUT_${i}" data-input="${i}" style="cursor:pointer" role="button" tabindex="0" aria-label="Input ${i}">
+        <title>Input ${i}: ${inputCaption(i)}</title>
+        <circle cx="${jx}" cy="340" r="23" fill="url(#mc_jack)" stroke="#1b1c1e" stroke-width="2"/>
+      </g>`;
+      }).join('')}
     </g>`;
 }
 
@@ -215,7 +215,7 @@ export function renderMcCurdyCaCenter(): string {
           <circle class="mc-btn-cap" cx="0" cy="0" r="10.5" fill="#1e293b" stroke="#475569" stroke-width="1"/>
           <text class="mc-btn-label" x="0" y="4" font-size="11.5" font-weight="900" fill="#f8fafc" text-anchor="middle">${i}</text>
           <!-- Input Label Below Switch -->
-          <text x="0" y="27" font-size="9.5" font-weight="700" fill="#cbd5e1" text-anchor="middle" letter-spacing="0.5">INPUT ${i}</text>
+          <text x="0" y="27" font-size="9.5" font-weight="700" fill="#cbd5e1" text-anchor="middle" letter-spacing="0.5">${inputCaption(i)}</text>
         </g>`;
         }).join('')}
       </g>

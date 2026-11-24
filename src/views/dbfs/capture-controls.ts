@@ -9,6 +9,7 @@ export function bindCaptureControls(v: DbfsView): void {
   const btnLog = document.getElementById('btnScopeLog');
   const btnSuperLog = document.getElementById('btnScopeSuperLog');
   const btnLin = document.getElementById('btnScopeLin');
+  const btnSamples = document.getElementById('btnScopeSamples');
   const lengthSlider = document.getElementById('scopeLengthSlider') as HTMLInputElement | null;
   const lengthVal = document.getElementById('scopeLengthVal');
   const btnClear = document.getElementById('btnScopeClear');
@@ -23,6 +24,7 @@ export function bindCaptureControls(v: DbfsView): void {
     btnLog.addEventListener('click', pick('log'));
     if (btnSuperLog) btnSuperLog.addEventListener('click', pick('super_log'));
     btnLin.addEventListener('click', pick('lin'));
+    if (btnSamples) btnSamples.addEventListener('click', pick('samples'));
   }
 
   if (lengthSlider) {

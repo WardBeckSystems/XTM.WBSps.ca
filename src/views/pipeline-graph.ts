@@ -41,6 +41,7 @@ interface GNode {
   hub?: boolean;
   tap?: { kind: 'hw' | 'pw' | 'mxl' | 'aoip'; ref: string };
   pick?: { inst: string; flow: string };   // locally discovered node/flow: shown in the ring buffer
+  gone?: boolean;        // seen earlier, not reported now: inactive placeholder
 }
 
 interface GEdge { from: string; to: string; clock?: boolean }
@@ -73,6 +74,8 @@ export class PipelineGraph {
   private fixEl: HTMLElement | null = null;
   private fixTimer: number | null = null;
   private local: XmxlInstance[] = [];
+  /** Every node seen this session, by id: dropouts stay as inactive placeholders. */
+  private seenNodes = new Map<string, GNode>();
   private picked = '';
   private onPick?: (instId: string, flowId: string) => void;
 
@@ -235,7 +238,7 @@ export class PipelineGraph {
 
   // ───────────────────────── model ─────────────────────────
 
-  private build(): { nodes: GNode[]; edges: GEdge[]; clocks: any[]; mc: any } {
+  private build(): { nodes: GNode[]; edges: GEdge[]; mc: any } {
     const nodes: GNode[] = [];
     const edges: GEdge[] = [];
     const layers = this.pipeline?.layers ?? {};
@@ -253,9 +256,9 @@ export class PipelineGraph {
       const dev = m ? `dev ${m[4]} ${m[5]}` : '';
       cards.set(key, [...(cards.get(key) ?? []), dev]);
     }
-    [...cards].forEach(([name, devs], i) => {
+    [...cards].forEach(([name, devs]) => {
       const idx = /^card (\d+)/.exec(name)?.[1];
-      nodes.push({ id: `hw${i}`, lane: 0, kind: 'hw', label: name, sub: `${devs.length} PCM device${devs.length === 1 ? '' : 's'}`, title: devs.join('\n'), live: true, tap: idx ? { kind: 'hw', ref: idx } : undefined });
+      nodes.push({ id: `hw_${name}`, lane: 0, kind: 'hw', label: name, sub: `${devs.length} PCM device${devs.length === 1 ? '' : 's'}`, title: devs.join('\n'), live: true, tap: idx ? { kind: 'hw', ref: idx } : undefined });
     });
 
     // 2 · PipeWire: graph hub, then streams.
@@ -264,9 +267,9 @@ export class PipelineGraph {
       id: 'pw', lane: 1, kind: 'hub', hub: true, live: pw.status === 'running',
       label: 'PipeWire graph', sub: rate ? `${q} / ${rate / 1000}k · ${pw.graph_quantum_ms} ms` : 'not reported',
     });
-    for (const [i, s] of ((pw.streams ?? []) as string[]).entries()) {
+    for (const s of (pw.streams ?? []) as string[]) {
       const oid = /^(\d+)\./.exec(String(s))?.[1];
-      nodes.push({ id: `pws${i}`, lane: 1, kind: 'pw', label: String(s).replace(/^\d+\.\s*/, ''), sub: 'stream', live: true, tap: oid ? { kind: 'pw', ref: oid } : undefined });
+      nodes.push({ id: `pws_${String(s).replace(/^\d+\.\s*/, '')}`, lane: 1, kind: 'pw', label: String(s).replace(/^\d+\.\s*/, ''), sub: 'stream', live: true, tap: oid ? { kind: 'pw', ref: oid } : undefined });
     }
 
     // 3 · MXL: domain hub, then flows.
@@ -338,6 +341,35 @@ export class PipelineGraph {
       }
     }
 
+    // A node that drops out stays as an inactive placeholder (pg-gone) instead of vanishing,
+    // and each lane reads alphabetically (hubs first) so nothing jumps around.
+    const now = new Set<string>();
+    for (const n of nodes) {
+      if (now.has(n.id)) continue;
+      now.add(n.id);
+      this.seenNodes.set(n.id, n);
+    }
+    // Same thing under another name (local discovery vs the daemon): not a placeholder.
+    const flowOf = (n: GNode) => n.pick?.flow ?? (n.tap?.kind === 'mxl' ? n.tap.ref : /^(?:fl|locf)_(.+)$/.exec(n.id)?.[1]);
+    const alias = new Set<string>();
+    for (const n of nodes) {
+      alias.add('l:' + base(short(n.label)));
+      const f = flowOf(n);
+      if (f) alias.add('f:' + f);
+    }
+    for (const [id, n] of this.seenNodes) {
+      if (now.has(id) || n.hub) continue;
+      const f = flowOf(n);
+      const sapDup = heardSap && n.kind === 'sap' && id.startsWith('loc_'); // AES67 node shown as its SAP sessions
+      if (sapDup || alias.has('l:' + base(short(n.label))) || (f && alias.has('f:' + f))) { this.seenNodes.delete(id); continue; }
+      nodes.push({ ...n, live: false, gone: true, tap: undefined, pick: undefined, title: `${n.title ? n.title + '\n' : ''}Not seen now: kept as a placeholder` });
+    }
+    const uniq = new Map(nodes.map((n) => [n.id, n] as const));
+    nodes.length = 0;
+    nodes.push(...[...uniq.values()].sort((a, b) =>
+      a.lane - b.lane || Number(!!b.hub) - Number(!!a.hub)
+      || a.label.localeCompare(b.label, undefined, { numeric: true, sensitivity: 'base' })));
+
     // Edges: every card feeds the graph; graph feeds MXL; MXL bridges to the network.
     for (const n of nodes) {
       if (n.lane === 0) edges.push({ from: n.id, to: 'pw' });
@@ -346,8 +378,7 @@ export class PipelineGraph {
     }
     edges.push({ from: 'pw', to: 'mxl' });
 
-    const clocks: any[] = mc?.ptp?.grandmasters ?? [];
-    return { nodes, edges, clocks, mc };
+    return { nodes, edges, mc };
   }
 
   // ───────────────────────── view ─────────────────────────
@@ -365,7 +396,7 @@ export class PipelineGraph {
   }
 
   private draw(): void {
-    const { nodes, edges, clocks, mc } = this.build();
+    const { nodes, edges, mc } = this.build();
 
     // Lay out each lane top-down; overflow collapses to "+N more".
     const pos = new Map<string, { x: number; y: number }>();
@@ -381,11 +412,9 @@ export class PipelineGraph {
         extra.push({ lane, n: inLane.length - MAX_NODES, y: TOP + MAX_NODES * (NODE_H + NODE_GAP) });
     }
     const rows = Math.max(1, ...[0, 1, 2, 3].map((l) => Math.min(MAX_NODES + 1, nodes.filter((n) => n.lane === l).length || 1)));
-    const clockY = TOP + rows * (NODE_H + NODE_GAP) + 6;
-    const H = clockY + 30;
+    const H = TOP + rows * (NODE_H + NODE_GAP) + 6; // PTP clocks live in the Timing tab
 
-    // Network nodes hang off the MXL hub, and off the PTP band when a clock exists.
-    const mxlPos = pos.get('mxl');
+    // Network nodes hang off the MXL hub.
     const netLinks = shown.filter((n) => n.lane === 3).map((n) => ({ from: 'mxl', to: n.id, live: n.live }));
 
     const curve = (a: { x: number; y: number }, b: { x: number; y: number }) => {
@@ -415,7 +444,7 @@ export class PipelineGraph {
       const tapAttr = n.tap || n.pick ? ` data-tap="${esc(n.id)}" role="button" tabindex="0"` : '';
       const tapHint = n.pick ? '\nClick to show in the ring buffer' : n.tap ? (clipped ? '\n● TEST POINT — click to lift the probe' : '\nClick to meter this point (test point)') : '';
       return `
-        <g class="pg-node pg-${n.kind}${n.live ? ' pg-on' : ''}${n.hub ? ' pg-hub' : ''}${n.tap ? ' pg-tappable' : ''}${n.pick ? ' pg-pickable' : ''}${clipped ? ' pg-tp' : ''}${picked ? ' pg-pick' : ''}"${tapAttr} transform="translate(${p.x} ${p.y})">
+        <g class="pg-node pg-${n.kind}${n.live ? ' pg-on' : ''}${n.hub ? ' pg-hub' : ''}${n.gone ? ' pg-gone' : ''}${n.tap ? ' pg-tappable' : ''}${n.pick ? ' pg-pickable' : ''}${clipped ? ' pg-tp' : ''}${picked ? ' pg-pick' : ''}"${tapAttr} transform="translate(${p.x} ${p.y})">
           <title>${esc(n.label)}${n.sub ? ` — ${esc(n.sub)}` : ''}${n.title ? `\n${esc(n.title)}` : ''}${tapHint}</title>
           <rect width="${LANE_W}" height="${NODE_H}" rx="4"/>
           <circle class="pg-dot" cx="8" cy="${NODE_H / 2}" r="2.6"/>
@@ -427,24 +456,6 @@ export class PipelineGraph {
 
     const more = extra.map((e) => `<text class="pg-more" x="${LANE_X[e.lane] + 8}" y="${e.y + 10}">+${e.n} more</text>`).join('');
 
-    // PTP clock band: one chip per grandmaster, dashed to the MXL hub (TAI) and the AoIP lane.
-    const bandX = LANE_X[2], bandW = LANE_X[3] + LANE_W - bandX;
-    const chipW = clocks.length ? Math.min(220, (bandW - 8 * (clocks.length - 1)) / clocks.length) : bandW;
-    const clockSvg = clocks.length
-      ? clocks.map((c, i) => {
-          const x = bandX + i * (chipW + 8);
-          const label = `${c.version === 1 ? 'PTPv1' : 'PTPv2'} ${c.version === 1 ? c.domain : 'd' + c.domain} · ${c.network}${c.priority1 != null ? ` · p1 ${c.priority1}` : ''}`;
-          const contested = c.sync_health === 'contested';
-          return `
-            <g class="pg-clock pg-v${c.version}${contested ? ' pg-contested' : ''}" transform="translate(${x} ${clockY})">
-              <title>Grandmaster ${esc(c.identity)}${c.source_ip ? ` from ${esc(c.source_ip)}` : ''}${contested ? '\nContested: more than one grandmaster on this domain' : ''}</title>
-              <rect width="${chipW}" height="21" rx="10.5"/>
-              <text class="pg-label" x="10" y="9">⏱ ${esc(trunc(label, 40))}</text>
-              <text class="pg-sub" x="10" y="17.5">${contested ? '⚠ contested · ' : ''}GM ${esc(trunc(String(c.identity), contested ? 26 : 38))}</text>
-            </g>`;
-        }).join('')
-      : `<text class="pg-sub" x="${bandX + 4}" y="${clockY + 13}">${mc ? (mc.ptp?.mode === 'passive' ? 'No PTP master reported by apk-ptp yet' : 'No PTP grandmaster heard on 224.0.1.129 yet') : 'PTP: waiting for daemon multicast listener'}</text>`;
-    const clockLink = mxlPos ? `<path class="pg-edge pg-clock-edge" d="M ${mxlPos.x + LANE_W / 2} ${clockY} V ${TOP + NODE_H}"/>` : '';
 
     const laneHead = ['1 · ALSA HARDWARE', '2 · PIPEWIRE GRAPH', '3 · MXL SHARED MEMORY', '4 · NETWORK AoIP'];
     const heads = laneHead.map((t, i) => `
@@ -466,16 +477,16 @@ export class PipelineGraph {
     this.el.innerHTML = `
       <div class="pg-status">
         <span class="pg-chip ${this.online ? 'pg-chip-on' : 'pg-chip-err'}" title="TAP daemon ${this.online ? 'online :8467' : 'offline'}"><i></i>TAP</span>
-        ${chip('SAP', mc?.sap)}${chip('PTP', mc?.ptp)}${chip('SIP', mc?.sip)}
+        ${chip('SAP', mc?.sap)}${chip('SIP', mc?.sip)}
         ${this.online ? '' : `<span class="pg-iface">TAP offline: <a href="https://github.com/WardBeckSystems/Ward-Beck-Audio-Tap" target="_blank" rel="noopener">download the Ward-Beck Audio Tap</a>, then <code>./run.sh</code> · guide at <a href="${DAEMON}/setup" target="_blank" rel="noopener">:8467/setup</a></span>`}
         ${this.tpChip()}
       </div>
       <svg class="pg-svg" viewBox="0 0 ${W} ${H}" role="img" aria-label="Audio pipeline signal flow: ALSA to PipeWire to MXL to network AoIP">
-        ${heads}${edgeSvg}${clockLink}${nodeSvg}${more}${clockSvg}
+        ${heads}${edgeSvg}${nodeSvg}${more}
         ${empty(0, this.online ? 'no ALSA cards reported' : 'TAP offline: docker compose up -d')}
         ${empty(3, mc ? 'nothing heard or announced' : 'no AoIP data')}
       </svg>
-      ${[mc?.sap, mc?.ptp, mc?.sip].some((l) => l?.error) ? `<div class="pg-errors">${[['SAP', mc.sap], ['PTP', mc.ptp], ['SIP', mc.sip]].filter(([, l]) => l?.error).map(([n, l]) => `<div><b>${n}</b> ${esc(l.error)}</div>`).join('')}</div>` : ''}
+      ${[mc?.sap, mc?.sip].some((l) => l?.error) ? `<div class="pg-errors">${[['SAP', mc.sap], ['SIP', mc.sip]].filter(([, l]) => l?.error).map(([n, l]) => `<div><b>${n}</b> ${esc(l.error)}</div>`).join('')}</div>` : ''}
     `;
     this.syncFixPrompt();
   }

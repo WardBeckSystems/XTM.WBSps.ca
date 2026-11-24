@@ -32,6 +32,7 @@ import * as ppm from './engine/ballistics/ppm';
 import type { PpmTypeInput } from './engine/ballistics/ppm-standards';
 import * as soundcard from './engine/sources/soundcard';
 import { connectSystemAudio } from './engine/sources/system-audio';
+import { connectMxlFlow, type MxlFlowFeed } from './engine/sources/mxl-flow';
 import { testGen, pod33Gen, configureGenerators, type Pod33Config, type BitBuddyConfig } from '../../Generators/web';
 import { resumeAudio } from './engine/autoplay';
 import * as graph from './engine/graph';
@@ -58,6 +59,11 @@ export class XtmAudioEngine {
   ctx: AudioContext | null = null;
   sourceNode: MediaStreamAudioSourceNode | AudioNode | null = null;
   stream: MediaStream | null = null;
+  /**
+   * Captured streams kept alive while another source plays, keyed 'system' or 'mic:<deviceId>'.
+   * Switching back reuses them, so the browser does not ask for the tab or microphone again.
+   */
+  parkedStreams: Map<string, MediaStream> = new Map();
   isSystemAudio: boolean = false;
   activeDeviceId: string | null = null;
   sourceType: SourceType = 'none'; // 'mic', 'system', 'test'
@@ -70,7 +76,7 @@ export class XtmAudioEngine {
 
   // Monitor / Listen Through
   monitorGainNode: GainNode | null = null;
-  monitorEnabled: boolean = true;
+  monitorEnabled: boolean = false; // speakers muted until the router unmutes them
   monitorVolume: number = 0.8;
 
   // Splitter & Analyser / Processor
@@ -115,6 +121,8 @@ export class XtmAudioEngine {
 
   // Listeners for device changes & status
   onStatusChange: ((status: any) => void) | null = null;
+  /** Live MXL flow feeding the meters (set by connectMxlFlow). */
+  mxlFeed: MxlFlowFeed | null = null;
   /** What the shared browser tab / window / screen is (set by connectSystemAudio). */
   tabInfo: import('../../WebRouter/src').BrowserTabInfo | null = null;
   onDevicesChange: ((devices: MediaDeviceInfo[], activeId?: string | null) => void) | null = null;
@@ -179,6 +187,9 @@ export class XtmAudioEngine {
 
   /** Connect to System Audio Output ("Listen to whatever is playing") via getDisplayMedia */
   connectSystemAudio(preferredSurface: 'monitor' | 'browser' | 'window' = 'browser', forcePrompt = false): Promise<boolean> { return connectSystemAudio(this, preferredSurface, forcePrompt); }
+
+  /** An MXL flow on the host (:8467) as the meter source: XTM-4, POD-22, loudness and scope all follow it */
+  connectMxlFlow(baseUrl: string, flowId: string, label?: string): Promise<boolean> { return connectMxlFlow(this, baseUrl, flowId, label); }
 
   /** Built-in Signal Generator for testing and calibration */
   startTestGenerator(type = 'sine1k'): void { testGen.startTestGenerator(this, type); }

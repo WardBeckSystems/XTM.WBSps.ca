@@ -281,3 +281,26 @@
 .ctrl-hint strong {
   color: var(--accent-green);
 }
+
+/* Display for Meters: live preview + Analog VU / PPM / Bargraph sub-tabs (meters-preview.ts) */
+.meters-preview {
+  display: flex; align-items: center; justify-content: center;
+  height: 118px; margin: 0 0 10px; padding: 6px;
+  background: var(--meters-preview-bg, #0a0f14);
+  border: 1px solid #1e3a2c; border-radius: 6px; overflow: hidden;
+  color: #64748b; font: 11px var(--font-mono);
+}
+.meters-preview[data-tab="bar"] { height: 64px; padding: 4px; }
+.meters-preview svg { width: 100%; height: 100%; display: block; pointer-events: none; }
+.meters-subtabs { display: flex; gap: 4px; margin: 0 0 12px; border-bottom: 1px solid #1e3a2c; }
+.meters-subtab {
+  flex: 1; padding: 7px 6px; margin-bottom: -1px; cursor: pointer;
+  font: 700 11px var(--font-mono); letter-spacing: 0.8px; text-transform: uppercase;
+  color: #64748b; background: transparent;
+  border: 1px solid transparent; border-bottom: 2px solid transparent; border-radius: 5px 5px 0 0;
+}
+.meters-subtab:hover { color: #cbd5e1; }
+.meters-subtab.active { color: #4ade80; border-color: #1e3a2c; border-bottom-color: #4ade80; background: #0f1f17; }
+.meters-subtab:focus-visible { outline: 2px solid #4ade80; outline-offset: 1px; }
+.meters-pane[hidden] { display: none; }
+.meters-pane > .drawer-section-sub:first-child { margin-top: 0; }

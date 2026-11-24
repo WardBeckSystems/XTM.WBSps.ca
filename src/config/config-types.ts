@@ -43,7 +43,7 @@ export interface WbsConsoleConfig {
     peakHold: boolean;
   };
   scope: {
-    timeMode: 'log' | 'super_log' | 'lin';
+    timeMode: 'log' | 'super_log' | 'lin' | 'samples';
     captureLengthSeconds: number;
     captureSpeedFps: number;
     logWarpBeta: number;

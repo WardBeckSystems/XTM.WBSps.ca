@@ -5,6 +5,7 @@
 
 import type { XtmAudioEngine } from '../../audio-engine';
 import type { BrowserTabInfo } from '../../../../WebRouter/src';
+import { takeParked } from '../graph';
 
 /** A track label that is only an internal capture id, not a human name. */
 const isOpaqueLabel = (l: string) => !l || /^(web-contents-media-stream|screen:|window:)/i.test(l) || /^[0-9a-f-]{20,}$/i.test(l);
@@ -57,6 +58,16 @@ export async function connectSystemAudio(
   if (!forcePrompt && engine.sourceType === 'system' && engine.stream && engine.stream.active) {
     return true;
   }
+  // The tab shared earlier is still open (parked while another source played): reuse it, no picker.
+  if (engine.sourceType !== 'system') {
+    const parked = takeParked(engine, 'system');
+    if (parked) {
+      await engine.ensureContext();
+      engine.stopCurrentSource();
+      attachTab(engine, parked, (parked as any).__wbsTabInfo || describeSharedSurface(parked));
+      return true;
+    }
+  }
 
   try {
     const savedSurface = (typeof localStorage !== 'undefined' && localStorage.getItem('xtm.sysaudio.surface')) || preferredSurface || 'browser';
@@ -64,7 +75,8 @@ export async function connectSystemAudio(
     // Any preceding 'await' (like await ensureContext()) would discard transient user activation.
     const displayPromise = (navigator.mediaDevices as any).getDisplayMedia({
       video: {
-        displaySurface: savedSurface === 'monitor' ? 'monitor' : 'browser'
+        // CH 2 is a browser tab: always open the picker on tabs, whatever was saved before
+        displaySurface: preferredSurface === 'browser' ? 'browser' : savedSurface === 'monitor' ? 'monitor' : 'browser'
       },
       audio: {
         echoCancellation: false,
@@ -73,7 +85,9 @@ export async function connectSystemAudio(
       },
       systemAudio: 'include',
       surfaceSwitching: 'include',
-      selfBrowserSurface: 'exclude',
+      // Offer this tab as well as every other tab: the picker opens on the tab list
+      // with the current tab in it, and "Share this tab instead" stays available later.
+      selfBrowserSurface: 'include',
       preferCurrentTab: false,
       monitorTypeSurfaces: 'include'
     });
@@ -93,22 +107,19 @@ export async function connectSystemAudio(
 
     await engine.ensureContext();
     engine.stopCurrentSource();
+    // A fresh pick replaces any tab still parked from before
+    takeParked(engine, 'system')?.getTracks().forEach(t => t.stop());
 
-    engine.stream = stream;
-    engine.isSystemAudio = true;
-    engine.activeDeviceId = null;
-    engine.sourceType = 'system';
-    engine.setupAudioGraph(stream);
-    engine.tabInfo = info;
-
+    (stream as any).__wbsTabInfo = info;
     // Track ends when user stops sharing in browser toolbar
     audioTracks[0].onended = () => {
       info.live = false;
+      if (engine.parkedStreams.get('system') === stream) engine.parkedStreams.delete('system');
+      if (engine.stream !== stream) return; // parked: the playing source is something else
       engine.stopCurrentSource();
       if (engine.onStatusChange) engine.onStatusChange({ type: 'disconnected', label: 'Audio Stopped' });
     };
-
-    if (engine.onStatusChange) engine.onStatusChange({ type: 'system', label: `${info.surface === 'browser' ? 'Browser Tab' : info.surface === 'window' ? 'Window' : 'Screen'}: ${info.title}`, info });
+    attachTab(engine, stream, info);
     return true;
   } catch (err: any) {
     if (err?.name === 'NotAllowedError') {
@@ -119,4 +130,16 @@ export async function connectSystemAudio(
     if (engine.onStatusChange) engine.onStatusChange({ type: 'error', error: err?.message });
     return false;
   }
+}
+
+/** Make a shared tab (new or parked) the playing source. */
+function attachTab(engine: XtmAudioEngine, stream: MediaStream, info: BrowserTabInfo): void {
+  engine.stream = stream;
+  engine.isSystemAudio = true;
+  engine.activeDeviceId = null;
+  engine.sourceType = 'system';
+  engine.setupAudioGraph(stream);
+  info.live = true;
+  engine.tabInfo = info;
+  if (engine.onStatusChange) engine.onStatusChange({ type: 'system', label: `${info.surface === 'browser' ? 'Browser Tab' : info.surface === 'window' ? 'Window' : 'Screen'}: ${info.title}`, info });
 }

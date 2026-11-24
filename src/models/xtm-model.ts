@@ -23,6 +23,8 @@ export class XtmModel {
   public d: XtmModeStateD = { src: 1, lvl: 42 }; // lvl 42 = -18 dBFS (0 VU Standard Reference)
   public s: XtmModeStateS = { pair: [1] };       // S1..S4 (1kHz, Pink Noise, 400Hz, Sweep)
   public selectedInput: number = 1;             // 1..4 (Hardware Selector Switch)
+  /** True while the lit selector button comes from an assigned input (input-assign.ts), not the mode. */
+  public inputAssigned = false;
   public mcRangeMode: 'outer' | 'inner' | 'cal' = 'outer'; // McCurdy Range Selector Switch
   public mcAttenuatorStep: number = 15;         // 0..30 (McCurdy 31-step Attenuator, step 15 = -20 outer / 0 inner)
 
@@ -159,6 +161,7 @@ export class XtmModel {
   }
 
   public pressMode(): void {
+    this.inputAssigned = false;
     if (!this.power) return;
     if (this.mode === 'SET') {
       this.mode = this.prevMode;
@@ -193,6 +196,7 @@ export class XtmModel {
   }
 
   public pressSource(): void {
+    this.inputAssigned = false;
     if (!this.power) return;
     if (this.mode === 'SET') {
       this.set.scr = this.set.scr === 'HP' ? 'TERM' : 'HP';
@@ -216,6 +220,7 @@ export class XtmModel {
   }
 
   public getSelectedInput(): number {
+    if (this.inputAssigned && this.selectedInput) return this.selectedInput;
     if (this.mode === 'A') {
       return this.a.src === 0 ? 1 : 2;
     }

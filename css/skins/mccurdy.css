@@ -76,3 +76,5 @@ body.theme-mccurdy #xtm_btn_SOURCE { display: none !important; }
 .mc-jack circle { transition: stroke 0.1s ease; }
 .mc-jack:hover circle { stroke: #f4f6f8; }
 .mc-jack:active circle { stroke: #ff2d1f; stroke-width: 3; }
+/* The patched input jack (McCurdy .com, four jacks): red ring like the pressed state */
+.mc-jack.mc-jack-active circle { stroke: #ff2d1f; stroke-width: 3; }

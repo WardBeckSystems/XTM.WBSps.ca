@@ -4,7 +4,7 @@ Test point: meter any point of the layered audio pipeline.
 
 One test point is active at a time, like the probe on a test-point jack. Whatever it
 is clipped onto is brought into its own ring buffer sized to 10 x that point's packet
-time, and metered per channel (peak / RMS) from the ring:
+time (AES67 / RAVENNA / Dante-AES67 streams: a fixed 10 s ring), and metered per channel (peak / RMS) from the ring:
 
   hw       ALSA card            -> its PipeWire source (or sink monitor), parec
                                    packet = PipeWire graph quantum
@@ -30,6 +30,7 @@ import time
 from array import array
 
 RING_PACKETS = 10
+RING_SECONDS = 10.0   # every test point (ALSA, PipeWire, MXL, AoIP): 10 s ring
 MAX_CHANNELS = 16
 FLOW_ID = "wbs-test-point"
 
@@ -97,17 +98,36 @@ def _graph_quantum(objs=None) -> int:
 # ---------------------------------------------------------------------------
 
 class TapRing:
-    """Planar Float32 ring of RING_PACKETS x packet_frames frames per channel."""
+    """
+    Planar Float32 ring per channel: RING_PACKETS x packet_frames frames, or a fixed
+    duration (AoIP: 10 s). Waveform min/max bins and peak/RMS meters are maintained
+    as each packet is written, so a 480,000-frame x 8ch ring snapshots in O(bins).
+    """
 
-    def __init__(self, channels: int, packet_frames: int, sample_rate: int):
+    NUM_BINS = 720
+
+    def __init__(self, channels: int, packet_frames: int, sample_rate: int, seconds: float = 0.0):
         self.channels = channels
         self.packet_frames = packet_frames
         self.sample_rate = sample_rate
-        self.length = RING_PACKETS * packet_frames
+        self.length = int(seconds * sample_rate) if seconds > 0 else RING_PACKETS * packet_frames
         self.data = [array("f", bytes(4 * self.length)) for _ in range(channels)]
         self.head = 0
         self.frames = 0
         self.packets = 0
+        self.nb = min(self.NUM_BINS, self.length)
+        self.bmin = [[0.0] * self.nb for _ in range(channels)]
+        self.bmax = [[0.0] * self.nb for _ in range(channels)]
+        self._last_bin = -1
+        self.peak = [0.0] * channels
+        self.rms = [0.0] * channels
+        # ballistics: peak falls back over ~1.5 s, RMS integrates over ~300 ms
+        pkt_s = max(1, packet_frames) / sample_rate
+        self._peak_fall = 0.92 ** (pkt_s / 0.1)
+        self._rms_k = 1.0 - math.exp(-pkt_s / 0.3)
+
+    def _bin_of(self, pos: int) -> int:
+        return (pos * self.nb) // self.length
 
     def write(self, planar):
         n = len(planar[0])
@@ -123,26 +143,44 @@ class TapRing:
             self.data[c][h:h + first] = src[:first]
             if first < n:
                 self.data[c][0:n - first] = src[first:n]
+            # meters from this packet
+            pk = max(max(src), -min(src))
+            ms = sum(v * v for v in src) / n
+            self.peak[c] = max(pk, self.peak[c] * self._peak_fall)
+            self.rms[c] += (math.sqrt(ms) - self.rms[c]) * self._rms_k
+        # bins: a bin is reset the first time the write head enters it
+        i = 0
+        while i < n:
+            pos = (h + i) % L
+            b = self._bin_of(pos)
+            bin_end = min(L, -(-((b + 1) * L) // self.nb))
+            run = min(n - i, max(1, bin_end - pos))
+            fresh = b != self._last_bin
+            self._last_bin = b
+            for c in range(self.channels):
+                seg = planar[c][i:i + run]
+                lo, hi = min(seg), max(seg)
+                if fresh:
+                    self.bmin[c][b], self.bmax[c][b] = lo, hi
+                else:
+                    if lo < self.bmin[c][b]:
+                        self.bmin[c][b] = lo
+                    if hi > self.bmax[c][b]:
+                        self.bmax[c][b] = hi
+            i += run
         self.head = (h + n) % L
         self.frames += n
         self.packets += 1
 
     def snapshot(self, bins: int) -> list:
-        nb = max(1, min(bins, self.length))
+        step = max(1, self.nb // max(1, bins))
+        db = lambda v: round(20.0 * math.log10(v), 2) if v > 1e-6 else -120.0
         out = []
         for c in range(self.channels):
-            ch = self.data[c]
-            lo, hi = [], []
-            for b in range(nb):
-                a, z = (b * self.length) // nb, max((b * self.length) // nb + 1, ((b + 1) * self.length) // nb)
-                seg = ch[a:z]
-                lo.append(round(min(seg), 5))
-                hi.append(round(max(seg), 5))
-            pk = max(max(hi), -min(lo)) if hi else 0.0
-            filled = min(self.frames, self.length)
-            rms = math.sqrt(sum(v * v for v in ch) / filled) if filled else 0.0
-            db = lambda v: round(20.0 * math.log10(v), 2) if v > 1e-6 else -120.0
-            out.append({"min": lo, "max": hi, "peak_db": db(pk), "rms_db": db(rms)})
+            mins, maxs = self.bmin[c], self.bmax[c]
+            lo = [round(min(mins[i:i + step]), 5) for i in range(0, self.nb, step)]
+            hi = [round(max(maxs[i:i + step]), 5) for i in range(0, self.nb, step)]
+            out.append({"min": lo, "max": hi, "peak_db": db(self.peak[c]), "rms_db": db(self.rms[c])})
         return out
 
 
@@ -260,7 +298,7 @@ class TestPoint:
         self.channels = max(1, min(ch, MAX_CHANNELS))
         self.packet_frames = _graph_quantum(objs)
         self.source = desc
-        self.ring = TapRing(self.channels, self.packet_frames, self.sample_rate)
+        self.ring = TapRing(self.channels, self.packet_frames, self.sample_rate, RING_SECONDS)
         lat_ms = max(1, int(1000 * self.packet_frames / self.sample_rate))
         self.proc = subprocess.Popen(
             ["parec", *dev_args, "--format=float32le", f"--rate={self.sample_rate}",
@@ -290,7 +328,7 @@ class TestPoint:
         self.channels = flow.channel_count
         self.packet_frames = flow.quantum
         self.source = f"{flow.flow_id} · {flow.domain_id} (shared memory)"
-        self.ring = TapRing(self.channels, self.packet_frames, self.sample_rate)
+        self.ring = TapRing(self.channels, self.packet_frames, self.sample_rate, RING_SECONDS)
         self.status = "running"
         cursor = flow.write_head
         L = flow.buffer_length
@@ -352,7 +390,7 @@ class TestPoint:
         ptime = s.get("ptime") or 1.0
         self.source = f"{s.get('session_name')} · {grp}:{port} · {self.channels}ch {enc} @ {self.sample_rate / 1000:g}k · ptime {ptime} ms"
         self.packet_frames = max(1, int(round(self.sample_rate * ptime / 1000.0)))
-        self.ring = TapRing(self.channels, self.packet_frames, self.sample_rate)
+        self.ring = TapRing(self.channels, self.packet_frames, self.sample_rate, RING_SECONDS)
 
         sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
         sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
@@ -412,7 +450,7 @@ class TestPoint:
                 if not sized and frames != self.packet_frames:  # measured packet beats SDP ptime
                     with _LOCK:
                         self.packet_frames = frames
-                        self.ring = TapRing(N, frames, self.sample_rate)
+                        self.ring = TapRing(N, frames, self.sample_rate, RING_SECONDS)
                 sized = True
                 payload = payload[: frames * bps * N]
                 if bps == 3:

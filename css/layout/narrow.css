@@ -1,7 +1,6 @@
 /*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.ca). All rights reserved. */
-/* Narrow / mobile footer: hide the build stamp, tighten spacing */
+/* Narrow / mobile footer: tighten spacing (the version lives in Settings) */
 @media (max-width: 960px) {
-  .build-stamp { display: none; }
   .drawer-toggle-right { gap: 10px; }
   .wbs-bottom-text, .mc-toggle-text, .footer-btn-text { font-size: 11px; }
 }

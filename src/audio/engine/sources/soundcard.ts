@@ -6,6 +6,7 @@
 
 import type { XtmAudioEngine } from '../../audio-engine';
 import { onNextGesture, resumeAudio } from '../autoplay';
+import { takeParked } from '../graph';
 
 /**
  * Microphone permission was refused: stop asking (every knob turn re-syncs the source)
@@ -89,7 +90,14 @@ export function buildSoundCardConstraints(deviceId: string | null): MediaStreamC
  */
 export async function connectSoundCard(engine: XtmAudioEngine, deviceId: string | null = null): Promise<boolean> {
   await engine.ensureContext();
+  // Same input already playing: nothing to do (and no new getUserMedia)
+  if (engine.sourceType === 'mic' && engine.stream?.getAudioTracks().some(t => t.readyState === 'live')
+      && (!deviceId || deviceId === engine.activeDeviceId)) return true;
   engine.stopCurrentSource();
+
+  // The same input was opened earlier and parked: reuse it, no permission round-trip
+  const parked = takeParked(engine, `mic:${deviceId || 'default'}`);
+  if (parked) return attachMic(engine, parked, deviceId);
 
   // If no input devices exist on the system, fail early cleanly without repeated candidate logs
   try {
@@ -148,7 +156,13 @@ export async function connectSoundCard(engine: XtmAudioEngine, deviceId: string 
     }
   }
 
+  return attachMic(engine, stream, deviceId);
+}
+
+/** Make an opened input (new or parked) the playing source. */
+async function attachMic(engine: XtmAudioEngine, stream: MediaStream, deviceId: string | null): Promise<boolean> {
   try {
+    (stream as any).__wbsMicKey = `mic:${deviceId || 'default'}`; // parked under the key it was asked for
     engine.stream = stream;
     const track = stream.getAudioTracks()[0];
     if (track) track.enabled = true;

@@ -1,0 +1,81 @@
+/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.ca). All rights reserved. */
+/* Ward-Beck.ca settings drawer cards: the brushed aluminium panels and engraved
+   ink of the meter bridge above, instead of the dark navy default. Each card
+   keeps its colour only as a thin anodized top edge. The McCurdy themes
+   already style the drawer in mccurdy.css / mccurdy-dark.css. */
+
+body.theme-wbs-ca .drawer-card {
+  background: linear-gradient(180deg, #dcd9cc 0%, #cbc8b9 100%);
+  border: 1px solid #8c897b;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.6), inset 0 -1px 0 rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.18);
+}
+body.theme-wbs-ca .audio-card { border-top: 3px solid #0e7490; }
+body.theme-wbs-ca .meters-card { border-top: 3px solid #15803d; }
+body.theme-wbs-ca .chart-card { border-top: 3px solid #be185d; }
+body.theme-wbs-ca .guide-card { border-top: 3px solid #b45309; }
+
+/* Engraved ink */
+body.theme-wbs-ca .drawer-card h4 { color: #2a2b2a; }
+body.theme-wbs-ca .drawer-section-sub { color: #6c7077; border-color: #a39f90; }
+body.theme-wbs-ca .drawer-card label,
+body.theme-wbs-ca .drawer-row label { color: #2a2b2a; }
+body.theme-wbs-ca .drawer-card { color: #454c59; }
+
+/* Controls: cream plates with ink, like the meter scale cards */
+body.theme-wbs-ca .drawer-card .ctrl-select {
+  background: #f1eee4;
+  color: #2a2b2a;
+  border-color: #9e9a89;
+}
+body.theme-wbs-ca .drawer-card .ctrl-select option { background: #f1eee4; color: #2a2b2a; }
+body.theme-wbs-ca .drawer-card .scope-clear-btn {
+  background: #edeae0;
+  border-color: #8c897b;
+  color: #2a2b2a;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.7);
+}
+body.theme-wbs-ca .drawer-card .scope-clear-btn span { color: inherit; }
+body.theme-wbs-ca .drawer-card .scope-clear-btn:hover { border-color: #c2410c; color: #c2410c; }
+body.theme-wbs-ca .drawer-card input[type="range"],
+body.theme-wbs-ca .drawer-card input[type="checkbox"] { accent-color: #c2410c; }
+
+/* Source readout and meter preview sit in black meter apertures */
+body.theme-wbs-ca .drawer-source-badge {
+  background: radial-gradient(circle at 50% 40%, #1c1b19 0%, #0b0a09 100%);
+  border-color: #8c897b;
+  color: #ffd152;
+}
+body.theme-wbs-ca .meters-preview {
+  background: radial-gradient(circle at 50% 42%, #1c1b19 0%, #121110 70%, #0b0a09 100%);
+  border-color: #8c897b;
+  box-shadow: inset 0 0 0 3px #2a2926, inset 0 0 18px rgba(0, 0, 0, 0.8);
+}
+
+/* Meter sub-tabs: engraved labels, active tab is a lit cream key */
+body.theme-wbs-ca .meters-subtab { color: #6c7077; border-color: transparent; }
+body.theme-wbs-ca .meters-subtab:hover { color: #2a2b2a; }
+body.theme-wbs-ca .meters-subtab.active {
+  background: #edeae0;
+  color: #c2410c;
+  border-color: #9e9a89;
+}
+
+/* Source buttons carry inline navy/green/indigo plates; on aluminium they become
+   cream keys with a coloured anodized edge (same order: blue, green, indigo). */
+body.theme-wbs-ca #btnBridgeOsAudio,
+body.theme-wbs-ca #btnDownloadRouter,
+body.theme-wbs-ca #btnOpenMxlTab {
+  background: #edeae0 !important;
+  color: #2a2b2a !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.7);
+}
+body.theme-wbs-ca #btnBridgeOsAudio { border-color: #0e7490 !important; }
+body.theme-wbs-ca #btnDownloadRouter { border-color: #15803d !important; }
+body.theme-wbs-ca #btnOpenMxlTab { border-color: #4338ca !important; }
+body.theme-wbs-ca #btnBridgeOsAudio:hover,
+body.theme-wbs-ca #btnDownloadRouter:hover,
+body.theme-wbs-ca #btnOpenMxlTab:hover { color: #c2410c !important; }
+
+/* Slider readouts: engraved orange instead of pale amber */
+body.theme-wbs-ca #inputGainVal,
+body.theme-wbs-ca #monitorVolVal { color: #c2410c !important; }

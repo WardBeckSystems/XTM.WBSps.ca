@@ -10,6 +10,7 @@ import { drawCursorTrace, drawLeadingDots } from './leading-edge';
 import { drawMinuteMarkers } from './minute-markers';
 import { drawNtpDots } from './ntp-dots';
 import { updateHudReadout, drawSignalLossWarning } from './hud-readout';
+import { drawSampleScope } from './sample-scope';
 
 /* Per-frame render: push the live sample, refresh the offscreen graph, blit, draw live overlays + HUD. */
 
@@ -45,6 +46,13 @@ export function renderFrame(v: DbfsView, _model: XtmModel, levels: MeterFrameTel
   const shouldUpdateGraph = true;
 
   const L = computeLayout(v);
+
+  // SAMPLES: individual audio samples instead of the level history
+  if (v.timeMode === 'samples') {
+    drawSampleScope(v, L);
+    updateHudReadout(v, live, L.bufLen);
+    return;
+  }
 
   if (shouldUpdateGraph && !drawGraph(v, L)) return;
 

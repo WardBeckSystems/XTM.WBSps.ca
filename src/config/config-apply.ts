@@ -62,10 +62,8 @@ export function applyBallisticsSection(cfg: WbsConsoleConfig, audio: XtmAudioEng
       audio.setInputTrim(cfg.ballistics.inputGainTrimDb);
     }
     if (cfg.ballistics.monitorAudio) {
-      audio.setMonitor(
-        !!cfg.ballistics.monitorAudio.enabled,
-        cfg.ballistics.monitorAudio.volume ?? 0.5
-      );
+      // Volume only: the speakers always load muted, whatever the saved config says
+      audio.setMonitorVolume(cfg.ballistics.monitorAudio.volume ?? 0.5);
     }
   }
 }

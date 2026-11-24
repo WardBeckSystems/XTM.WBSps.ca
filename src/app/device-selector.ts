@@ -15,45 +15,6 @@ let linuxHostAvailable = false;
 let linuxHostSse: EventSource | null = null;
 let xmxlDisconnect: (() => void) | null = null;
 
-/**
- * Polls one MXL flow's per-channel peak / RMS from the host (/api/mxl/flow/<id>/levels)
- * and hands it on in the same shape as the /api/stream/meters SSE events.
- */
-function connectFlowLevels(baseUrl: string, flowId: string, onUpdate: (d: any) => void): () => void {
-  let stopped = false;
-  let busy = false;
-  const tick = () => {
-    if (stopped || busy) return;
-    busy = true;
-    fetch(`${baseUrl}/api/mxl/flow/${encodeURIComponent(flowId)}/levels`)
-      .then((r) => (r.ok ? r.json() : null))
-      .then((d) => {
-        if (stopped || !d || !Array.isArray(d.peak_db) || d.peak_db.length === 0) return;
-        const pkL = d.peak_db[0];
-        const pkR = d.peak_db[1] ?? pkL;
-        const rmsL = d.rms_db[0];
-        const rmsR = d.rms_db[1] ?? rmsL;
-        onUpdate({
-          left_db: rmsL,
-          right_db: rmsR,
-          left_peak_db: pkL,
-          right_peak_db: pkR,
-          // Same VU alignment as the host tap: 0 VU = -18 dBFS RMS
-          left_vu: rmsL + 18,
-          right_vu: rmsR + 18,
-        });
-      })
-      .catch(() => {})
-      .finally(() => { busy = false; });
-  };
-  tick();
-  const timer = window.setInterval(tick, 33);
-  return () => {
-    stopped = true;
-    window.clearInterval(timer);
-  };
-}
-
 /** Probes local Linux host daemon (WARD BECK TAP) on port 8467 */
 export async function probeLinuxHost(): Promise<boolean> {
   try {
@@ -122,6 +83,9 @@ export function bindAudioCallbacks(ctx: AppContext, refs: DrawerControls): void 
     } else if (status.type === 'system') {
       drawerSourceBadge.textContent = 'Source: ' + (status.label || 'Computer System Audio');
       drawerSourceBadge.style.color = '#7df9ff';
+    } else if (status.type === 'mxl') {
+      drawerSourceBadge.textContent = 'Source: 🎛️ MXL · ' + (status.label || status.flowId);
+      drawerSourceBadge.style.color = '#22c55e';
     } else if (status.type === 'test') {
       drawerSourceBadge.textContent = 'Source: ' + status.label;
       drawerSourceBadge.style.color = '#ffd152';
@@ -413,11 +377,13 @@ export function initDeviceSelector(ctx: AppContext, refs: DrawerControls, sync: 
           audio.currentLevels.hasAudio = true;
         }
       };
-      // The master bus comes off the host tap's SSE stream; any other flow is metered
-      // straight from its MXL ring / grain buffer.
-      xmxlDisconnect = flowTag && flowTag !== 'wbs-flow-master-stereo' && port === 8467
-        ? connectFlowLevels(instance.baseUrl, flowTag, applyLevels)
-        : connectXmxlStream(instance as any, applyLevels);
+      // The host carries real audio: stream the flow's samples into the engine so the
+      // XTM-4, POD-22, loudness, phase and scope all take it as their source.
+      if (port === 8467) {
+        audio.connectMxlFlow(instance.baseUrl, flowTag || 'wbs-flow-master-stereo', flowInfo?.label || flowTag || 'Master Bus');
+        return;
+      }
+      xmxlDisconnect = connectXmxlStream(instance as any, applyLevels);
       return;
     }
 

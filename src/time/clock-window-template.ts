@@ -126,25 +126,25 @@ export function renderClockWindowHtml(
     body.theme-wbs-ca .clock-nrc-sub { fill: #78716c !important; }
     body.theme-wbs-ca .clock-nrc-srv { fill: #78716c !important; }
 
-    body.theme-mccurdy-dark .clock-dial-plate { fill: url(#clockDialMcCurdyDark) !important; }
+    body.theme-mccurdy-dark .clock-dial-plate { fill: url(#clockDialMcCurdyBlue) !important; }
     body.theme-mccurdy-dark .clock-baseline-arc { stroke: #f0f4f8 !important; }
     body.theme-mccurdy-dark .clock-tick-std { stroke: #f0f4f8 !important; }
     body.theme-mccurdy-dark .clock-num-std { fill: #f0f4f8 !important; }
     body.theme-mccurdy-dark .clock-num-warn { fill: #facc15 !important; }
-    body.theme-mccurdy-dark .clock-num-24 { fill: #627d98 !important; }
-    body.theme-mccurdy-dark .clock-nrc-lbl { fill: #9fb3c8 !important; }
-    body.theme-mccurdy-dark .clock-nrc-sub { fill: #627d98 !important; }
-    body.theme-mccurdy-dark .clock-nrc-srv { fill: #9fb3c8 !important; }
+    body.theme-mccurdy-dark .clock-num-24 { fill: #9fb3c8 !important; }
+    body.theme-mccurdy-dark .clock-nrc-lbl { fill: #d9e2ec !important; }
+    body.theme-mccurdy-dark .clock-nrc-sub { fill: #9fb3c8 !important; }
+    body.theme-mccurdy-dark .clock-nrc-srv { fill: #d9e2ec !important; }
 
-    body.theme-mccurdy .clock-dial-plate { fill: url(#clockDialMcCurdyLight) !important; }
-    body.theme-mccurdy .clock-baseline-arc { stroke: #102a43 !important; }
-    body.theme-mccurdy .clock-tick-std { stroke: #102a43 !important; }
-    body.theme-mccurdy .clock-num-std { fill: #0b1b2b !important; }
-    body.theme-mccurdy .clock-num-warn { fill: #c2410c !important; }
-    body.theme-mccurdy .clock-num-24 { fill: #627d98 !important; }
-    body.theme-mccurdy .clock-nrc-lbl { fill: #334e68 !important; }
-    body.theme-mccurdy .clock-nrc-sub { fill: #486581 !important; }
-    body.theme-mccurdy .clock-nrc-srv { fill: #486581 !important; }
+    body.theme-mccurdy .clock-dial-plate, body.theme-mccurdy-light .clock-dial-plate { fill: url(#clockDialMcCurdyBlue) !important; }
+    body.theme-mccurdy .clock-baseline-arc, body.theme-mccurdy-light .clock-baseline-arc { stroke: #f0f4f8 !important; }
+    body.theme-mccurdy .clock-tick-std, body.theme-mccurdy-light .clock-tick-std { stroke: #f0f4f8 !important; }
+    body.theme-mccurdy .clock-num-std, body.theme-mccurdy-light .clock-num-std { fill: #f0f4f8 !important; }
+    body.theme-mccurdy .clock-num-warn, body.theme-mccurdy-light .clock-num-warn { fill: #facc15 !important; }
+    body.theme-mccurdy .clock-num-24, body.theme-mccurdy-light .clock-num-24 { fill: #9fb3c8 !important; }
+    body.theme-mccurdy .clock-nrc-lbl, body.theme-mccurdy-light .clock-nrc-lbl { fill: #d9e2ec !important; }
+    body.theme-mccurdy .clock-nrc-sub, body.theme-mccurdy-light .clock-nrc-sub { fill: #9fb3c8 !important; }
+    body.theme-mccurdy .clock-nrc-srv, body.theme-mccurdy-light .clock-nrc-srv { fill: #d9e2ec !important; }
 
     .wbs-modern-only { display: none; }
     .wbs-ca-only { display: none; }
@@ -152,6 +152,9 @@ export function renderClockWindowHtml(
     body.theme-wbs-dark .wbs-modern-only { display: inline; }
     body.theme-wbs-ca .wbs-ca-only { display: inline; }
     body.theme-mccurdy-dark .mc-only, body.theme-mccurdy .mc-only { display: inline; }
+    .clock-brand-mc-vintage, .clock-brand-mc-new { display: none; }
+    body.theme-mccurdy-dark .clock-brand-mc-vintage { display: inline; }
+    body.theme-mccurdy .clock-brand-mc-new, body.theme-mccurdy-light .clock-brand-mc-new { display: inline; }
   </style>
 </head>
 <body class="theme-${theme}">

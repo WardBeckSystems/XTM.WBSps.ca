@@ -1,0 +1,46 @@
+/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.ca). All rights reserved. */
+/* Side bar: slide-out reference panel on the right edge (design & hardware guides). */
+.xtm-sidebar {
+  position: fixed;
+  top: 50%;
+  right: 0;
+  z-index: 900;
+  display: flex;
+  align-items: flex-start;
+  transform: translate(calc(100% - 26px), -50%);
+  transition: transform 0.22s ease;
+  max-height: 92vh;
+}
+.xtm-sidebar.open { transform: translate(0, -50%); }
+
+.xtm-sidebar-tab {
+  flex: none;
+  width: 26px;
+  padding: 12px 0;
+  writing-mode: vertical-rl;
+  font: 800 0.66rem monospace;
+  letter-spacing: 0.18em;
+  color: #f59e0b;
+  background: #1d1810;
+  border: 1px solid #3a2e14;
+  border-right: none;
+  border-radius: 6px 0 0 6px;
+  cursor: pointer;
+}
+.xtm-sidebar-tab:hover { color: #fbbf24; }
+
+.xtm-sidebar-body {
+  width: min(380px, calc(100vw - 42px));
+  max-height: 92vh;
+  overflow-y: auto;
+  box-shadow: -6px 0 18px rgba(0, 0, 0, 0.45);
+}
+.xtm-sidebar-body .drawer-card { margin: 0; border-radius: 6px 0 0 6px; }
+
+body.theme-mccurdy .xtm-sidebar-tab,
+body.theme-mccurdy-light .xtm-sidebar-tab { background: #f4f1ea; border-color: #b5b1a6; color: #b45309; }
+
+@media print { .xtm-sidebar { display: none; } }
+
+/* Guides belong to Settings: the tab only shows on the settings page. */
+body:not(.xtm-settings-page) .xtm-sidebar { display: none; }

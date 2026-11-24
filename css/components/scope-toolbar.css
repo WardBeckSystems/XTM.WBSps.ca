@@ -131,3 +131,22 @@
   font-size: 9.5px;
   color: #64748b;
 }
+
+/* Icon-only time scale buttons (name lives in title / aria-label) */
+.scope-tab-btn.scope-tab-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 3px 8px;
+  min-width: 38px;
+}
+.scope-tab-ico {
+  width: 26px;
+  height: 15px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.scope-tab-ico circle { fill: currentColor; stroke: none; }

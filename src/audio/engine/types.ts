@@ -72,7 +72,7 @@ export interface CurrentLevelsState {
   hasAudio: boolean;
 }
 
-export type SourceType = 'none' | 'mic' | 'system' | 'test';
+export type SourceType = 'none' | 'mic' | 'system' | 'test' | 'mxl';
 
 /** Default VU movement coefficients (ANSI C16.5-1942 electromechanical 2nd-order ODE). */
 export function createVuCoeffs(): Record<string, VuCoeffConfig> {

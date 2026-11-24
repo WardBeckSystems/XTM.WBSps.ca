@@ -16,3 +16,16 @@ html, body { height: 100%; overflow: hidden; }
 }
 .aux-drawer[open] .drawer-grid::-webkit-scrollbar { display: none; }
 .drawer-toggle::-webkit-details-marker { display: none; }
+/* Settings page: the drawer cards fill the lower bay and scroll inside it */
+#settingsStage .drawer-grid { max-height: none; overflow: visible; }
+/* Not a .meter-unit (its "every svg fills the width" rule would blow up the settings icons),
+   so the lower-bay page layout is spelled out here. */
+#settingsStage {
+  flex: 1 1 0px;
+  min-height: 180px;
+  line-height: normal;
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-width: none;
+}
+#settingsStage::-webkit-scrollbar { display: none; }

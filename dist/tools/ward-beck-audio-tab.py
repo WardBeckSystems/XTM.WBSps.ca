@@ -32,7 +32,9 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from mxl_engine import MXL_ENGINE, current_tai_ns
 from pipeline_inspector import inspect_alsa, inspect_full_pipeline, inspect_pipewire, inspect_aoip
 import aoip_listener
+from setup_page import SETUP_HTML
 import test_point
+import listen_picker
 
 PORT = 8467
 
@@ -1293,6 +1295,36 @@ HTML_UI = """<!DOCTYPE html>
   }
   .footer-links a { color: var(--text-muted); text-decoration: none; margin-left: 12px; }
   .footer-links a:hover { color: #94a3b8; }
+
+  /* Listen picker: the simple front page */
+  .pick { display:flex; flex-direction:column; gap:14px; }
+  .pick-now { display:flex; align-items:center; gap:12px; }
+  .pick-now-label { font-size:15px; font-weight:700; color:#e2e8f0; flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .pick-now-bar { width:160px; height:8px; background:#0f172a; border-radius:4px; overflow:hidden; }
+  .pick-now-fill { height:100%; width:0; background:linear-gradient(90deg,#22c55e,#eab308 80%,#ef4444); transition:width 60ms linear; }
+  .pick-group-title { font-size:11px; font-weight:700; letter-spacing:1px; text-transform:uppercase; color:#64748b; margin-bottom:6px; }
+  .pick-list { display:flex; flex-direction:column; gap:6px; }
+  .pick-row { display:flex; align-items:center; gap:10px; width:100%; text-align:left; padding:10px 12px; border-radius:8px; border:1px solid #1e293b; background:#0b1220; color:#cbd5e1; font:inherit; cursor:pointer; }
+  .pick-row:hover { border-color:#38bdf8; }
+  .pick-row.on { border-color:#22c55e; background:#052e16; color:#f8fafc; }
+  .pick-led { width:9px; height:9px; border-radius:50%; background:#334155; flex:none; }
+  .pick-row.on .pick-led { background:#22c55e; box-shadow:0 0 8px #22c55e; }
+  .pick-name { font-weight:700; flex:none; }
+  .pick-title { color:#94a3b8; font-size:12px; flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .pick-lvl { width:60px; height:5px; background:#0f172a; border-radius:3px; overflow:hidden; flex:none; }
+  .pick-lvl > div { height:100%; width:0; background:#22c55e; }
+  .pick-empty { font-size:12px; color:#64748b; padding:4px 2px; }
+  /* CTRL tray: hold CTRL 5 s to reveal the full routing (same gesture as XTM's settings drawer) */
+  .ctrl-lock { display:flex; align-items:center; gap:10px; padding:8px 12px; border:1px dashed #1e293b; border-radius:8px; color:#475569; font-size:11px; }
+  .ctrl-lock-bar { flex:1; max-width:160px; height:4px; background:#0f172a; border-radius:2px; overflow:hidden; }
+  .ctrl-lock-fill { height:100%; width:0; background:#22c55e; }
+  .tray { display:flex; flex-wrap:wrap; align-items:center; gap:10px 18px; padding:10px 12px; border:1px solid #1e293b; border-radius:8px; font-size:12px; color:#64748b; }
+  .tray-facts { display:flex; flex-wrap:wrap; gap:6px 18px; flex:1; min-width:0; }
+  .tray-facts b { color:#cbd5e1; font-weight:600; word-break:break-all; }
+  .tray-actions { display:flex; align-items:center; gap:14px; }
+  .tray-actions a { color:#38bdf8; text-decoration:none; font-weight:700; }
+  .tray .reset-report { flex-basis:100%; }
+  .ctrl-lock.holding { color:#22c55e; border-color:#22c55e; }
 </style>
 </head>
 <body>
@@ -1303,6 +1335,7 @@ HTML_UI = """<!DOCTYPE html>
       <div>
         <div class="branding-title">WARD-BECK SYSTEMS // TELEMETRY &amp; SIGNAL TAP</div>
         <div class="branding-sub">Linux Virtual Patchbay &amp; MXL Ring Buffer Telemetry (:8467)</div>
+        <div class="branding-sub"><a href="/setup" style="color:#38bdf8;font-weight:700;text-decoration:none;">⚙ Setup &amp; Docker deployment guide →</a></div>
       </div>
     </div>
     <div class="live-pill" id="sseStatusPill">
@@ -1312,111 +1345,38 @@ HTML_UI = """<!DOCTYPE html>
   </div>
 
   <div class="body-content">
-    <div class="action-banner">
-      <div class="action-banner-title">📡 Live Broadcast Visualizer Connection</div>
-      <div class="action-banner-desc">
-        This local daemon provides low-latency telemetry, MXL shared-memory flows, and virtual loopback audio directly to the live Ward-Beck mastering visualizers. Open the live URL in your browser to view the broadcast meters and routing console:
+    <div class="pick">
+      <div class="pick-now">
+        <div class="pick-now-label">What should the meters hear?</div>
+        <div class="pick-now-bar"><div class="pick-now-fill" id="pickFill"></div></div>
       </div>
-      <div class="action-buttons">
-        <a href="https://ward-beck.ca" target="_blank" rel="noopener" class="btn-primary">
-          <span>🎛️</span> <span>Open Ward-Beck Visualizer (ward-beck.ca)</span>
-        </a>
-        <a href="https://xtm.wbsps.ca" target="_blank" rel="noopener" class="btn-secondary">
-          <span>📡</span> <span>Open XTM-4 Rack (xtm.wbsps.ca)</span>
-        </a>
-        <a href="http://localhost:8080" target="_blank" rel="noopener" class="btn-secondary" id="btnLocalHostLink" style="display:none;">
-          <span>💻</span> <span>Local Host (:8080)</span>
-        </a>
-        <button type="button" class="btn-reset" id="btnResetAll" title="Kill every generator and destroy stray virtual cards">
-          <span>⟲</span> <span>Reset All</span>
-        </button>
+      <div>
+        <div class="pick-group-title">Windows making noise</div>
+        <div class="pick-list" id="pickApps"></div>
       </div>
-      <div class="reset-report" id="resetReport" hidden></div>
-    </div>
-
-    <div class="telemetry-grid">
-      <div class="stat-card">
-        <div class="stat-label">Live Signal Tap Levels</div>
-        <div class="meter-bar-container">
-          <div class="meter-row">
-            <span style="width:14px;color:#94a3b8;">L</span>
-            <div class="meter-track"><div class="meter-fill" id="meterFillL"></div></div>
-            <span class="meter-readout" id="meterTextL">-60.0 dB</span>
-          </div>
-          <div class="meter-row">
-            <span style="width:14px;color:#94a3b8;">R</span>
-            <div class="meter-track"><div class="meter-fill" id="meterFillR"></div></div>
-            <span class="meter-readout" id="meterTextR">-60.0 dB</span>
-          </div>
-        </div>
+      <div>
+        <div class="pick-group-title">Sound card inputs</div>
+        <div class="pick-list" id="pickInputs"></div>
       </div>
-
-      <div class="stat-card">
-        <div class="stat-label">Active Audio Source</div>
-        <div class="stat-value" id="valActiveSource" style="font-size:13px;word-break:break-all;color:#38bdf8;">wbs_input_bus.monitor</div>
-        <div class="stat-label" style="margin-top:4px;">Physical Output Sink</div>
-        <div style="font-size:11px;color:#cbd5e1;word-break:break-all;" id="valPhysicalSink">Hardware Speakers / PipeWire</div>
-      </div>
-
-      <div class="stat-card">
-        <div class="stat-label">Virtual Audio Buses</div>
-        <div style="font-size:11px;line-height:1.6;color:#cbd5e1;" id="valRoutes">
-          <div>• wbs_meter_tap: <span style="color:#22c55e;">ACTIVE</span></div>
-          <div>• Physical Speakers: <span style="color:#22c55e;">FEEDBACK GUARDED</span></div>
-          <div>• MXL Shared Memory: <span style="color:#22c55e;">48 kHz / 32-bit Float</span></div>
-        </div>
-      </div>
-
-      <div class="stat-card">
-        <div class="stat-label">Network AoIP &amp; NMOS</div>
-        <div class="stat-value" id="valAoipCount" style="color:#a78bfa;">Scanning...</div>
-        <div style="font-size:11px;color:#94a3b8;" id="valAoipDesc">Dante, Ravenna, AES67, NMOS IS-04/05</div>
+      <div class="ctrl-lock" id="ctrlLock" title="Hold CTRL for 5 seconds">
+        <span>🔒</span><span id="ctrlLockText">Available to those that know...</span>
+        <div class="ctrl-lock-bar"><div class="ctrl-lock-fill" id="ctrlLockFill"></div></div>
       </div>
     </div>
 
-    <div>
-      <div class="stat-label" style="margin-bottom:8px;">Live Telemetry API Endpoints (CORS &amp; PNA Enabled)</div>
-      <table class="endpoints-table">
-        <thead>
-          <tr>
-            <th style="width:70px;">Method</th>
-            <th style="width:160px;">Endpoint</th>
-            <th>Telemetry Payload</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td><span class="method-badge">GET</span></td>
-            <td><a href="/api/status" class="endpoint-link" target="_blank">/api/status</a></td>
-            <td>Full system status, active source, virtual buses, meter levels, and MXL telemetry</td>
-          </tr>
-          <tr>
-            <td><span class="method-badge" style="background:#15803d;">SSE</span></td>
-            <td><a href="/api/stream/meters" class="endpoint-link" target="_blank">/api/stream/meters</a></td>
-            <td>High-frequency Server-Sent Events meter level stream (dBFS &amp; VU)</td>
-          </tr>
-          <tr>
-            <td><span class="method-badge">GET</span></td>
-            <td><a href="/api/mxl" class="endpoint-link" target="_blank">/api/mxl</a></td>
-            <td>MXL Continuous Circular Ring Buffer shared memory telemetry and flow registry</td>
-          </tr>
-          <tr>
-            <td><span class="method-badge">GET</span></td>
-            <td><a href="/api/aoip" class="endpoint-link" target="_blank">/api/aoip</a></td>
-            <td>Audio-over-IP announcements (Dante, Ravenna, AES67 SAP, MoipBuddy)</td>
-          </tr>
-          <tr>
-            <td><span class="method-badge">GET</span></td>
-            <td><a href="/api/aoip/multicast" class="endpoint-link" target="_blank">/api/aoip/multicast</a></td>
-            <td>Live multicast listeners: SAP/SDP sessions, PTP v1 (Dante) &amp; v2 (Ravenna/AES67) clocks, SIP</td>
-          </tr>
-          <tr>
-            <td><span class="method-badge">GET</span></td>
-            <td><a href="/api/pipeline" class="endpoint-link" target="_blank">/api/pipeline</a></td>
-            <td>3-Layer Linux Audio Pipeline topology (ALSA Kernel, PipeWire/Pulse, MXL)</td>
-          </tr>
-        </tbody>
-      </table>
+    <div id="ctrlTray" style="display:none;">
+      <div class="tray">
+        <div class="tray-facts">
+          <span>Speakers <b id="valPhysicalSink">—</b></span>
+          <span>Network <b id="valAoipCount">—</b></span>
+        </div>
+        <div class="tray-actions">
+          <a href="http://localhost:8080" target="_blank" rel="noopener" id="btnLocalHostLink" style="display:none;">Local XTM :8080</a>
+          <a href="/api/status" target="_blank">API</a>
+          <button type="button" class="btn-reset" id="btnResetAll" title="Kill every generator and destroy stray virtual cards">⟲ Reset All</button>
+        </div>
+        <div class="reset-report" id="resetReport" hidden></div>
+      </div>
     </div>
   </div>
 
@@ -1452,7 +1412,7 @@ HTML_UI = """<!DOCTYPE html>
   // Probe local server :8080
   fetch('http://localhost:8080/manifest.json', { mode: 'no-cors' }).then(() => {
     const loc = document.getElementById('btnLocalHostLink');
-    if (loc) loc.style.display = 'inline-flex';
+    if (loc) loc.style.display = 'inline';
   }).catch(() => {});
 
   // 1. Connect to SSE stream
@@ -1467,6 +1427,8 @@ HTML_UI = """<!DOCTYPE html>
         if (fillR) fillR.style.width = dbToFrac(rDb) + '%';
         if (textL) textL.textContent = lDb.toFixed(1) + ' dB';
         if (textR) textR.textContent = rDb.toFixed(1) + ' dB';
+        const pf = document.getElementById('pickFill');
+        if (pf) pf.style.width = dbToFrac(Math.max(lDb, rDb)) + '%';
       } catch (_) {}
     };
     es.onerror = () => {
@@ -1481,6 +1443,82 @@ HTML_UI = """<!DOCTYPE html>
     if (pillText) pillText.textContent = 'OFFLINE';
   }
 
+  // Listen picker: windows making noise, then sound card inputs
+  const appsEl = document.getElementById('pickApps');
+  const inputsEl = document.getElementById('pickInputs');
+  function row(on, name, title, lvl, onClick) {
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'pick-row' + (on ? ' on' : '');
+    b.innerHTML = '<span class="pick-led"></span><span class="pick-name"></span><span class="pick-title"></span>';
+    b.querySelector('.pick-name').textContent = name;
+    b.querySelector('.pick-title').textContent = title || '';
+    if (lvl !== null) {
+      const l = document.createElement('div');
+      l.className = 'pick-lvl';
+      l.innerHTML = '<div style="width:' + dbToFrac(lvl) + '%"></div>';
+      b.appendChild(l);
+    }
+    b.addEventListener('click', onClick);
+    return b;
+  }
+  function listen(body) {
+    fetch('/api/listen', { method: 'POST', body: JSON.stringify(body) }).then(refreshPick).catch(() => {});
+  }
+  function refreshPick() {
+    return fetch('/api/listen').then(r => r.json()).then(d => {
+      const pick = d.pick || {};
+      appsEl.replaceChildren();
+      inputsEl.replaceChildren();
+      const all = !pick.app && !pick.input;
+      appsEl.appendChild(row(all, 'Everything', 'all desktop audio', null, () => listen({ app: null })));
+      (d.apps || []).forEach(a => appsEl.appendChild(
+        row(pick.app === a.key, a.name, a.title, null, () => listen({ app: a.key }))));
+      if (!(d.inputs || []).length) {
+        const e = document.createElement('div');
+        e.className = 'pick-empty';
+        e.textContent = 'No sound card inputs found';
+        inputsEl.appendChild(e);
+      }
+      (d.inputs || []).forEach(i => inputsEl.appendChild(
+        row(pick.input === i.name, i.label, '', i.db, () => listen({ input: i.name }))));
+    }).catch(() => {});
+  }
+  refreshPick();
+  setInterval(refreshPick, 1500);
+
+  // CTRL tray: hold CTRL for 5 s to reveal the full routing for this session
+  const tray = document.getElementById('ctrlTray');
+  const lock = document.getElementById('ctrlLock');
+  const lockFill = document.getElementById('ctrlLockFill');
+  const lockText = document.getElementById('ctrlLockText');
+  let trayOpen = false;
+  function openTray() { trayOpen = true; tray.style.display = 'contents'; lock.style.display = 'none'; }
+  try { if (sessionStorage.getItem('wbs_tap_unlocked') === 'true') openTray(); } catch (_) {}
+  let held = null, holdTimer = null;
+  function cancelHold() {
+    clearInterval(holdTimer); holdTimer = null; held = null;
+    lock.classList.remove('holding'); lockFill.style.width = '0%';
+    lockText.textContent = 'Available to those that know...';
+  }
+  window.addEventListener('keydown', e => {
+    if (e.key !== 'Control' || held || trayOpen) return;
+    held = performance.now();
+    lock.classList.add('holding');
+    holdTimer = setInterval(() => {
+      const t = performance.now() - held;
+      lockFill.style.width = Math.min(100, t / 50) + '%';
+      lockText.textContent = Math.max(0, (5000 - t) / 1000).toFixed(1) + 's';
+      if (t >= 5000) {
+        cancelHold();
+        try { sessionStorage.setItem('wbs_tap_unlocked', 'true'); } catch (_) {}
+        openTray();
+      }
+    }, 40);
+  });
+  window.addEventListener('keyup', e => { if (e.key === 'Control' && held) cancelHold(); });
+  window.addEventListener('blur', () => { if (held) cancelHold(); });
+
   // Reset All: kill generators + destroy stray cards
   const resetBtn = document.getElementById('btnResetAll');
   const resetOut = document.getElementById('resetReport');
@@ -1491,7 +1529,7 @@ HTML_UI = """<!DOCTYPE html>
       lines.push('Generators killed: ' + (rep.generators.length ? rep.generators.join(', ') : 'none running'));
       lines.push('Stray cards destroyed: ' + (rep.modules.length + rep.processes.length || 'none found'));
       rep.modules.concat(rep.processes).forEach(m => lines.push('  ✕ ' + m));
-      resetOut.textContent = lines.join('\n');
+      resetOut.textContent = lines.join('\\n');
       resetOut.hidden = false;
       refreshStatus();
     }).catch(err => {
@@ -1545,6 +1583,21 @@ class WBSHandler(http.server.BaseHTTPRequestHandler):
             self.send_header("Content-Type", "text/html; charset=utf-8")
             self.end_headers()
             self.wfile.write(HTML_UI.encode("utf-8"))
+
+        elif path == "/api/listen":
+            with STATE_LOCK:
+                listen_picker.enforce(sys.modules[__name__])
+                payload = listen_picker.state(sys.modules[__name__])
+            self.send_response(200)
+            self.send_header("Content-Type", "application/json")
+            self.end_headers()
+            self.wfile.write(json.dumps(payload).encode("utf-8"))
+
+        elif path in ("/setup", "/setup/"):
+            self.send_response(200)
+            self.send_header("Content-Type", "text/html; charset=utf-8")
+            self.end_headers()
+            self.wfile.write(SETUP_HTML.encode("utf-8"))
 
         elif path == "/api/status":
             pipeline_data = get_cached_pipeline(MXL_ENGINE)
@@ -1678,6 +1731,50 @@ class WBSHandler(http.server.BaseHTTPRequestHandler):
             self.end_headers()
             self.wfile.write(json.dumps(CBC_GEN_STATE).encode("utf-8"))
 
+        elif path.startswith("/api/mxl/flow/") and path.endswith("/pcm"):
+            # Raw audio of one flow for the browser meters:
+            # /api/mxl/flow/<flow_id>/pcm?since=<cursor>&max=<frames> → planar Float32 LE
+            flow_id = path.split("/")[4]
+            qs = parse_qs(parsed.query)
+            since = int(qs.get("since", ["-1"])[0])
+            max_frames = int(qs.get("max", ["9600"])[0])
+            res = None
+            if flow_id == test_point.FLOW_ID:
+                tp = test_point._ACTIVE
+                ring = tp.ring if tp else None
+                if ring:
+                    with test_point._LOCK:
+                        L, w = ring.length, ring.head
+                        if since < 0:
+                            res = (b"", w, ring.channels, ring.sample_rate, 0)
+                        else:
+                            avail = (w - since) % L
+                            if avail > max_frames:
+                                since, avail = (w - max_frames) % L, max_frames
+                            out = bytearray()
+                            for c in range(ring.channels):
+                                d = ring.data[c]
+                                seg = d[since:since + avail] if since + avail <= L else d[since:L] + d[0:avail - (L - since)]
+                                out += seg.tobytes()
+                            res = (bytes(out), w, ring.channels, ring.sample_rate, avail)
+            else:
+                res = MXL_ENGINE.get_flow_pcm(flow_id, since, max_frames)
+            if res is None:
+                self.send_response(404)
+                self.end_headers()
+                return
+            payload, cursor, nch, sr, frames = res
+            self.send_response(200)
+            self.send_header("Content-Type", "application/octet-stream")
+            self.send_header("Cache-Control", "no-store")
+            self.send_header("X-Cursor", str(cursor))
+            self.send_header("X-Channels", str(nch))
+            self.send_header("X-Sample-Rate", str(sr))
+            self.send_header("X-Frames", str(frames))
+            self.send_header("Access-Control-Expose-Headers", "X-Cursor, X-Channels, X-Sample-Rate, X-Frames")
+            self.end_headers()
+            self.wfile.write(payload)
+
         elif path.startswith("/api/mxl/flow/") and path.endswith("/levels"):
             # Live per-channel peak / RMS of one flow: /api/mxl/flow/<flow_id>/levels
             flow_id = path.split("/")[4]
@@ -1776,6 +1873,14 @@ class WBSHandler(http.server.BaseHTTPRequestHandler):
             self.send_header("Content-Type", "application/json")
             self.end_headers()
             self.wfile.write(json.dumps(payload).encode("utf-8"))
+        elif parsed.path == "/api/listen":
+            data = json.loads(body) if body else {}
+            with STATE_LOCK:
+                ok = listen_picker.listen(sys.modules[__name__], data)
+            self.send_response(200 if ok else 400)
+            self.send_header("Content-Type", "application/json")
+            self.end_headers()
+            self.wfile.write(json.dumps({"ok": ok}).encode("utf-8"))
         elif parsed.path == "/api/set_source":
             global SELECTED_SOURCE
             data = json.loads(body)

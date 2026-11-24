@@ -47,7 +47,8 @@ export function ensureAudioGraph(engine: XtmAudioEngine): GainNode | null {
       try {
         engine.processorNode = new AudioWorkletNode(ctx, WORKLET_PROCESSOR_NAME);
         engine.processorNode.port.onmessage = (e) => {
-          if (e.data && e.data.ch0 && e.data.ch1) {
+          // While an MXL flow feeds the meters, the graph's own (silent) input is ignored
+          if (e.data && e.data.ch0 && e.data.ch1 && !engine.mxlFeed) {
             engine.processAudioBlockBuffers(e.data.ch0, e.data.ch1);
           }
         };
@@ -60,7 +61,7 @@ export function ensureAudioGraph(engine: XtmAudioEngine): GainNode | null {
       // Legacy fallback
       const bufferSize = 1024;
       engine.processorNode = ctx.createScriptProcessor(bufferSize, 2, 2);
-      engine.processorNode.onaudioprocess = (e) => engine.processAudioBlock(e);
+      engine.processorNode.onaudioprocess = (e) => { if (!engine.mxlFeed) engine.processAudioBlock(e); };
     }
 
     engine.inputGainNode.connect(engine.hpfNode);
@@ -109,6 +110,10 @@ export function setupAudioGraph(engine: XtmAudioEngine, sourceObj: any, isDirect
  */
 export function stopCurrentSource(engine: XtmAudioEngine): void {
   if (engine.tabInfo) engine.tabInfo.live = false;
+  if (engine.mxlFeed) {
+    engine.mxlFeed.stop();
+    engine.mxlFeed = null;
+  }
   if (engine.sweepTimer) {
     clearInterval(engine.sweepTimer);
     engine.sweepTimer = null;
@@ -129,22 +134,39 @@ export function stopCurrentSource(engine: XtmAudioEngine): void {
     (engine as any).bitBuddyNode = null;
   }
   if (engine.stream) {
-    engine.stream.getTracks().forEach(t => t.stop());
+    // A tab share or microphone stays open (parked): switching back must not prompt again.
+    // It ends only when the user stops sharing, or when a new capture of the same kind replaces it.
+    const key = engine.sourceType === 'system' ? 'system'
+      : engine.sourceType === 'mic' ? ((engine.stream as any).__wbsMicKey || `mic:${engine.activeDeviceId || 'default'}`) : null;
+    const live = engine.stream.getAudioTracks().some(t => t.readyState === 'live');
+    if (key && live) {
+      const old = engine.parkedStreams.get(key);
+      if (old && old !== engine.stream) old.getTracks().forEach(t => t.stop());
+      engine.parkedStreams.set(key, engine.stream);
+    } else {
+      engine.stream.getTracks().forEach(t => t.stop());
+    }
     engine.stream = null;
   }
   if (engine.sourceNode) {
     try { engine.sourceNode.disconnect(); } catch (_) {}
     engine.sourceNode = null;
   }
-  if (engine.processorNode) {
-    try {
-      if ((engine.processorNode as any).port) {
-        (engine.processorNode as any).port.onmessage = null;
-      }
-      engine.processorNode.disconnect();
-    } catch (_) {}
-    engine.processorNode = null;
-  }
+  // The metering processor is part of the permanent graph (ensureAudioGraph builds it once,
+  // keyed on the input bus), so it stays connected: tearing it down here left every later
+  // source unmetered and froze the XTM-4, POD-22 and loudness on the old source.
   engine.sourceType = 'none';
   engine.isSystemAudio = false;
+  // New source, new programme: integrated loudness / LRA start over
+  engine.resetLoudness();
+}
+
+/** A parked capture stream that is still live, or null (dead ones are dropped). */
+export function takeParked(engine: XtmAudioEngine, key: string): MediaStream | null {
+  const s = engine.parkedStreams.get(key);
+  if (!s) return null;
+  engine.parkedStreams.delete(key);
+  if (s.getAudioTracks().some(t => t.readyState === 'live')) return s;
+  s.getTracks().forEach(t => t.stop());
+  return null;
 }

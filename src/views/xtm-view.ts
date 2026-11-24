@@ -84,6 +84,7 @@ export class XtmView {
   btnEls: Record<string, ButtonElementBundle> = {};
   winkEls: (SVGElement | null)[] = [null, null, null, null, null];
   mcInputEls: (SVGElement | null)[] = [null, null, null, null, null];
+  mcJackEls: (SVGElement | null)[] = [null, null, null, null, null];
   vuShatterEls: (SVGElement | null)[] = [null, null, null, null];
 
   panelEl: SVGElement | null = null;
@@ -194,9 +195,11 @@ export class XtmView {
 
     this.winkEls = [null];
     this.mcInputEls = [null];
+    this.mcJackEls = [null];
     for (let i = 1; i <= 4; i++) {
       this.winkEls.push(this.container.querySelector<SVGElement>(`#wink_btn_${i}`));
       this.mcInputEls.push(this.container.querySelector<SVGElement>(`#mc_input_btn_${i}`));
+      this.mcJackEls.push(this.container.querySelector<SVGElement>(`#mc_jack_${i}`));
     }
 
     this.vuShatterEls = [
@@ -302,6 +305,12 @@ export class XtmView {
           const isLatched = (i === activeInput);
           mEl.classList.toggle('mc-btn-latched', isLatched);
           mEl.setAttribute('aria-pressed', isLatched ? 'true' : 'false');
+        }
+        // McCurdy .com: the patched jack
+        const jEl = this.mcJackEls[i];
+        if (jEl) {
+          jEl.classList.toggle('mc-jack-active', i === activeInput);
+          jEl.setAttribute('aria-pressed', i === activeInput ? 'true' : 'false');
         }
       }
     }

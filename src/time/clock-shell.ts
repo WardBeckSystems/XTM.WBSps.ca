@@ -8,6 +8,10 @@
  */
 
 import type { ClockTheme } from './types';
+import { WBS_LOGO_PATH } from '../views/xtm/lib/wbs-logo';
+
+/** Outer edge of the WBS badge, filled behind the logo. */
+const WBS_BADGE_OUTLINE = 'M-0.03 3.81 C-0.03 7.93 -0.03 13.59 -0.03 17.71 C-0.03 21.6 31.29 21.6 33.55 21.6 C35.9 21.6 38.28 21.6 40.67 21.6 C42.87 21.6 74.06 21.6 74.06 17.71 L74.06 3.81 C74.06 -0 42.87 -0 40.67 -0 C36.81 -0 37.4 -0 33.55 -0 C31.29 -0 -0.03 -0 -0.03 3.81 Z';
 
 export const WARN_YELLOW = '#facc15'; // Solid yellow warning/cue marker fill
 
@@ -77,6 +81,13 @@ export function renderClockDefs(): string {
     </radialGradient>
 
     <!-- McCurdy ATS-100 Console Light Cream Face -->
+    <radialGradient id="clockDialMcCurdyBlue" cx="50%" cy="50%" r="70%">
+      <stop offset="0%" stop-color="#2a5280" />
+      <stop offset="60%" stop-color="#1e3a5f" />
+      <stop offset="90%" stop-color="#142842" />
+      <stop offset="100%" stop-color="#0b1b2b" />
+    </radialGradient>
+
     <radialGradient id="clockDialMcCurdyLight" cx="50%" cy="50%" r="68%">
       <stop offset="0%" stop-color="#fdfbf5" />
       <stop offset="65%" stop-color="#eee9db" />
@@ -222,21 +233,35 @@ export function renderClockDialFace(theme: ClockTheme = 'wbs-dark'): string {
 
     <!-- Brand Badges (Theme Connected at Stylesheet) -->
     <g class="clock-brand clock-brand-wbs-modern wbs-modern-only" style="cursor:pointer;" title="Ward-Beck Systems VU Master Clock">
-      <rect x="-60" y="-76" width="120" height="38" rx="5" fill="#0b0d10" stroke="#22c55e" stroke-width="1.6"/>
-      <text x="0" y="-58" font-family="'Helvetica Neue', Arial, sans-serif" font-size="12" font-weight="900" fill="#22c55e" text-anchor="middle" letter-spacing="1.2">WARD-BECK</text>
-      <text x="0" y="-44" font-family="'Helvetica Neue', Arial, sans-serif" font-size="8.5" font-weight="800" fill="#cbd5e1" text-anchor="middle" letter-spacing="1.5">VU MASTER CLOCK</text>
+      <!-- The WBS logo itself, no words: green on black -->
+      <g transform="translate(-48.2 -72) scale(1.3)">
+        <path d="${WBS_BADGE_OUTLINE}" fill="#0b0d10"/>
+        <path d="${WBS_LOGO_PATH}" fill="#22c55e" fill-rule="evenodd"/>
+      </g>
     </g>
 
     <g class="clock-brand clock-brand-wbs-vintage wbs-ca-only" style="cursor:pointer;" title="Ward-Beck Systems Vintage Master Clock">
-      <rect x="-60" y="-76" width="120" height="38" rx="5" fill="#ffffff" stroke="#f97316" stroke-width="1.8"/>
-      <text x="0" y="-58" font-family="'Helvetica Neue', Arial, sans-serif" font-size="12" font-weight="900" fill="#f97316" text-anchor="middle" letter-spacing="1.2">WARD-BECK</text>
-      <text x="0" y="-44" font-family="'Helvetica Neue', Arial, sans-serif" font-size="8.5" font-weight="800" fill="#2a2b2a" text-anchor="middle" letter-spacing="1.5">SYSTEMS · TORONTO</text>
+      <!-- The WBS logo itself, no words: orange on white -->
+      <g transform="translate(-48.2 -72) scale(1.3)">
+        <path d="${WBS_BADGE_OUTLINE}" fill="#ffffff"/>
+        <path d="${WBS_LOGO_PATH}" fill="#f97316" fill-rule="evenodd"/>
+      </g>
     </g>
 
-    <g class="clock-brand clock-brand-mc mc-only" style="cursor:pointer;" title="McCurdy Radio Industries Studio Master Clock">
-      <rect x="-56" y="-76" width="112" height="38" rx="5" fill="#142842" stroke="#d9e2ec" stroke-width="1.4"/>
-      <text x="0" y="-57" font-family="'Helvetica Neue', Arial, sans-serif" font-size="13" font-weight="900" fill="#ffffff" text-anchor="middle" letter-spacing="0.8">McCURDY</text>
-      <text x="0" y="-44" font-family="'Helvetica Neue', Arial, sans-serif" font-size="8.5" font-weight="800" fill="#9fb3c8" text-anchor="middle" letter-spacing="1.2">STUDIO CLOCK</text>
+    <!-- McCurdy Dark: vintage meter-dial cartouche (styleguide-mccurdy-meter-logo.html) -->
+    <g class="clock-brand clock-brand-mc-vintage" transform="translate(-60, -80) scale(0.2)" style="cursor:pointer;" title="McCurdy Radio Industries Studio Clock">
+      <path d="M 294,14 Q 300,12.5 306,14 L 556,48 Q 566,49.5 562,60 L 517,156 Q 514,162 506,163 L 306,204 Q 300,205.5 294,204 L 94,163 Q 86,162 83,156 L 38,60 Q 34,49.5 44,48 Z" fill="#f5ede3" stroke="#1a1715" stroke-width="6"/>
+      <path fill="#1a1715" d="M 101,46 L 139,46 L 139,62 C 149,49 164,43 181,43 C 199,43 213,50 221,63 C 231,49 246,43 263,43 C 289,43 306,59 306,87 L 306,156 L 317,156 L 317,163 L 271,163 L 271,156 L 281,156 L 281,89 C 281,71 271,61 255,61 C 239,61 227,72 227,91 L 227,156 L 238,156 L 238,163 L 192,163 L 192,156 L 202,156 L 202,89 C 202,71 192,61 176,61 C 160,61 148,72 148,91 L 148,156 L 159,156 L 159,163 L 113,163 L 113,156 L 123,156 L 123,54 L 101,54 Z"/>
+      <text x="323" y="84" font-family="Georgia, 'Times New Roman', serif" font-weight="bold" font-size="33" fill="#1a1715">C</text>
+      <text x="349" y="109" font-family="Georgia, 'Times New Roman', serif" font-weight="bold" font-size="56" letter-spacing="1.5" fill="#1a1715">CURDY</text>
+      <path fill="#1a1715" d="M 264,118 L 523,118 A 11,11 0 0 1 523,140 L 264,140 A 11,11 0 0 1 264,118 Z"/>
+      <text x="396" y="133.5" font-family="Arial, Helvetica, sans-serif" font-weight="bold" font-size="12.5" letter-spacing="1.2" text-anchor="middle" fill="#f5ede3">RADIO INDUSTRIES LIMITED</text>
+    </g>
+
+    <!-- McCurdy ATS: the new McCurdy wordmark -->
+    <g class="clock-brand clock-brand-mc-new" style="cursor:pointer;" title="McCurdy Radio Industries Studio Clock">
+      <rect x="-56" y="-76" width="112" height="38" rx="6" fill="#142842" stroke="#ffffff" stroke-width="2.4"/>
+      <text x="0" y="-50" font-family="'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="21" font-weight="800" fill="#ffffff" text-anchor="middle">McCurdy</text>
     </g>
 
     <!-- NRC-CNRC Official Time Alignment Inscription & Canadian Broadcast Logo (Canada) -->

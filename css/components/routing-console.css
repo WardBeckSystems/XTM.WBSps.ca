@@ -154,6 +154,76 @@
   overflow: hidden;
 }
 
+/* One EBU DMF ring buffer per MXL flow */
+.rc-flow-rings {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+  gap: 10px;
+  margin-bottom: 10px;
+}
+.rc-flow-ring-card {
+  border: 1px solid color-mix(in srgb, currentColor 22%, transparent);
+  border-radius: 5px;
+  padding: 6px 8px 8px;
+  cursor: pointer;
+  min-width: 0;
+}
+.rc-flow-ring-card.active { border-color: var(--eye-meter); }
+.rc-flow-ring-card.idle { opacity: 0.55; cursor: default; }
+.rc-flow-ring-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font: 700 0.72rem monospace;
+  margin-bottom: 4px;
+}
+.rc-flow-ring-name { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.rc-flow-copy {
+  border: 1px solid currentColor;
+  background: transparent;
+  color: inherit;
+  border-radius: 3px;
+  font-size: 0.8rem;
+  line-height: 1;
+  padding: 2px 6px;
+  cursor: pointer;
+  opacity: 0.75;
+}
+.rc-flow-copy:hover, .rc-flow-copy:focus-visible { opacity: 1; }
+.rc-flow-ring-chs { display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; }
+
+/* AES67 transmitter strip at the foot of each MXL flow card */
+.rc-aes67-tx {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 6px;
+  padding-top: 6px;
+  border-top: 1px solid color-mix(in srgb, currentColor 18%, transparent);
+  font: 700 0.72rem monospace;
+  cursor: default;
+}
+.rc-aes67-tag { letter-spacing: 0.06em; }
+.rc-aes67-addr { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; opacity: 0.75; }
+.rc-aes67-tx.on .rc-aes67-addr { opacity: 1; }
+.rc-aes67-led { width: 8px; height: 8px; border-radius: 50%; background: color-mix(in srgb, currentColor 30%, transparent); flex: 0 0 auto; }
+.rc-aes67-tx.on .rc-aes67-led { background: #22c55e; box-shadow: 0 0 6px #22c55e; }
+.rc-aes67-tx.fault .rc-aes67-led { background: #ef4444; box-shadow: 0 0 6px #ef4444; }
+.rc-aes67-btn {
+  border: 1px solid currentColor;
+  background: transparent;
+  color: inherit;
+  border-radius: 3px;
+  font: 800 0.68rem monospace;
+  letter-spacing: 0.08em;
+  padding: 2px 8px;
+  cursor: pointer;
+}
+.rc-aes67-btn.active { background: #111417; border-color: #ff7700; color: #ff7700; box-shadow: 0 0 6px rgba(255, 119, 0, 0.4); }
+.rc-aes67-btn:disabled { opacity: 0.5; cursor: wait; }
+.rc-flow-ring-chs .rc-ring-widget { flex: 0 0 160px; width: 160px; }
+.rc-flow-ring-chs canvas { width: 160px; height: 160px; }
+
 .rc-ring-widget {
   text-align: center;
   flex: 0 0 180px;
@@ -1065,6 +1135,9 @@ body.theme-wbs-ca .rc-btn-sel.active {
   padding-bottom: 6px;
 }
 
+/* No title: only the live flow line, no rule under it */
+.rc-deck-header-untitled { justify-content: flex-start; border-bottom: none; padding-bottom: 2px; }
+
 .rc-deck-sub {
   font-size: 0.68rem;
   font-weight: 600;
@@ -1080,13 +1153,13 @@ body.theme-wbs-ca .rc-btn-sel.active {
   background: #02060b;
   border: 1px solid #102338;
   border-radius: 6px;
-  padding: 6px;
+  padding: 0;
   box-shadow: inset 0 0 25px rgba(0, 0, 0, 0.9);
 }
 
 .rc-eye-canvas {
   width: 100%;
-  max-width: 440px;
+  max-width: 460px;
   height: auto;
   aspect-ratio: 1 / 1;
   display: block;
@@ -1493,15 +1566,6 @@ body.theme-wbs-dark .rc-studio-needle-tip {
   fill: #9dff3a;
 }
 
-/* Scanalyzer eye legend: buffer write head vs meter read head */
-.rc-eye-legend {
-  display: flex;
-  justify-content: center;
-  gap: 14px;
-  font: 600 0.6rem monospace;
-  color: #94a3b8;
-  letter-spacing: 0.04em;
-}
 .rc-eye-key {
   display: inline-block;
   width: 14px;
@@ -1631,6 +1695,8 @@ body.theme-mccurdy-light .rc-pipeline-graph, body.theme-mccurdy .rc-pipeline-gra
 .pg-dot { fill: #5a5f57; }
 .pg-node:not(.pg-on) { opacity: 0.6; }
 .pg-node:not(.pg-on) rect { stroke-dasharray: 3 3; }
+.pg-node.pg-gone { opacity: 0.35; filter: grayscale(1); }
+.pg-node.pg-gone .pg-dot { fill: none; stroke: currentColor; }
 .pg-on.pg-hw .pg-dot { fill: var(--pg-hw); } .pg-on.pg-hw rect { stroke: var(--pg-hw); }
 .pg-on.pg-pw .pg-dot { fill: var(--pg-pw); }
 .pg-on.pg-mxl .pg-dot { fill: var(--pg-mxl); }
@@ -1687,3 +1753,11 @@ body.theme-mccurdy-light .rc-pipeline-graph, body.theme-mccurdy .rc-pipeline-gra
 .pg-fix-status.ok { color: #22c55e; }
 .pg-fix-actions { display: flex; justify-content: flex-end; }
 .pg-fix-actions button { background: transparent; color: #d6cfbb; border: 1px solid #2f3732; padding: 8px 14px; }
+
+/* Ring buffer cards use the data view's eye: one dial per flow */
+.rc-flow-ring-chs canvas.rc-flow-eye { width: 220px; height: 220px; }
+
+/* Data tab: no nested frames. The rack and deck add no padding or borders; the eye and pipeline sit edge to edge. */
+#dataStage .routing-console-rack { padding: 0; border: 0; border-radius: 0; box-shadow: none; }
+#dataStage .rc-top-monitoring-deck { padding: 0; margin: 0; border: 0; border-radius: 0; box-shadow: none; gap: 6px; }
+#dataStage .rc-pipeline-graph { padding: 4px; }

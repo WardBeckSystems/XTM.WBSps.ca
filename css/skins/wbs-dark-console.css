@@ -1,0 +1,291 @@
+/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.ca). All rights reserved. */
+/* Ward-Beck.com (Modern Studio Dark, the default theme) for the console racks: data, routing and
+   generators. Navy from the base rules becomes the charcoal of wbs-dark.css at the same lightness;
+   bright accents are kept. Generated from the rack CSS; regenerate after palette changes. */
+
+body:not(.theme-wbs-ca):not(.theme-mccurdy):not(.theme-mccurdy-light):not(.theme-mccurdy-dark) .routing-console-rack {
+  background: #101113;
+  border: 2px solid #34383f;
+}
+body:not(.theme-wbs-ca):not(.theme-mccurdy):not(.theme-mccurdy-light):not(.theme-mccurdy-dark) .routing-rack-header {
+  border-bottom: 2px solid #2e3138;
+}
+body:not(.theme-wbs-ca):not(.theme-mccurdy):not(.theme-mccurdy-light):not(.theme-mccurdy-dark) .routing-wbs-badge {
+  background: #1d2024;
+}
+body:not(.theme-wbs-ca):not(.theme-mccurdy):not(.theme-mccurdy-light):not(.theme-mccurdy-dark) .rc-badge {
+  background: #141619;
+  border: 1px solid #3c4049;
+}
+body:not(.theme-wbs-ca):not(.theme-mccurdy):not(.theme-mccurdy-light):not(.theme-mccurdy-dark) .rc-buffer-card {
+  background: #0e1012;
+  border: 1px solid #32353d;
+}
+body:not(.theme-wbs-ca):not(.theme-mccurdy):not(.theme-mccurdy-light):not(.theme-mccurdy-dark) .rc-telemetry-pill {
+  background: #060607;
+  border: 1px solid #292c33;
+}
+body:not(.theme-wbs-ca):not(.theme-mccurdy):not(.theme-mccurdy-light):not(.theme-mccurdy-dark) .rc-stat-box {
+  background: #070809;
+  border: 1px solid #24262c;
+}
+body:not(.theme-wbs-ca):not(.theme-mccurdy):not(.theme-mccurdy-light):not(.theme-mccurdy-dark) .rc-linear-unwrap {
+  background: #070809;
+  border: 1px solid #24262c;
+}
+body:not(.theme-wbs-ca):not(.theme-mccurdy):not(.theme-mccurdy-light):not(.theme-mccurdy-dark) .rc-unwrap-bar {
+  border: 1px solid #34383f;
+}
+body:not(.theme-wbs-ca):not(.theme-mccurdy):not(.theme-mccurdy-light):not(.theme-mccurdy-dark) .rc-slice-past {
+  background: #444953;
+}
+body:not(.theme-wbs-ca):not(.theme-mccurdy):not(.theme-mccurdy-light):not(.theme-mccurdy-dark) .rc-slice-headroom {
+  background: #1a1c1f;
+}
+body:not(.theme-wbs-ca):not(.theme-mccurdy):not(.theme-mccurdy-light):not(.theme-mccurdy-dark) .routing-aux-panels {
+  border-top: 2px solid #2e3138;
+}
+body:not(.theme-wbs-ca):not(.theme-mccurdy):not(.theme-mccurdy-light):not(.theme-mccurdy-dark) .rc-pod-panel,
+body:not(.theme-wbs-ca):not(.theme-mccurdy):not(.theme-mccurdy-light):not(.theme-mccurdy-dark) .rc-abb-panel {
+  background: #0e1012;
+  border: 1px solid #32363d;
+}
+body:not(.theme-wbs-ca):not(.theme-mccurdy):not(.theme-mccurdy-light):not(.theme-mccurdy-dark) .rc-panel-title {
+  border-bottom: 1px solid #282b31;
+}
+body:not(.theme-wbs-ca):not(.theme-mccurdy):not(.theme-mccurdy-light):not(.theme-mccurdy-dark) .rc-power-btn {
+  background: #23262b;
+  border: 1px solid #3f444d;
+}
+body:not(.theme-wbs-ca):not(.theme-mccurdy):not(.theme-mccurdy-light):not(.theme-mccurdy-dark) .rc-power-btn:hover {
+  background: #34383f;
+}
+body:not(.theme-wbs-ca):not(.theme-mccurdy):not(.theme-mccurdy-light):not(.theme-mccurdy-dark) .rc-btn-sel {
+  background: #191b1f;
+  border: 1px solid #3c414a;
+}
+body:not(.theme-wbs-ca):not(.theme-mccurdy):not(.theme-mccurdy-light):not(.theme-mccurdy-dark) .rc-btn-sel:hover {
+  background: #2f3239;
+}
+body:not(.theme-wbs-ca):not(.theme-mccurdy):not(.theme-mccurdy-light):not(.theme-mccurdy-dark) .rc-btn-sel.active {
+  background: #535966;
+}
+body:not(.theme-wbs-ca):not(.theme-mccurdy):not(.theme-mccurdy-light):not(.theme-mccurdy-dark) .rc-led-dot {
+  background: #383c45;
+}
+body:not(.theme-wbs-ca):not(.theme-mccurdy):not(.theme-mccurdy-light):not(.theme-mccurdy-dark) .rc-led-rack {
+  background: #08080a;
+  border: 1px solid #24262c;
+}
+body:not(.theme-wbs-ca):not(.theme-mccurdy):not(.theme-mccurdy-light):not(.theme-mccurdy-dark) .rc-led-indicator {
+  background: #25282d;
+}
+body:not(.theme-wbs-ca):not(.theme-mccurdy):not(.theme-mccurdy-light):not(.theme-mccurdy-dark) .rc-xmxl-bar {
+  background: #0d0e10;
+  border: 1px solid #33363e;
+}
+body:not(.theme-wbs-ca):not(.theme-mccurdy):not(.theme-mccurdy-light):not(.theme-mccurdy-dark) .rc-xmxl-pill {
+  background: #131417;
+  border: 1px solid #41464f;
+}
+body:not(.theme-wbs-ca):not(.theme-mccurdy):not(.theme-mccurdy-light):not(.theme-mccurdy-dark) .rc-xmxl-pill:hover {
+  background: #212328;
+}
+body:not(.theme-wbs-ca):not(.theme-mccurdy):not(.theme-mccurdy-light):not(.theme-mccurdy-dark) .rc-xmxl-pill.active {
+  background: #24272c;
+}
+body:not(.theme-wbs-ca):not(.theme-mccurdy):not(.theme-mccurdy-light):not(.theme-mccurdy-dark) .rc-xmxl-flow-btn {
+  background: #141619;
+  border: 1px solid #34383f;
+}
+body:not(.theme-wbs-ca):not(.theme-mccurdy):not(.theme-mccurdy-light):not(.theme-mccurdy-dark) .rc-loudness-strip {
+  background: #0b0c0d;
+  border: 1px solid #212428;
+}
+body:not(.theme-wbs-ca):not(.theme-mccurdy):not(.theme-mccurdy-light):not(.theme-mccurdy-dark) .rc-top-monitoring-deck {
+  background: #08090a;
+  border: 1px solid #24262c;
+}
+body:not(.theme-wbs-ca):not(.theme-mccurdy):not(.theme-mccurdy-light):not(.theme-mccurdy-dark) .rc-deck-header {
+  border-bottom: 1px solid #27292f;
+}
+body:not(.theme-wbs-ca):not(.theme-mccurdy):not(.theme-mccurdy-light):not(.theme-mccurdy-dark) .rc-eye-canvas-container {
+  background: #050607;
+  border: 1px solid #1e2024;
+}
+body:not(.theme-wbs-ca):not(.theme-mccurdy):not(.theme-mccurdy-light):not(.theme-mccurdy-dark) .rc-phase-track {
+  background: #0c0c0e;
+  border: 1px solid #2b2e35;
+}
+body:not(.theme-wbs-ca):not(.theme-mccurdy):not(.theme-mccurdy-light):not(.theme-mccurdy-dark) .rc-eye-hud-card {
+  background: #08090a;
+  border: 1px solid #24262c;
+}
+body:not(.theme-wbs-ca):not(.theme-mccurdy):not(.theme-mccurdy-light):not(.theme-mccurdy-dark) .rc-pipeline-card {
+  background: #0c0c0e;
+  border: 1px solid #24262c;
+}
+body:not(.theme-wbs-ca):not(.theme-mccurdy):not(.theme-mccurdy-light):not(.theme-mccurdy-dark) .rc-telemetry-box {
+  background: #08090a;
+  border: 1px solid #24262c;
+}
+body:not(.theme-wbs-ca):not(.theme-mccurdy):not(.theme-mccurdy-light):not(.theme-mccurdy-dark) .rc-telemetry-box-title {
+  border-bottom: 1px solid #191b1f;
+}
+body:not(.theme-wbs-ca):not(.theme-mccurdy):not(.theme-mccurdy-light):not(.theme-mccurdy-dark) .rc-pipeline-footer {
+  border-top: 1px solid #191b1f;
+}
+body:not(.theme-wbs-ca):not(.theme-mccurdy):not(.theme-mccurdy-light):not(.theme-mccurdy-dark) .rc-pill-aes67 {
+  background: #464b55 !important;
+}
+body:not(.theme-wbs-ca):not(.theme-mccurdy):not(.theme-mccurdy-light):not(.theme-mccurdy-dark) .rc-cbc-studio-panel {
+  background: #101113;
+}
+body:not(.theme-wbs-ca):not(.theme-mccurdy):not(.theme-mccurdy-light):not(.theme-mccurdy-dark) .rc-cbc-select {
+  background: #08090a;
+  border: 1px solid #33363e;
+}
+body:not(.theme-wbs-ca):not(.theme-mccurdy):not(.theme-mccurdy-light):not(.theme-mccurdy-dark) .rc-cbc-btn {
+  background: #0c0d0f;
+  border: 1px solid #272a30;
+}
+body:not(.theme-wbs-ca):not(.theme-mccurdy):not(.theme-mccurdy-light):not(.theme-mccurdy-dark) .rc-cbc-btn:hover {
+  background: #1d1f23;
+}
+body:not(.theme-wbs-ca):not(.theme-mccurdy):not(.theme-mccurdy-light):not(.theme-mccurdy-dark) .rc-gen-card {
+  background: #050607;
+  border: 1px solid #1e2024;
+}
+body:not(.theme-wbs-ca):not(.theme-mccurdy):not(.theme-mccurdy-light):not(.theme-mccurdy-dark) .rc-gen-bar {
+  background: #141619;
+}
+body:not(.theme-wbs-ca):not(.theme-mccurdy):not(.theme-mccurdy-light):not(.theme-mccurdy-dark) .pg-fix-backdrop {
+  background: rgba(6, 6, 7, 0.62);
+}
+body:not(.theme-wbs-ca):not(.theme-mccurdy):not(.theme-mccurdy-light):not(.theme-mccurdy-dark) .bitset-fault {
+  background: #23262b;
+  border: 1px solid #3f444d;
+}
+body:not(.theme-wbs-ca):not(.theme-mccurdy):not(.theme-mccurdy-light):not(.theme-mccurdy-dark) .bitset-chip {
+  background: #23262b;
+  border: 1px solid #3f444d;
+}
+body:not(.theme-wbs-ca):not(.theme-mccurdy):not(.theme-mccurdy-light):not(.theme-mccurdy-dark) .bitset-extras {
+  border-top: 1px solid #282b31;
+}
+body:not(.theme-wbs-ca):not(.theme-mccurdy):not(.theme-mccurdy-light):not(.theme-mccurdy-dark) .bitset-sep {
+  background: #3f444d;
+}
+body:not(.theme-wbs-ca):not(.theme-mccurdy):not(.theme-mccurdy-light):not(.theme-mccurdy-dark) .rc-cbc-svc {
+  border: 1px solid #383c45;
+}
+body:not(.theme-wbs-ca):not(.theme-mccurdy):not(.theme-mccurdy-light):not(.theme-mccurdy-dark) .wr-rack {
+  background: #101113;
+  border: 2px solid #34383f;
+}
+body:not(.theme-wbs-ca):not(.theme-mccurdy):not(.theme-mccurdy-light):not(.theme-mccurdy-dark) .wr-rack-header {
+  border-bottom: 2px solid #2e3138;
+}
+body:not(.theme-wbs-ca):not(.theme-mccurdy):not(.theme-mccurdy-light):not(.theme-mccurdy-dark) .wr-wbs-badge {
+  background: #1d2024;
+}
+body:not(.theme-wbs-ca):not(.theme-mccurdy):not(.theme-mccurdy-light):not(.theme-mccurdy-dark) .wr-badge {
+  background: #141619;
+  border: 1px solid #3c4049;
+}
+body:not(.theme-wbs-ca):not(.theme-mccurdy):not(.theme-mccurdy-light):not(.theme-mccurdy-dark) .wr-bay {
+  background: #0c0c0e;
+  border: 1px solid #2b2e35;
+}
+body:not(.theme-wbs-ca):not(.theme-mccurdy):not(.theme-mccurdy-light):not(.theme-mccurdy-dark) .wr-bay-header {
+  border-bottom: 1px solid #24272d;
+}
+body:not(.theme-wbs-ca):not(.theme-mccurdy):not(.theme-mccurdy-light):not(.theme-mccurdy-dark) .wr-strip {
+  background: #131417;
+  border: 1px solid #30343b;
+}
+body:not(.theme-wbs-ca):not(.theme-mccurdy):not(.theme-mccurdy-light):not(.theme-mccurdy-dark) .wr-strip.selected {
+  background: #1d1f23;
+}
+body:not(.theme-wbs-ca):not(.theme-mccurdy):not(.theme-mccurdy-light):not(.theme-mccurdy-dark) .wr-pill-sys {
+  background: #535966;
+}
+body:not(.theme-wbs-ca):not(.theme-mccurdy):not(.theme-mccurdy-light):not(.theme-mccurdy-dark) .wr-pill-out {
+  background: #383c45;
+}
+body:not(.theme-wbs-ca):not(.theme-mccurdy):not(.theme-mccurdy-light):not(.theme-mccurdy-dark) .wr-meter-bezel {
+  fill: #121416;
+  stroke: #2a2d34;
+}
+body:not(.theme-wbs-ca):not(.theme-mccurdy):not(.theme-mccurdy-light):not(.theme-mccurdy-dark) .wr-meter-face {
+  fill: #1b1d21;
+  stroke: #34383f;
+}
+body:not(.theme-wbs-ca):not(.theme-mccurdy):not(.theme-mccurdy-light):not(.theme-mccurdy-dark) .wr-meter-hub {
+  stroke: #18191d;
+}
+body:not(.theme-wbs-ca):not(.theme-mccurdy):not(.theme-mccurdy-light):not(.theme-mccurdy-dark) .wr-meter-bar-track {
+  background: #070809;
+  border: 1px solid #22252a;
+}
+body:not(.theme-wbs-ca):not(.theme-mccurdy):not(.theme-mccurdy-light):not(.theme-mccurdy-dark) .wr-btn-engage {
+  background: #24262c;
+  border: 1px solid #3f444d;
+}
+body:not(.theme-wbs-ca):not(.theme-mccurdy):not(.theme-mccurdy-light):not(.theme-mccurdy-dark) .wr-btn-engage:hover {
+  background: #32363d;
+}
+body:not(.theme-wbs-ca):not(.theme-mccurdy):not(.theme-mccurdy-light):not(.theme-mccurdy-dark) .wr-btn-to-speakers {
+  background: #151619;
+  border: 1px solid #33363e;
+}
+body:not(.theme-wbs-ca):not(.theme-mccurdy):not(.theme-mccurdy-light):not(.theme-mccurdy-dark) .wr-btn-to-speakers:hover {
+  background: #272a30;
+}
+body:not(.theme-wbs-ca):not(.theme-mccurdy):not(.theme-mccurdy-light):not(.theme-mccurdy-dark) .wr-btn-out-tool {
+  background: #1c1e22;
+  border: 1px solid #32363d;
+}
+body:not(.theme-wbs-ca):not(.theme-mccurdy):not(.theme-mccurdy-light):not(.theme-mccurdy-dark) .wr-btn-out-tool:hover {
+  background: #2f3239;
+}
+body:not(.theme-wbs-ca):not(.theme-mccurdy):not(.theme-mccurdy-light):not(.theme-mccurdy-dark) .wr-matrix-card {
+  background: #0e1012;
+  border: 1px solid #32353d;
+}
+body:not(.theme-wbs-ca):not(.theme-mccurdy):not(.theme-mccurdy-light):not(.theme-mccurdy-dark) .wr-btn-master-speakers.inactive {
+  background: #25282d;
+}
+body:not(.theme-wbs-ca):not(.theme-mccurdy):not(.theme-mccurdy-light):not(.theme-mccurdy-dark) .wr-matrix-table th {
+  border-bottom: 1px solid #2b2e35;
+}
+body:not(.theme-wbs-ca):not(.theme-mccurdy):not(.theme-mccurdy-light):not(.theme-mccurdy-dark) .wr-th-row {
+  border-bottom: 1px solid #1f2126;
+}
+body:not(.theme-wbs-ca):not(.theme-mccurdy):not(.theme-mccurdy-light):not(.theme-mccurdy-dark) .wr-td-crosspoint {
+  border-bottom: 1px solid #1f2126;
+}
+body:not(.theme-wbs-ca):not(.theme-mccurdy):not(.theme-mccurdy-light):not(.theme-mccurdy-dark) .wr-matrix-btn {
+  background: #141518;
+  border: 2px solid #2e3138;
+}
+body:not(.theme-wbs-ca):not(.theme-mccurdy):not(.theme-mccurdy-light):not(.theme-mccurdy-dark) .wr-matrix-btn:hover {
+  background: #202327;
+}
+body:not(.theme-wbs-ca):not(.theme-mccurdy):not(.theme-mccurdy-light):not(.theme-mccurdy-dark) .wr-matrix-led {
+  background: #32353d;
+}
+body:not(.theme-wbs-ca):not(.theme-mccurdy):not(.theme-mccurdy-light):not(.theme-mccurdy-dark) .wr-grid .wr-grid-in {
+  border-bottom: 1px solid #1f2126;
+}
+body:not(.theme-wbs-ca):not(.theme-mccurdy):not(.theme-mccurdy-light):not(.theme-mccurdy-dark) .wr-grid tfoot td,
+body:not(.theme-wbs-ca):not(.theme-mccurdy):not(.theme-mccurdy-light):not(.theme-mccurdy-dark) .wr-grid tfoot th {
+  border-top: 2px solid #2e3138;
+}
+body:not(.theme-wbs-ca):not(.theme-mccurdy):not(.theme-mccurdy-light):not(.theme-mccurdy-dark) .wr-grid thead .wr-grid-out {
+  border-bottom: 2px solid #2e3138;
+}
+body:not(.theme-wbs-ca):not(.theme-mccurdy):not(.theme-mccurdy-light):not(.theme-mccurdy-dark) .routing-console-rack {
+  --eye-grid: #1d1f23;
+  --eye-spoke: #22252a;
+}
