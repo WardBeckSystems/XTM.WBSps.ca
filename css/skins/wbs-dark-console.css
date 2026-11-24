@@ -162,20 +162,6 @@ body:not(.theme-wbs-ca):not(.theme-mccurdy):not(.theme-mccurdy-light):not(.theme
 body:not(.theme-wbs-ca):not(.theme-mccurdy):not(.theme-mccurdy-light):not(.theme-mccurdy-dark) .pg-fix-backdrop {
   background: rgba(6, 6, 7, 0.62);
 }
-body:not(.theme-wbs-ca):not(.theme-mccurdy):not(.theme-mccurdy-light):not(.theme-mccurdy-dark) .bitset-fault {
-  background: #23262b;
-  border: 1px solid #3f444d;
-}
-body:not(.theme-wbs-ca):not(.theme-mccurdy):not(.theme-mccurdy-light):not(.theme-mccurdy-dark) .bitset-chip {
-  background: #23262b;
-  border: 1px solid #3f444d;
-}
-body:not(.theme-wbs-ca):not(.theme-mccurdy):not(.theme-mccurdy-light):not(.theme-mccurdy-dark) .bitset-extras {
-  border-top: 1px solid #282b31;
-}
-body:not(.theme-wbs-ca):not(.theme-mccurdy):not(.theme-mccurdy-light):not(.theme-mccurdy-dark) .bitset-sep {
-  background: #3f444d;
-}
 body:not(.theme-wbs-ca):not(.theme-mccurdy):not(.theme-mccurdy-light):not(.theme-mccurdy-dark) .rc-cbc-svc {
   border: 1px solid #383c45;
 }

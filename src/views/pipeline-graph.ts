@@ -37,6 +37,7 @@ interface GNode {
   sub?: string;
   kind: Kind;
   live?: boolean;        // heard on the wire / actually running
+  writing?: boolean;     // MXL flow: its write head moved since the last poll (green)
   title?: string;
   hub?: boolean;
   tap?: { kind: 'hw' | 'pw' | 'mxl' | 'aoip'; ref: string };
@@ -78,6 +79,8 @@ export class PipelineGraph {
   private local: XmxlInstance[] = [];
   /** Every node seen this session, by id: dropouts stay as inactive placeholders. */
   private seenNodes = new Map<string, GNode>();
+  /** Last write_seq per MXL flow: a flow whose sequence moves is being written. */
+  private mxlSeq = new Map<string, number>();
   private picked = '';
   private onPick?: (instId: string, flowId: string) => void;
 
@@ -287,8 +290,12 @@ export class PipelineGraph {
     });
     for (const f of flows) {
       const over = (f.overrun_count ?? 0) + (f.underrun_count ?? 0);
+      const seq = Number(f.write_seq ?? f.write_head ?? NaN);
+      const prev = this.mxlSeq.get(f.flow_id);
+      if (!isNaN(seq)) this.mxlSeq.set(f.flow_id, seq);
+      const writing = prev !== undefined && !isNaN(seq) && seq !== prev;
       nodes.push({
-        id: `fl_${f.flow_id}`, lane: 2, kind: 'mxl', live: true, label: f.label || f.flow_id, domain: tapDomain,
+        id: `fl_${f.flow_id}`, lane: 2, kind: 'mxl', live: true, writing, label: f.label || f.flow_id, domain: tapDomain,
         sub: `${f.channel_count}ch · ${(f.sample_rate ?? 48000) / 1000}k${over ? ` · ${over} xrun` : ''}`, title: f.flow_id,
         tap: { kind: 'mxl', ref: f.flow_id },
       });
@@ -346,7 +353,14 @@ export class PipelineGraph {
         const label = short(f.label || f.flowId).replace(/\s*\(.*\)$/, '');
         if (seen.has(base(label))) continue;
         seen.add(base(label));
-        nodes.push({ id: `locf_${f.flowId}`, lane: 2, kind: 'mxl', live: true, label, sub: `${f.channelCount}ch · ${f.sampleRate / 1000}k`, title: f.label, domain: dom, pick: { inst: inst.id, flow: f.flowId } });
+        // Green: a writer holds it (MXL lock), or its write head moved since the last poll
+        let writing = f.active === true;
+        if (!writing && f.writeSeq) {
+          const prev = this.mxlSeq.get(f.flowId);
+          this.mxlSeq.set(f.flowId, f.writeSeq);
+          writing = prev !== undefined && prev !== f.writeSeq;
+        }
+        nodes.push({ id: `locf_${f.flowId}`, lane: 2, kind: 'mxl', live: true, writing, label, sub: `${f.channelCount}ch · ${f.sampleRate / 1000}k`, title: f.label, domain: dom, pick: { inst: inst.id, flow: f.flowId } });
       }
     }
 
@@ -464,7 +478,7 @@ export class PipelineGraph {
       const tapAttr = n.tap || n.pick ? ` data-tap="${esc(n.id)}" role="button" tabindex="0"` : '';
       const tapHint = n.pick ? '\nClick to show in the ring buffer' : n.tap ? (clipped ? '\n● TEST POINT — click to lift the probe' : '\nClick to meter this point (test point)') : '';
       return `
-        <g class="pg-node pg-${n.kind}${n.live ? ' pg-on' : ''}${n.hub ? ' pg-hub' : ''}${n.gone ? ' pg-gone' : ''}${n.tap ? ' pg-tappable' : ''}${n.pick ? ' pg-pickable' : ''}${clipped ? ' pg-tp' : ''}${picked ? ' pg-pick' : ''}"${tapAttr} transform="translate(${p.x} ${p.y})">
+        <g class="pg-node pg-${n.kind}${n.live ? ' pg-on' : ''}${n.writing ? ' pg-writing' : ''}${n.hub ? ' pg-hub' : ''}${n.gone ? ' pg-gone' : ''}${n.tap ? ' pg-tappable' : ''}${n.pick ? ' pg-pickable' : ''}${clipped ? ' pg-tp' : ''}${picked ? ' pg-pick' : ''}"${tapAttr} transform="translate(${p.x} ${p.y})">
           <title>${esc(n.label)}${n.sub ? ` — ${esc(n.sub)}` : ''}${n.title ? `\n${esc(n.title)}` : ''}${tapHint}</title>
           <rect width="${LANE_W}" height="${NODE_H}" rx="4"/>
           <circle class="pg-dot" cx="8" cy="${NODE_H / 2}" r="2.6"/>

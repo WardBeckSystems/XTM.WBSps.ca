@@ -27,6 +27,8 @@ export interface XmxlFlowInfo {
   shmPath?: string;
   overrunCount?: number;
   underrunCount?: number;
+  /** A writer holds the flow (MXL: lock on its data file). */
+  active?: boolean;
 }
 
 export interface XmxlInstance {
@@ -208,6 +210,7 @@ async function probeTarget(target: ProbeTarget): Promise<XmxlInstance | null> {
                 bufferLength: tf.buffer_length || 480000,
                 quantum: tf.quantum || 256,
                 shmPath: tf.path || '',
+                active: tf.active === true,
               });
             }
           }

@@ -1783,3 +1783,5 @@ body.theme-mccurdy-light .rc-pipeline-graph, body.theme-mccurdy .rc-pipeline-gra
 .rc-pod-outs tbody tr + tr td, .rc-pod-outs tbody tr + tr th { border-top: 1px solid rgba(127, 127, 127, 0.18); }
 @media (max-width: 1100px) { .rc-pod-outs .rc-btn-group { flex-wrap: wrap; } }
 .rc-pod-grid:has(> .rc-pod-col:only-child) { grid-template-columns: 1fr; }
+/* An MXL flow being written (its write head moves): green, like a lit signal LED */
+.pg-node.pg-writing .pg-dot { fill: #22c55e; filter: drop-shadow(0 0 2px #22c55e); }
