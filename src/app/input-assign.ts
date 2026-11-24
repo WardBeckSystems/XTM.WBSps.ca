@@ -52,7 +52,7 @@ function cleanLabel(text: string): string {
   return head || t || text.trim();
 }
 function shortOf(name: string): string {
-  const s = name.toUpperCase().replace(/^(MONITOR OF|WARD-BECK)\s+/, '').replace(/[^A-Z0-9 \-/.]/g, '').trim();
+  const s = name.toUpperCase().replace(/^MONITOR OF\s+/, '').replace(/^WARD-BECK\s+(TAP\s+\d:\s*)?/, '').replace(/[^A-Z0-9 \-/.]/g, '').trim();
   return s.length > 11 ? s.slice(0, 10).trim() + '…' : s || 'INPUT';
 }
 function groupOf(value: string): string {
