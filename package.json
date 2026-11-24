@@ -1,6 +1,6 @@
 {
   "name": "xtm.wbsps.ca",
-  "version": "2.0.151",
+  "version": "2.0.153",
   "description": "A standalone, broadcast-accurate implementation of the **Ward-Beck Systems XTM-4 Extended Range Test Meter** paired with the **POD-22 Stereo Loudness Meter** in a unified equipment rack.",
   "main": "sw.js",
   "type": "module",

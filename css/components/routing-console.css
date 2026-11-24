@@ -1771,3 +1771,15 @@ body.theme-mccurdy-light .rc-pipeline-graph, body.theme-mccurdy .rc-pipeline-gra
   100% { box-shadow: 0 0 0 0 transparent; }
 }
 .gen-flash { animation: gen-flash 1.6s ease-out; }
+
+/* POD-33: the four rear AES outputs, a row each (frequency · level · channel / phase) */
+.rc-pod-outs { width: 100%; border-collapse: collapse; margin-top: 10px; }
+.rc-pod-outs th, .rc-pod-outs td { padding: 3px 6px 3px 0; text-align: left; vertical-align: middle; }
+.rc-pod-outs thead th { padding-bottom: 4px; }
+.rc-pod-outs .rc-btn-group { flex-wrap: nowrap; }
+.rc-pod-out-name { font: 800 0.7rem monospace; letter-spacing: .5px; white-space: nowrap; color: inherit; }
+.rc-pod-out.playing .rc-pod-out-name { color: #ea580c; }
+.rc-pod-out.playing .rc-pod-out-name::after { content: ' ▶'; }
+.rc-pod-outs tbody tr + tr td, .rc-pod-outs tbody tr + tr th { border-top: 1px solid rgba(127, 127, 127, 0.18); }
+@media (max-width: 1100px) { .rc-pod-outs .rc-btn-group { flex-wrap: wrap; } }
+.rc-pod-grid:has(> .rc-pod-col:only-child) { grid-template-columns: 1fr; }
