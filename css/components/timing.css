@@ -74,9 +74,11 @@ body.theme-wbs-ca .tm-timing, body.theme-mccurdy .tm-timing, body.theme-mccurdy-
 .lg-tools { display: inline-flex; align-items: center; gap: 12px; font-weight: 500; letter-spacing: 0; color: var(--pg-sub); }
 .lg-filter { font: inherit; padding: 2px 6px; border: 1px solid var(--pg-lane-line); border-radius: 3px; background: var(--pg-lane); color: var(--pg-text); width: 160px; }
 .lg-btn { color: var(--pg-clock); text-decoration: none; border: 1px solid currentColor; border-radius: 3px; padding: 1px 8px; }
-.lg-log { max-height: 420px; overflow-y: auto; background: var(--pg-lane); border: 1px solid var(--pg-lane-line); border-radius: 3px; padding: 4px 6px; font-weight: 500; }
+.lg-log { user-select: text; -webkit-user-select: text; cursor: text; max-height: 420px; overflow-y: auto; background: var(--pg-lane); border: 1px solid var(--pg-lane-line); border-radius: 3px; padding: 4px 6px; font-weight: 500; }
 .lg-line { white-space: pre-wrap; word-break: break-word; padding: 1px 0; }
 .lg-t { color: var(--pg-sub); margin-right: 8px; }
 .lg-area { display: inline-block; min-width: 64px; margin-right: 8px; color: var(--pg-flow); font-weight: 700; }
 .lg-warn { color: var(--pg-clock); }
 .lg-err { color: #ef4444; }
+.lg-log * { user-select: text; -webkit-user-select: text; }
+button.lg-btn { background: transparent; font: inherit; cursor: pointer; }

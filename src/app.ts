@@ -117,6 +117,10 @@ export async function initApp(): Promise<void> {
   (window as any).xtmAudio = audio;
   (window as any).xtmView = view;
   (window as any).xtmDataView = dataView;
+  const receiversStageEl = document.getElementById('receiversStage');
+  if (webRouter && receiversStageEl) webRouter.mountReceivers(receiversStageEl);
+  const hardwareStageEl = document.getElementById('hardwareStage');
+  if (webRouter && hardwareStageEl) webRouter.mountHardware(hardwareStageEl);
   (window as any).xtmWebRouter = webRouter;
   (window as any).xtmCtx = ctx;
 

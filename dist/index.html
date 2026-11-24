@@ -61,8 +61,8 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Ward-Beck Systems">
-  <script type="module" crossorigin src="./assets/index-DbciUOpx.js"></script>
-  <link rel="stylesheet" crossorigin href="./assets/index-yWdXCoGW.css">
+  <script type="module" crossorigin src="./assets/index-qw2TcxJo.js"></script>
+  <link rel="stylesheet" crossorigin href="./assets/index-B4ckYwSc.css">
 </head>
 <body class="">
   <!-- <div id="audioStartOverlay" style="position:fixed; top:0; left:0; width:100%; height:100%; background:#0a0b0d; z-index:9999; display:flex; align-items:center; justify-content:center;">
@@ -121,6 +121,12 @@
       <!-- Timing: PTP grandmasters and clocks (moved here from the data tab's pipeline graph) -->
       <div class="meter-unit routing-unit" id="timingStage" style="display: none;"></div>
 
+      <!-- Receivers: the Network and MoIP flows the TAP listens to (router CH 9 / CH 10) -->
+      <div class="meter-unit routing-unit" id="receiversStage" style="display: none;"></div>
+
+      <!-- Hardware: the TAP's outputs to the sound cards -->
+      <div class="meter-unit routing-unit" id="hardwareStage" style="display: none;"></div>
+
       <!-- Logging: data export (moved here from Settings) and the TAP's live log -->
       <div class="meter-unit routing-unit" id="loggingStage" style="display: none;"></div>
 
@@ -162,6 +168,14 @@
           <button type="button" class="footer-view-btn" id="btnViewRouting" data-view="routing" role="menuitemradio" aria-checked="false" title="Web Router (inputs × outputs grid)">
             <span class="footer-view-led"></span>
             <span class="footer-view-name">routing</span>
+          </button>
+          <button type="button" class="footer-view-btn" id="btnViewReceivers" data-view="receivers" role="menuitemradio" aria-checked="false" title="Receivers (the Network and MoIP flows, router CH 9 / CH 10)">
+            <span class="footer-view-led"></span>
+            <span class="footer-view-name">receivers</span>
+          </button>
+          <button type="button" class="footer-view-btn" id="btnViewHardware" data-view="hardware" role="menuitemradio" aria-checked="false" title="Hardware (the TAP's outputs to the sound cards)">
+            <span class="footer-view-led"></span>
+            <span class="footer-view-name">hardware</span>
           </button>
           <button type="button" class="footer-view-btn" id="btnViewGenerators" data-view="generators" role="menuitemradio" aria-checked="false" title="Signal generators (POD-33, ABS-1 → ABB-1)">
             <span class="footer-view-led"></span>

@@ -271,7 +271,9 @@ body.theme-wbs-ca .footer-view-btn.active {
   box-shadow: none;
   z-index: auto;
 }
-.footer-view-menu.inline .footer-view-btn { width: auto; white-space: nowrap; padding: 3px 10px; }
+.footer-view-menu.inline .footer-view-btn { width: auto; white-space: nowrap; padding: 3px 7px; gap: 5px; letter-spacing: 0.5px; }
+.footer-view-menu.inline .footer-view-led { width: 5px; height: 5px; }
+.drawer-toggle-left.views-inline { gap: 6px; }
 .footer-view-menu.inline .footer-view-sep,
 .footer-view-menu.inline .footer-view-settings { display: none; }
 .drawer-toggle-left.views-inline { flex-wrap: nowrap; }

@@ -30,6 +30,7 @@ export class LoggingView {
           <span class="lg-tools">
             <input type="search" class="lg-filter" id="lgFilter" placeholder="filter" aria-label="Filter the TAP log">
             <label class="tm-opt"><input type="checkbox" id="lgProblems"> warnings only</label>
+            <button type="button" class="lg-btn" id="lgCopy" title="Copy the log lines shown (filter applies)">copy</button>
             <a class="lg-btn" href="${DAEMON}/api/diagnostics/bundle" download title="One file with the TAP's full report and log: send it when something is wrong">diagnostics</a>
           </span>
         </div>
@@ -41,6 +42,12 @@ export class LoggingView {
     document.querySelectorAll('[data-logging-move]').forEach((n) => { if (!n.classList.contains('drawer-section-sub')) exp.appendChild(n); else n.remove(); });
     this.el.querySelector('#lgFilter')!.addEventListener('input', (e) => { this.filter = (e.target as HTMLInputElement).value.toLowerCase(); this.draw(); });
     this.el.querySelector('#lgProblems')!.addEventListener('change', (e) => { this.problemsOnly = (e.target as HTMLInputElement).checked; this.draw(); });
+    const copy = this.el.querySelector('#lgCopy') as HTMLButtonElement;
+    copy.addEventListener('click', () => {
+      const text = this.shown().join('\n') + '\n';
+      const done = (ok: boolean) => { copy.textContent = ok ? 'copied' : 'copy failed'; setTimeout(() => { copy.textContent = 'copy'; }, 1500); };
+      navigator.clipboard?.writeText(text).then(() => done(true), () => done(this.copyFallback(text))) ?? done(this.copyFallback(text));
+    });
     this.poll();
     this.timer = window.setInterval(() => this.poll(), POLL_MS);
     return this;
@@ -80,12 +87,34 @@ export class LoggingView {
       : `<span class="pg-chip pg-chip-err"><i></i>TAP</span><span class="pg-iface">offline: no log to show</span>`;
   }
 
+  /** The raw lines that pass the filter and "warnings only". */
+  private shown(): string[] {
+    const lvl = (l: string) => (l.includes(' ERROR [') ? 'err' : l.includes(' WARN  [') ? 'warn' : 'info');
+    return this.lines.filter((l) => (!this.problemsOnly || lvl(l) !== 'info') && (!this.filter || l.toLowerCase().includes(this.filter)));
+  }
+
+  /** Clipboard API refused (not a secure context): a hidden textarea and execCommand. */
+  private copyFallback(text: string): boolean {
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.cssText = 'position:fixed;opacity:0;left:-9999px';
+    document.body.appendChild(ta);
+    ta.select();
+    let ok = false;
+    try { ok = document.execCommand('copy'); } catch { /* ignore */ }
+    ta.remove();
+    return ok;
+  }
+
   private draw(grew = false): void {
     const box = this.el.querySelector('#lgLog') as HTMLElement | null;
     if (!box) return;
+    // A selection in progress is not wiped by the next poll: new lines wait until it is cleared.
+    const sel = window.getSelection();
+    if (grew && sel && !sel.isCollapsed && sel.anchorNode && box.contains(sel.anchorNode)) return;
     const atEnd = box.scrollHeight - box.scrollTop - box.clientHeight < 24;
     const lvl = (l: string) => (l.includes(' ERROR [') ? 'err' : l.includes(' WARN  [') ? 'warn' : 'info');
-    const rows = this.lines.filter((l) => (!this.problemsOnly || lvl(l) !== 'info') && (!this.filter || l.toLowerCase().includes(this.filter)));
+    const rows = this.shown();
     box.innerHTML = rows.map((l) => {
       // "2026-11-24T13:15:37.664Z INFO  [start] text" → time · area · text
       const m = /^(\S+)\s+(\w+)\s+\[([^\]]*)\]\s?(.*)$/.exec(l);
