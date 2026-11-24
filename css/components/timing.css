@@ -65,3 +65,5 @@ body.theme-wbs-ca .tm-timing, body.theme-mccurdy .tm-timing, body.theme-mccurdy-
 .tm-table tr.tm-shade td:nth-child(2) { color: var(--tm-c); font-weight: 700; }
 .tm-off-row.tm-shade .tm-off-name, .tm-off-row.tm-shade .tm-off-val { color: var(--tm-c); }
 .tm-ev.tm-shade { color: var(--tm-c); box-shadow: inset 3px 0 0 var(--tm-c); padding-left: 6px; }
+/* NTP log: one row per answer the clock took, newest first */
+.tm-ntp-log { max-height: 220px; overflow-y: auto; }

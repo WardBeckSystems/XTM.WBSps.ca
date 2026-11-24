@@ -310,7 +310,25 @@ export class TimingView {
       <div class="tm-head">NTP CONFIG</div>
       <div class="tm-kv">${servers}${cell('poll min', n.poll_min)}${cell('poll max', n.poll_max)}${cell('root distance max', n.root_distance_max)}</div>
       ${(n.config ?? []).map((f: any) => `
-        <div class="tm-conf"><div class="tm-conf-file">${esc(f.file)}</div><pre>${esc((f.lines ?? []).join('\n') || '(defaults: nothing set)')}</pre></div>`).join('')}`;
+        <div class="tm-conf"><div class="tm-conf-file">${esc(f.file)}</div><pre>${esc((f.lines ?? []).join('\n') || '(defaults: nothing set)')}</pre></div>`).join('')}
+      ${this.ntpLog(n)}`;
+  }
+
+  /** Every NTP answer the clock took while the TAP watched (newest first). */
+  private ntpLog(n: any): string {
+    const rs: any[] = n.receipts ?? [];
+    if (!rs.length) return '';
+    return `
+      <div class="tm-head">NTP LOG</div>
+      <div class="tm-table-wrap tm-ntp-log"><table class="tm-table">
+        <thead><tr><th>Time</th><th>Server</th><th>Offset</th><th>Delay</th><th>Jitter</th><th>Stratum</th><th>Poll</th></tr></thead>
+        <tbody>${rs.slice(0, 100).map((r) => `
+          <tr${r.first ? ' class="tm-off" title="The last answer before the TAP started watching"' : ''}>
+            <td class="tm-mono">${r.first ? 'earlier' : hms(r.t)}</td><td>${esc(r.server ?? '—')}</td>
+            <td class="tm-num">${esc(r.offset ?? '—')}</td><td class="tm-num">${esc(r.delay ?? '—')}</td>
+            <td class="tm-num">${esc(r.jitter ?? '—')}</td><td class="tm-num">${esc(r.stratum ?? '—')}</td><td>${esc(r.poll ?? '—')}</td>
+          </tr>`).join('')}</tbody>
+      </table></div>`;
   }
 
   private draw(): void {
