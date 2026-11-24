@@ -26,7 +26,7 @@ const LANE_X = [8, 270, 532, 794];
 const NODE_H = 21;
 const NODE_GAP = 4;
 const TOP = 28;          // first node y
-const MAX_NODES = 18;    // per lane, then "+N more"
+const GROUP_GAP = 6;     // between groups of similar names
 
 type Kind = 'hw' | 'pw' | 'mxl' | 'dante' | 'ravenna' | 'sap' | 'nmos' | 'sip' | 'moip' | 'hub';
 
@@ -399,10 +399,12 @@ export class PipelineGraph {
         label: domainLabel.get(d) ?? d, sub: `${kids.length} flow${kids.length === 1 ? '' : 's'} / app${kids.length === 1 ? '' : 's'}`, title: `MXL domain ${d}`,
       });
     }
+    // Similar names sit together: grouped by their first four letters (POD-…, WBS-…, ABB-…)
+    const group = (n: GNode) => n.label.replace(/[^a-z0-9]/gi, '').slice(0, 4).toUpperCase();
     const domRank = (n: GNode) => (n.lane !== 2 ? '' : (n.domain ?? tapDomain) === tapDomain ? '0' : '1' + (domainLabel.get(n.domain!) ?? n.domain));
     nodes.push(...[...uniq.values()].sort((a, b) =>
       a.lane - b.lane || domRank(a).localeCompare(domRank(b)) || Number(!!b.hub) - Number(!!a.hub)
-      || a.label.localeCompare(b.label, undefined, { numeric: true, sensitivity: 'base' })));
+      || group(a).localeCompare(group(b)) || a.label.localeCompare(b.label, undefined, { numeric: true, sensitivity: 'base' })));
 
     // Edges: every card feeds the graph; graph feeds MXL; MXL bridges to the network.
     for (const n of nodes) {
@@ -432,21 +434,26 @@ export class PipelineGraph {
   private draw(): void {
     const { nodes, edges, mc } = this.build();
 
-    // Lay out each lane top-down; overflow collapses to "+N more".
+    // Lay out each lane top-down, every node shown; a small gap opens between groups of
+    // similar names (first four letters) and between domains.
     const pos = new Map<string, { x: number; y: number }>();
     const shown: GNode[] = [];
     const extra: { lane: number; n: number; y: number }[] = [];
+    const groupOf = (n: GNode) => `${n.domain ?? ''}|${n.hub ? '' : n.label.replace(/[^a-z0-9]/gi, '').slice(0, 4).toUpperCase()}`;
+    let bottom = TOP;
     for (let lane = 0; lane < 4; lane++) {
-      const inLane = nodes.filter((n) => n.lane === lane);
-      inLane.slice(0, MAX_NODES).forEach((n, i) => {
-        pos.set(n.id, { x: LANE_X[lane], y: TOP + i * (NODE_H + NODE_GAP) });
+      let y = TOP, prev: string | null = null;
+      for (const n of nodes.filter((n) => n.lane === lane)) {
+        const g = groupOf(n);
+        if (prev !== null && g !== prev) y += GROUP_GAP;
+        prev = g;
+        pos.set(n.id, { x: LANE_X[lane], y });
         shown.push(n);
-      });
-      if (inLane.length > MAX_NODES)
-        extra.push({ lane, n: inLane.length - MAX_NODES, y: TOP + MAX_NODES * (NODE_H + NODE_GAP) });
+        y += NODE_H + NODE_GAP;
+      }
+      bottom = Math.max(bottom, y);
     }
-    const rows = Math.max(1, ...[0, 1, 2, 3].map((l) => Math.min(MAX_NODES + 1, nodes.filter((n) => n.lane === l).length || 1)));
-    const H = TOP + rows * (NODE_H + NODE_GAP) + 6; // PTP clocks live in the Timing tab
+    const H = Math.max(bottom, TOP + NODE_H + NODE_GAP) + 6; // PTP clocks live in the Timing tab
 
     // Network nodes hang off the MXL hub.
     const netLinks = shown.filter((n) => n.lane === 3).map((n) => ({ from: 'mxl', to: n.id, live: n.live }));
