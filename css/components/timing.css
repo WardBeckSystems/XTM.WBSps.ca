@@ -17,4 +17,31 @@
 .tm-num { text-align: right; }
 .tm-gm-tag { color: var(--pg-clock); }
 .tm-off td { opacity: 0.5; }
-.tm-row-contested td:nth-child(10) { color: #ef4444; font-weight: 700; }
+.tm-row-contested td:nth-child(11) { color: #ef4444; font-weight: 700; }
+
+/* Toolbar: status left, the three view check boxes right */
+.tm-bar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 6px; }
+.tm-bar .pg-status { margin-bottom: 0; }
+.tm-opts { display: flex; flex-wrap: wrap; gap: 12px; color: var(--pg-sub); }
+.tm-opt { display: inline-flex; align-items: center; gap: 4px; cursor: pointer; }
+.tm-opt input { accent-color: var(--pg-clock); margin: 0; }
+/* PTP − NTP: one row per leader, value then plot */
+.tm-off-row { display: grid; grid-template-columns: minmax(170px, auto) 120px 1fr; gap: 10px; align-items: center; padding: 3px 0; border-bottom: 1px solid var(--pg-lane-line); }
+.tm-off-name span, .tm-off-val span { color: var(--pg-sub); font-weight: 500; }
+.tm-off-val { font-size: 0.75rem; font-weight: 800; text-align: right; color: var(--pg-clock); }
+.tm-off-val span { display: block; font-size: 0.58rem; }
+.tm-off-plot { width: 100%; height: 54px; display: block; }
+@media (max-width: 640px) { .tm-off-row { grid-template-columns: 1fr auto; } .tm-off-plot { grid-column: 1 / -1; } }
+/* Events: newest first */
+.tm-events { max-height: 180px; overflow-y: auto; font-weight: 500; }
+.tm-ev { padding: 2px 0; border-bottom: 1px solid var(--pg-lane-line); }
+.tm-ev b { display: inline-block; min-width: 64px; color: var(--pg-flow); }
+.tm-ev-t { color: var(--pg-sub); margin-right: 8px; }
+.tm-ev-contested b, .tm-ev-gone b { color: #ef4444; }
+.tm-ev-leader b, .tm-ev-settled b { color: var(--pg-clock); }
+/* NTP status and config */
+.tm-kv { display: flex; flex-wrap: wrap; gap: 4px 16px; font-weight: 600; }
+.tm-kv span { color: var(--pg-sub); font-weight: 500; margin-right: 4px; }
+.tm-conf { margin-top: 4px; }
+.tm-conf-file { color: var(--pg-sub); }
+.tm-conf pre { margin: 2px 0 0; padding: 4px 6px; background: var(--pg-lane); border: 1px solid var(--pg-lane-line); border-radius: 3px; font: 500 0.6rem/1.35 monospace; white-space: pre-wrap; }
