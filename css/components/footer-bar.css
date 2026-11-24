@@ -255,3 +255,29 @@ body.theme-wbs-ca .footer-view-btn.active {
   box-shadow: 0 0 8px rgba(255, 119, 0, 0.4);
 }
 
+
+/* Room on the bar: the views sit in it as a row and the cog opens Settings. When space is
+   tight the row goes back to the cog's drop-up (lower-unit-switcher measures the fit). */
+.footer-view-menu.inline {
+  position: static;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 2px;
+  min-width: 0;
+  background: transparent;
+  border: 0;
+  padding: 0;
+  box-shadow: none;
+  z-index: auto;
+}
+.footer-view-menu.inline .footer-view-btn { width: auto; white-space: nowrap; padding: 3px 10px; }
+.footer-view-menu.inline .footer-view-sep,
+.footer-view-menu.inline .footer-view-settings { display: none; }
+.drawer-toggle-left.views-inline { flex-wrap: nowrap; }
+.drawer-toggle-left.views-inline .drawer-gear-label { display: none; }
+.drawer-toggle-left.views-inline .btn-settings-cog.settings-on { color: #ff7700; opacity: 1; }
+.drawer-toggle-left.views-inline .btn-settings-cog.settings-on svg { opacity: 1; }
+/* While the fit is measured nothing may squeeze or wrap, so an overflow shows up */
+.drawer-toggle.fit-measure > *,
+.drawer-toggle.fit-measure .footer-style-btn { flex-shrink: 0; white-space: nowrap; }
