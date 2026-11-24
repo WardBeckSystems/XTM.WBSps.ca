@@ -80,6 +80,20 @@ export function inputChoices(): InputChoice[] {
   return [...devs, ...BUILTIN].sort((a, b) => order.indexOf(a.group) - order.indexOf(b.group));
 }
 
+/** The input id on button n (1-4). */
+export function inputAssignment(n: number): string {
+  return assigned[n - 1] || DEFAULTS[n - 1];
+}
+
+/** The TAP's MXL ring that carries input `id`, or null (browser tab, a sound card, pink noise). */
+export function inputFlowId(id: string): string | null {
+  if (id === 'pod33') return 'wbs-flow-ref-tone';
+  if (id === 'bitbuddy') return 'wbs-flow-bit-spitter';
+  if (id === 'dev:' || id === 'dev:__WBS_LINUX_HOST__') return 'wbs-flow-master-stereo';
+  const m = /^dev:__XMXL_\d+_(.+)__$/.exec(id);
+  return m ? m[1] : null;
+}
+
 /** Caption for button n (1-4). */
 export function inputCaption(n: number): string {
   const id = assigned[n - 1];

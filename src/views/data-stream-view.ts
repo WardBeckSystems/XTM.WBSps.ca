@@ -9,6 +9,7 @@
 
 import type { AppContext } from '../app/app-context';
 import type { XtmModel } from '../models/xtm-model';
+import { inputAssignment, inputCaption, inputFlowId } from '../app/input-assign';
 import {
   getActiveXmxlInstances,
   onXmxlInstancesChanged,
@@ -223,8 +224,13 @@ export class DataStreamView {
   /**
    * 60 FPS Render Hook from Frame Loop
    */
+  /** Pressing a small ring presses that INPUT button (wired by app.ts). */
+  onSelectInput: ((n: number) => void) | null = null;
+  private model: XtmModel | null = null;
+
   render(_model: XtmModel, levels: any): void {
     if (!this.isBuilt || !this.container) return;
+    this.model = _model;
 
     // Advance buffer write-head (synchronized to live telemetry from local XMXL instance if available)
     const eyeFlow = this.getEyeFlow();
@@ -282,7 +288,7 @@ export class DataStreamView {
         if (secEl) secEl.textContent = '—';
         if (headIdxEl) headIdxEl.textContent = 'HEAD: —';
         if (headSecEl) headSecEl.textContent = 'no MXL ring data';
-        setLabel('NO MXL DATA · start ward-beck-audio-tab.py (port 8467)');
+        setLabel(this.ringsFresh() ? 'no test point' : 'NO MXL DATA · start ward-beck-audio-tab.py (port 8467)');
       }
     }
     this.renderGeneratorGrid(isMcDark, isMcLight, isWbsCa);
@@ -484,14 +490,10 @@ export class DataStreamView {
     return !!this.mxlRings && performance.now() - this.mxlRingsAt < 2000;
   }
 
-  /** The flow shown in the big eye: the selected flow if the engine writes it, else the program bus. */
+  /** The big eye is the selected test point (click one in the pipeline); none set, it idles. */
   private getEyeFlow(): any | null {
     if (!this.ringsFresh() || !this.mxlRings) return null;
-    const flows = this.mxlRings.flows;
-    return flows.find((f) => f.flow_id === this.selectedFlowId)
-      || flows.find((f) => f.kind === 'program')
-      || flows[0]
-      || null;
+    return this.mxlRings.flows.find((f: any) => f.kind === 'testpoint') || null;
   }
 
   /** One EBU DMF ring buffer card per MXL flow: a ring per channel (real min/max bins) + copyable connection info. */
@@ -609,38 +611,41 @@ export class DataStreamView {
   }
 
   /** One mini ring + stacked per-channel meter for each declared generator flow. */
+  /** Four small rings: the MXL buffers of INPUT 1-4 on the switcher, the pressed one lit. */
   private renderGeneratorGrid(isMcDark: boolean, isMcLight: boolean, isWbsCa: boolean): void {
     const grid = this.container?.querySelector('#rcGenGrid') as HTMLElement | null;
     if (!grid) return;
-    const flows = this.ringsFresh() && this.mxlRings ? this.mxlRings.flows : [];
-    const key = flows.map((f) => `${f.flow_id}:${f.channel_count}`).join('|');
+    const all: any[] = this.ringsFresh() && this.mxlRings ? this.mxlRings.flows : [];
+    // An input with no MXL ring (browser tab, a sound card, pink noise) keeps its place as an idle dial.
+    const inputs = [1, 2, 3, 4].map((n) => {
+      const id = inputFlowId(inputAssignment(n));
+      return { n, caption: inputCaption(n), flow: (id && all.find((f) => f.flow_id === id)) || null };
+    });
+    const flows = inputs.map((x) => x.flow ?? { flow_id: '', channel_count: 2, channels: [] });
+    const key = inputs.map((x) => `${x.caption}:${x.flow?.flow_id ?? '-'}:${x.flow?.channel_count ?? 0}`).join('|');
     if (key !== this.genGridKey) {
       this.genGridKey = key;
-      grid.innerHTML = flows.length === 0
-        ? '<div class="rc-gen-empty">No declared generators — MXL engine not reachable</div>'
-        : flows.map((f, i) => `
-          <button type="button" class="rc-gen-card" data-gen-flow="${f.flow_id}" title="${f.label}">
+      grid.innerHTML = inputs.map(({ n, caption, flow: f }, i) => `
+          <button type="button" class="rc-gen-card${f ? '' : ' idle'}" data-gen-input="${n}" title="INPUT ${n} · ${caption}${f ? `\n${f.label}` : '\nNo MXL ring for this input'}">
             <canvas class="rc-gen-ring" id="rcGenRing${i}" width="132" height="132"></canvas>
             <div class="rc-gen-meter" id="rcGenMeter${i}">
-              ${Array.from({ length: f.channel_count }, (_, c) => `
+              ${Array.from({ length: f?.channel_count ?? 0 }, (_, c) => `
                 <div class="rc-gen-ch"><span class="rc-gen-chl">${c + 1}</span><div class="rc-gen-bar"><div class="rc-gen-rms"></div><div class="rc-gen-pk"></div></div><span class="rc-gen-db">—</span></div>`).join('')}
             </div>
-            <div class="rc-gen-name">${f.kind === 'program' ? 'PROGRAM · ' : ''}${f.label}</div>
+            <div class="rc-gen-name">${n} · ${caption}</div>
           </button>`).join('');
-      grid.querySelectorAll('[data-gen-flow]').forEach((btn) => {
+      grid.querySelectorAll('[data-gen-input]').forEach((btn) => {
         btn.addEventListener('click', (e) => {
-          this.selectedFlowId = (e.currentTarget as HTMLElement).getAttribute('data-gen-flow') || this.selectedFlowId;
-          this.updateXmxlBar();
-          this.meterFlow(this.selectedPort || 8467, this.selectedFlowId);
+          this.onSelectInput?.(Number((e.currentTarget as HTMLElement).dataset.genInput));
         });
       });
     }
+    const lit = this.model?.power ? this.model.getSelectedInput() : 0;
     const dbToPct = (db: number) => Math.max(0, Math.min(100, ((db + 60) / 60) * 100));
     flows.forEach((f, i) => {
       const cv = grid.querySelector(`#rcGenRing${i}`) as HTMLCanvasElement | null;
-      if (cv) this.drawScanalyzerEye(cv, f, isMcDark, isMcLight, isWbsCa, true);
-      const card = grid.querySelector(`[data-gen-flow="${f.flow_id}"]`);
-      card?.classList.toggle('active', f.flow_id === this.getEyeFlow()?.flow_id);
+      if (cv) this.drawScanalyzerEye(cv, f.flow_id ? f : null, isMcDark, isMcLight, isWbsCa, true, '');
+      grid.querySelector(`[data-gen-input="${i + 1}"]`)?.classList.toggle('active', lit === i + 1);
       const rows = grid.querySelectorAll(`#rcGenMeter${i} .rc-gen-ch`);
       rows.forEach((row, c) => {
         const ch = f.channels[c];
@@ -768,7 +773,9 @@ export class DataStreamView {
       ctx.font = `${compact ? 9 : 13}px monospace`;
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
-      ctx.fillText('NO MXL DATA', cx, cy);
+      // Idle: the caller's word for why (none for the input rings), the hub left blank.
+      const why = label.split(' · ')[0];
+      if (why) ctx.fillText(compact ? why : why.toUpperCase(), cx, cy);
       ctx.restore();
       return;
     }

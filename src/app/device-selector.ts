@@ -251,9 +251,11 @@ export function initDeviceSelector(ctx: AppContext, refs: DrawerControls, sync: 
     selectDevice.dispatchEvent(new Event('change'));
   });
 
-  selectDevice.addEventListener('change', async () => {
+  selectDevice.addEventListener('change', async (ev: Event) => {
     const selectedId = selectDevice.value || null;
     sync.isAudioStarted = true;
+    // Picked by hand from the device list (not by INPUT 1-4, which sets it in code): no input button is selected.
+    if (ev.isTrusted) model.clearInput();
 
     // Disconnect any active Linux Host SSE stream
     if (linuxHostSse) {

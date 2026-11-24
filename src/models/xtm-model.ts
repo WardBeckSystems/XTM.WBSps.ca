@@ -220,13 +220,22 @@ export class XtmModel {
   }
 
   public getSelectedInput(): number {
-    if (this.inputAssigned && this.selectedInput) return this.selectedInput;
+    // Assigned buttons: the button pressed, or 0 (none lit) when something else picked the source.
+    if (this.inputAssigned) return this.selectedInput;
     if (this.mode === 'A') {
       return this.a.src === 0 ? 1 : 2;
     }
     if (this.mode === 'D') return 3;
     if (this.mode === 'S') return 4;
     return this.selectedInput || 1;
+  }
+
+  /** A source chosen anywhere but INPUT 1-4 (device list, router, eye): no button is selected. */
+  public clearInput(): void {
+    if (this.inputAssigned && this.selectedInput === 0) return;
+    this.inputAssigned = true;
+    this.selectedInput = 0;
+    this.notify();
   }
 
   public setInput(inputNum: number): void {
