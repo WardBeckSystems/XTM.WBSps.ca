@@ -422,6 +422,28 @@ export class DataStreamView {
     this.aes67At = performance.now();
   }
 
+  /** Generator panel (generators tab) that feeds each MXL flow. */
+  static readonly GEN_PANELS: Record<string, string> = {
+    'wbs-flow-ref-tone': '.rc-pod-panel',
+    'wbs-flow-bit-spitter': '.wbs-bitset',
+  };
+
+  /** Clicking a generator's flow card opens the generators tab at that generator. */
+  private showGenerator(flowId: string): void {
+    const sel = DataStreamView.GEN_PANELS[flowId];
+    if (!sel) return;
+    (window as any).setLowerUnitMode?.('generators');
+    const panel = document.querySelector(`#generatorsStage ${sel}`) as HTMLElement | null;
+    if (!panel) return;
+    requestAnimationFrame(() => {
+      panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      panel.classList.remove('gen-flash');
+      void panel.offsetWidth; // restart the animation
+      panel.classList.add('gen-flash');
+      window.setTimeout(() => panel.classList.remove('gen-flash'), 1600);
+    });
+  }
+
   /** AES67 transmitter for a flow, if the daemon has one (stale after 3 s). */
   private aes67For(flowId: string): any | null {
     return performance.now() - this.aes67At < 3000 ? this.aes67[flowId] ?? null : null;
@@ -485,7 +507,7 @@ export class DataStreamView {
       grid.innerHTML = flows.length === 0
         ? '<div class="rc-gen-empty">No MXL flows: start ward-beck-audio-tab.py (port 8467)</div>'
         : flows.map((f, i) => `
-          <div class="rc-flow-ring-card${f.idle ? ' idle' : ''}" data-flow-ring="${esc(f.flow_id)}" title="${esc(f.label)}\n${f.idle ? 'No test point set: click a test point in the data tab pipeline' : 'Click to show in the Scanalyzer eye'}">
+          <div class="rc-flow-ring-card${f.idle ? ' idle' : ''}" data-flow-ring="${esc(f.flow_id)}" title="${esc(f.label)}\n${f.idle ? 'No test point set: click a test point in the data tab pipeline' : DataStreamView.GEN_PANELS[f.flow_id] ? 'Click to open its generator' : 'Click to show in the Scanalyzer eye'}">
             <div class="rc-flow-ring-head">
               <span class="rc-flow-ring-name">${esc(String(f.label).replace(/^Ward-Beck\s+/, '').replace(/\s*\([^)]*\)\s*$/, ''))}</span>
               <span class="rc-ring-head" id="rcFlowHead${i}">#0</span>
@@ -515,6 +537,7 @@ export class DataStreamView {
           if (copy) { this.copyConnectionInfo(copy); return; }
           if ((card as HTMLElement).classList.contains('idle')) return;
           this.selectedFlowId = (card as HTMLElement).dataset.flowRing || this.selectedFlowId;
+          this.showGenerator(this.selectedFlowId);
           this.updateXmxlBar();
           this.meterFlow(this.selectedPort || 8467, this.selectedFlowId);
         });

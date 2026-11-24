@@ -1761,3 +1761,10 @@ body.theme-mccurdy-light .rc-pipeline-graph, body.theme-mccurdy .rc-pipeline-gra
 #dataStage .routing-console-rack { padding: 0; border: 0; border-radius: 0; box-shadow: none; }
 #dataStage .rc-top-monitoring-deck { padding: 0; margin: 0; border: 0; border-radius: 0; box-shadow: none; gap: 6px; }
 #dataStage .rc-pipeline-graph { padding: 4px; }
+
+/* Generator panel opened from its MXL flow card (MXL transmitters tab) */
+@keyframes gen-flash {
+  0%, 60% { box-shadow: 0 0 0 2px #ff7700, 0 0 14px rgba(255, 119, 0, 0.55); }
+  100% { box-shadow: 0 0 0 0 transparent; }
+}
+.gen-flash { animation: gen-flash 1.6s ease-out; }

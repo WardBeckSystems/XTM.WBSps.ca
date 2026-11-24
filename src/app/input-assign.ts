@@ -13,7 +13,7 @@ import type { AudioSync } from './audio-sync';
 export interface InputChoice { id: string; name: string; short: string; group: string }
 
 const KEY = 'xtm.inputAssign';
-const DEFAULTS = ['dev:', 'tab', 'pod33', 'bitbuddy'];
+const DEFAULTS = ['dev:', 'tab', 'bitbuddy', 'pod33']; // the tone is input 4 (the XTM-4's TEST GEN button)
 const BUILTIN: InputChoice[] = [
   { id: 'tab', name: 'Browser Tab', short: 'TAB', group: 'Console' },
   { id: 'pod33', name: 'POD-33 Tone', short: 'POD-33', group: 'Console' },
@@ -21,9 +21,9 @@ const BUILTIN: InputChoice[] = [
   { id: 'pink', name: 'Pink Noise', short: 'PINK', group: 'Console' },
 ];
 /** Router input index for the built-in generators and the tab. */
-const ROUTER_IDX: Record<string, number> = { tab: 1, pod33: 2, bitbuddy: 3, pink: 4 };
-/** Web Router input rows (CH 1-5) as button assignments: CH 1 Soundcard In is the default input. */
-const ROUTER_ROWS = ['dev:', 'tab', 'pod33', 'bitbuddy', 'pink'];
+const ROUTER_IDX: Record<string, number> = { tab: 1, pod33: 2, bitbuddy: 6, pink: 7 };
+/** Web Router input rows (CH 1-8) as button assignments: CH 1 Soundcard In is the default input; CH 3-6 are POD-33 AES1-4. */
+const ROUTER_ROWS = ['dev:', 'tab', 'pod33', 'pod33', 'pod33', 'pod33', 'bitbuddy', 'pink'];
 const assignListeners = new Set<() => void>();
 
 let assigned: string[] = load();
