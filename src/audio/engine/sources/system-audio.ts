@@ -46,14 +46,28 @@ function describeSharedSurface(stream: MediaStream): BrowserTabInfo {
   };
 }
 
+/** A share picker already open: every caller (INPUT 2, the router's CH 2, the mode sync) waits on it. */
+let pending: Promise<boolean> | null = null;
+
 /**
  * Connect to System Audio Output
- * Uses getDisplayMedia to capture computer audio
+ * Uses getDisplayMedia to capture computer audio. The tab already shared (playing or parked)
+ * is reused without asking; the picker opens once, however many callers ask at the same time.
  */
-export async function connectSystemAudio(
+export function connectSystemAudio(
   engine: XtmAudioEngine,
   preferredSurface: 'monitor' | 'browser' | 'window' = 'browser',
   forcePrompt = false
+): Promise<boolean> {
+  if (pending) return pending;
+  pending = connectSystemAudioOnce(engine, preferredSurface, forcePrompt).finally(() => { pending = null; });
+  return pending;
+}
+
+async function connectSystemAudioOnce(
+  engine: XtmAudioEngine,
+  preferredSurface: 'monitor' | 'browser' | 'window',
+  forcePrompt: boolean
 ): Promise<boolean> {
   if (!forcePrompt && engine.sourceType === 'system' && engine.stream && engine.stream.active) {
     return true;
