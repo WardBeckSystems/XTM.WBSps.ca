@@ -78,6 +78,9 @@ export class XtmAudioEngine {
   monitorGainNode: GainNode | null = null;
   monitorEnabled: boolean = false; // speakers muted until the router unmutes them
   monitorVolume: number = 0.8;
+  /** Cue / HP: a second output, played into the TAP's HW 2 bus (setCue) */
+  cueGainNode: GainNode | null = null;
+  cueEl: HTMLAudioElement | null = null;
 
   // Splitter & Analyser / Processor
   splitterNode: ChannelSplitterNode | null = null;
@@ -251,6 +254,9 @@ export class XtmAudioEngine {
   setMonitor(enabled: boolean, volume: number | null = null): void { chain.setMonitor(this, enabled, volume); }
 
   setMonitorVolume(val: number): void { chain.setMonitorVolume(this, val); }
+
+  /** Cue / HP on or off: the routed input plays into the TAP's HW 2 (Cue/HP) bus. */
+  setCue(enabled: boolean): Promise<boolean> { return chain.setCue(this, enabled); }
 
   updateMonitorState(): void { chain.updateMonitorState(this); }
 

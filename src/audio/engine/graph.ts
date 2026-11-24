@@ -66,6 +66,10 @@ export function ensureAudioGraph(engine: XtmAudioEngine): GainNode | null {
 
     engine.inputGainNode.connect(engine.hpfNode);
     engine.hpfNode.connect(engine.monitorGainNode);
+    // Cue / HP: silent until the router puts the input on Cue (signal-chain setCue)
+    engine.cueGainNode = ctx.createGain();
+    engine.cueGainNode.gain.value = 0;
+    engine.hpfNode.connect(engine.cueGainNode);
     engine.hpfNode.connect(engine.processorNode);
 
     // Connect processor to destination (silent dummy connection required for processor to run)

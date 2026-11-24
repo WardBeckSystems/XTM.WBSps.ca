@@ -62,3 +62,47 @@ export function updateMonitorState(engine: XtmAudioEngine): void {
   const vol = engine.monitorEnabled ? engine.monitorVolume : 0.0;
   engine.monitorGainNode.gain.setValueAtTime(vol, engine.ctx.currentTime);
 }
+
+/** PipeWire / PulseAudio sink the TAP makes for Cue / HP ("Ward-Beck TAP 6: HW 2 (Cue/HP)"). */
+const CUE_SINK = /HW 2 \(Cue\/HP\)/;
+let cueWarned = false;
+
+/**
+ * Cue / HP: the routed input plays into the TAP's HW 2 bus through a second audio output
+ * (an <audio> element on that sink); the hardware grid sends HW 2 to any sound cards.
+ */
+export async function setCue(engine: XtmAudioEngine, enabled: boolean): Promise<boolean> {
+  const ctx = engine.ctx;
+  const g = engine.cueGainNode;
+  if (!ctx || !g) return false;
+  if (!enabled) {
+    g.gain.setValueAtTime(0, ctx.currentTime);
+    engine.cueEl?.pause();
+    return true;
+  }
+  resumeAudio(ctx);
+  if (!engine.cueEl) {
+    const dest = ctx.createMediaStreamDestination();
+    g.connect(dest);
+    const el = new Audio();
+    el.srcObject = dest.stream;
+    engine.cueEl = el;
+  }
+  const el = engine.cueEl as HTMLAudioElement & { setSinkId?: (id: string) => Promise<void> };
+  try {
+    const outs = (await navigator.mediaDevices.enumerateDevices()).filter((d) => d.kind === 'audiooutput');
+    const hw2 = outs.find((d) => CUE_SINK.test(d.label));
+    if (!hw2 || !el.setSinkId) {
+      if (!cueWarned) console.warn('[Cue] TAP HW 2 (Cue/HP) output not found: start the Ward-Beck Audio Tap and allow audio devices');
+      cueWarned = true;
+      return false;
+    }
+    await el.setSinkId(hw2.deviceId);
+    await el.play();
+    g.gain.setValueAtTime(1, ctx.currentTime);
+    return true;
+  } catch (e) {
+    console.warn('[Cue] could not play into HW 2:', e);
+    return false;
+  }
+}
