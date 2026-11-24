@@ -107,6 +107,10 @@ export function selectAssignedInput(ctx: AppContext, sync: AudioSync, n: number)
   model.flash(inputCaption(n).slice(0, 9));
   model.saveEEPROM();
 
+  // One input at a time: the TAP's tone or Bit Buddy would otherwise keep playing under this input.
+  if (webRouter && id !== 'pod33' && webRouter.pod33Engaged) webRouter.setPod33(false);
+  if (webRouter && id !== 'bitbuddy' && webRouter.bitBuddyEngaged) webRouter.setBitBuddy(false);
+
   if (id.startsWith('dev:')) {
     const sel = document.getElementById('selectDevice') as HTMLSelectElement | null;
     const value = id.slice(4);
