@@ -75,6 +75,7 @@ export async function initApp(): Promise<void> {
         } : null),
         onPlayFlow: (flowId) => window.dispatchEvent(new CustomEvent('xtm:meter-flow', { detail: { port: 8467, flowId } })),
         // An MXL transmitter column opens that flow in the Transmitters tab
+        onOpenReceivers: () => (window as any).setLowerUnitMode?.('receivers'),
         onOpenFlow: (flow) => {
           dataView?.setFlow(flow);
           (window as any).setLowerUnitMode?.('mxl');
