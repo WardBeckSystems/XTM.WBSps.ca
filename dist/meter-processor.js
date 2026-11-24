@@ -7,7 +7,7 @@
 class WbsMeterProcessor extends AudioWorkletProcessor {
   constructor() {
     super();
-    this.bufSize = 1024;
+    this.bufSize = 128; // one render quantum: the needle sees audio 2.7 ms after it happens
     this.bufL = new Float32Array(this.bufSize);
     this.bufR = new Float32Array(this.bufSize);
     this.idx = 0;
