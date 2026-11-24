@@ -43,6 +43,7 @@ interface GNode {
   pick?: { inst: string; flow: string };   // locally discovered node/flow: shown in the ring buffer
   gone?: boolean;        // seen earlier, not reported now: inactive placeholder
   badges?: string[];     // how it was heard (SAP, SIP), drawn on the node instead of a global chip
+  domain?: string;       // MXL lane: the domain a flow / app belongs to (one hub per domain)
 }
 
 interface GEdge { from: string; to: string; clock?: boolean }
@@ -275,15 +276,19 @@ export class PipelineGraph {
 
     // 3 · MXL: domain hub, then flows.
     const flows: any[] = mxl.flows ?? [];
+    // The TAP's domain: from its pipeline report, else from discovery of :8467, else a placeholder.
+    const tapDomain = mxl.domain_id && mxl.domain_id !== 'none' ? mxl.domain_id
+      : this.local.find((i) => i.port === 8467 && i.type === 'wbs-router')?.domainId || 'MXL domain';
+    const domainLabel = new Map<string, string>([[tapDomain, tapDomain]]);
     nodes.push({
-      id: 'mxl', lane: 2, kind: 'hub', hub: true, live: flows.length > 0,
-      label: mxl.domain_id && mxl.domain_id !== 'none' ? mxl.domain_id : 'MXL domain',
+      id: 'mxl', lane: 2, kind: 'hub', hub: true, live: flows.length > 0, domain: tapDomain,
+      label: tapDomain,
       sub: mxl.shm_base_dir ?? '/dev/shm/mxl',
     });
     for (const f of flows) {
       const over = (f.overrun_count ?? 0) + (f.underrun_count ?? 0);
       nodes.push({
-        id: `fl_${f.flow_id}`, lane: 2, kind: 'mxl', live: true, label: f.label || f.flow_id,
+        id: `fl_${f.flow_id}`, lane: 2, kind: 'mxl', live: true, label: f.label || f.flow_id, domain: tapDomain,
         sub: `${f.channel_count}ch · ${(f.sample_rate ?? 48000) / 1000}k${over ? ` · ${over} xrun` : ''}`, title: f.flow_id,
         tap: { kind: 'mxl', ref: f.flow_id },
       });
@@ -330,15 +335,18 @@ export class PipelineGraph {
         nodes.push({ id: `loc_${inst.id}`, lane: 3, kind: nk, live: inst.status === 'online', label: name, sub: `${inst.flows.length} flow${inst.flows.length === 1 ? '' : 's'} · ${inst.latencyMs} ms`, pick: first ? { inst: inst.id, flow: first } : undefined });
         continue;
       }
+      // One domain, one group: CBC apps name it by id ('exercise-4') or by UUID + label.
+      const dom = inst.port === 8467 && !inst.domainId ? tapDomain : inst.domainLabel || inst.domainId || 'local';
+      if (!domainLabel.has(dom)) domainLabel.set(dom, inst.domainLabel || dom);
       if (inst.port !== 8467)
-        nodes.push({ id: `loc_${inst.id}`, lane: 2, kind: 'mxl', live: inst.status === 'online', label: name, sub: `:${inst.port} · ${inst.latencyMs} ms`, title: inst.domainId, pick: first ? { inst: inst.id, flow: first } : undefined });
+        nodes.push({ id: `loc_${inst.id}`, lane: 2, kind: 'mxl', live: inst.status === 'online', label: name, sub: `:${inst.port} · ${inst.latencyMs} ms`, title: inst.domainId, domain: dom, pick: first ? { inst: inst.id, flow: first } : undefined });
       for (const f of inst.flows) {
         if (seenFlow.has(f.flowId)) continue;
         seenFlow.add(f.flowId);
         const label = short(f.label || f.flowId).replace(/\s*\(.*\)$/, '');
         if (seen.has(base(label))) continue;
         seen.add(base(label));
-        nodes.push({ id: `locf_${f.flowId}`, lane: 2, kind: 'mxl', live: true, label, sub: `${f.channelCount}ch · ${f.sampleRate / 1000}k`, title: f.label, pick: { inst: inst.id, flow: f.flowId } });
+        nodes.push({ id: `locf_${f.flowId}`, lane: 2, kind: 'mxl', live: true, label, sub: `${f.channelCount}ch · ${f.sampleRate / 1000}k`, title: f.label, domain: dom, pick: { inst: inst.id, flow: f.flowId } });
       }
     }
 
@@ -367,15 +375,26 @@ export class PipelineGraph {
     }
     const uniq = new Map(nodes.map((n) => [n.id, n] as const));
     nodes.length = 0;
+    // MXL lane: one hub per domain with its flows and apps under it (the TAP's domain first).
+    const mxlNodes = [...uniq.values()].filter((n) => n.lane === 2);
+    for (const d of new Set(mxlNodes.map((n) => n.domain ?? tapDomain))) {
+      if (mxlNodes.some((n) => n.hub && (n.domain ?? tapDomain) === d)) continue;
+      const kids = mxlNodes.filter((n) => (n.domain ?? tapDomain) === d);
+      uniq.set(`dom_${d}`, {
+        id: `dom_${d}`, lane: 2, kind: 'hub', hub: true, domain: d, live: kids.some((k) => k.live && !k.gone),
+        label: domainLabel.get(d) ?? d, sub: `${kids.length} flow${kids.length === 1 ? '' : 's'} / app${kids.length === 1 ? '' : 's'}`, title: `MXL domain ${d}`,
+      });
+    }
+    const domRank = (n: GNode) => (n.lane !== 2 ? '' : (n.domain ?? tapDomain) === tapDomain ? '0' : '1' + (domainLabel.get(n.domain!) ?? n.domain));
     nodes.push(...[...uniq.values()].sort((a, b) =>
-      a.lane - b.lane || Number(!!b.hub) - Number(!!a.hub)
+      a.lane - b.lane || domRank(a).localeCompare(domRank(b)) || Number(!!b.hub) - Number(!!a.hub)
       || a.label.localeCompare(b.label, undefined, { numeric: true, sensitivity: 'base' })));
 
     // Edges: every card feeds the graph; graph feeds MXL; MXL bridges to the network.
     for (const n of nodes) {
       if (n.lane === 0) edges.push({ from: n.id, to: 'pw' });
       if (n.lane === 1 && !n.hub) edges.push({ from: 'pw', to: n.id });
-      if (n.lane === 2 && !n.hub) edges.push({ from: 'mxl', to: n.id });
+      if (n.lane === 2 && !n.hub) edges.push({ from: (n.domain ?? tapDomain) === tapDomain ? 'mxl' : `dom_${n.domain}`, to: n.id });
     }
     edges.push({ from: 'pw', to: 'mxl' });
 
