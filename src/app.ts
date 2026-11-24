@@ -20,7 +20,7 @@ import { initSettingsDrawer } from './app/settings-drawer';
 import { initVfdMetric } from './app/vfd-metric';
 import { initPodExtendedRange, initPodScaleAndHold, initPodDecay } from './app/pod22-options';
 import { initCsvExport } from './app/csv-export';
-import { bindRouterMeterInputs, routerMeterInput, selectAssignedInput } from './app/input-assign';
+import { bindRouterMeterInputs, routerMeterInput } from './app/input-assign';
 import { createAudioSync } from './app/audio-sync';
 import { applyInitialAudioState, bindModelChange, bindFrontPanel, bindAudioUnlock } from './app/model-bindings';
 import { bindAudioCallbacks, initDeviceScan, initDeviceSelector } from './app/device-selector';
@@ -114,8 +114,13 @@ export async function initApp(): Promise<void> {
 
   const sync = createAudioSync(ctx, refs);
   onMeterInput = (meter, input) => routerMeterInput(ctx, sync, meter, input);
-  // The data view's four small rings are INPUT 1-4: pressing one presses the button.
-  if (dataView) dataView.onSelectInput = (n) => selectAssignedInput(ctx, sync, n);
+  // The data view's four small rings are INPUT 1-4: a click is a press of that front-panel
+  // button (same path: audio context resumed, then the input switched), with the meter
+  // switched on first if it is off.
+  if (dataView) dataView.onSelectInput = (n) => {
+    if (!model.power) model.togglePower();
+    void view.onButtonPressed?.(`INPUT_${n}`);
+  };
   bindRouterMeterInputs(ctx);
   bindModelChange(ctx, refs, sync);
   bindFrontPanel(ctx, sync);
