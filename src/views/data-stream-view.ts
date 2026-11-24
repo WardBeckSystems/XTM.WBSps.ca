@@ -674,7 +674,11 @@ export class DataStreamView {
     // With a dial face the scale labels sit inside the face, so the bands step in a little.
     // Bands run wide: from just outside the hub (flow line + pointer) to just inside the scale labels.
     // Small dials (ring buffer cards) keep room for the fixed-size scale labels.
-    const rOuter = Math.min((T.faceMid && !compact ? 184 : 198) * k, w / 2 - 32);
+    // Whole-second rings put their numbers in the hub, so the bands run out to the bezel.
+    const hubLabels = !(flow?.packet_frames && flow.buffer_length / flow.packet_frames <= 64);
+    const rOuter = hubLabels
+      ? Math.min(w, h) / 2 - (T.faceMid ? 18 : 15) * k
+      : Math.min((T.faceMid && !compact ? 184 : 198) * k, w / 2 - 32);
     const rInner = (compact ? 56 : 76) * k;
     const gridCol = T.grid;
     const writeCol = T.write;
@@ -727,7 +731,7 @@ export class DataStreamView {
     // Hard cap: never draw more spokes/labels than can be read around the ring.
     const secs = Math.min(64, pkt ? Math.max(1, Math.round(flow.buffer_length / pkt)) : Math.max(1, Math.round(dur)));
     const spokeLabel = (s: number) => {
-      if (!pkt) return `${s}.0s`;
+      if (!pkt) return `${s}`;
       const ms = (s * pkt * 1000) / sr;
       return ms >= 1000 ? `${(ms / 1000).toFixed(2)}s` : `${+ms.toFixed(ms < 10 ? 2 : 1)}ms`;
     };
@@ -740,7 +744,8 @@ export class DataStreamView {
       ctx.lineWidth = s === 0 ? 2 : 1;
       ctx.stroke();
       if (!compact) {
-        const lr = Math.min(rOuter + 17 * k, w / 2 - 17);
+        // Whole seconds sit in the hub like a clock face; packet times stay outside the ring.
+        const lr = pkt ? Math.min(rOuter + 17 * k, w / 2 - 17) : rInner - 14 * k;
         ctx.font = s === 0 ? 'bold 11px monospace' : '9px monospace';
         ctx.fillStyle = s === 0 ? T.zero : T.label;
         ctx.textAlign = 'center';
@@ -839,8 +844,9 @@ export class DataStreamView {
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
       lines.forEach((ln, i) => {
-        const y = (36 + i * 13) * k;
-        const half = Math.sqrt(Math.max(0, (rInner - 4 * k) ** 2 - (y + 5 * k) ** 2));
+        // Kept inside the ring of hub second numbers (rInner - 14k).
+        const y = (24 + i * 12) * k;
+        const half = Math.sqrt(Math.max(0, (rInner - 22 * k) ** 2 - (y + 5 * k) ** 2));
         ctx.font = `${i === 0 ? 'bold ' : ''}${Math.round(9 * k)}px monospace`;
         let t = ln;
         while (t.length > 3 && ctx.measureText(t).width > half * 2) t = t.slice(0, -2) + '…';
