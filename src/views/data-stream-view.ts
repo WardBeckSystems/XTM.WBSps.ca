@@ -739,8 +739,10 @@ export class DataStreamView {
     const nCh = flow ? Math.max(1, flow.channel_count || flow.channels?.length || 1) : 2;
     const bandH = (rOuter - rInner) / nCh;
 
-    // 1. Band outlines + 1-second spokes of buffer position
+    // 1. Band outlines + 1-second spokes of buffer position (small eyes: just the tracks)
+    const sr = flow?.sample_rate || 48000;
     ctx.save();
+    if (!compact) {
     ctx.lineWidth = 1;
     ctx.strokeStyle = gridCol;
     for (let c = 0; c <= nCh; c++) {
@@ -749,7 +751,6 @@ export class DataStreamView {
       ctx.stroke();
     }
     // Spokes: one per second, or one per packet for a test-point ring (10 x packet time).
-    const sr = flow?.sample_rate || 48000;
     // Packet spokes only when the ring is a handful of packets (10 x packet); a long ring
     // (AoIP test points: 10 s of 1 ms packets) keeps one spoke per second.
     const pkt = flow?.packet_frames && flow.buffer_length / flow.packet_frames <= 64 ? flow.packet_frames : 0;
@@ -778,6 +779,7 @@ export class DataStreamView {
         ctx.textBaseline = 'middle';
         ctx.fillText(spokeLabel(s), cx + Math.cos(a) * lr, cy + Math.sin(a) * lr);
       }
+    }
     }
     ctx.restore();
 
@@ -831,6 +833,9 @@ export class DataStreamView {
 
     const wA = (flow.write_head / len) * Math.PI * 2 + rot;
     const mA = (flow.meter_head / len) * Math.PI * 2 + rot;
+
+    // Small eyes stop here: the tracks as levels, no heads or pointer
+    if (compact) return;
 
     // 3. Meter read head: arm across the bands + pointer at centre
     ctx.save();
