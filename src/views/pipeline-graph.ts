@@ -488,7 +488,7 @@ export class PipelineGraph {
 
     this.el.innerHTML = `
       <div class="pg-status">
-        ${this.online ? '' : `<span class="pg-iface">TAP offline: <a href="https://github.com/WardBeckSystems/Ward-Beck-Audio-Tap" target="_blank" rel="noopener">download the Ward-Beck Audio Tap</a>, then <code>./run.sh</code> · guide at <a href="${DAEMON}/setup" target="_blank" rel="noopener">:8467/setup</a></span>`}
+        ${this.online ? '' : `<span class="pg-iface">TAP offline: <a href="https://github.com/WardBeckSystems/Ward-Beck-Audio-Tap/releases/latest" target="_blank" rel="noopener">download the Ward-Beck Audio Tap</a> (Linux, Windows, macOS) and run its installer</span>`}
         ${this.tpChip()}
       </div>
       <svg class="pg-svg" viewBox="0 0 ${W} ${H}" role="img" aria-label="Audio pipeline signal flow: ALSA to PipeWire to MXL to network AoIP">

@@ -20,7 +20,7 @@ const NTP_POLL_MS = 10000;
 const OFFSET_KEEP = 300;
 const OPTS_KEY = 'xtm_timing_opts';
 type Opts = { ntp: boolean; events: boolean; offset: boolean };
-const TAP_DOWNLOAD = 'https://github.com/WardBeckSystems/Ward-Beck-Audio-Tap';
+const TAP_DOWNLOAD = 'https://github.com/WardBeckSystems/Ward-Beck-Audio-Tap/releases/latest';
 
 const esc = (v: unknown) =>
   String(v ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]!));
