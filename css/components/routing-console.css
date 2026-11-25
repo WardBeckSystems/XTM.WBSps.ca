@@ -1800,15 +1800,26 @@ body.theme-mccurdy-light .rc-pipeline-graph, body.theme-mccurdy .rc-pipeline-gra
 .rc-top-monitoring-deck { align-items: flex-start; }
 .rc-pipeline-col { overflow-y: auto; overscroll-behavior: contain; }
 
-/* Transmitters: quadrants (1 2 / 3 4), each the eye then the console's VU meter */
-.rc-flow-rings { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-.rc-flow-ring-chs { display: flex; align-items: center; justify-content: center; gap: 10px; }
-.rc-flow-ring-chs .rc-flow-eye { width: 200px; height: 200px; flex: none; }
+/* Transmitters: one panel, the four transmitters side by side (2 x 2 when narrow), no section
+   headers; each is a one-line strip (name, AES67 address, TX, SDP, ID) over its eye and meter,
+   both scaling with the window so the whole panel fits on screen. */
+#mxlStage .routing-console-rack { padding: 6px; }
+#mxlStage .rc-data-buffer { margin: 0; }
+#mxlStage .rc-buffer-card { padding: 0; margin: 0 0 6px; border: 0; background: none; }
+.rc-flow-rings { grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 6px; margin: 0; }
+.rc-flow-ring-chs { grid-template-columns: 1fr !important; }
+.rc-flow-ring-card { padding: 4px 6px 6px; }
+.rc-flow-ring-head { margin-bottom: 2px; gap: 6px; }
+.rc-flow-ring-head.rc-aes67-tx { margin-top: 0; padding-top: 0; border-top: 0; cursor: pointer; }
+.rc-flow-ring-head .rc-aes67-addr { display: none; } /* on hover: the line's tooltip has the address */
+.rc-flow-ring-chs { display: grid; grid-template-columns: 44% 1fr; align-items: center; gap: 6px; }
+.rc-flow-ring-chs canvas.rc-flow-eye { width: min(100%, 24vh); height: auto; aspect-ratio: 1; justify-self: center; }
 /* The console's own VU meter in miniature (L black, R red needles on one face) */
 .rc-tx-vus { flex: 1; min-width: 0; display: flex; align-items: center; }
-.rc-tx-vus .wr-theme-meters-wrap { position: relative; width: 100%; max-width: 360px; margin: 0; }
+.rc-tx-vus .wr-theme-meters-wrap { position: relative; width: 100%; margin: 0; }
 .rc-tx-vus .wr-theme-meter-svg { display: block; width: 100%; height: auto; }
-@media (max-width: 1300px) { .rc-flow-rings { grid-template-columns: minmax(0, 1fr); } }
+@media (max-width: 1500px) { .rc-flow-rings { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@media (max-width: 760px) { .rc-flow-rings { grid-template-columns: minmax(0, 1fr); } }
 
 /* CBC / Radio-Canada MXL studio: early-web HTML, as plain as a page could be.
    Grey page, Times, blue underlined links, grey bevelled buttons, default selects. */
@@ -1857,3 +1868,23 @@ html body .rc-cbc-studio-panel select.rc-cbc-select {
 html body .rc-cbc-studio-panel .rc-cbc-flow-info { color: #000 !important; font-size: 0.85rem !important; font-style: italic; }
 html body .rc-cbc-studio-panel .rc-cbc-header { flex-wrap: wrap !important; }
 html body .rc-cbc-studio-panel .rc-cbc-header::after { flex: 0 0 100%; }
+
+/* Router: the background is always the console's panel colour (each theme's --bg-panel), from the
+   stage edge to every cell. No washed rows or columns: what is live shows by its wires and LEDs,
+   and the selected strip by a glowing outline rather than a tint. */
+body #routingStage,
+body #routingStage .routing-console-rack,
+body .wr-rack,
+body .wr-rack .wr-grid,
+body .wr-rack .wr-grid th,
+body .wr-rack .wr-grid td,
+body .wr-rack .wr-grid tbody tr.live .wr-td-crosspoint { background: var(--bg-panel) !important; }
+html body #routingStage .wr-rack .wr-grid .wr-strip.selected {
+  background: transparent !important;
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, #f97316 70%, transparent), 0 0 8px rgba(249, 115, 22, 0.25) !important;
+}
+
+/* Pipeline graph: the clicked card comes to the front, glows and shows its details */
+.pg-node { cursor: pointer; }
+.pg-node.pg-focus { opacity: 1; }
+.pg-node.pg-focus rect { stroke: var(--pg-hub); stroke-width: 2.4; stroke-dasharray: none; filter: drop-shadow(0 0 4px var(--pg-hub)); }

@@ -62,11 +62,12 @@ export async function initApp(): Promise<void> {
   const meterArt = (): MeterArt | null => (document.getElementById('xtm_meter_group_0') ? {
     href: 'xtm_meter_group_0',
     needle: 'xtm_needle_0',
-    box: [MX[0] - 312, 42, 624, 370],
+    box: [MX[0] - 312, 42, 624, 252], // cropped just below the glass: the housing's lower lip goes first
     pivot: [MX[0], PY],
     length: R + 8,
     window: [MX[0] - 288, 65, 576, 211, 7],
     angle: (db: number) => (db <= -55 || !isFinite(db) ? restAngle(false) : vuAngle(vuFrac(db), false)),
+    under: 'mc_bezel_0', // the McCurdy console's black stepped bezel (hidden under other skins)
   } : null);
   if (dataView) dataView.meterArt = meterArt;
   // Meter Input 1-4 crosspoints drive the XTM-4's INPUT buttons (wired once the audio sync exists)

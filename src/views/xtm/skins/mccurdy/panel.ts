@@ -29,11 +29,11 @@ const PANEL_DEFS = `<defs>
       </defs>`;
 
 /** Black stepped bezel behind one meter window (ATS-100 console mode only) */
-function bezel(cx: number): string {
+function bezel(cx: number, i: number): string {
   const { bx, by } = MC_BEZEL;
   const x0 = cx - MW / 2 - bx, y0 = MYc - MH / 2 - by;
   const w = MW + 2 * bx, h = MH + 2 * by;
-  return `<g class="mc-com-only" filter="url(#mc_shadow)">
+  return `<g id="mc_bezel_${i}" class="mc-com-only" filter="url(#mc_shadow)">
         <rect x="${x0}" y="${y0}" width="${w}" height="${h}" rx="4" fill="url(#mc_bezel)" stroke="#0d0d0e" stroke-width="2"/>
         <polygon points="${x0},${y0} ${x0 + w},${y0} ${x0 + w - bx},${y0 + by} ${x0 + bx},${y0 + by}" fill="#36373a"/>
         <polygon points="${x0},${y0 + h} ${x0 + w},${y0 + h} ${x0 + w - bx},${y0 + h - by} ${x0 + bx},${y0 + h - by}" fill="#111113"/>
@@ -60,7 +60,7 @@ export function renderMcCurdyPanel(): string {
       <rect class="mc-panel-bg" x="1" y="1" width="${W - 2}" height="${H - 2}" rx="6" fill="url(#mc_panel)" stroke="#b5b1a6" stroke-width="2"/>
       <line x1="4" y1="3" x2="${W - 4}" y2="3" stroke="#ffffff" stroke-opacity="0.7" stroke-width="2"/>`;
 
-  for (const cx of MX) s += bezel(cx);
+  MX.forEach((cx, i) => { s += bezel(cx, i); });
 
   s += legend(MC_LEGENDS.input1X, 'INPUT 1', null) + legend(MC_LEGENDS.input2X, 'INPUT 2', MC_LEGENDS.input2LineX0);
 

@@ -35,6 +35,8 @@ interface GNode {
   lane: number;
   label: string;
   sub?: string;
+  /** a second line that says nothing next to its neighbours: shown only on the clicked card */
+  detail?: string;
   kind: Kind;
   live?: boolean;        // heard on the wire / actually running
   writing?: boolean;     // MXL flow: its write head moved since the last poll (green)
@@ -82,6 +84,8 @@ export class PipelineGraph {
   /** Last write_seq per MXL flow: a flow whose sequence moves is being written. */
   private mxlSeq = new Map<string, number>();
   private picked = '';
+  /** The clicked card: brought to the front, highlighted, its details shown. */
+  private focused = '';
   private onPick?: (instId: string, flowId: string) => void;
 
   /** HTML docked in a lane's free space under its cards: lane 0 (ALSA) holds the telemetry
@@ -101,6 +105,12 @@ export class PipelineGraph {
         if (this.testPoint?.fix) this.fixDismissed.delete(this.fixKey(this.testPoint.fix));
         this.syncFixPrompt();
         return;
+      }
+      const card = (e.target as Element).closest?.('[data-node]');
+      if (card) {
+        const id = card.getAttribute('data-node') || '';
+        this.focused = this.focused === id ? '' : id;
+        this.draw();
       }
       const g = (e.target as Element).closest?.('[data-tap]');
       const node = g ? this.taps.get(g.getAttribute('data-tap') || '') : undefined;
@@ -416,6 +426,20 @@ export class PipelineGraph {
       a.lane - b.lane || domRank(a).localeCompare(domRank(b)) || Number(!!b.hub) - Number(!!a.hub)
       || group(a).localeCompare(group(b)) || a.label.localeCompare(b.label, undefined, { numeric: true, sensitivity: 'base' })));
 
+    // A second line only when it tells this card apart: one most of its column shares (every flow
+    // "2ch · 48k", every PipeWire node "stream") says nothing, so it moves to the tooltip.
+    for (const lane of [0, 1, 2, 3]) {
+      const inLane = nodes.filter((n) => n.lane === lane && !n.hub && n.sub);
+      const count = new Map<string, number>();
+      inLane.forEach((n) => count.set(n.sub!, (count.get(n.sub!) ?? 0) + 1));
+      for (const n of inLane) {
+        if (n.sub === 'stream' || (inLane.length > 2 && count.get(n.sub!)! > inLane.length / 2)) {
+          n.detail = n.sub;
+          n.sub = undefined;
+        }
+      }
+    }
+
     // Edges: every card feeds the graph; graph feeds MXL; MXL bridges to the network.
     for (const n of nodes) {
       if (n.lane === 0) edges.push({ from: n.id, to: 'pw' });
@@ -494,22 +518,25 @@ export class PipelineGraph {
     }).join('');
 
     this.taps.clear();
-    const nodeSvg = shown.map((n) => {
+    const front = [...shown.filter((n) => n.id !== this.focused), ...shown.filter((n) => n.id === this.focused)];
+    const nodeSvg = front.map((n) => {
       const p = pos.get(n.id)!;
       if (n.tap) this.taps.set(n.id, n);
       if (n.pick) this.taps.set(n.id, n);
       const clipped = this.isClipped(n);
       const picked = !!n.pick && n.pick.flow === this.picked;
       const tapAttr = n.tap || n.pick ? ` data-tap="${esc(n.id)}" role="button" tabindex="0"` : '';
+      const focus = n.id === this.focused;
+      const line2 = n.sub ?? (focus ? n.detail : undefined);
       const tapHint = n.pick ? '\nClick to show in the ring buffer' : n.tap ? (clipped ? '\n● TEST POINT — click to lift the probe' : '\nClick to meter this point (test point)') : '';
       return `
-        <g class="pg-node pg-${n.kind}${n.live ? ' pg-on' : ''}${n.writing ? ' pg-writing' : ''}${n.hub ? ' pg-hub' : ''}${n.gone ? ' pg-gone' : ''}${n.tap ? ' pg-tappable' : ''}${n.pick ? ' pg-pickable' : ''}${clipped ? ' pg-tp' : ''}${picked ? ' pg-pick' : ''}"${tapAttr} transform="translate(${p.x} ${p.y})">
-          <title>${esc(n.label)}${n.sub ? ` — ${esc(n.sub)}` : ''}${n.title ? `\n${esc(n.title)}` : ''}${tapHint}</title>
+        <g class="pg-node pg-${n.kind}${n.live ? ' pg-on' : ''}${n.writing ? ' pg-writing' : ''}${n.hub ? ' pg-hub' : ''}${n.gone ? ' pg-gone' : ''}${n.tap ? ' pg-tappable' : ''}${n.pick ? ' pg-pickable' : ''}${clipped ? ' pg-tp' : ''}${picked ? ' pg-pick' : ''}${focus ? ' pg-focus' : ''}" data-node="${esc(n.id)}"${tapAttr} transform="translate(${p.x} ${p.y})">
+          <title>${esc(n.label)}${n.sub ?? n.detail ? ` — ${esc(n.sub ?? n.detail!)}` : ''}${n.title ? `\n${esc(n.title)}` : ''}${tapHint}</title>
           <rect width="${LANE_W}" height="${NODE_H}" rx="4"/>
           <circle class="pg-dot" cx="8" cy="${NODE_H / 2}" r="2.6"/>
           <text class="pg-label" x="15" y="9">${esc(trunc(n.label, n.badges?.length ? 34 : 40))}</text>
           ${n.badges?.length ? `<text class="pg-badge" x="${LANE_W - 5}" y="9" text-anchor="end">${esc(n.badges.join(' '))}</text>` : ''}
-          ${n.sub ? `<text class="pg-sub" x="15" y="17.5">${esc(trunc(n.sub, clipped ? 34 : 50))}</text>` : ''}
+          ${line2 ? `<text class="pg-sub" x="15" y="17.5">${esc(trunc(line2, clipped ? 34 : 50))}</text>` : ''}
           ${clipped ? `<text class="pg-tp-tag" x="${LANE_W - 5}" y="17.5" text-anchor="end">● TP</text>` : ''}
         </g>`;
     }).join('');

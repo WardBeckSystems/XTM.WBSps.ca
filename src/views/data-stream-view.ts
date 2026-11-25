@@ -210,24 +210,9 @@ export class DataStreamView {
         <div class="rc-data-buffer">
             <!-- Top: Continuous Circular Ring Buffer -->
             <div class="rc-buffer-card">
-              <div class="rc-buffer-header">
-                <span>EBU DMF / MXL CONTINUOUS CIRCULAR RING BUFFER</span>
-                <span class="rc-telemetry-pill" id="rcHeadroomTag">HEADROOM: 99.5% · 0 OVERRUNS</span>
-              </div>
-
               <!-- One EBU DMF ring buffer per MXL flow the engine writes, each with copyable connection info -->
               <div class="rc-flow-rings" id="rcFlowRings"></div>
 
-              <!-- Precision ITU-R BS.1770 / EBU R128 LOUDNESS Readout -->
-              <div class="rc-loudness-strip" id="rcLoudnessStrip">
-                <div class="rc-loudness-metric">
-                  <span>INTEGRATED: <strong class="rc-loudness-val" id="rcLuIntegrated">-24.0 LUFS</strong></span>
-                  <span>MOMENTARY: <strong class="rc-loudness-val" id="rcLuMomentary">-24.0 LUFS</strong></span>
-                  <span>SHORT-TERM: <strong class="rc-loudness-val" id="rcLuShort">-24.0 LUFS</strong></span>
-                  <span>TRUE PEAK: <strong class="rc-loudness-val" id="rcLuTruePeak">-1.2 dBTP</strong></span>
-                </div>
-                <div class="rc-stat-sub rc-tone-cyan">ITU-R BS.1770-4 / EBU R128 CALIBRATED</div>
-              </div>
             </div>
         </div>
       </div>
@@ -322,21 +307,6 @@ export class DataStreamView {
 
     this.renderFlowRings([ringColor0, ringColor1], isMcDark, isMcLight, isWbsCa);
 
-    // 5. Update ITU-R BS.1770 / EBU R128 LOUDNESS metrics
-    const dbfsL = levels?.dbfs ? levels.dbfs[0] : vuL;
-    const dbfsR = levels?.dbfs ? levels.dbfs[1] : vuR;
-    const lufsVal = Math.max(-60, Math.min(0, (dbfsL + dbfsR) / 2));
-    const truePeak = Math.max(-60, Math.min(3, Math.max(dbfsL, dbfsR) + 0.3));
-
-    const luIntEl = this.$('#rcLuIntegrated');
-    const luMomEl = this.$('#rcLuMomentary');
-    const luShortEl = this.$('#rcLuShort');
-    const luTpEl = this.$('#rcLuTruePeak');
-
-    if (luIntEl) luIntEl.textContent = `${lufsVal.toFixed(1)} LUFS`;
-    if (luMomEl) luMomEl.textContent = `${(lufsVal + 0.2).toFixed(1)} LUFS`;
-    if (luShortEl) luShortEl.textContent = `${(lufsVal - 0.1).toFixed(1)} LUFS`;
-    if (luTpEl) luTpEl.textContent = `${truePeak.toFixed(1)} dBTP`;
   }
 
   private initXmxlBinding(): void {
@@ -349,8 +319,6 @@ export class DataStreamView {
 
   private updateXmxlBar(): void {
     if (!this.container) return;
-    const headroomEl = this.$('#rcHeadroomTag');
-
     // Discovered nodes + flows are drawn as signals in the pipeline graph above.
     this.graph?.setLocal(this.detectedInstances, this.selectedFlowId, (instId, flowId) => {
       const inst = this.detectedInstances.find((i) => i.id === instId);
@@ -362,9 +330,6 @@ export class DataStreamView {
     });
 
     const curInst = (this.selectedInstanceId ? this.detectedInstances.find((i) => i.id === this.selectedInstanceId) : null) || this.detectedInstances.find((i) => i.port === this.selectedPort) || this.detectedInstances[0];
-    if (headroomEl && curInst) {
-      headroomEl.textContent = `DOMAIN: ${curInst.domainId || 'domain-wbs-dmf-01'} · LATENCY: ${curInst.latencyMs}ms · 0 OVERRUNS`;
-    }
 
     // Connect SSE stream if not connected and instance 8467 is active
     if (!this.activeXmxlDisconnect && curInst && curInst.port === 8467) {
@@ -544,6 +509,8 @@ export class DataStreamView {
       ['wbs-flow-ref-tone', 'MXL67-2 · POD-33 1 kHz'],
       ['wbs-flow-ref-tone-low', 'MXL67-3 · POD-33 400 / 100 Hz'],
       ['wbs-flow-bit-spitter', 'MXL67-4 · Bit Spitter'],
+      ['wbs-network-ams81', 'MXL67-5 · Network loop out'],
+      ['wbs-moip-ams81', 'MXL67-6 · MoIP loop out'],
     ];
     const flows: any[] = live.length ? TX.map(([id, name]) => {
       const f = live.find((x) => x.flow_id === id);
@@ -560,23 +527,19 @@ export class DataStreamView {
         ? '<div class="rc-gen-empty">No MXL flows: start ward-beck-audio-tab.py (port 8467)</div>'
         : flows.map((f, i) => `
           <div class="rc-flow-ring-card${f.idle ? ' idle' : ''}" data-flow-ring="${esc(f.flow_id)}" title="${esc(f.label)}\n${f.idle ? 'Not made by this TAP yet: restart the TAP' : DataStreamView.GEN_PANELS[f.flow_id] ? 'Click to open its generator' : 'Click to show in the Scanalyzer eye'}">
-            <div class="rc-flow-ring-head">
-              <span class="rc-flow-ring-name">${esc(String(f.label).replace(/^Ward-Beck\s+/, '').replace(/\s*\([^)]*\)\s*$/, ''))}</span>
-              <span class="rc-ring-head" id="rcFlowHead${i}">#0</span>
-              <button type="button" class="rc-flow-copy" data-flow-copy="${esc(f.flow_id)}" title="Copy MXL flow ID ${esc(f.flow_id)}\n\n${esc(this.connectionInfo(f))}" aria-label="Copy MXL flow ID for ${esc(f.label)}">MXL ID</button>
+            <div class="rc-flow-ring-head${this.aes67For(f.flow_id) ? ' rc-aes67-tx' : ''}"${this.aes67For(f.flow_id) ? ` data-aes67="${esc(f.flow_id)}"` : ''}>
+              ${this.aes67For(f.flow_id) ? '<span class="rc-led-dot rc-aes67-led"></span>' : ''}
+              <span class="rc-flow-ring-name" id="rcFlowName${i}">${esc(f.label)}</span>
+              ${this.aes67For(f.flow_id) ? `
+              <span class="rc-aes67-addr"></span>
+              <button type="button" class="rc-aes67-btn" data-aes67-tx="${esc(f.flow_id)}" title="AES67 on the network (SAP + Bonjour)">TX</button>
+              <button type="button" class="rc-flow-copy" data-aes67-sdp="${esc(f.flow_id)}" title="Copy AES67 SDP (ts-refclk names the PTP leader)" aria-label="Copy AES67 SDP for ${esc(f.label)}">SDP</button>` : ''}
+              <button type="button" class="rc-flow-copy" data-flow-copy="${esc(f.flow_id)}" title="Copy MXL flow ID ${esc(f.flow_id)}\n\n${esc(this.connectionInfo(f))}" aria-label="Copy MXL flow ID for ${esc(f.label)}">ID</button>
             </div>
             <div class="rc-flow-ring-chs">
               <canvas id="rcFlowRing${i}" width="220" height="220" class="rc-flow-eye"></canvas>
               <div class="rc-tx-vus">${this.art ? renderArtMeterPair('rcTx', i, this.art) : renderMeterPair('rcTx', i)}</div>
             </div>
-            ${this.aes67For(f.flow_id) ? `
-            <div class="rc-aes67-tx" data-aes67="${esc(f.flow_id)}">
-              <span class="rc-led-dot rc-aes67-led"></span>
-              <span class="rc-aes67-tag">AES67</span>
-              <span class="rc-aes67-addr"></span>
-              <button type="button" class="rc-aes67-btn" data-aes67-tx="${esc(f.flow_id)}">TX</button>
-              <button type="button" class="rc-flow-copy" data-aes67-sdp="${esc(f.flow_id)}" title="Copy AES67 SDP (ts-refclk names the PTP leader)" aria-label="Copy AES67 SDP for ${esc(f.label)}">SDP</button>
-            </div>` : ''}
           </div>`).join('');
       grid.querySelectorAll('[data-flow-ring]').forEach((card) => {
         card.addEventListener('click', (e) => {
@@ -585,7 +548,7 @@ export class DataStreamView {
           if (tx) { this.toggleAes67(tx as HTMLButtonElement); return; }
           const sdp = t.closest('[data-aes67-sdp]') as HTMLElement | null;
           if (sdp) { this.copyAes67Sdp(sdp); return; }
-          if (t.closest('.rc-aes67-tx')) return;
+          if (t.closest('.rc-aes67-addr')) return;
           const copy = t.closest('[data-flow-copy]') as HTMLElement | null;
           if (copy) { this.copyConnectionInfo(copy); return; }
           if ((card as HTMLElement).classList.contains('idle')) return;
@@ -605,8 +568,12 @@ export class DataStreamView {
     }
     const eyeId = this.getEyeFlow()?.flow_id;
     flows.forEach((f, i) => {
-      const head = grid.querySelector(`#rcFlowHead${i}`);
-      if (head) head.textContent = f.idle ? 'idle' : `#${f.write_head}`;
+      // The transmitter's name is what feeds it (the router names it; the SDP carries it)
+      const nameEl = grid.querySelector(`#rcFlowName${i}`);
+      const txName = this.aes67For(f.flow_id)?.name as string | undefined;
+      const tag = String(f.label).split(' · ')[0];
+      const shown = txName ? `${tag} · ${txName}` : f.label;
+      if (nameEl && nameEl.textContent !== shown) nameEl.textContent = shown;
       grid.querySelector(`[data-flow-ring="${CSS.escape(f.flow_id)}"]`)?.classList.toggle('active', f.flow_id === eyeId);
       // Same eye as the data view: one dial per flow, a band per channel
       const cv = grid.querySelector(`#rcFlowRing${i}`) as HTMLCanvasElement | null;
