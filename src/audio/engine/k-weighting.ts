@@ -1,4 +1,4 @@
-/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.ca). All rights reserved. */
+/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.com - Ward-Beck.ca). All rights reserved. */
 /**
  * ITU-R BS.1770 K-weighting pre-filter: stage 1 high shelf + stage 2 RLB high pass.
  */

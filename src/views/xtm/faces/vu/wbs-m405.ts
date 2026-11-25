@@ -1,4 +1,4 @@
-/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.ca). All rights reserved. */
+/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.com - Ward-Beck.ca). All rights reserved. */
 /**
  * Ward-Beck Systems M405 Extended Range VU Movement:
  * - Rotated upper VU labels (-26 deg left, +26 deg right).

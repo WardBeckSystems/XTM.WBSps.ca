@@ -1,4 +1,4 @@
-/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.ca). All rights reserved. */
+/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.com - Ward-Beck.ca). All rights reserved. */
 /** Per-frame phase correlation LED paint (WBS round lamps or McCurdy red segments). */
 import { wbsPhaseColors } from '../skins/wbs/phase-leds';
 import { MC_PHASE_ON, MC_PHASE_OFF } from '../skins/mccurdy/phase-window';

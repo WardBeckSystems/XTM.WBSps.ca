@@ -1,4 +1,4 @@
-/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.ca). All rights reserved. */
+/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.com - Ward-Beck.ca). All rights reserved. */
 /**
  * PPM (quasi-peak) ballistic standards.
  * 1: DIN 45406 (10ms attack, 1500ms release / -20 dB in 1.5s)

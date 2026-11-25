@@ -1,4 +1,4 @@
-/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.ca). All rights reserved. */
+/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.com - Ward-Beck.ca). All rights reserved. */
 /**
  * SVG defs for Ward-Beck vintage hardware styling (Ward-Beck.ca):
  * - Slate-blue baked enamel front panel gradient & top rim gradient.

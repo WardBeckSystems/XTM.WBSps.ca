@@ -1,4 +1,4 @@
-/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.ca). All rights reserved. */
+/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.com - Ward-Beck.ca). All rights reserved. */
 /** 5x7 dot-matrix font glyphs: 7 rows, 5 bits per row (MSB = left column) */
 export const FONT_5X7: Record<string, readonly number[]> = {
   ' ': [0,0,0,0,0,0,0], '-': [0,0,0,31,0,0,0], '/': [0,1,2,4,8,16,0], '.': [0,0,0,0,0,12,12],

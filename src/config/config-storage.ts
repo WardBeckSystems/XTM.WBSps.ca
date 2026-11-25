@@ -1,4 +1,4 @@
-/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.ca). All rights reserved. */
+/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.com - Ward-Beck.ca). All rights reserved. */
 /** Storage abstraction: localStorage with persistent consent, sessionStorage otherwise. */
 
 export function storageGetWith(persistent: () => boolean, key: string): string | null {

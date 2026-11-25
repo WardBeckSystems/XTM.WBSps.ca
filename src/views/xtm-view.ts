@@ -1,4 +1,4 @@
-/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.ca). All rights reserved. */
+/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.com - Ward-Beck.ca). All rights reserved. */
 /**
  * WBS XTM Pure Precision Visualizer & SVG Renderer
  * High-performance 60+ FPS architecture with GPU-accelerated needle transforms

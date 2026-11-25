@@ -1,4 +1,4 @@
-/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.ca). All rights reserved. */
+/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.com - Ward-Beck.ca). All rights reserved. */
 /**
  * Procedural Randomized VU Meter Glass Shatter Engine:
  * Generates organic, non-repeating spiderweb glass fracture patterns with sharp

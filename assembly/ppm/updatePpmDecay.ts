@@ -1,4 +1,4 @@
-/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.ca). All rights reserved. */
+/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.com - Ward-Beck.ca). All rights reserved. */
 import { sampleRate } from "../core/state";
 import { ppmType, ppmAttCoeff, ppmDecCoeff } from "./state";
 import { PPM_TYPE_I, PPM_TYPE_I_ATTACK_S, PPM_TYPE_I_TAU_DEC_S } from "./standards/typeI_DIN45406";

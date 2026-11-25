@@ -1,4 +1,4 @@
-/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.ca). All rights reserved. */
+/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.com - Ward-Beck.ca). All rights reserved. */
 /**
  * Clock Hands: Exact electromechanical VU meter needle geometry
  * for Hour, Minute, and Second hands, styled after the Ward-Beck Systems

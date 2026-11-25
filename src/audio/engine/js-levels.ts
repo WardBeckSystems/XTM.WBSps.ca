@@ -1,4 +1,4 @@
-/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.ca). All rights reserved. */
+/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.com - Ward-Beck.ca). All rights reserved. */
 /**
  * JavaScript fallback metering path (used when the WASM DSP is unavailable):
  * VU, PPM, dBFS peak, RMS, K-weighted loudness and phase correlation per block.

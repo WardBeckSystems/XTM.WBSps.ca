@@ -1,4 +1,4 @@
-/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.ca). All rights reserved. */
+/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.com - Ward-Beck.ca). All rights reserved. */
 // PPM Ballistics (IEC 60268-10 / DIN 45406 / BBC BS 4297) state.
 import { PPM_TYPE_II } from "./standards/typeII_BBC_BS4297";
 

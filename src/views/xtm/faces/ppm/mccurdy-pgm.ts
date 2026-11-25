@@ -1,4 +1,4 @@
-/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.ca). All rights reserved. */
+/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.com - Ward-Beck.ca). All rights reserved. */
 /**
  * McCurdy ATS-100 PGM PPM face (McCurdy skin only, class mc-only):
  * outer dB-from-tone scale, inner dBu scale (TONE = +8), yellow +8 .. +12 band.

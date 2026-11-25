@@ -1,4 +1,4 @@
-/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.ca). All rights reserved. */
+/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.com - Ward-Beck.ca). All rights reserved. */
 /**
  * VFD dot-matrix display: 8-character text for the current state (flash message,
  * setup text, loss-of-signal warning, or the loudness / WardBeck / Systems cycle)

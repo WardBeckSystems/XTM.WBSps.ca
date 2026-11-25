@@ -1,4 +1,4 @@
-/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.ca). All rights reserved. */
+/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.com - Ward-Beck.ca). All rights reserved. */
 // Pre-allocated static buffers in linear memory (shared with JS).
 import { MAX_BUFFER_SIZE } from "./constants";
 

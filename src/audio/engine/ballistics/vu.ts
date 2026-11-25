@@ -1,4 +1,4 @@
-/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.ca). All rights reserved. */
+/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.com - Ward-Beck.ca). All rights reserved. */
 /**
  * VU meter movement ballistics (ANSI C16.5-1942 electromechanical 2nd-order ODE),
  * discretised with the bilinear transform. Pimson / Fisam movement styles and

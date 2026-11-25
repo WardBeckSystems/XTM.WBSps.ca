@@ -1,4 +1,4 @@
-/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.ca). All rights reserved. */
+/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.com - Ward-Beck.ca). All rights reserved. */
 /**
  * Ward-Beck Systems M433/M434 Peak Program Meter (DA91001/SCALE2-3, p. 3-2):
  * - Fig. 1-2 METER SCALE 2: Reference -8 with 0 to +6 yellow marker

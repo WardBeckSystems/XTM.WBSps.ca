@@ -1,4 +1,4 @@
-/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.ca). All rights reserved. */
+/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.com - Ward-Beck.ca). All rights reserved. */
 import { K_SHELF_F0_HZ, K_SHELF_GAIN_DB, K_SHELF_VB_EXP, K_HP_F0_HZ, K_HP_Q } from "./constants";
 import {
   kShelf_b0, kShelf_b1, kShelf_b2, kShelf_a1, kShelf_a2,

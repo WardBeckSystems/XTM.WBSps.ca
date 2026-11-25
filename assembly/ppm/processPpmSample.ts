@@ -1,4 +1,4 @@
-/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.ca). All rights reserved. */
+/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.com - Ward-Beck.ca). All rights reserved. */
 import { ppmAttCoeff, ppmDecCoeff, ppm_env_L, ppm_env_R } from "./state";
 
 // One sample of quasi-peak envelope ballistics for both channels (rectified, calibrated input).

@@ -1,4 +1,4 @@
-/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.ca). All rights reserved. */
+/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.com - Ward-Beck.ca). All rights reserved. */
 /** Service worker registration (cache-first offline app); skipped in the Vite dev server. */
 import { notifyUpdateAvailable } from './update-check';
 

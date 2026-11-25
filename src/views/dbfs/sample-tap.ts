@@ -1,4 +1,4 @@
-/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.ca). All rights reserved. */
+/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.com - Ward-Beck.ca). All rights reserved. */
 /* Raw-sample tap for the SAMPLES time scale: two AnalyserNodes hung off the engine's
  * high-pass node (post trim + HPF, the same point the meters read). Created lazily the
  * first time SAMPLES is shown and re-attached if the audio context changes. */

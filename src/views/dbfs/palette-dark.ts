@@ -1,4 +1,4 @@
-/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.ca). All rights reserved. */
+/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.com - Ward-Beck.ca). All rights reserved. */
 /* Dark (default) scope palette, matching APK.audio & broadcast mastering standard. */
 
 export function createDarkPalette(): Record<string, string> {

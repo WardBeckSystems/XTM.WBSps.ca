@@ -1,4 +1,4 @@
-/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.ca). All rights reserved. */
+/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.com - Ward-Beck.ca). All rights reserved. */
 /** Shared <defs> block of the XTM shell: dial lamps, bloom, PPM face, chamber, plate, glows. */
 import {
   AMBER_LAMP,

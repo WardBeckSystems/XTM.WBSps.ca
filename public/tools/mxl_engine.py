@@ -14,7 +14,7 @@ Specifications:
 - Wrap-around slice mechanics (wrappedMultiBufferSlice)
 - Live PipeWire/ALSA edge ingestion into MXL shared memory
 
-Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.ca). All rights reserved.
+Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.com - Ward-Beck.ca). All rights reserved.
 """
 
 import json

@@ -1,4 +1,4 @@
-/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.ca). All rights reserved. */
+/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.com - Ward-Beck.ca). All rights reserved. */
 /** Per-frame needle rotation: direct transform writes, skipped when the angle has not moved. */
 import type { MeterFrameTelemetry } from '../../../types/telemetry';
 import { MX, PY } from '../layout/wbs-layout';

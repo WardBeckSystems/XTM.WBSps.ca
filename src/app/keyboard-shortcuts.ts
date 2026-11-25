@@ -1,4 +1,4 @@
-/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.ca). All rights reserved. */
+/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.com - Ward-Beck.ca). All rights reserved. */
 /** Keyboard shortcuts (M: Mode, S: Source, Up/Down: Trim, H: Setup, P: Power). */
 
 import type { AppContext } from './app-context';

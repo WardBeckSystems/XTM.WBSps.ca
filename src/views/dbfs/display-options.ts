@@ -1,4 +1,4 @@
-/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.ca). All rights reserved. */
+/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.com - Ward-Beck.ca). All rights reserved. */
 import type { DbfsView } from '../dbfs-view';
 
 /* Settings-drawer display options: waveform fade, 0 dBFS line, hover HUD, docking, cursor trace, phase. */

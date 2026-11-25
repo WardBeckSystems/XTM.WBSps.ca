@@ -1,4 +1,4 @@
-/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.ca). All rights reserved. */
+/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.com - Ward-Beck.ca). All rights reserved. */
 /** Shared helper: trigger a browser download of CSV text with a timestamped filename. */
 
 export function downloadCsv(csv: string, filenamePrefix: string): void {

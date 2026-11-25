@@ -1,4 +1,4 @@
-/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.ca). All rights reserved. */
+/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.com - Ward-Beck.ca). All rights reserved. */
 import type { DbfsView } from '../dbfs-view';
 import { PAL_MC } from './palette-mccurdy';
 import { PAL_WBS_CA } from './palette-wbs-ca';

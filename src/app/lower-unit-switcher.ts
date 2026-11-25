@@ -1,4 +1,4 @@
-/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.ca). All rights reserved. */
+/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.com - Ward-Beck.ca). All rights reserved. */
 /**
  * Lower Console Bay views, picked from the Settings cog's drop-up menu:
  * loudness · data · routing · generators · transmitters · timing (then Settings).

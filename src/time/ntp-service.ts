@@ -1,4 +1,4 @@
-/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.ca). All rights reserved. */
+/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.com - Ward-Beck.ca). All rights reserved. */
 /**
  * NTP Service: Broadcast-grade Network Time Protocol client and telemetry provider.
  * Connects to Canadian National Research Council (NRC-CNRC) atomic time servers:

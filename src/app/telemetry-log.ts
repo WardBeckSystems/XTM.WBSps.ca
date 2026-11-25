@@ -1,4 +1,4 @@
-/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.ca). All rights reserved. */
+/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.com - Ward-Beck.ca). All rights reserved. */
 /** Per-second telemetry log and fast-transient event log, recorded from the frame loop. */
 
 import { buildTelemetryEntry, buildTransientEntry } from './telemetry-entry';

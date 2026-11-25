@@ -1,4 +1,4 @@
-/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.ca). All rights reserved. */
+/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.com - Ward-Beck.ca). All rights reserved. */
 /**
  * Logging tab: telemetry export (moved here from Settings) and the TAP's own log, live
  * (GET /api/log?since=), with the diagnostics bundle a tester can send.

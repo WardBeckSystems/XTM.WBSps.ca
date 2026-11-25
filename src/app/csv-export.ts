@@ -1,4 +1,4 @@
-/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.ca). All rights reserved. */
+/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.com - Ward-Beck.ca). All rights reserved. */
 /** Export drawer section: telemetry CSV, transient-log CSV and hourly auto-export. */
 
 import { createTelemetryRecorder, type TelemetryRecorder } from './telemetry-log';

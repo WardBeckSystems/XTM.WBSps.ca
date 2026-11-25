@@ -1,4 +1,4 @@
-/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.ca). All rights reserved. */
+/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.com - Ward-Beck.ca). All rights reserved. */
 /**
  * Standalone dedicated window HTML template for the Master Studio Clock.
  * Connected at the stylesheet to the active meter skins (Ward-Beck & McCurdy).

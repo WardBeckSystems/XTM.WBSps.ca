@@ -1,4 +1,4 @@
-/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.ca). All rights reserved. */
+/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.com - Ward-Beck.ca). All rights reserved. */
 /**
  * Inline AudioWorklet processor used when meter-processor.js cannot be loaded.
  * Posts each 128-sample render quantum to the main thread (lowest meter latency).

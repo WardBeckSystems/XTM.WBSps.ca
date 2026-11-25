@@ -1,4 +1,4 @@
-/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.ca). All rights reserved. */
+/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.com - Ward-Beck.ca). All rights reserved. */
 /** PPM ballistics standard: drives the audio engine and the PPM face (view.ppmStandard). */
 
 import { type AppContext, saveAppConfig } from './app-context';

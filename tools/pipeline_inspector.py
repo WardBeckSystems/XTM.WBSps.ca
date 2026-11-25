@@ -8,7 +8,7 @@ Inspects and visualizes the 4-layer Linux audio & AoIP broadcast architecture:
 3. High-Throughput Shared-Memory Layer: EBU DMF / MXL (/dev/shm/mxl) continuous Float32 circular ring buffers.
 4. Audio-over-IP (AoIP) Network Layer: Dante, Ravenna (uNet2500), AES67 (SAP/SDP), NMOS IS-04/05, SIP & LikeDotAudio MoipBuddy.
 
-Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.ca). All rights reserved.
+Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.com - Ward-Beck.ca). All rights reserved.
 """
 
 import json

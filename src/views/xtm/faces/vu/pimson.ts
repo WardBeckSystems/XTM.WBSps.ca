@@ -1,4 +1,4 @@
-/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.ca). All rights reserved. */
+/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.com - Ward-Beck.ca). All rights reserved. */
 /**
  * Vintage PIMSON 29T movement (meterStyle 'pimson'): +-45 deg span,
  * corner VU / VU legends, teardrop pointer; straight yellow PPM wand.

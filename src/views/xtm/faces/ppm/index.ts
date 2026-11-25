@@ -1,4 +1,4 @@
-/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.ca). All rights reserved. */
+/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.com - Ward-Beck.ca). All rights reserved. */
 /**
  * PPM face registry (ppmStandard -> engraving).
  *   type2 / scale2  Ward-Beck M433/M434 Scale 2 (default)

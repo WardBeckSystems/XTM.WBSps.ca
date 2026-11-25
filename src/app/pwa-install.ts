@@ -1,4 +1,4 @@
-/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.ca). All rights reserved. */
+/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.com - Ward-Beck.ca). All rights reserved. */
 /** PWA "Install Page as App" banner (beforeinstallprompt, iOS Add-to-Home-Screen steps). */
 
 export function initPwaInstall(): void {

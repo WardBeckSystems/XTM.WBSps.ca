@@ -1,4 +1,4 @@
-/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.ca). All rights reserved. */
+/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.com - Ward-Beck.ca). All rights reserved. */
 /**
  * Assignable input selector: each of the XTM-4's INPUT 1-4 buttons plays any input.
  * The list holds every input the console knows: every entry of the input device list

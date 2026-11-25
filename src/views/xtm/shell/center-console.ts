@@ -1,4 +1,4 @@
-/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.ca). All rights reserved. */
+/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.com - Ward-Beck.ca). All rights reserved. */
 /** Centre console: phase LED row, green plate / McCurdy centre, VFD window and buttons. */
 import { DISP } from '../layout/wbs-layout';
 import { MC_PHASE_WINDOW } from '../skins/mccurdy/phase-window';

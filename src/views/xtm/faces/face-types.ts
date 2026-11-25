@@ -1,4 +1,4 @@
-/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.ca). All rights reserved. */
+/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.com - Ward-Beck.ca). All rights reserved. */
 /** Shared types for dial face renderers. */
 import type { PolarFn, ArcFn } from '../lib/svg';
 import type { NeedleParts } from '../lib/needle';

@@ -1,4 +1,4 @@
-/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.ca). All rights reserved. */
+/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.com - Ward-Beck.ca). All rights reserved. */
 /**
  * McCurdy Radio Industries Limited authentic vintage dial branding:
  * - McCurdyRadio.com (ATS-100 Cream Mode): Authentic Rectangle Cartouche Box & Wordmark (Monochrome outline)

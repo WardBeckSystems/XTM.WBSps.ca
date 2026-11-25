@@ -1,4 +1,4 @@
-/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.ca). All rights reserved. */
+/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.com - Ward-Beck.ca). All rights reserved. */
 /** Meter chamber: recess shadow gradients, recess shadow overlay and molded bezel rim. */
 import { MW, MH } from '../layout/wbs-layout';
 

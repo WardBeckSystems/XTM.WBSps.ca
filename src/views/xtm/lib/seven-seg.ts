@@ -1,4 +1,4 @@
-/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.ca). All rights reserved. */
+/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.com - Ward-Beck.ca). All rights reserved. */
 /** 2-digit 7-segment SVG renderer (McCurdy RANGE readout). */
 
 export interface SegWindow { x: number; y: number; w: number; h: number }

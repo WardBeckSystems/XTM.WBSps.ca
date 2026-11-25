@@ -1,4 +1,4 @@
-/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.ca). All rights reserved. */
+/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.com - Ward-Beck.ca). All rights reserved. */
 import { kHp_b0, kHp_b1, kHp_b2, kHp_a1, kHp_a2, s2_x1_R, s2_x2_R, s2_y1_R, s2_y2_R } from "./state";
 
 // K-weighting stage 2 (RLB high pass), channel R: one sample in, one sample out.

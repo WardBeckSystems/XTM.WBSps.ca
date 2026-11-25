@@ -1,4 +1,4 @@
-# Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.ca). All rights reserved.
+# Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.com - Ward-Beck.ca). All rights reserved.
 """
 Setup & deployment guide served by the TAP at /setup.
 
@@ -221,7 +221,7 @@ docker compose down                         # stop and remove the container
 ./install.sh                                # native install (systemd user service) instead of Docker</code></pre>
   </section>
 
-  <footer>Copyright &copy; 2026 Ward-Beck Systems (<a href="https://ward-beck.ca">Ward-Beck.ca</a>). All rights reserved.</footer>
+  <footer>Copyright &copy; 2026 Ward-Beck Systems (<a href="https://ward-beck.com">Ward-Beck.com</a> - <a href="https://ward-beck.ca">Ward-Beck.ca</a>). All rights reserved.</footer>
 </div>
 
 <script>

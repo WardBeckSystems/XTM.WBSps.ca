@@ -1,4 +1,4 @@
-/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.ca). All rights reserved. */
+/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.com - Ward-Beck.ca). All rights reserved. */
 /** Model ↔ engine/drawer bindings: initial sync, model.onChange, front-panel buttons, audio unlock. */
 
 import { type AppContext, saveAppConfig } from './app-context';

@@ -1,4 +1,4 @@
-/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.ca). All rights reserved. */
+/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.com - Ward-Beck.ca). All rights reserved. */
 import type { TimeModeSpec } from './time-mode-spec';
 
 /* Super transient log time scale: steep beta warp (beta = 60) for very recent detail. */

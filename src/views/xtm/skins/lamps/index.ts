@@ -1,4 +1,4 @@
-/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.ca). All rights reserved. */
+/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.com - Ward-Beck.ca). All rights reserved. */
 /**
  * VU dial lamp registry (dialLamp): amber, amber_bottom, tungsten, golden,
  * parchment, white, warm_white, green_glow, dark_night, unlit.

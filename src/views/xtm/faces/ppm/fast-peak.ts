@@ -1,4 +1,4 @@
-/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.ca). All rights reserved. */
+/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.com - Ward-Beck.ca). All rights reserved. */
 /** PPM face, ppmStandard 'fast_peak' - digital quasi-peak in dBFS: alignment -18 dBFS, red above -9 dBFS. */
 import type { AltPpmFace } from './alt-face';
 

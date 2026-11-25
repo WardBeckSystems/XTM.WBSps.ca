@@ -1,4 +1,4 @@
-/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.ca). All rights reserved. */
+/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.com - Ward-Beck.ca). All rights reserved. */
 /**
  * Core audio mode synchroniser: routes the front-panel MODE/SOURCE selection to the
  * audio engine, re-asserts the reference level and nudges SENS after an input change.

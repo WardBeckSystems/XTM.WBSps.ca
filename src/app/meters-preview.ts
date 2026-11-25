@@ -1,4 +1,4 @@
-/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.ca). All rights reserved. */
+/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.com - Ward-Beck.ca). All rights reserved. */
 /**
  * "Display for Meters" drawer card: three sub-tabs (Analog VU · PPM · Bargraph)
  * with a live preview of the matching meters above them.

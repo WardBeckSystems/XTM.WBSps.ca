@@ -1,4 +1,4 @@
-/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.ca). All rights reserved. */
+/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.com - Ward-Beck.ca). All rights reserved. */
 /** WBS skin: stencil path for the signature solid green centre plate (scalloped cut-outs). */
 import { DISP, BX, BY, BW, BH } from '../../layout/wbs-layout';
 

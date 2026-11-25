@@ -1,4 +1,4 @@
-/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.ca). All rights reserved. */
+/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.com - Ward-Beck.ca). All rights reserved. */
 /* Scope markup: canvas wrapper plus the floating / dockable hover HUD card. */
 
 export const DBFS_TEMPLATE = `

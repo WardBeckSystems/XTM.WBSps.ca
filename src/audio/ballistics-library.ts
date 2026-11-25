@@ -1,4 +1,4 @@
-/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.ca). All rights reserved. */
+/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.com - Ward-Beck.ca). All rights reserved. */
 /**
  * WBS XTM-4 — Analog VU & Needle Ballistics Library
  * Sourced from LikeDotAudio / APK.softapp.TEST.AUDIO.VuAnalog

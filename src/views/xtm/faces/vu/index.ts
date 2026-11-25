@@ -1,4 +1,4 @@
-/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.ca). All rights reserved. */
+/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.com - Ward-Beck.ca). All rights reserved. */
 /** VU movement style registry (meterStyle -> face style). */
 import type { VuFaceStyle } from '../face-types';
 import { FISAM_STYLE, SIFAM_STYLE } from './fisam';

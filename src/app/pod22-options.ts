@@ -1,4 +1,4 @@
-/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.ca). All rights reserved. */
+/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.com - Ward-Beck.ca). All rights reserved. */
 /** POD-22 options: extended LED range, scale mode, peak hold and decay. */
 
 import { type AppContext, saveAppConfig } from './app-context';

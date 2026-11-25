@@ -1,4 +1,4 @@
-/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.ca). All rights reserved. */
+/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.com - Ward-Beck.ca). All rights reserved. */
 /**
  * McCurdy Radio Hardware Jack Panel & Model Markings:
  * - 600 ohm, 10K, 20K impedance silkscreen markings.

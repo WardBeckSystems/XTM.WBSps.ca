@@ -1,4 +1,4 @@
-/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.ca). All rights reserved. */
+/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.com - Ward-Beck.ca). All rights reserved. */
 /** Complete base SVG shell for the XTM-4 front panel (both skins, all four meters). */
 import { VW, VH, MX, MYc } from '../layout/wbs-layout';
 import { SHELL_DEFS } from './defs';

@@ -1,4 +1,4 @@
-/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.ca). All rights reserved. */
+/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.com - Ward-Beck.ca). All rights reserved. */
 import type { MeterFrameTelemetry, TimeScaleMode } from '../types/telemetry';
 import type { XtmModel } from '../models/xtm-model';
 import type { VisibleNtpDot, NtpReceipt } from '../time/ntp-types';

@@ -1,4 +1,4 @@
-/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.ca). All rights reserved. */
+/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.com - Ward-Beck.ca). All rights reserved. */
 import type { TimeModeSpec, TimeStep } from './time-mode-spec';
 
 /* Linear time scale: wall-clock time of day on the lower axis, evenly spaced ticks. */

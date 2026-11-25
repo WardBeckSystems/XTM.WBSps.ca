@@ -1,4 +1,4 @@
-/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.ca). All rights reserved. */
+/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.com - Ward-Beck.ca). All rights reserved. */
 /**
  * MONITOR level knob: a small knurled rotary pot beside the INPUT SELECTOR.
  * - Drives the system volume, as the keyboard's volume keys do (through the TAP), and

@@ -1,4 +1,4 @@
-/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.ca). All rights reserved. */
+/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.com - Ward-Beck.ca). All rights reserved. */
 /** Button element lookup and per-frame pressed / released paint. */
 import { BX } from '../layout/wbs-layout';
 import { BUTTON_PAINT } from '../skins/wbs/buttons';

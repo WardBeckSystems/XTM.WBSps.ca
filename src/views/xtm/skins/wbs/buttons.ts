@@ -1,4 +1,4 @@
-/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.ca). All rights reserved. */
+/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.com - Ward-Beck.ca). All rights reserved. */
 /**
  * WBS skin: MODE / SOURCE / DOWN / UP rectangular pushbutton switches with white
  * labels above, and their pressed / released paint.

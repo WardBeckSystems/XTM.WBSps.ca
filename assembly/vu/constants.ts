@@ -1,4 +1,4 @@
-/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.ca). All rights reserved. */
+/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.com - Ward-Beck.ca). All rights reserved. */
 // Standard VU (ANSI C16.5-1942) definition.
 
 // 0 VU = +4 dBu (-18 dBFS). Scale factor to map full-wave rectified sine

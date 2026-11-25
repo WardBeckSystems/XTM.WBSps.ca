@@ -1,4 +1,4 @@
-/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.ca). All rights reserved. */
+/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.com - Ward-Beck.ca). All rights reserved. */
 // Ward-Beck Systems XTM-4 — High-Performance WebAssembly Audio DSP Engine
 // Strict AssemblyScript / WebAssembly compiled binary
 //

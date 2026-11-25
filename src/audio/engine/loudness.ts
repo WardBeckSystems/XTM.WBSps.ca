@@ -1,4 +1,4 @@
-/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.ca). All rights reserved. */
+/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.com - Ward-Beck.ca). All rights reserved. */
 /**
  * ITU-R BS.1770 / EBU R128 loudness: momentary (400 ms), short-term (3 s),
  * gated integrated loudness and loudness range (LRA).

@@ -1,4 +1,4 @@
-/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.ca). All rights reserved. */
+/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.com - Ward-Beck.ca). All rights reserved. */
 /** PPM face, ppmStandard 'type1' - DIN 45406: dB scale, alignment -9, permitted max 0, red 0 .. +3. */
 import type { AltPpmFace } from './alt-face';
 

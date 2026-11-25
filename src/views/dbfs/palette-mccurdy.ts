@@ -1,4 +1,4 @@
-/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.ca). All rights reserved. */
+/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.com - Ward-Beck.ca). All rights reserved. */
 /* McCurdy light-mode (cream paper) overrides layered over the dark palette. */
 
 export const PAL_MC: Record<string, string> = {

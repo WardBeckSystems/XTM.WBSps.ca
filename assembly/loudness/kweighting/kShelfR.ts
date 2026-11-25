@@ -1,4 +1,4 @@
-/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.ca). All rights reserved. */
+/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.com - Ward-Beck.ca). All rights reserved. */
 import { kShelf_b0, kShelf_b1, kShelf_b2, kShelf_a1, kShelf_a2, s1_x1_R, s1_x2_R, s1_y1_R, s1_y2_R } from "./state";
 
 // K-weighting stage 1 (high shelf), channel R: one sample in, one sample out.

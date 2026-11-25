@@ -1,4 +1,4 @@
-/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.ca). All rights reserved. */
+/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.com - Ward-Beck.ca). All rights reserved. */
 /**
  * Static meter dial movement shell: clipped face plate, lamp bloom, VU or PPM
  * engraving, skin logos, rotating needle group (id xtm_needle_N), chamber recess

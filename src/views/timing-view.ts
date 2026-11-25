@@ -1,4 +1,4 @@
-/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.ca). All rights reserved. */
+/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.com - Ward-Beck.ca). All rights reserved. */
 /**
  * Timing tab: PTP grandmasters and every clock the TAP daemon hears (its built-in
  * apk-ptp sniffer, or apk-ptp over MQTT), from GET /api/aoip/multicast. Grandmasters lead as

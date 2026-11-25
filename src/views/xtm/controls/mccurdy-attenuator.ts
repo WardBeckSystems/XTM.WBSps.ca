@@ -1,4 +1,4 @@
-/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.ca). All rights reserved. */
+/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.com - Ward-Beck.ca). All rights reserved. */
 /**
  * McCurdy Radio Extended Range 31-Step Dual-Scale Attenuator (Model 023 / SA14023):
  * - Light-grey / warm ivory circular skirt base (r=95).

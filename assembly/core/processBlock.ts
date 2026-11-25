@@ -1,4 +1,4 @@
-/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.ca). All rights reserved. */
+/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.com - Ward-Beck.ca). All rights reserved. */
 import { MAX_BUFFER_SIZE } from "./constants";
 import { inputBufferL, inputBufferR, outputTelemetry } from "./buffers";
 import { sampleRate, calGain } from "./state";

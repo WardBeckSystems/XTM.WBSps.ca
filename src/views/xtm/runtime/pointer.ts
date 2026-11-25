@@ -1,4 +1,4 @@
-/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.ca). All rights reserved. */
+/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.com - Ward-Beck.ca). All rights reserved. */
 /**
  * Pointer handling, attached once: press on any .xtm-btn (WBS buttons and McCurdy
  * jacks), auto-repeat for held UP / DOWN, release on window pointerup / pointercancel.

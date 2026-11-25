@@ -1,4 +1,4 @@
-/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.ca). All rights reserved. */
+/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.com - Ward-Beck.ca). All rights reserved. */
 import { phaseAlpha, phase_sL2, phase_sR2, phase_sLR } from "./state";
 
 // One sample of the smoothed L², R² and L·R products (calibrated input).

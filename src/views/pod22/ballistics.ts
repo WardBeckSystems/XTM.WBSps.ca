@@ -1,4 +1,4 @@
-/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.ca). All rights reserved. */
+/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.com - Ward-Beck.ca). All rights reserved. */
 /**
  * POD-22 per-frame runtime: level source selection, ballistic decay filter,
  * peak-hold dot and PK clip latch. Produces the lit-segment map for one frame.

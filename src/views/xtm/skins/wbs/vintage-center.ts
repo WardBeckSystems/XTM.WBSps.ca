@@ -1,4 +1,4 @@
-/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.ca). All rights reserved. */
+/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.com - Ward-Beck.ca). All rights reserved. */
 /**
  * Ward-Beck Systems Vintage Centre Console (Ward-Beck.ca):
  * - Upper: Centered DR Differential Decade / Vernier Dial Scale with fluted Bakelite instrument knob.

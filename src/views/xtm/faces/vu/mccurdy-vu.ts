@@ -1,4 +1,4 @@
-/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.ca). All rights reserved. */
+/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.com - Ward-Beck.ca). All rights reserved. */
 /**
  * McCurdy SA14023 Big Vintage Audio Level Meter VU Face:
  * Directly derived from authentic vintage McCurdy reference / gemini-svg (14).svg:

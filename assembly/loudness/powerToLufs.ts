@@ -1,4 +1,4 @@
-/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.ca). All rights reserved. */
+/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.com - Ward-Beck.ca). All rights reserved. */
 import { LUFS_OFFSET, LUFS_FLOOR, LUFS_POWER_GATE } from "./constants";
 
 // Mean-square power -> LUFS (floored at -70).

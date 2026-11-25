@@ -1,4 +1,4 @@
-<!-- Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.ca). All rights reserved. -->
+<!-- Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.com - Ward-Beck.ca). All rights reserved. -->
 # Ctrl-click: the magic wand
 
 Holding **Ctrl** (**⌘** on macOS) while clicking turns a control's click into a shortcut. A plain

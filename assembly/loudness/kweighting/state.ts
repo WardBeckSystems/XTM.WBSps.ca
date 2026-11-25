@@ -1,4 +1,4 @@
-/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.ca). All rights reserved. */
+/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.com - Ward-Beck.ca). All rights reserved. */
 // ITU-R BS.1770-4 K-weighting filter coefficients and per-channel state.
 
 // Stage 1 (High Shelf) — defaults are the 48 kHz coefficients

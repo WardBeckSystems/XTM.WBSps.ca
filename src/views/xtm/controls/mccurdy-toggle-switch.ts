@@ -1,4 +1,4 @@
-/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.ca). All rights reserved. */
+/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.com - Ward-Beck.ca). All rights reserved. */
 /**
  * McCurdy Radio Vintage Chrome Bat-Handle Toggle Stick Switch:
  * - Chrome hex nut, circular bushing, and chamfer ring.

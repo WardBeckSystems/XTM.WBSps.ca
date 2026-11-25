@@ -1,4 +1,4 @@
-/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.ca). All rights reserved. */
+/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.com - Ward-Beck.ca). All rights reserved. */
 /** 60 FPS direct hardware loop: needles first, then secondary displays, telemetry, LUFS glow, FPS. */
 
 import type { AppContext } from './app-context';

@@ -1,4 +1,4 @@
-/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.ca). All rights reserved. */
+/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.com - Ward-Beck.ca). All rights reserved. */
 import { ppmType } from "./state";
 import { updatePpmDecay } from "./updatePpmDecay";
 import { PPM_TYPE_I } from "./standards/typeI_DIN45406";

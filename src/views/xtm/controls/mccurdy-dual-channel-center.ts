@@ -1,4 +1,4 @@
-/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.ca). All rights reserved. */
+/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.com - Ward-Beck.ca). All rights reserved. */
 /**
  * McCurdy Dual-Channel 19" 2U Center Console Section:
  * Sourced from wbs_mccurdy_dual_channel_19_2u_metering_panel.html:

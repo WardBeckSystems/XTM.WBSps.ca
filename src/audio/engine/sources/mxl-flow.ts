@@ -1,4 +1,4 @@
-/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.ca). All rights reserved. */
+/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.com - Ward-Beck.ca). All rights reserved. */
 /**
  * MXL flow as a real meter source: pulls the flow's samples from the host
  * (/api/mxl/flow/<id>/pcm) and runs them through the same block processor as a

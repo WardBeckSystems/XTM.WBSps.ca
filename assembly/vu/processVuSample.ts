@@ -1,4 +1,4 @@
-/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.ca). All rights reserved. */
+/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.com - Ward-Beck.ca). All rights reserved. */
 import { VU_K_AVG, VU_NEEDLE_MIN, VU_NEEDLE_MAX } from "./constants";
 import {
   vuB0, vuB1, vuB2, vuA1, vuA2,

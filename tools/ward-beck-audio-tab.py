@@ -4,7 +4,7 @@ WARD BECK TAP
 =============
 Virtual Audio Patchbay & Non-Destructive Signal Tap Controller Daemon (HTML Router + Live VU Bridge)
 Linux Audio & MXL (Media eXchange Layer / EBU DMF) Compatible Controller
-Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.ca). All rights reserved.
+Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.com - Ward-Beck.ca). All rights reserved.
 
 Routes Linux desktop audio (YouTube, Spotify, DAWs, Media Players) into Ward-Beck XTM-4
 via isolated virtual null-sinks (100% feedback-free, banner-free, low-latency signal tap).
@@ -1381,7 +1381,7 @@ HTML_UI = """<!DOCTYPE html>
   </div>
 
   <div class="footer-bar">
-    <div>Copyright &copy; 2026 Ward-Beck Systems (Ward-Beck.ca). All rights reserved.</div>
+    <div>Copyright &copy; 2026 Ward-Beck Systems (Ward-Beck.com - Ward-Beck.ca). All rights reserved.</div>
     <div class="footer-links">
       <a href="https://ward-beck.ca" target="_blank" rel="noopener">Ward-Beck.ca</a>
       <a href="https://xtm.wbsps.ca" target="_blank" rel="noopener">XTM.WBSps.ca</a>

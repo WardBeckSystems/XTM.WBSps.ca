@@ -1,4 +1,4 @@
-/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.ca). All rights reserved. */
+/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.com - Ward-Beck.ca). All rights reserved. */
 import type { DbfsView } from '../dbfs-view';
 import type { NtpReceipt } from '../../time/ntp-types';
 import { ntpService } from '../../time/ntp-service';

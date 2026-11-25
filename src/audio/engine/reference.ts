@@ -1,4 +1,4 @@
-/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.ca). All rights reserved. */
+/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.com - Ward-Beck.ca). All rights reserved. */
 /**
  * Reference / calibration level: analog dBu (+4 dBu = 0 VU) or digital dBFS
  * (-18 dBFS = 0 VU), plus PPM SENS trim. Pushed to the WASM DSP when ready.

@@ -1,4 +1,4 @@
-/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.ca). All rights reserved. */
+/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.com - Ward-Beck.ca). All rights reserved. */
 import type { DbfsView } from '../dbfs-view';
 import type { TimeScaleMode } from '../../types/telemetry';
 import { CAPTURE_STEPS, SPEED_STEPS } from './capture-steps';

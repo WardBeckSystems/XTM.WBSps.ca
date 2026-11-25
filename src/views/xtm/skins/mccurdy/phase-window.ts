@@ -1,4 +1,4 @@
-/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.ca). All rights reserved. */
+/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.com - Ward-Beck.ca). All rights reserved. */
 /** McCurdy skin: red LED window with 8 individual rectangular correlation phase segments (class mc-only). */
 import { PHASE_LED } from '../../layout/wbs-layout';
 

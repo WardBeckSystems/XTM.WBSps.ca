@@ -1,4 +1,4 @@
-/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.ca). All rights reserved. */
+/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.com - Ward-Beck.ca). All rights reserved. */
 /**
  * VU scale engraving shared by every VU style: -20..0 black arc, 0..+3 red band,
  * intermediate and major ticks with numerals, percentage sub-scale.

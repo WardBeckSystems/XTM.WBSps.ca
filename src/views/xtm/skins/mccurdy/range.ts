@@ -1,4 +1,4 @@
-/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.ca). All rights reserved. */
+/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.com - Ward-Beck.ca). All rights reserved. */
 /** McCurdy RANGE readout: 2-character text for the model and its 7-segment markup. */
 import type { XtmModel } from '../../../../models/xtm-model';
 import { MC_WIN } from '../../layout/mccurdy-layout';

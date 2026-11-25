@@ -1,4 +1,4 @@
-/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.ca). All rights reserved. */
+/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.com - Ward-Beck.ca). All rights reserved. */
 import { defineConfig, type Plugin } from 'vite';
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
@@ -38,7 +38,7 @@ export default defineConfig({
     target: 'es2022',
     rollupOptions: {
       output: {
-        postBanner: '/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.ca). All rights reserved. */'
+        postBanner: '/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.com - Ward-Beck.ca). All rights reserved. */'
       }
     }
   },

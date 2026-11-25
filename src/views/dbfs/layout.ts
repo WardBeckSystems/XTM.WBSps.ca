@@ -1,4 +1,4 @@
-/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.ca). All rights reserved. */
+/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.com - Ward-Beck.ca). All rights reserved. */
 import type { DbfsView } from '../dbfs-view';
 
 /* Plot geometry for one frame: margins, plot box, dB -> y mapping and the lime (-18 dBFS) line. */

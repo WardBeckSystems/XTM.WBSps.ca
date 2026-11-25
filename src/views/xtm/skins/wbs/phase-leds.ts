@@ -1,4 +1,4 @@
-/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.ca). All rights reserved. */
+/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.com - Ward-Beck.ca). All rights reserved. */
 /**
  * Phase correlation LED row (8 lamps, 0 deg .. 180 deg). Each position carries both
  * the WBS round lamp (xphase_led_N, wbs-only) and the McCurdy rectangular segment
