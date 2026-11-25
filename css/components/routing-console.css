@@ -1732,6 +1732,9 @@ body.theme-mccurdy-light .rc-pipeline-graph, body.theme-mccurdy .rc-pipeline-gra
 .pg-moip .pg-dot { fill: var(--pg-sap); } .pg-moip rect { stroke: var(--pg-sap); }
 .pg-node.pg-tp rect { stroke: var(--pg-tp); stroke-width: 2.4; stroke-dasharray: none; }
 .pg-tp-tag { font: 700 6.6px monospace; fill: var(--pg-tp); letter-spacing: 0.5px; }
+.pg-rt-tag { font: 700 6.6px monospace; fill: var(--pg-accent); letter-spacing: 0.5px; }
+.pg-node.pg-routed { opacity: 1; }
+.pg-node.pg-routed:not(.pg-tp) rect { stroke: var(--pg-accent); stroke-width: 1.8; stroke-dasharray: none; }
 .pg-badge { font: 700 6px monospace; fill: var(--pg-sub); letter-spacing: 0.5px; }
 .pg-tp-chip { border-color: var(--pg-tp); }
 .pg-tp-why { font: 10px monospace; color: var(--pg-dante); margin-left: 6px; }

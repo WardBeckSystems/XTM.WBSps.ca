@@ -74,6 +74,8 @@ export class PipelineGraph {
   private aoip: any = null;
   private online = false;
   private testPoint: any = null;
+  /** /api/receiver: the router's receivers (network, MoIP) and the point each one is pointed at. */
+  private receivers: Record<string, any> = {};
   private taps = new Map<string, GNode>();
   private fixDismissed = new Set<string>();
   private fixEl: HTMLElement | null = null;
@@ -234,6 +236,14 @@ export class PipelineGraph {
     }
   }
 
+  /** Router receivers (network, MoIP) pointed at this card's point. */
+  private routedBy(n: GNode): string[] {
+    if (!n.tap) return [];
+    return Object.entries(this.receivers)
+      .filter(([, r]) => r?.active && r.point && r.point.kind === n.tap!.kind && r.point.ref === n.tap!.ref)
+      .map(([name, r]) => (r.ams81 ? `${name} ${r.ams81}` : name));
+  }
+
   private isClipped(n: GNode): boolean {
     const tp = this.testPoint;
     return !!(tp && n.tap && tp.kind === n.tap.kind && tp.ref === n.tap.ref);
@@ -244,7 +254,8 @@ export class PipelineGraph {
     const tick = async () => {
       // Only poll while the data tab is on screen.
       if (this.el.offsetParent !== null) {
-        const [p, a, t] = await Promise.all([getJson('/api/pipeline'), getJson('/api/aoip'), getJson('/api/testpoint')]);
+        const [p, a, t, r] = await Promise.all([getJson('/api/pipeline'), getJson('/api/aoip'), getJson('/api/testpoint'), getJson('/api/receiver')]);
+        this.receivers = r ?? {};
         this.online = !!(p || a);
         this.pipeline = p?.pipeline ?? p;
         this.aoip = a;
@@ -321,6 +332,8 @@ export class PipelineGraph {
       });
     }
 
+    const seenFlowIds = new Set<string>(flows.map((f) => f.flow_id));
+
     // 4 · AoIP: what multicast actually heard first, then mDNS/NMOS announcements.
     const heardIps = new Set<string>();
     for (const s of mc?.sap?.sessions ?? []) {
@@ -344,12 +357,36 @@ export class PipelineGraph {
     for (const m of mc?.sip?.messages ?? [])
       nodes.push({ id: `sip_${m.method}_${m.from}`, lane: 3, kind: 'sip', live: true, label: `${m.method} ${m.from}`, sub: `${m.source_ip} · ×${m.count}`, title: m.user_agent, badges: ['SIP'] });
 
+    // Every flow in every domain under /dev/shm/mxl (nested ones too), each with how long ago it
+    // started. Clicking an audio flow points the test point at it.
+    const age = (sec: number) => sec < 90 ? `${Math.round(sec)}s` : sec < 5400 ? `${Math.round(sec / 60)}m`
+      : sec < 172800 ? `${Math.round(sec / 3600)}h` : `${Math.round(sec / 86400)}d`;
+    for (const [dlbl, dom] of Object.entries<any>(mxl.domains ?? {})) {
+      for (const f of dom?.flows ?? []) {
+        const fid = String(f.flow_id ?? f.id ?? '');
+        if (!fid || seenFlowIds.has(fid)) continue;
+        seenFlowIds.add(fid);
+        const d = dlbl === mxl.domain_id ? tapDomain : dlbl;
+        if (!domainLabel.has(d)) domainLabel.set(d, dlbl);
+        const audio = String(f.format ?? '').includes('audio') || String(f.media_type ?? '').startsWith('audio');
+        const sr = typeof f.sample_rate === 'object' ? f.sample_rate?.numerator : f.sample_rate;
+        const what = audio ? `${f.channel_count ?? '?'}ch · ${(sr ?? 48000) / 1000}k` : String(f.media_type ?? f.format ?? 'flow').replace(/^.*[:/]/, '');
+        const old = typeof f.age_sec === 'number' ? ` · ${age(f.age_sec)} old` : '';
+        const started = typeof f.started_at === 'number' ? `\nstarted ${new Date(f.started_at * 1000).toLocaleString()}` : '';
+        nodes.push({
+          id: `fl_${fid}`, lane: 2, kind: 'mxl', live: f.active !== false, writing: f.active === true,
+          label: f.label || fid, domain: d, sub: `${what}${old}`, title: `${fid}\n${f.path ?? ''}${started}`,
+          tap: audio ? { kind: 'mxl', ref: fid } : undefined,
+        });
+      }
+    }
+
     // Locally discovered nodes the daemon did not already report: MXL apps + their flows in lane 3,
     // network gateways in lane 4. Clicking one shows that flow in the ring buffer below.
     const base = (s: string) => s.replace(/\s*\(.*$/, '').trim().toLowerCase();
     const seen = new Set(nodes.map((n) => base(n.label)));
     const heardSap = (mc?.sap?.sessions ?? []).length > 0;
-    const seenFlow = new Set(flows.map((f) => f.flow_id));
+    const seenFlow = seenFlowIds;
     const short = (s: string) => s.replace(/^(Ward-Beck Systems|Ward-Beck|CBC\/Radio-Canada|NMOS IS-04:|Dante:|Ravenna:|AES67:|LikeDotAudio:)\s*/i, '').replace(/^⚡\s*/, '');
     const netKind: Partial<Record<XmxlInstance['type'], Kind>> = { 'dante-node': 'dante', 'ravenna-node': 'ravenna', 'aes67-node': 'sap', 'nmos-node': 'nmos', 'moip-node': 'moip' };
     for (const inst of this.local) {
@@ -524,20 +561,23 @@ export class PipelineGraph {
       if (n.tap) this.taps.set(n.id, n);
       if (n.pick) this.taps.set(n.id, n);
       const clipped = this.isClipped(n);
+      const routed = this.routedBy(n);
+      const tags = [clipped ? '● METER' : '', routed.length ? '⇄ ROUTED' : ''].filter(Boolean);
       const picked = !!n.pick && n.pick.flow === this.picked;
       const tapAttr = n.tap || n.pick ? ` data-tap="${esc(n.id)}" role="button" tabindex="0"` : '';
       const focus = n.id === this.focused;
       const line2 = n.sub ?? (focus ? n.detail : undefined);
-      const tapHint = n.pick ? '\nClick to show in the ring buffer' : n.tap ? (clipped ? '\n● TEST POINT — click to lift the probe' : '\nClick to meter this point (test point)') : '';
+      const tapHint = (routed.length ? `\n⇄ routed by ${routed.join(', ')}` : '')
+        + (n.pick ? '\nClick to show in the ring buffer' : n.tap ? (clipped ? '\n● On the meters (test point): click to lift the probe' : '\nClick to point the meters (test point) here') : '');
       return `
-        <g class="pg-node pg-${n.kind}${n.live ? ' pg-on' : ''}${n.writing ? ' pg-writing' : ''}${n.hub ? ' pg-hub' : ''}${n.gone ? ' pg-gone' : ''}${n.tap ? ' pg-tappable' : ''}${n.pick ? ' pg-pickable' : ''}${clipped ? ' pg-tp' : ''}${picked ? ' pg-pick' : ''}${focus ? ' pg-focus' : ''}" data-node="${esc(n.id)}"${tapAttr} transform="translate(${p.x} ${p.y})">
+        <g class="pg-node pg-${n.kind}${n.live ? ' pg-on' : ''}${n.writing ? ' pg-writing' : ''}${n.hub ? ' pg-hub' : ''}${n.gone ? ' pg-gone' : ''}${n.tap ? ' pg-tappable' : ''}${n.pick ? ' pg-pickable' : ''}${clipped ? ' pg-tp' : ''}${routed.length ? ' pg-routed' : ''}${picked ? ' pg-pick' : ''}${focus ? ' pg-focus' : ''}" data-node="${esc(n.id)}"${tapAttr} transform="translate(${p.x} ${p.y})">
           <title>${esc(n.label)}${n.sub ?? n.detail ? ` — ${esc(n.sub ?? n.detail!)}` : ''}${n.title ? `\n${esc(n.title)}` : ''}${tapHint}</title>
           <rect width="${LANE_W}" height="${NODE_H}" rx="4"/>
           <circle class="pg-dot" cx="8" cy="${NODE_H / 2}" r="2.6"/>
           <text class="pg-label" x="15" y="9">${esc(trunc(n.label, n.badges?.length ? 34 : 40))}</text>
           ${n.badges?.length ? `<text class="pg-badge" x="${LANE_W - 5}" y="9" text-anchor="end">${esc(n.badges.join(' '))}</text>` : ''}
-          ${line2 ? `<text class="pg-sub" x="15" y="17.5">${esc(trunc(line2, clipped ? 34 : 50))}</text>` : ''}
-          ${clipped ? `<text class="pg-tp-tag" x="${LANE_W - 5}" y="17.5" text-anchor="end">● TP</text>` : ''}
+          ${line2 ? `<text class="pg-sub" x="15" y="17.5">${esc(trunc(line2, tags.length ? 50 - 10 * tags.length : 50))}</text>` : ''}
+          ${tags.length ? `<text x="${LANE_W - 5}" y="17.5" text-anchor="end">${tags.map((t) => `<tspan class="${t.includes('METER') ? 'pg-tp-tag' : 'pg-rt-tag'}" dx="3">${t}</tspan>`).join('')}</text>` : ''}
         </g>`;
     }).join('');
 
