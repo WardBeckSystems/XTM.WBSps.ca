@@ -739,7 +739,7 @@ export class DataStreamView {
     const nCh = flow ? Math.max(1, flow.channel_count || flow.channels?.length || 1) : 2;
     const bandH = (rOuter - rInner) / nCh;
 
-    // 1. Band outlines + 1-second spokes of buffer position (small eyes: just the tracks)
+    // 1. Band outlines + 1-second spokes of buffer position (small eyes: none, just tracks and heads)
     const sr = flow?.sample_rate || 48000;
     ctx.save();
     if (!compact) {
@@ -833,9 +833,6 @@ export class DataStreamView {
 
     const wA = (flow.write_head / len) * Math.PI * 2 + rot;
     const mA = (flow.meter_head / len) * Math.PI * 2 + rot;
-
-    // Small eyes stop here: the tracks as levels, no heads or pointer
-    if (compact) return;
 
     // 3. Meter read head: arm across the bands + pointer at centre
     ctx.save();
