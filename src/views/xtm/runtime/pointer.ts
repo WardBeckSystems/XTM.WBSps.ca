@@ -61,6 +61,11 @@ export function attachPointerEvents(container: HTMLElement, host: ButtonHost): v
           return;
         }
 
+        // Ctrl-click (⌘) an INPUT button: a new pick for it (the tab: share another tab)
+        if (name.startsWith('INPUT_') && (e.ctrlKey || e.metaKey) && !e.altKey) {
+          host.onButtonPressed?.('NEW_' + name);
+          return;
+        }
         if (host.onButtonPressed) host.onButtonPressed(name);
 
         // Smooth auto-repeat for UP and DOWN range adjustments when held

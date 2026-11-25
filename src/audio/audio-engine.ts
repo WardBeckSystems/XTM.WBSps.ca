@@ -258,6 +258,12 @@ export class XtmAudioEngine {
   /** Cue / HP on or off: the routed input plays into the TAP's HW 2 (Cue/HP) bus. */
   setCue(enabled: boolean): Promise<boolean> { return chain.setCue(this, enabled); }
 
+  /** The shared tab's stream, playing or parked (null when nothing is shared). */
+  tabStream(): MediaStream | null {
+    const s = this.sourceType === 'system' && this.stream ? this.stream : this.parkedStreams.get('system') ?? null;
+    return s && s.getAudioTracks().some((t) => t.readyState === 'live') ? s : null;
+  }
+
   /** Monitor into the TAP's HW 1 bus (true) or the default output (false). */
   setMonitorSink(toTap: boolean): Promise<boolean> { return chain.setMonitorSink(this, toTap); }
 

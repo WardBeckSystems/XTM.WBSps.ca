@@ -22,6 +22,7 @@ anything Ctrl does can be undone by a plain click or another Ctrl-click.
 | McCurdy attenuator knob | The attenuator step that reads 0 dB on its scale | Turn by drag / wheel | same |
 | XTM-4 MONITOR knob (the system volume, like the keyboard keys) | System volume to 0 | Turn by drag / wheel; double-click = 70 % | `src/views/xtm/controls/monitor-knob.ts` |
 | Footer logos (Ward-Beck.ca, .com, McCurdyRadio.ca, .com) | Background only steps .ca → .com → Radio.ca → Radio.com; meters and layout stay | Whole house look (and clears the background override) | `index.html` `switchOrCycleTab(mode, event)`, `css/base/viewport.css` |
+| Router CH 2 strip, or the XTM-4 INPUT button holding the tab | Share a **new** tab (the picker opens again) | Play the tab already shared (no picker) | `WebRouter/src/web-router.ts` click handler; `pointer.ts` → `NEW_INPUT_n` → `model-bindings.ts` |
 | Dial face logo (Ctrl + Alt) | Dual-meter mode (no centre) on / off | Cycle meter style | `src/views/xtm/runtime/pointer.ts` |
 
 ## Candidates

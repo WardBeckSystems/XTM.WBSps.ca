@@ -113,7 +113,8 @@ export function setupAudioGraph(engine: XtmAudioEngine, sourceObj: any, isDirect
  * Stop current audio stream or test generator
  */
 export function stopCurrentSource(engine: XtmAudioEngine): void {
-  if (engine.tabInfo) engine.tabInfo.live = false;
+  // The shared tab stays a live source while its share lasts (parked below); it is marked
+  // gone only when its track ends or it is really stopped.
   if (engine.mxlFeed) {
     engine.mxlFeed.stop();
     engine.mxlFeed = null;
@@ -148,6 +149,7 @@ export function stopCurrentSource(engine: XtmAudioEngine): void {
       if (old && old !== engine.stream) old.getTracks().forEach(t => t.stop());
       engine.parkedStreams.set(key, engine.stream);
     } else {
+      if (engine.sourceType === 'system' && engine.tabInfo) engine.tabInfo.live = false;
       engine.stream.getTracks().forEach(t => t.stop());
     }
     engine.stream = null;

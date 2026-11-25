@@ -5,7 +5,7 @@ import { type AppContext, saveAppConfig } from './app-context';
 import type { DrawerControls } from './dom-refs';
 import type { AudioSync } from './audio-sync';
 import { getMeterKey } from './meter-style';
-import { assignInput, openInputPicker, selectAssignedInput } from './input-assign';
+import { assignInput, inputAssignment, openInputPicker, selectAssignedInput } from './input-assign';
 
 /** Push the model's current reference level, HPF and VU style to the audio engine. */
 export function applyInitialAudioState(ctx: AppContext): void {
@@ -52,6 +52,11 @@ export function bindFrontPanel(ctx: AppContext, sync: AudioSync): void {
       model.pressUp();
     } else if (btnName === 'SENS_ZERO') {
       model.sensitivityToZero();
+    } else if (btnName.startsWith('NEW_INPUT_')) {
+      // Ctrl-click on the button that holds the tab: share another tab (straight from the click)
+      const n = parseInt(btnName.replace('NEW_INPUT_', ''), 10);
+      if (inputAssignment(n) === 'tab') audio.connectSystemAudio('browser', true);
+      selectAssignedInput(ctx, sync, n);
     } else if (btnName.startsWith('INPUT_')) {
       const inputNum = parseInt(btnName.replace('INPUT_', ''), 10);
       if (inputNum >= 1 && inputNum <= 4) {
