@@ -1,0 +1,193 @@
+/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.com - Ward-Beck.ca). All rights reserved. */
+/* ==================================================================
+   Data tab console faced like an M460 module, the same face as the pipeline graph
+   (Ward-Beck-Plugin-Core/art/concept-rack-gemini.svg, panel/src/lib.rs Face::panel / ink):
+   anodized grey panel, silver trim rails, thumb screws, engraved white Helvetica lettering,
+   LEDs and cap colours (green live, yellow, red, white, black).
+   The palette is fixed here, so the console looks the same in every theme.
+   Selectors start with `html body` so they outrank the per-theme rules in data-themes.css.
+   ================================================================== */
+:root body .routing-console-rack.routing-console-rack {
+  --m460-panel: linear-gradient(90deg, #383e44 0%, #2c3136 6%, #25292e 94%, #1d2024 100%);
+  --m460-panel-v: linear-gradient(180deg, #383e44 0%, #2c3136 6%, #25292e 94%, #1d2024 100%);
+  --m460-trim: linear-gradient(90deg, #fff 0%, #d2d6da 45%, #9ca2a8 55%, #e4e7ea 100%);
+  --m460-trim-v: linear-gradient(180deg, #fff 0%, #d2d6da 45%, #9ca2a8 55%, #e4e7ea 100%);
+  --m460-plate: linear-gradient(180deg, #202327, #16191c);
+  --m460-line: #0c0e10;
+  --m460-edge: #454b52;
+  --m460-ink: #e6eaee;
+  --m460-ink-2: #dce1e6;
+  --m460-ink-3: #cfd5db;
+  --m460-dim: #aeb5bc;
+  --m460-green: #34d07d;
+  --m460-yellow: #e5b800;
+  --m460-red: #d93218;
+  --m460-font: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  --m460-engrave: 0 -1px 0 rgba(0, 0, 0, 0.55), 0 1px 0 rgba(255, 255, 255, 0.06);
+  --m460-screw: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='-8 -8 16 16'%3E%3Ccircle r='7' fill='%23111315' stroke='%23454b52' stroke-width='0.7'/%3E%3Ccircle r='5' fill='%232c3136' stroke='%23687078' stroke-width='0.8'/%3E%3Cline x1='-3.3' x2='3.3' stroke='%23111315' stroke-width='1.2'/%3E%3Cline y1='-3.3' y2='3.3' stroke='%23111315' stroke-width='1.2'/%3E%3C/svg%3E");
+  /* M460 VU face (concept-rack vuFace): cream lamp face, black ink, red read needle */
+  --eye-face-hi: #fff4cf;
+  --eye-face-mid: #f5e7b8;
+  --eye-face-lo: #bfa663;
+  --eye-face-light-y: 0.4;
+  --eye-bezel: #0c0e10;
+  --eye-grid: rgba(20, 16, 8, 0.5);
+  --eye-spoke: rgba(20, 16, 8, 0.25);
+  --eye-zero: #d93218;
+  --eye-label: #141008;
+  --eye-ch1: rgba(20, 16, 8, 0.85);
+  --eye-ch2: rgba(217, 50, 24, 0.85);
+  --eye-write: #141008;
+  --eye-tip: #141008;
+  --eye-meter: #d93218;
+  --eye-glow: 0;
+  /* docked cards (pg-dock) read these */
+  --pg-node: #1c1f23; --pg-node-line: var(--m460-line); --pg-text: var(--m460-ink);
+  background: #090a0c;
+  color: var(--m460-ink-2);
+}
+html body #dataStage { background: #090a0c; }
+html body .routing-console-rack .rc-top-monitoring-deck { background: #090a0c; border-color: #1d2024; }
+
+/* ---- INPUT 1-4 / eye column: one module face with trim rails and thumb screws ---- */
+html body .routing-console-rack .rc-eye-col {
+  position: relative;
+  padding: 22px 14px 26px;
+  background:
+    var(--m460-screw) right 8px top 4px / 14px 14px no-repeat,
+    var(--m460-screw) left 8px bottom 6px / 14px 14px no-repeat,
+    var(--m460-trim-v) left 0 top 0 / 3.5px 100% no-repeat,
+    var(--m460-trim-v) right 0 top 0 / 3.5px 100% no-repeat,
+    var(--m460-panel);
+  border: 1px solid var(--m460-line);
+  border-radius: 3px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.6);
+  font-family: var(--m460-font);
+}
+
+/* Recessed plates on the face */
+html body .routing-console-rack .rc-gen-card,
+html body .routing-console-rack .rc-eye-hud-card,
+html body .routing-console-rack .rc-telemetry-box,
+html body .routing-console-rack .rc-telemetry-pill,
+html body .routing-console-rack .rc-flow-ring-card,
+html body .routing-console-rack .pg-dock .rc-eye-hud-card {
+  background: var(--m460-plate);
+  border: 1px solid var(--m460-line);
+  border-radius: 3px;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04), 0 1px 0 rgba(255, 255, 255, 0.05);
+  color: var(--m460-ink-2);
+}
+
+/* Meter windows: the eye and the small rings sit in black bezels */
+html body .routing-console-rack .rc-eye-canvas-container {
+  background: #0c0e10;
+  border: 1px solid #000;
+  border-radius: 4px;
+  box-shadow: inset 0 0 12px rgba(0, 0, 0, 0.9), 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+/* ---- Engraved lettering ---- */
+html body .routing-console-rack .rc-gen-name,
+html body .routing-console-rack .rc-eye-hud-label,
+html body .routing-console-rack .rc-telemetry-box-title,
+html body .routing-console-rack .rc-phase-lbl,
+html body .routing-console-rack .rc-flow-ring-head {
+  font-family: var(--m460-font);
+  font-weight: 700;
+  letter-spacing: 0.9px;
+  text-transform: uppercase;
+  color: var(--m460-ink);
+  text-shadow: var(--m460-engrave);
+}
+html body .routing-console-rack .rc-telemetry-box-title { border-bottom-color: #3a4047; }
+html body .routing-console-rack .rc-eye-hud-val { color: #ffffff; }
+html body .routing-console-rack .rc-eye-hud-sub,
+html body .routing-console-rack .rc-telemetry-item,
+html body .routing-console-rack .rc-gen-chl,
+html body .routing-console-rack .rc-gen-db { color: var(--m460-ink-3); }
+html body .routing-console-rack .rc-telemetry-item span { color: var(--m460-dim); }
+html body .routing-console-rack .rc-telemetry-item strong { color: var(--m460-ink); }
+
+/* Value tones: cap colours */
+html body .routing-console-rack .rc-tone-cyan { color: #ffffff; }
+html body .routing-console-rack .rc-tone-ok { color: var(--m460-green); }
+html body .routing-console-rack .rc-tone-meter { color: #ff664d; }
+html body .routing-console-rack .rc-tone-accent { color: #ffea4d; }
+
+/* Needle keys: red read needle, black write needle (silver-edged so it reads on the panel) */
+html body .routing-console-rack .rc-eye-key-meter { background: var(--m460-red); box-shadow: none; }
+html body .routing-console-rack .rc-eye-key-write { background: #141008; box-shadow: 0 0 0 1px #9ca2a8; }
+
+/* ---- Phase correlation: a dark slot with a green LED needle ---- */
+html body .routing-console-rack .rc-phase-track {
+  background: #0c0e10;
+  border: 1px solid #000;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.9), 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+html body .routing-console-rack .rc-phase-marker-scale { color: var(--m460-dim); font-family: var(--m460-font); }
+html body .routing-console-rack .rc-phase-needle {
+  background: radial-gradient(circle at 35% 35%, #75ffad, #12a84e 50%, #054a20);
+  box-shadow: 0 0 6px var(--m460-green);
+}
+
+/* ---- INPUT 1-4 mini meters: LED bar on black ---- */
+html body .routing-console-rack .rc-gen-bar { background: #0c0e10; }
+html body .routing-console-rack .rc-gen-rms { background: linear-gradient(90deg, #34d07d 0%, #34d07d 70%, #e5b800 85%, #d93218 100%); }
+html body .routing-console-rack .rc-gen-pk { background: #ffffff; }
+html body .routing-console-rack .rc-gen-ch.over .rc-gen-pk { background: var(--m460-red); }
+/* If it glows it goes: the selected input lights green */
+html body .routing-console-rack .rc-gen-card.active {
+  border-color: var(--m460-green);
+  box-shadow: 0 0 0 2px var(--m460-green), 0 0 12px rgba(52, 208, 125, 0.6);
+}
+html body .routing-console-rack .rc-gen-card.active .rc-gen-name { color: var(--m460-green); }
+html body .routing-console-rack .rc-gen-empty { color: var(--m460-dim); font-family: var(--m460-font); }
+
+/* ---- MXL ring-buffer cards ---- */
+html body .routing-console-rack .rc-flow-ring-card {
+  background:
+    var(--m460-trim) left 0 top 0 / 100% 2.5px no-repeat,
+    var(--m460-panel-v);
+}
+html body .routing-console-rack .rc-flow-ring-card.active { border-color: var(--m460-green); box-shadow: 0 0 0 1px var(--m460-green); }
+html body .routing-console-rack .rc-aes67-tx { border-top-color: #3a4047; }
+html body .routing-console-rack .rc-aes67-led { background: radial-gradient(circle at 35% 35%, #484d54, #202327 65%, #0e1012); box-shadow: none; }
+html body .routing-console-rack .rc-aes67-tx.on .rc-aes67-led { background: radial-gradient(circle at 35% 35%, #75ffad, #12a84e 50%, #054a20); box-shadow: 0 0 5px var(--m460-green); }
+html body .routing-console-rack .rc-aes67-tx.fault .rc-aes67-led { background: radial-gradient(circle at 35% 35%, #ff8a75, #d41e08 50%, #5e0900); box-shadow: 0 0 5px var(--m460-red); }
+/* Push buttons: black caps with white lettering; TX lit = green cap */
+html body .routing-console-rack .rc-flow-copy,
+html body .routing-console-rack .rc-aes67-btn {
+  background: radial-gradient(circle at 35% 30%, #484d54, #202327 65%, #0e1012);
+  border: 1px solid var(--m460-line);
+  color: var(--m460-ink);
+  font-family: var(--m460-font);
+  opacity: 1;
+}
+html body .routing-console-rack .rc-flow-copy:hover,
+html body .routing-console-rack .rc-aes67-btn:hover { border-color: #687078; }
+html body .routing-console-rack .rc-aes67-btn.active {
+  background: radial-gradient(circle at 35% 30%, #34d07d, #169853 65%, #0b5c31);
+  border-color: #0b5c31;
+  color: #0c0e10;
+  box-shadow: 0 0 6px rgba(52, 208, 125, 0.5);
+}
+
+/* ---- Status chips around the graph: plates with an LED ---- */
+html body .routing-console-rack .pg-status { font-family: var(--m460-font); }
+html body .routing-console-rack .pg-iface { color: var(--m460-ink-3); }
+html body .routing-console-rack .pg-iface a { color: #ffea4d; }
+html body .routing-console-rack .pg-chip {
+  background: var(--m460-plate);
+  border: 1px solid var(--m460-line);
+  border-radius: 3px;
+  color: var(--m460-ink);
+  letter-spacing: 0.6px;
+}
+html body .routing-console-rack .pg-chip i { background: radial-gradient(circle at 35% 35%, #484d54, #202327 65%, #0e1012); }
+html body .routing-console-rack .pg-chip-on i { background: radial-gradient(circle at 35% 35%, #75ffad, #12a84e 50%, #054a20); box-shadow: 0 0 4px var(--m460-green); }
+html body .routing-console-rack .pg-chip-err i { background: radial-gradient(circle at 35% 35%, #ff8a75, #d41e08 50%, #5e0900); box-shadow: 0 0 4px var(--m460-red); }
+html body .routing-console-rack .pg-tp-why { color: #ff664d; }
+html body .routing-console-rack .pg-fix-open { background: radial-gradient(circle at 35% 30%, #ffea4d, #e5b800 65%, #9c7a00); color: #0c0e10; }
+html body .routing-console-rack .pg-errors { color: #ff664d; font-family: var(--m460-font); }
+html body .routing-console-rack .pg-errors b { color: var(--m460-ink); }
