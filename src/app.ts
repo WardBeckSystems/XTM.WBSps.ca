@@ -14,7 +14,7 @@ import { DbfsView } from './views/dbfs-view';
 import { DataStreamView } from './views/data-stream-view';
 import { LoggingView } from './views/logging-view';
 import { GeneratorsView } from '../Generators.WBSps.ca/web';
-import { WebRouter } from '../WebRouter/src';
+import { WebRouter, type MeterArt } from '../WebRouter/src';
 import { MX, PY, R } from './views/xtm/layout/wbs-layout';
 import { bindMonitorKnob } from './views/xtm/controls/monitor-knob';
 import { restAngle, vuAngle, vuFrac } from './views/xtm/lib/scale-math';
@@ -58,22 +58,24 @@ export async function initApp(): Promise<void> {
   const dataStageEl = document.getElementById('dataStage');
   const dataView = dataStageEl ? new DataStreamView(dataStageEl) : null;
   const routerStageEl = document.getElementById('routerStage');
+  // The XTM's own VU meter (meter 0) in miniature: every router strip and transmitter card shows it
+  const meterArt = (): MeterArt | null => (document.getElementById('xtm_meter_group_0') ? {
+    href: 'xtm_meter_group_0',
+    needle: 'xtm_needle_0',
+    box: [MX[0] - 312, 42, 624, 370],
+    pivot: [MX[0], PY],
+    length: R + 8,
+    window: [MX[0] - 288, 65, 576, 211, 7],
+    angle: (db: number) => (db <= -55 || !isFinite(db) ? restAngle(false) : vuAngle(vuFrac(db), false)),
+  } : null);
+  if (dataView) dataView.meterArt = meterArt;
   // Meter Input 1-4 crosspoints drive the XTM-4's INPUT buttons (wired once the audio sync exists)
   let onMeterInput: ((meter: number, input: number) => void) | null = null;
   const webRouter = routerStageEl
     ? new WebRouter(routerStageEl, { audio, onFlowHint: (flow) => dataView?.setFlow(flow),
         onMeterInput: (meter, input) => onMeterInput?.(meter, input),
         // CH 9 / CH 10 receivers: the TAP's receiver flow goes on the meters
-        // Every router strip shows the XTM's own VU meter (meter 0) in miniature
-        meterArt: () => (document.getElementById('xtm_meter_group_0') ? {
-          href: 'xtm_meter_group_0',
-          needle: 'xtm_needle_0',
-          box: [MX[0] - 312, 42, 624, 370],
-          pivot: [MX[0], PY],
-          length: R + 8,
-          window: [MX[0] - 288, 65, 576, 211, 7],
-          angle: (db: number) => (db <= -55 || !isFinite(db) ? restAngle(false) : vuAngle(vuFrac(db), false)),
-        } : null),
+        meterArt,
         onPlayFlow: (flowId) => window.dispatchEvent(new CustomEvent('xtm:meter-flow', { detail: { port: 8467, flowId } })),
         // An MXL transmitter column opens that flow in the Transmitters tab
         onOpenReceivers: () => (window as any).setLowerUnitMode?.('receivers'),
