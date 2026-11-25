@@ -117,7 +117,7 @@ export function selectAssignedInput(ctx: AppContext, sync: AudioSync, n: number)
   const { model, audio, webRouter } = ctx;
   const id = assigned[n - 1] || DEFAULTS[n - 1];
   if (!model.power) return;
-  if (id === 'none') { model.flash('NO INPUT'); return; } // emptied from the router
+  if (id === 'none') { silenceInput(ctx, sync, n); return; } // emptied from the router: nothing plays
 
   // Mode follows the kind of source (reference level / meter law), and the hardware-mode sync
   // is told it is already in place so it does not connect something else over it.
@@ -159,6 +159,24 @@ export function selectAssignedInput(ctx: AppContext, sync: AudioSync, n: number)
   model.inputAssigned = true;
   model.notify();
   verifyInput(ctx, sync, n, id);
+}
+
+/**
+ * An empty input (nothing routed to its MTR column) plays nothing: whatever was playing stops,
+ * the generators included, and the needles fall. The button stays lit: it is the input selected.
+ */
+function silenceInput(ctx: AppContext, sync: AudioSync, n: number): void {
+  const { model, audio, webRouter } = ctx;
+  if (webRouter?.pod33Engaged) webRouter.setPod33(false);
+  if (webRouter?.bitBuddyEngaged) webRouter.setBitBuddy(false);
+  (audio as any).stopCurrentSource?.();
+  // The hardware-mode sync must not connect a source back in under it
+  sync.isAudioStarted = true;
+  sync.lastModeKey = model.mode + ':' + (model.mode === 'A' ? model.a.src : model.mode === 'D' ? model.d.src : model.s.pair[0]);
+  model.selectedInput = n;
+  model.inputAssigned = true;
+  model.flash('NO INPUT');
+  model.notify();
 }
 
 /**
@@ -206,7 +224,12 @@ export function routerRowsOfButtons(): (number | null)[] {
 export function routerMeterInput(ctx: AppContext, sync: AudioSync, n: number, row: number): void {
   if (n < 1 || n > 4) return;
   // The lit crosspoint was clicked: this input button holds nothing now
-  if (row < 0) { assignInput(n, 'none'); ctx.view.isBuilt = false; return; }
+  if (row < 0) {
+    assignInput(n, 'none');
+    ctx.view.isBuilt = false;
+    if (ctx.model.power && ctx.model.getSelectedInput() === n) silenceInput(ctx, sync, n); // it was playing
+    return;
+  }
   const id = ROUTER_ROWS[row];
   if (!id) return;
   assignInput(n, id);
