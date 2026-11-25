@@ -1,0 +1,108 @@
+/*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.ca). All rights reserved. */
+/* ---------------------------------------------------------------
+   MONITOR level knob (src/views/xtm/controls/monitor-knob.ts)
+   - Small knurled pot just right of the INPUT selector.
+   - Only shown while the Ward-Beck Audio Tap is online (.is-online).
+   - Position (SVG user units) and colours per theme; default = wbs-dark.
+   --------------------------------------------------------------- */
+.xtm-monitor-knob {
+  display: none;
+  cursor: ns-resize;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  outline: none;
+  /* wbs-dark: lower right of the green plate, under UP */
+  transform: translate(1800px, 383px) scale(0.72);
+  --mk-ink: #e2e8f0;
+  --mk-track: rgba(0, 0, 0, 0.38);
+  --mk-arc: #d9f99d;
+  --mk-skirt-hi: #3b4452;
+  --mk-skirt-lo: #0b0e13;
+  --mk-body-hi: #4b5563;
+  --mk-body-lo: #111827;
+  --mk-cap-hi: #374151;
+  --mk-cap-lo: #0f1115;
+  --mk-edge: #05070a;
+  --mk-pointer: #f8fafc;
+  --mk-glint: rgba(255, 255, 255, 0.28);
+  --mk-focus: #d9f99d;
+}
+.xtm-monitor-knob.is-online { display: inline; }
+
+.xtm-monitor-knob .mk-hit { fill: transparent; }
+.xtm-monitor-knob .mk-track,
+.xtm-monitor-knob .mk-arc { fill: none; stroke-width: 2.4; stroke-linecap: round; }
+.xtm-monitor-knob .mk-track { stroke: var(--mk-track); }
+.xtm-monitor-knob .mk-arc { stroke: var(--mk-arc); }
+.xtm-monitor-knob .mk-ticks line { stroke: var(--mk-ink); stroke-width: 1.2; stroke-opacity: 0.75; }
+.xtm-monitor-knob .mk-skirt { stroke: var(--mk-edge); stroke-width: 1; }
+.xtm-monitor-knob .mk-body { stroke: var(--mk-edge); stroke-width: 0.7; }
+.xtm-monitor-knob .mk-cap { stroke: var(--mk-edge); stroke-width: 0.8; }
+.xtm-monitor-knob .mk-glint { fill: none; stroke: var(--mk-glint); stroke-width: 1.1; stroke-linecap: round; }
+.xtm-monitor-knob .mk-pointer { stroke: var(--mk-pointer); stroke-width: 2.4; stroke-linecap: round; }
+.xtm-monitor-knob .mk-label { fill: var(--mk-ink); font-size: 8.5px; font-weight: 700; letter-spacing: 1.6px; }
+.xtm-monitor-knob .mk-skirt-hi { stop-color: var(--mk-skirt-hi); }
+.xtm-monitor-knob .mk-skirt-lo { stop-color: var(--mk-skirt-lo); }
+.xtm-monitor-knob .mk-body-hi { stop-color: var(--mk-body-hi); }
+.xtm-monitor-knob .mk-body-lo { stop-color: var(--mk-body-lo); }
+.xtm-monitor-knob .mk-cap-hi { stop-color: var(--mk-cap-hi); }
+.xtm-monitor-knob .mk-cap-lo { stop-color: var(--mk-cap-lo); }
+
+.xtm-monitor-knob:hover .mk-skirt,
+.xtm-monitor-knob.is-turning .mk-skirt { filter: brightness(1.12); }
+.xtm-monitor-knob:focus-visible .mk-skirt { stroke: var(--mk-focus); stroke-width: 1.6; }
+
+/* Ward-Beck.ca: Bakelite like the DR knob, on brushed aluminium, right of INPUT SELECTOR */
+body.theme-wbs-ca .xtm-monitor-knob {
+  transform: translate(1810px, 369px) scale(0.9);
+  --mk-ink: #2a2b2a;
+  --mk-track: #a39f90;
+  --mk-arc: #c2410c;
+  --mk-skirt-hi: #3a3d42;
+  --mk-skirt-lo: #090a0b;
+  --mk-body-hi: #2e3135;
+  --mk-body-lo: #0b0c0d;
+  --mk-cap-hi: #40444b;
+  --mk-cap-lo: #0c0d0f;
+  --mk-edge: #070809;
+  --mk-pointer: #eceae2;
+  --mk-glint: rgba(255, 255, 255, 0.3);
+  --mk-focus: #c2410c;
+}
+
+/* McCurdy .ca (dark blue panel): chrome skirt, gold cap like the attenuator, right of the 1-4 buttons */
+body.theme-mccurdy-dark .xtm-monitor-knob {
+  transform: translate(1790px, 376px) scale(0.8);
+  --mk-ink: #e2e8f0;
+  --mk-track: rgba(255, 255, 255, 0.22);
+  --mk-arc: #fbbf24;
+  --mk-skirt-hi: #f1f5f9;
+  --mk-skirt-lo: #8b95a3;
+  --mk-body-hi: #cbd5e1;
+  --mk-body-lo: #6b7684;
+  --mk-cap-hi: #fde68a;
+  --mk-cap-lo: #ca8a04;
+  --mk-edge: #334155;
+  --mk-pointer: #111317;
+  --mk-glint: rgba(255, 255, 255, 0.55);
+  --mk-focus: #fbbf24;
+}
+
+/* McCurdy .com (cream paper): black knob, red index like the RANGE LEDs, right of the INPUT box */
+body.theme-mccurdy .xtm-monitor-knob {
+  transform: translate(1808px, 330px) scale(0.95);
+  --mk-ink: #181b1e;
+  --mk-track: #b8b2a2;
+  --mk-arc: #dc2626;
+  --mk-skirt-hi: #3a3c40;
+  --mk-skirt-lo: #0d0e10;
+  --mk-body-hi: #33363b;
+  --mk-body-lo: #0f1012;
+  --mk-cap-hi: #45484e;
+  --mk-cap-lo: #111214;
+  --mk-edge: #0b0c0d;
+  --mk-pointer: #f4f1e8;
+  --mk-glint: rgba(255, 255, 255, 0.25);
+  --mk-focus: #dc2626;
+}

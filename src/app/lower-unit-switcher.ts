@@ -5,7 +5,7 @@
  * - loudness:   dBFS / BS.1770 LUFS scope (always the view on load)
  * - data:       Scanalyzer Audio Eye & pipeline graph
  * - routing:    Web Router (inputs × outputs grid)
- * - receivers:  the Network and MoIP flows the TAP listens to (router CH 9 / CH 10)
+ * - receivers:  the Network and MoIP flows the TAP listens to (router CH 8 / CH 9)
  * - hardware:   the TAP's outputs to the sound cards
  * - generators: POD-33, ABS-1 Bit Spitter → ABB-1 Bit Buddy
  * - mxl:        one EBU DMF / MXL ring buffer per transmitter, then the CBC MXL test generator

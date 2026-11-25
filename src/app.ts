@@ -16,6 +16,7 @@ import { LoggingView } from './views/logging-view';
 import { GeneratorsView } from '../Generators/web';
 import { WebRouter } from '../WebRouter/src';
 import { MX, PY, R } from './views/xtm/layout/wbs-layout';
+import { bindMonitorKnob } from './views/xtm/controls/monitor-knob';
 import { restAngle, vuAngle, vuFrac } from './views/xtm/lib/scale-math';
 import type { AppContext } from './app/app-context';
 import { queryDrawerControls } from './app/dom-refs';
@@ -94,6 +95,19 @@ export async function initApp(): Promise<void> {
       monSlider.value = String(r.speakerLevel);
       if (monVal) monVal.textContent = Math.round(r.speakerLevel * 100) + '%';
     });
+    // XTM-4 MONITOR knob: the same speaker level, turned through the slider so all three stay in step
+    if (stageEl) {
+      bindMonitorKnob(stageEl, {
+        level: () => webRouter.speakerLevel,
+        setLevel: (v) => {
+          monSlider.value = String(v);
+          monSlider.dispatchEvent(new Event('input', { bubbles: true }));
+        },
+        online: () => !!(webRouter as unknown as { daemonOnline?: boolean }).daemonOnline,
+        defaultLevel: parseFloat(monSlider.defaultValue) || 0.7,
+        subscribe: (cb) => { webRouter.onChange(cb); },
+      });
+    }
   }
   const generatorsStageEl = document.getElementById('generatorsStage');
   if (generatorsStageEl && webRouter) {

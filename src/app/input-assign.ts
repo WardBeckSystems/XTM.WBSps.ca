@@ -3,7 +3,7 @@
  * Assignable input selector: each of the XTM-4's INPUT 1-4 buttons plays any input.
  * The list holds every input the console knows: every entry of the input device list
  * (sound cards, TAP buses, the Linux host, MXL flows, NMOS nodes), the shared browser tab,
- * POD-33, Bit Buddy and pink noise. Hold or right-click a button to choose; the button's
+ * POD-33 and the Bit Buddy. Hold or right-click a button to choose; the button's
  * caption shows the input's name. Assignments persist per browser.
  */
 
@@ -21,14 +21,13 @@ const BUILTIN: InputChoice[] = [
   { id: 'pod33:3', name: 'POD-33 AES3', short: 'POD-33 AES3', group: 'Console' },
   { id: 'pod33:4', name: 'POD-33 AES4', short: 'POD-33 AES4', group: 'Console' },
   { id: 'bitbuddy', name: 'Bit Buddy', short: 'BIT BUDDY', group: 'Console' },
-  { id: 'pink', name: 'Pink Noise', short: 'PINK', group: 'Console' },
-  { id: 'netrx', name: 'Network Receiver (CH 9)', short: 'NETWORK', group: 'AoIP' },
-  { id: 'moiprx', name: 'MoIP Receiver (CH 10)', short: 'MOIP', group: 'AoIP' },
+  { id: 'netrx', name: 'Network Receiver (CH 8)', short: 'NETWORK', group: 'AoIP' },
+  { id: 'moiprx', name: 'MoIP Receiver (CH 9)', short: 'MOIP', group: 'AoIP' },
 ];
 /** Router input index for the built-in generators and the tab. */
-const ROUTER_IDX: Record<string, number> = { tab: 1, pod33: 2, 'pod33:2': 3, 'pod33:3': 4, 'pod33:4': 5, bitbuddy: 6, pink: 7, netrx: 8, moiprx: 9 };
-/** Web Router input rows (CH 1-10) as button assignments: CH 1 Soundcard In is the default input; CH 3-6 are POD-33 AES1-4; CH 9 / 10 the network and MoIP receivers. */
-const ROUTER_ROWS = ['dev:', 'tab', 'pod33', 'pod33:2', 'pod33:3', 'pod33:4', 'bitbuddy', 'pink', 'netrx', 'moiprx'];
+const ROUTER_IDX: Record<string, number> = { tab: 1, pod33: 2, 'pod33:2': 3, 'pod33:3': 4, 'pod33:4': 5, bitbuddy: 6, netrx: 7, moiprx: 8 };
+/** Web Router input rows (CH 1-9) as button assignments: CH 1 Soundcard In is the default input; CH 3-6 are POD-33 AES1-4; CH 8 / 9 the network and MoIP receivers. */
+const ROUTER_ROWS = ['dev:', 'tab', 'pod33', 'pod33:2', 'pod33:3', 'pod33:4', 'bitbuddy', 'netrx', 'moiprx'];
 const assignListeners = new Set<() => void>();
 
 let assigned: string[] = load();
@@ -37,7 +36,8 @@ const names = new Map<string, string>(); // id → caption, learned from the dev
 function load(): string[] {
   try {
     const v = JSON.parse(localStorage.getItem(KEY) || 'null');
-    if (Array.isArray(v) && v.length === 4) return v.map(String);
+    // Pink noise is gone (the Bit Spitter's sweep / noise sources replace it)
+    if (Array.isArray(v) && v.length === 4) return v.map((x, i) => (String(x) === 'pink' ? DEFAULTS[i] : String(x)));
   } catch { /* private window */ }
   return [...DEFAULTS];
 }
@@ -90,12 +90,12 @@ export function inputAssignment(n: number): string {
   return assigned[n - 1] || DEFAULTS[n - 1];
 }
 
-/** The TAP's MXL ring that carries input `id`, or null (browser tab, a sound card, pink noise). */
+/** The TAP's MXL ring that carries input `id`, or null (browser tab, a sound card). */
 export function inputFlowId(id: string): string | null {
   if (id.startsWith('pod33')) return 'wbs-flow-ref-tone';
   if (id === 'bitbuddy') return 'wbs-flow-bit-spitter';
-  if (id === 'netrx') return 'wbs-network-rx';
-  if (id === 'moiprx') return 'wbs-moip-rx';
+  if (id === 'netrx') return 'wbs-network-ams81'; // the AMS-81 stereo fold-down
+  if (id === 'moiprx') return 'wbs-moip-ams81';
   if (id === 'dev:' || id === 'dev:__WBS_LINUX_HOST__') return 'wbs-flow-master-stereo';
   const m = /^dev:__XMXL_\d+_(.+)__$/.exec(id);
   return m ? m[1] : null;
@@ -145,8 +145,6 @@ export function selectAssignedInput(ctx: AppContext, sync: AudioSync, n: number)
     webRouter.selectInput(ROUTER_IDX[id]); // also lights the router's input strip
   } else if (id === 'tab') {
     audio.connectSystemAudio('browser');
-  } else if (id === 'pink') {
-    audio.startTestGenerator('pink');
   }
   // The routing above may have re-set mode/lastModeKey: mark this mode as already connected
   // and keep this button lit.

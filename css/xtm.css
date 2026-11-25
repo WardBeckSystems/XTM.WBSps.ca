@@ -32,4 +32,5 @@
 @import "./skins/drawer-themes.css";
 @import "./skins/wbs-dark-console.css";
 @import "./components/input-picker.css";
+@import "./components/monitor-knob.css";
 @import "./components/timing.css";

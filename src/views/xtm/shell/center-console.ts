@@ -7,6 +7,7 @@ import { renderPhaseLedRow } from '../skins/wbs/phase-leds';
 import { renderCenterPlate } from '../skins/wbs/center-plate';
 import { renderButtons } from '../skins/wbs/buttons';
 import { renderVintageWbsCenter } from '../skins/wbs/vintage-center';
+import { renderMonitorKnob } from '../controls/monitor-knob';
 
 export function renderCenterConsole(on: boolean): string {
   return `<g id="xtm_center_console" class="xtm-center-console">
@@ -41,6 +42,9 @@ export function renderCenterConsole(on: boolean): string {
 
           <!-- Mode & Source / Up & Down Front-Panel Buttons -->
           ${renderButtons()}
+
+          <!-- MONITOR level knob beside the input selector (only while the Audio Tap is online) -->
+          ${renderMonitorKnob()}
 
           <!-- Lock Indicator Badge displayed when middle section locks into place -->
           <g id="xtm_center_locked_badge" class="xtm-center-locked-badge" style="opacity: 0; pointer-events: none; transition: opacity 0.3s ease;">

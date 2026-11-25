@@ -6,6 +6,7 @@
  * - McCurdy Chrome Bat-Handle Toggle Stick Switch
  * - McCurdy Dual-Channel Center Section (Knob + Stick below Knob + Range Switch)
  * - 1/4" Patch Bay Jacks & Hardware Markings
+ * - MONITOR level knob (shown while the Audio Tap is online)
  */
 
 export * from './wbs-m405-knob';
@@ -16,3 +17,4 @@ export * from './mccurdy-dual-knobs';
 export * from './mccurdy-toggle-switch';
 export * from './mccurdy-dual-channel-center';
 export * from './mccurdy-jacks';
+export * from './monitor-knob';
