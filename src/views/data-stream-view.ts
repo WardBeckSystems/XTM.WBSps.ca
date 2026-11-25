@@ -86,6 +86,14 @@ export class DataStreamView {
     // Clicking a pipeline card clips the test point there; the eye follows it.
     if (graphEl) {
       this.graph = new PipelineGraph(graphEl, (on) => { if (on) this.setFlow('wbs-test-point'); });
+      // The eye column sets the deck's height: the pipeline scrolls inside it
+      const eyeCol = this.container.querySelector('.rc-eye-col') as HTMLElement | null;
+      const pipeCol = this.container.querySelector('.rc-pipeline-col') as HTMLElement | null;
+      if (eyeCol && pipeCol) {
+        const fit = () => { if (eyeCol.offsetHeight) pipeCol.style.maxHeight = `${eyeCol.offsetHeight}px`; };
+        new ResizeObserver(fit).observe(eyeCol);
+        fit();
+      }
       // The telemetry cards fill the ALSA lane's free space
       this.graph.setDock(this.container.querySelector('.rc-eye-hud-grid') as HTMLElement | null);
       this.graph.start();
@@ -114,12 +122,12 @@ export class DataStreamView {
         <div class="rc-top-monitoring-deck">
           <!-- LEFT PANE: Scanalyzer Audio Eye Visualizer & Phase Correlation Bar -->
           <div class="rc-deck-col rc-eye-col">
+            <!-- INPUT 1-4 rings across the top, the big eye under them -->
+            <div class="rc-gen-grid" id="rcGenGrid"></div>
+
             <div class="rc-eye-canvas-container">
               <canvas id="rcEyeCanvas" width="440" height="440" class="rc-eye-canvas"></canvas>
             </div>
-
-            <!-- One ring + meter per declared signal generator (real ring buffers) -->
-            <div class="rc-gen-grid" id="rcGenGrid"></div>
 
             <!-- Scanalyzer Style Phase Correlation Bar -->
             <div class="rc-scanalyzer-phase-bar-wrapper">

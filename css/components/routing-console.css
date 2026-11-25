@@ -1794,3 +1794,8 @@ body.theme-mccurdy-light .rc-pipeline-graph, body.theme-mccurdy .rc-pipeline-gra
 .rc-eye-hud-grid.pg-dock { grid-template-columns: 1fr; max-width: none; margin: 0; z-index: 1; }
 .pg-dock .rc-eye-hud-card { background: var(--pg-node); border-color: var(--pg-node-line); }
 .pg-dock .rc-eye-hud-val { color: var(--pg-text); }
+/* Data tab: INPUT 1-4 rings in a row at the top centre, the big eye below; that column is the
+   deck's height and the pipeline scrolls within it */
+.rc-eye-col > .rc-gen-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); max-width: 440px; margin: 0 auto 8px; }
+.rc-top-monitoring-deck { align-items: flex-start; }
+.rc-pipeline-col { overflow-y: auto; overscroll-behavior: contain; }
