@@ -511,10 +511,14 @@ export class DataStreamView {
     return !!this.mxlRings && performance.now() - this.mxlRingsAt < 2000;
   }
 
-  /** The big eye is the selected test point (click one in the pipeline); none set, it idles. */
+  /** The big eye is the lit INPUT's ring (what the XTM-4 plays: if it glows, it goes); an input
+   *  with no ring (tab, sound card) falls back to the test point clipped in the pipeline. */
   private getEyeFlow(): any | null {
     if (!this.ringsFresh() || !this.mxlRings) return null;
-    return this.mxlRings.flows.find((f: any) => f.kind === 'testpoint') || null;
+    const lit = this.model?.power ? this.model.getSelectedInput() : 0;
+    const id = lit ? inputFlowId(inputAssignment(lit)) : null;
+    const input = id ? this.mxlRings.flows.find((f: any) => f.flow_id === id) : null;
+    return input || this.mxlRings.flows.find((f: any) => f.kind === 'testpoint') || null;
   }
 
   /** One EBU DMF ring buffer card per MXL flow: a ring per channel (real min/max bins) + copyable connection info. */

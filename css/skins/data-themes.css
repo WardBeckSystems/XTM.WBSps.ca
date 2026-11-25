@@ -277,3 +277,11 @@ body.theme-mccurdy-dark .routing-console-rack {
 }
 body.theme-mccurdy-dark .routing-console-rack { --eye-bezel: #0f1c29; }
 
+
+/* The INPUT button that is lit is the ring that glows: green, like the XTM-4's selected button.
+   If it glows, it goes. */
+html body .rc-gen-card.active {
+  border-color: #22c55e;
+  box-shadow: 0 0 0 2px #22c55e, 0 0 14px rgba(34, 197, 94, 0.75);
+}
+html body .rc-gen-card.active .rc-gen-name { color: #22c55e; }
