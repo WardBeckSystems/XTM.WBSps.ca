@@ -186,6 +186,31 @@ export function bindRouterMeterInputs(ctx: AppContext): void {
 }
 
 /** Small list of every input, opened by holding or right-clicking button n. */
+/** How a generator input is running and set, from the router; '' for other inputs. */
+function liveDetail(id: string): string {
+  const r = (window as any).xtmWebRouter;
+  if (!r) return '';
+  const lvl = (db: number | null | undefined) => (db === null || db === undefined || db <= -100 ? 'off' : `${db} dBFS`);
+  const hz = (f: number) => (f >= 1000 ? `${f / 1000} kHz` : `${f} Hz`);
+  if (id.startsWith('pod33')) {
+    const n = id === 'pod33' ? 0 : Number(id.split(':')[1]) - 1;
+    const o = r.pod33Outputs?.[n] ?? r.pod33Config;
+    if (!o) return '';
+    const f = !o.freq ? 'silence' : o.freqR && o.freqR !== o.freq ? `${hz(o.freq)} / ${hz(o.freqR)}` : hz(o.freq);
+    const beep = o.beep ? ` · beep 1/${o.beep} s${o.beepLeft ? ' L' : ''}` : '';
+    const on = r.pod33Engaged && r.pod33Out === n ? ' · on' : '';
+    return `${f} · ${lvl(o.levelDb)} · ${o.channelMode}${beep}${on}`;
+  }
+  if (id === 'bitbuddy') {
+    const b = r.bitBuddyConfig;
+    if (!b) return '';
+    const src = b.pattern === 'tone' ? hz(b.tone) : b.pattern === 'file' ? (b.fileName || 'file') : b.pattern;
+    const fault = b.fault && b.fault !== 'clean' ? ` · ${b.fault}` : '';
+    return `${src} · ${lvl(b.level)} · ${b.ext ? 'EXT' : `${b.sampleRate / 1000} kHz`}${fault}${r.bitBuddyEngaged ? ' · on' : ''}`;
+  }
+  return '';
+}
+
 export function openInputPicker(n: number, x: number, y: number, onPick: (id: string) => void): void {
   document.getElementById('xtmInputPicker')?.remove();
   const menu = document.createElement('div');
@@ -208,8 +233,10 @@ export function openInputPicker(n: number, x: number, y: number, onPick: (id: st
     b.setAttribute('role', 'menuitemradio');
     b.setAttribute('aria-checked', c.id === cur ? 'true' : 'false');
     b.className = 'xtm-input-pick' + (c.id === cur ? ' active' : '');
-    b.textContent = c.name;
-    b.title = c.name;
+    // Generators say how they are set and whether they run: "POD-33 AES1 (1 kHz · -18 dBFS · stereo · on)"
+    const how = liveDetail(c.id);
+    b.textContent = how ? `${c.name} (${how})` : c.name;
+    b.title = b.textContent;
     b.addEventListener('click', (e) => {
       e.stopPropagation();
       menu.remove();
