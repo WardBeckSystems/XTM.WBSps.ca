@@ -2,5 +2,5 @@
 	path = WebRouter
 	url = https://github.com/WardBeckSystems/WebRouter.git
 [submodule "Generators"]
-	path = Generators
+	path = Generators.WBSps.ca
 	url = https://github.com/LikeDotAudio/Ward-Beck-Generators.git

@@ -33,7 +33,7 @@ import type { PpmTypeInput } from './engine/ballistics/ppm-standards';
 import * as soundcard from './engine/sources/soundcard';
 import { connectSystemAudio } from './engine/sources/system-audio';
 import { connectMxlFlow, type MxlFlowFeed } from './engine/sources/mxl-flow';
-import { testGen, pod33Gen, configureGenerators, type Pod33Config, type BitBuddyConfig } from '../../Generators/web';
+import { testGen, pod33Gen, configureGenerators, type Pod33Config, type BitBuddyConfig } from '../../Generators.WBSps.ca/web';
 import { resumeAudio } from './engine/autoplay';
 import * as graph from './engine/graph';
 

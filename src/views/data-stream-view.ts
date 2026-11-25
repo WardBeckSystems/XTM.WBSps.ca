@@ -94,8 +94,6 @@ export class DataStreamView {
         new ResizeObserver(fit).observe(eyeCol);
         fit();
       }
-      // The telemetry cards fill the ALSA lane's free space
-      this.graph.setDock(this.container.querySelector('.rc-eye-hud-grid') as HTMLElement | null);
       this.graph.start();
       this.updateXmxlBar();
     }
@@ -162,13 +160,13 @@ export class DataStreamView {
               </div>
               <div class="rc-eye-hud-card">
                 <div class="rc-eye-hud-label">BUFFER CAPACITY &amp; SHM</div>
-                <div class="rc-eye-hud-val rc-tone-ok">480,000 FRAMES (10.0s)</div>
-                <div class="rc-eye-hud-sub">3.84 MB /dev/shm · PROT_READ zero copy</div>
+                <div class="rc-eye-hud-val rc-tone-ok" id="rcEyeBufVal">—</div>
+                <div class="rc-eye-hud-sub" id="rcEyeBufSub">—</div>
               </div>
               <div class="rc-eye-hud-card">
                 <div class="rc-eye-hud-label">QUANTUM</div>
-                <div class="rc-eye-hud-val">256 FRAMES</div>
-                <div class="rc-eye-hud-sub">5.33 ms @ 48 kHz</div>
+                <div class="rc-eye-hud-val" id="rcEyeQVal">—</div>
+                <div class="rc-eye-hud-sub" id="rcEyeQSub">—</div>
               </div>
               <div class="rc-eye-hud-card">
                 <div class="rc-eye-hud-label">SLIP RATE</div>
@@ -291,6 +289,14 @@ export class DataStreamView {
         if (lagEl) lagEl.textContent = `${(eyeFlow.meter_head / sr).toFixed(3)}s · lag ${(lag / sr * 1000).toFixed(1)} ms`;
         if (headIdxEl) headIdxEl.textContent = `#${eyeFlow.write_head}`;
         if (headSecEl) headSecEl.textContent = `${(eyeFlow.write_head / sr).toFixed(3)}s / ${len.toLocaleString()} frames`;
+        // The selected signal's own buffer and quantum
+        const ch = eyeFlow.channel_count || 2;
+        const q = eyeFlow.packet_frames || eyeFlow.quantum || 0;
+        const set = (id: string, t: string) => { const el = this.container?.querySelector('#' + id); if (el) el.textContent = t; };
+        set('rcEyeBufVal', `${len.toLocaleString()} FRAMES (${(len / sr).toFixed(1)}s)`);
+        set('rcEyeBufSub', `${(len * ch * 4 / 1e6).toFixed(2)} MB · ${ch} ch Float32 · ${eyeFlow.shm_path ? '/dev/shm · PROT_READ zero copy' : 'TAP ring'}`);
+        set('rcEyeQVal', q ? `${q} FRAMES` : '—');
+        set('rcEyeQSub', q ? `${(q / sr * 1000).toFixed(2)} ms @ ${sr / 1000} kHz` : `${sr / 1000} kHz`);
         setLabel(eyeFlow.kind === 'testpoint'
           ? `${eyeFlow.label} · ${eyeFlow.source || ''} · ring ${eyeFlow.buffer_length / eyeFlow.packet_frames <= 64 ? `10 × ${eyeFlow.packet_frames} fr` : `${(eyeFlow.ring_ms / 1000).toFixed(0)} s`} (${eyeFlow.ring_frames.toLocaleString()} fr)${eyeFlow.status !== 'running' ? ' · ' + String(eyeFlow.status).toUpperCase() : ''}`
           : `${String(eyeFlow.label).replace(/\s*\([^)]*\)\s*$/, '')} · ${eyeFlow.channel_count}ch @ ${sr / 1000}kHz`);

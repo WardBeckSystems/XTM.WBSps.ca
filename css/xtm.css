@@ -6,7 +6,7 @@
 @import "./base/viewport.css";
 @import "./components/meter-stack.css";
 @import "./components/routing-console.css";
-@import "../Generators/web/generators-bitset.css";
+@import "../Generators.WBSps.ca/web/generators-bitset.css";
 @import "../WebRouter/src/web-router.css";
 @import "./components/scope-toolbar.css";
 @import "./components/hud.css";

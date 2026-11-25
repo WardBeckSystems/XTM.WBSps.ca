@@ -13,7 +13,7 @@ import { Pod22View } from './views/pod22-view';
 import { DbfsView } from './views/dbfs-view';
 import { DataStreamView } from './views/data-stream-view';
 import { LoggingView } from './views/logging-view';
-import { GeneratorsView } from '../Generators/web';
+import { GeneratorsView } from '../Generators.WBSps.ca/web';
 import { WebRouter } from '../WebRouter/src';
 import { MX, PY, R } from './views/xtm/layout/wbs-layout';
 import { bindMonitorKnob } from './views/xtm/controls/monitor-knob';

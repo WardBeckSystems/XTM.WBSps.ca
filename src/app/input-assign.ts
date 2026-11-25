@@ -134,7 +134,11 @@ export function selectAssignedInput(ctx: AppContext, sync: AudioSync, n: number)
   if (webRouter && !id.startsWith('pod33') && webRouter.pod33Engaged) webRouter.setPod33(false);
   if (webRouter && id !== 'bitbuddy' && webRouter.bitBuddyEngaged) webRouter.setBitBuddy(false);
 
-  if (id.startsWith('dev:')) {
+  if (id === 'dev:' && (webRouter as any)?.daemonOnline) {
+    // Default input with the TAP running: the meters read the TAP's master bus (what the system
+    // plays), the same ring this button shows. A named device is metered itself (below).
+    window.dispatchEvent(new CustomEvent('xtm:meter-flow', { detail: { port: 8467, flowId: 'wbs-flow-master-stereo' } }));
+  } else if (id.startsWith('dev:')) {
     const sel = document.getElementById('selectDevice') as HTMLSelectElement | null;
     const value = id.slice(4);
     if (sel && Array.from(sel.options).some((o) => o.value === value)) {
@@ -154,6 +158,34 @@ export function selectAssignedInput(ctx: AppContext, sync: AudioSync, n: number)
   model.selectedInput = n;
   model.inputAssigned = true;
   model.notify();
+  verifyInput(ctx, sync, n, id);
+}
+
+/**
+ * After a press: is the meter (VU, loudness) really on that input? If not (a source that did not
+ * take, a feed left over from before), apply the input once more. Never re-asks for a tab.
+ */
+let verifyTimer = 0;
+function verifyInput(ctx: AppContext, sync: AudioSync, n: number, id: string, retry = true): void {
+  clearTimeout(verifyTimer);
+  verifyTimer = window.setTimeout(() => {
+    const a: any = ctx.audio;
+    if (!ctx.model.power || ctx.model.selectedInput !== n || inputAssignment(n) !== id) return; // moved on
+    const flow = a.mxlFeed?.flowId as string | undefined;
+    const ok =
+      id === 'tab' ? a.sourceType === 'system'
+      : id.startsWith('pod33') ? !!a.pod33Node || flow === 'wbs-flow-ref-tone'
+      : id === 'bitbuddy' ? !!a.bitBuddyNode || flow === 'wbs-flow-bit-spitter'
+      : id === 'netrx' || id === 'moiprx' ? flow === inputFlowId(id)
+      : id === 'dev:' && (ctx.webRouter as any)?.daemonOnline ? flow === 'wbs-flow-master-stereo'
+      : id.startsWith('dev:') ? a.sourceType === 'mic' || a.sourceType === 'mxl' || a.sourceType === 'system'
+      : true;
+    if (ok || !retry) return;
+    if (id === 'tab' && !a.tabStream?.()) return; // the share is gone: only a click may ask again
+    console.info(`[input] INPUT ${n} (${id}) did not reach the meters: applied again`);
+    selectAssignedInput(ctx, sync, n);
+    verifyInput(ctx, sync, n, id, false);
+  }, 900);
 }
 
 export function assignInput(n: number, id: string): void {
