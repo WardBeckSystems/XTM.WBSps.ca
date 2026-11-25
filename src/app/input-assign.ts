@@ -104,6 +104,7 @@ export function inputFlowId(id: string): string | null {
 /** Caption for button n (1-4). */
 export function inputCaption(n: number): string {
   const id = assigned[n - 1];
+  if (id === 'none') return '—';
   const b = BUILTIN.find((c) => c.id === id);
   if (b) return b.short;
   if (id === 'dev:') return 'SOUNDCARD';
@@ -116,6 +117,7 @@ export function selectAssignedInput(ctx: AppContext, sync: AudioSync, n: number)
   const { model, audio, webRouter } = ctx;
   const id = assigned[n - 1] || DEFAULTS[n - 1];
   if (!model.power) return;
+  if (id === 'none') { model.flash('NO INPUT'); return; } // emptied from the router
 
   // Mode follows the kind of source (reference level / meter law), and the hardware-mode sync
   // is told it is already in place so it does not connect something else over it.
@@ -170,8 +172,11 @@ export function routerRowsOfButtons(): (number | null)[] {
  * input `row` to button n and plays it; assigning a button (hold / right-click) moves the crosspoint.
  */
 export function routerMeterInput(ctx: AppContext, sync: AudioSync, n: number, row: number): void {
+  if (n < 1 || n > 4) return;
+  // The lit crosspoint was clicked: this input button holds nothing now
+  if (row < 0) { assignInput(n, 'none'); ctx.view.isBuilt = false; return; }
   const id = ROUTER_ROWS[row];
-  if (!id || n < 1 || n > 4) return;
+  if (!id) return;
   assignInput(n, id);
   ctx.view.isBuilt = false; // captions are drawn into the panel art
   selectAssignedInput(ctx, sync, n);
