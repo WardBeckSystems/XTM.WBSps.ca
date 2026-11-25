@@ -18,6 +18,7 @@ import {
   type XmxlInstance,
 } from '../audio/engine/sources/xmxl-discovery';
 import { PipelineGraph } from './pipeline-graph';
+import { vuDbToAngle } from '../../WebRouter/src';
 
 /** Ring audio fades out with age and is gone this many seconds after the write head passed. */
 const FADE_S = 8;
@@ -532,14 +533,19 @@ export class DataStreamView {
     const grid = this.$('#rcFlowRings') as HTMLElement | null;
     if (!grid) return;
     const live: any[] = this.ringsFresh() && this.mxlRings ? this.mxlRings.flows : [];
-    // Four transmitters: the program bus, the generators, then the Ward-Beck Tap (test point).
-    // The Tap only has a ring while a test point is set; until then its card sits idle.
-    // Receivers (router CH 9 / 10) are not transmitters: they show on the input rings only.
-    const flows: any[] = [...live.filter((f) => f.kind !== 'testpoint' && f.kind !== 'receiver'), ...live.filter((f) => f.kind === 'testpoint')];
-    if (live.length && !flows.some((f) => f.kind === 'testpoint')) {
-      flows.push({ flow_id: 'wbs-test-point', label: 'Ward-Beck Test Point Tap', kind: 'testpoint', idle: true,
-        channel_count: 2, sample_rate: 48000, write_head: 0, buffer_length: this.RING_CAPACITY, channels: [] });
-    }
+    // The router's four transmitters, in its order (MXL67-1 … 4), each with its AES67 sender.
+    // A transmitter the TAP has not made yet keeps its place as an idle card.
+    const TX = [
+      ['wbs-flow-master-stereo', 'MXL67-1 · Repeater'],
+      ['wbs-flow-ref-tone', 'MXL67-2 · POD-33 1 kHz'],
+      ['wbs-flow-ref-tone-low', 'MXL67-3 · POD-33 400 / 100 Hz'],
+      ['wbs-flow-bit-spitter', 'MXL67-4 · Bit Spitter'],
+    ];
+    const flows: any[] = live.length ? TX.map(([id, name]) => {
+      const f = live.find((x) => x.flow_id === id);
+      return f ? { ...f, label: name } : { flow_id: id, label: name, idle: true,
+        channel_count: 2, sample_rate: 48000, write_head: 0, buffer_length: this.RING_CAPACITY, channels: [] };
+    }) : [];
     this.flowCards = flows;
     const key = flows.map((f) => `${f.flow_id}:${f.channel_count}:${f.idle ? 'idle' : ''}:${this.aes67For(f.flow_id) ? 'aes67' : ''}`).join('|');
     if (key !== this.flowRingsKey) {
@@ -548,7 +554,7 @@ export class DataStreamView {
       grid.innerHTML = flows.length === 0
         ? '<div class="rc-gen-empty">No MXL flows: start ward-beck-audio-tab.py (port 8467)</div>'
         : flows.map((f, i) => `
-          <div class="rc-flow-ring-card${f.idle ? ' idle' : ''}" data-flow-ring="${esc(f.flow_id)}" title="${esc(f.label)}\n${f.idle ? 'No test point set: click a test point in the data tab pipeline' : DataStreamView.GEN_PANELS[f.flow_id] ? 'Click to open its generator' : 'Click to show in the Scanalyzer eye'}">
+          <div class="rc-flow-ring-card${f.idle ? ' idle' : ''}" data-flow-ring="${esc(f.flow_id)}" title="${esc(f.label)}\n${f.idle ? 'Not made by this TAP yet: restart the TAP' : DataStreamView.GEN_PANELS[f.flow_id] ? 'Click to open its generator' : 'Click to show in the Scanalyzer eye'}">
             <div class="rc-flow-ring-head">
               <span class="rc-flow-ring-name">${esc(String(f.label).replace(/^Ward-Beck\s+/, '').replace(/\s*\([^)]*\)\s*$/, ''))}</span>
               <span class="rc-ring-head" id="rcFlowHead${i}">#0</span>
@@ -556,6 +562,7 @@ export class DataStreamView {
             </div>
             <div class="rc-flow-ring-chs">
               <canvas id="rcFlowRing${i}" width="220" height="220" class="rc-flow-eye"></canvas>
+              <div class="rc-tx-vus">${[0, 1].map((c) => DataStreamView.miniVu(`rcTxVu${i}_${c}`, c ? 'R' : 'L')).join('')}</div>
             </div>
             ${this.aes67For(f.flow_id) ? `
             <div class="rc-aes67-tx" data-aes67="${esc(f.flow_id)}">
@@ -592,6 +599,18 @@ export class DataStreamView {
       // Same eye as the data view: one dial per flow, a band per channel
       const cv = grid.querySelector(`#rcFlowRing${i}`) as HTMLCanvasElement | null;
       if (cv) this.drawScanalyzerEye(cv, f, isMcDark, isMcLight, isWbsCa, false, '');
+      // L / R VU meters from the ring's RMS (0 VU = -18 dBFS), with VU-like ballistics
+      [0, 1].forEach((c) => {
+        const needle = grid.querySelector(`#rcTxVu${i}_${c} .rc-vu-needle`) as SVGElement | null;
+        if (!needle) return;
+        const ch = f.channels?.[c] ?? f.channels?.[0];
+        const target = f.idle || !ch || typeof ch.rms_db !== 'number' || ch.rms_db <= -100 ? -60 : ch.rms_db + 18;
+        const key = `${f.flow_id}:${c}`;
+        const prev = this.txVu.get(key) ?? -60;
+        const v = prev + (target - prev) * 0.18;
+        this.txVu.set(key, v);
+        needle.setAttribute('transform', `rotate(${vuDbToAngle(v).toFixed(2)} 60 96)`);
+      });
       const tx = this.aes67For(f.flow_id);
       const strip = tx ? grid.querySelector(`[data-aes67="${CSS.escape(f.flow_id)}"]`) as HTMLElement | null : null;
       if (tx && strip) {
@@ -610,6 +629,28 @@ export class DataStreamView {
         ].filter(Boolean).join('\n');
       }
     });
+  }
+
+  /** Smoothed VU readings of the transmitter meters, per flow and channel. */
+  private txVu = new Map<string, number>();
+
+  /** A small moving-coil VU meter (-20 … +3 VU), its needle turned by rotate() each frame. */
+  static miniVu(id: string, ch: string): string {
+    const P = (a: number, r: number) => { const t = (a * Math.PI) / 180; return `${(60 + r * Math.sin(t)).toFixed(1)} ${(96 - r * Math.cos(t)).toFixed(1)}`; };
+    const ticks = [-20, -10, -7, -5, -3, -2, -1, 0, 1, 2, 3].map((db) => {
+      const a = vuDbToAngle(db), major = [-20, -10, -5, 0, 3].includes(db);
+      return `<path d="M${P(a, 64)} L${P(a, major ? 72 : 69)}" class="rc-vu-tick${db > 0 ? ' red' : ''}"/>`
+        + (major ? `<text x="${P(a, 79).split(' ')[0]}" y="${P(a, 79).split(' ')[1]}" class="rc-vu-num${db > 0 ? ' red' : ''}">${db > 0 ? '+' + db : db}</text>` : '');
+    }).join('');
+    return `<svg class="rc-vu" id="${id}" viewBox="0 0 120 84" role="img" aria-label="VU ${ch}">
+      <rect x="1" y="1" width="118" height="82" rx="5" class="rc-vu-face"/>
+      <path d="M${P(vuDbToAngle(-20), 64)} A64 64 0 0 1 ${P(vuDbToAngle(0), 64)}" class="rc-vu-arc"/>
+      <path d="M${P(vuDbToAngle(0), 64)} A64 64 0 0 1 ${P(vuDbToAngle(3), 64)}" class="rc-vu-arc red"/>
+      ${ticks}
+      <text x="60" y="58" class="rc-vu-label">VU ${ch}</text>
+      <line x1="60" y1="96" x2="60" y2="26" class="rc-vu-needle" transform="rotate(-42 60 96)"/>
+      <circle cx="60" cy="96" r="6" class="rc-vu-pivot"/>
+    </svg>`;
   }
 
   /** Everything a reader needs to attach to a flow: SHM ring files, format, clock and the daemon's HTTP taps. */

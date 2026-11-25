@@ -1799,3 +1799,20 @@ body.theme-mccurdy-light .rc-pipeline-graph, body.theme-mccurdy .rc-pipeline-gra
 .rc-eye-col > .rc-gen-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); max-width: 440px; margin: 0 auto 8px; }
 .rc-top-monitoring-deck { align-items: flex-start; }
 .rc-pipeline-col { overflow-y: auto; overscroll-behavior: contain; }
+
+/* Transmitters: quadrants (1 2 / 3 4), each the eye then a pair of VU meters */
+.rc-flow-rings { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.rc-flow-ring-chs { display: flex; align-items: center; justify-content: center; gap: 10px; }
+.rc-flow-ring-chs .rc-flow-eye { width: 200px; height: 200px; flex: none; }
+.rc-tx-vus { display: flex; gap: 6px; }
+.rc-vu { width: 150px; height: auto; display: block; }
+.rc-vu-face { fill: #f4c36a; stroke: #1a1a1a; stroke-width: 2; }
+.rc-vu-arc { fill: none; stroke: #1a1a1a; stroke-width: 1.4; }
+.rc-vu-arc.red, .rc-vu-tick.red { stroke: #c81e1e; }
+.rc-vu-tick { stroke: #1a1a1a; stroke-width: 1.3; }
+.rc-vu-num { font: 700 8px ui-monospace, monospace; text-anchor: middle; dominant-baseline: middle; fill: #1a1a1a; }
+.rc-vu-num.red { fill: #c81e1e; }
+.rc-vu-label { font: 800 9px ui-monospace, monospace; text-anchor: middle; fill: #1a1a1a; opacity: 0.7; }
+.rc-vu-needle { stroke: #111; stroke-width: 1.6; stroke-linecap: round; }
+.rc-vu-pivot { fill: #222; }
+@media (max-width: 1300px) { .rc-flow-rings { grid-template-columns: minmax(0, 1fr); } }
