@@ -22,6 +22,25 @@ Both units share the exact same live audio input stream captured from your compu
 
 ---
 
+## What makes it different
+
+### 1. Obsessive hardware and ballistics authenticity
+Most browser audio meters draw a generic needle or bargraph. Here, both the physical dial geometry and the underlying mathematical ballistics are modelled after specific broadcast standards.
+
+- **Era-specific movements and faceplates.** Switches between distinct hardware movements: the Ward-Beck M405 (S4 vintage dial), McCurdy SA14023 (red 0–100 % modulation scale), Simpson 42V400C (Ampex teardrop) and Sifam Director 14 (AL29 tapered wand). Alongside them, authentic chassis finishes (vintage champagne anodized, McCurdy studio slate, ATS-100 cream enamel) and filament / halogen backlight colour temperatures.
+- **True IEC and ANSI ballistics curves.** Models mechanical overshoot and asymmetric decay curves rather than simple RMS smoothing: ANSI C16.5-1942 300 ms VU with 1–1.5 % overshoot, BBC BS 4297 PPM Type II, DIN 45406 Type I, Nordic N9, and the Ward-Beck M433 / M434 scales.
+- **Built-in industrial design styleguides.** Interactive vector blueprints and hardware styleguides (XTM-4, the M600 modular rack grid, the DR fluted Bakelite vernier attenuator physics, and the faceted 6-point McCurdy cartouche) document the industrial design rules behind the instruments.
+
+### 2. Broadcast-grade DSP and loudness telemetry in a zero-install PWA
+- **Simultaneous analog and digital compliance.** An ITU-R BS.1770-4 / EBU R128 K-weighted loudness engine (Momentary, Short-Term and Integrated LUFS, LRA, and L+R / L−R phase telemetry) runs directly alongside the vintage VU / PPM needles and a POD-22 extended mastering bargraph (−100 dBFS to +22 dB).
+- **Super-transient scope warping.** A configurable logarithmic time-warp axis (β = 8 up to β = 120 for ultra-high transient focus) running at up to 240 FPS, plus `.WBS` YAML profile portability and automated `.CSV` telemetry logging.
+- **Crosspoint routing and OS audio bridging.** A 9 × 10 web crosspoint matrix (the WBS Web Router, with virtual test-point insertion and generators such as the POD-33 tone generator and the ABS-1 Bit Spitter) and an OS audio bridge (the Ward-Beck Audio Tap) meter system audio cleanly, without browser tab-capture banners.
+
+### 3. A living tribute to Toronto's broadcast engineering heritage
+Rather than letting the Ward-Beck Systems and McCurdy Radio Industries legacies disappear after manufacturing ceased, the site repurposes their domain names into an open, interactive instrument and living archive, bridging Toronto's classic analog broadcast console era with modern IP / digital loudness workflows.
+
+---
+
 ## 1. Quick Start
 
 Run the included local server launcher from the terminal:
