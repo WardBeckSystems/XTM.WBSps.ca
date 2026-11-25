@@ -63,7 +63,7 @@ export function updateMonitorState(engine: XtmAudioEngine): void {
   engine.monitorGainNode.gain.setValueAtTime(vol, engine.ctx.currentTime);
 }
 
-/** PipeWire / PulseAudio sink the TAP makes for Cue / HP ("Ward-Beck TAP 6: HW 2 (Cue/HP)"). */
+/** PipeWire / PulseAudio sink the TAP makes for Cue / HP ("Ward-Beck TAP: HW 2 (Cue/HP)"). */
 const CUE_SINK = /HW 2 \(Cue\/HP\)/;
 let cueWarned = false;
 
@@ -71,7 +71,7 @@ let cueWarned = false;
  * Cue / HP: the routed input plays into the TAP's HW 2 bus through a second audio output
  * (an <audio> element on that sink); the hardware grid sends HW 2 to any sound cards.
  */
-/** The TAP's HW 1 bus ("Ward-Beck TAP 5: HW 1 (Speakers)"). */
+/** The TAP's HW 1 bus ("Ward-Beck TAP: HW 1 (Speakers)"). */
 const SPEAKER_SINK = /HW 1 \(Speakers\)/;
 let speakerSinkWanted: boolean | null = null;
 

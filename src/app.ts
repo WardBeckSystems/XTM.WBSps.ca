@@ -95,17 +95,34 @@ export async function initApp(): Promise<void> {
       monSlider.value = String(r.speakerLevel);
       if (monVal) monVal.textContent = Math.round(r.speakerLevel * 100) + '%';
     });
-    // XTM-4 MONITOR knob: the same speaker level, turned through the slider so all three stay in step
+    // XTM-4 MONITOR knob: the system volume, as the keyboard's volume keys move it (the TAP
+    // reads and sets it: GET / POST /api/system_volume). It follows the keys too.
     if (stageEl) {
+      const TAP = 'http://localhost:8467/api/system_volume';
+      let sysVol = 0.7, sending = 0, pendingVol: number | null = null;
+      const knobListeners: (() => void)[] = [];
+      const send = () => {
+        if (sending || pendingVol === null) return;
+        const v = pendingVol; pendingVol = null; sending = 1;
+        fetch(TAP, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ percent: Math.round(v * 100) }) })
+          .catch(() => {}).finally(() => { sending = 0; send(); });
+      };
+      let turnedAt = 0;
+      window.setInterval(() => {
+        if (!(webRouter as unknown as { daemonOnline?: boolean }).daemonOnline || Date.now() - turnedAt < 1500) return;
+        fetch(TAP, { cache: 'no-store' }).then((r) => (r.ok ? r.json() : null)).then((d) => {
+          if (typeof d?.percent === 'number' && Date.now() - turnedAt >= 1500) {
+            sysVol = d.muted ? 0 : d.percent / 100;
+            knobListeners.forEach((cb) => cb());
+          }
+        }).catch(() => {});
+      }, 1000);
       bindMonitorKnob(stageEl, {
-        level: () => webRouter.speakerLevel,
-        setLevel: (v) => {
-          monSlider.value = String(v);
-          monSlider.dispatchEvent(new Event('input', { bubbles: true }));
-        },
+        level: () => sysVol,
+        setLevel: (v) => { sysVol = v; turnedAt = Date.now(); pendingVol = v; send(); },
         online: () => !!(webRouter as unknown as { daemonOnline?: boolean }).daemonOnline,
-        defaultLevel: parseFloat(monSlider.defaultValue) || 0.7,
-        subscribe: (cb) => { webRouter.onChange(cb); },
+        defaultLevel: 0.7,
+        subscribe: (cb) => { knobListeners.push(cb); webRouter.onChange(cb); },
       });
     }
   }

@@ -20,7 +20,7 @@ anything Ctrl does can be undone by a plain click or another Ctrl-click.
 |---|---|---|---|
 | XTM-4 sensitivity / DR knob (WBS) | Sensitivity to 0 dB (CARD IN / SYST OUT). In TEST GEN: POD-33 to −18 dBFS (0 VU), never full scale | Turn by drag / wheel | `src/views/xtm/runtime/pointer.ts` → `SENS_ZERO` → `XtmModel.sensitivityToZero()` |
 | McCurdy attenuator knob | The attenuator step that reads 0 dB on its scale | Turn by drag / wheel | same |
-| XTM-4 MONITOR knob | Monitor level to 0 | Turn by drag / wheel; double-click = 70 % | `src/views/xtm/controls/monitor-knob.ts` |
+| XTM-4 MONITOR knob (the system volume, like the keyboard keys) | System volume to 0 | Turn by drag / wheel; double-click = 70 % | `src/views/xtm/controls/monitor-knob.ts` |
 | Footer logos (Ward-Beck.ca, .com, McCurdyRadio.ca, .com) | Background only steps .ca → .com → Radio.ca → Radio.com; meters and layout stay | Whole house look (and clears the background override) | `index.html` `switchOrCycleTab(mode, event)`, `css/base/viewport.css` |
 | Dial face logo (Ctrl + Alt) | Dual-meter mode (no centre) on / off | Cycle meter style | `src/views/xtm/runtime/pointer.ts` |
 

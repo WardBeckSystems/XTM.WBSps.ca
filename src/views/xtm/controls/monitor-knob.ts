@@ -1,8 +1,8 @@
 /*! Copyright (c) 2026 Ward-Beck Systems (Ward-Beck.ca). All rights reserved. */
 /**
  * MONITOR level knob: a small knurled rotary pot beside the INPUT SELECTOR.
- * - Drives the speaker (HW 1) level, the same value as Settings → Monitor Volume
- *   and the router's Speakers fader.
+ * - Drives the system volume, as the keyboard's volume keys do (through the TAP), and
+ *   follows them.
  * - Only on the panel while the Ward-Beck Audio Tap (localhost:8467) is online.
  * - Drag up / down or scroll to turn, double-click for the default, arrow keys when focused.
  * - Colours come from the --mk-* tokens in css/components/monitor-knob.css (one set per theme);
