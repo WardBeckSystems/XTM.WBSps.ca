@@ -144,15 +144,17 @@ export class PipelineGraph {
       const g = (e.target as Element).closest?.('[data-tap]');
       const node = g ? this.taps.get(g.getAttribute('data-tap') || '') : undefined;
       // A tappable card toggles its chooser; anywhere else closes it.
+      const was = this.chooser;
       this.chooser = node?.tap && this.chooser !== node.id ? node.id : '';
-      if (card || !this.chooser) this.draw();
+      if (card || was !== this.chooser) this.draw();
       if (node?.pick) this.onPick?.(node.pick.inst, node.pick.flow);
     });
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape' && this.chooser) { this.chooser = ''; this.draw(); }
     });
+    // composedPath, not contains(): by now the clicked card has been re-rendered out of the DOM.
     document.addEventListener('click', (e) => {
-      if (this.chooser && !this.el.contains(e.target as Node)) { this.chooser = ''; this.draw(); }
+      if (this.chooser && !e.composedPath().includes(this.el)) { this.chooser = ''; this.draw(); }
     });
   }
 
@@ -646,7 +648,7 @@ export class PipelineGraph {
       const focus = n.id === this.focused;
       const line2 = n.sub ?? (focus ? n.detail : undefined);
       const tapHint = (routed.length ? `\n⇄ routed by ${routed.join(', ')}` : '')
-        + (n.pick ? '\nClick to show in the ring buffer' : n.tap ? (clipped ? '\n● On the meters (test point): click to lift the probe' : '\nClick to point the meters (test point) here') : '');
+        + (n.pick ? '\nClick to show in the ring buffer' : n.tap ? '\nClick to choose a receiver: METER' + (this.rxSlots(n).length ? ' or a router receiver' : '') : '');
       return `
         <g class="pg-node pg-${n.kind}${n.live ? ' pg-on' : ''}${n.writing ? ' pg-writing' : ''}${n.hub ? ' pg-hub' : ''}${n.gone ? ' pg-gone' : ''}${n.tap ? ' pg-tappable' : ''}${n.pick ? ' pg-pickable' : ''}${clipped ? ' pg-tp' : ''}${routed.length ? ' pg-routed' : ''}${picked ? ' pg-pick' : ''}${focus ? ' pg-focus' : ''}" data-node="${esc(n.id)}"${tapAttr} transform="translate(${p.x} ${p.y})">
           <title>${esc(dnsName(n.label))}${n.sub ?? n.detail ? ` — ${esc(n.sub ?? n.detail!)}` : ''}${n.title ? `\n${esc(n.title)}` : ''}${tapHint}</title>
@@ -711,8 +713,6 @@ export class PipelineGraph {
       ${[mc?.sap, mc?.sip].some((l) => l?.error) ? `<div class="pg-errors">${[['SAP', mc.sap], ['SIP', mc.sip]].filter(([, l]) => l?.error).map(([n, l]) => `<div><b>${n}</b> ${esc(l.error)}</div>`).join('')}</div>` : ''}
     `;
     const svg = this.el.querySelector('.pg-svg') as SVGSVGElement | null;
-    if (svg && this.docks.length) {
-      const k = svg.getBoundingClientRect().width / W;
     // Measured fit: label clears the badge, sub line clears the METER / ROUTED tags, all inside the card.
     svg?.querySelectorAll<SVGGElement>('.pg-node').forEach((g) => {
       const left = (e: Element | null, dflt: number) => (e ? (e as SVGTextElement).getBBox().x : dflt);
@@ -720,6 +720,8 @@ export class PipelineGraph {
       fitText(g.querySelector('.pg-label'), left(badge, LANE_W - 4) - 4 - 15);
       fitText(g.querySelector('.pg-sub'), left(tag, LANE_W - 4) - 4 - 15);
     });
+    if (svg && this.docks.length) {
+      const k = svg.getBoundingClientRect().width / W;
       const top0 = svg.getBoundingClientRect().top - this.el.getBoundingClientRect().top;
       this.el.style.position = 'relative';
       for (const d of this.docks) {
@@ -731,6 +733,22 @@ export class PipelineGraph {
         });
         this.el.appendChild(d.el);
       }
+    }
+    // The receiver chooser hangs under its card (closes if the card stops being tappable).
+    const open = this.taps.get(this.chooser), at = pos.get(this.chooser);
+    if (!open?.tap || !at || !svg) this.chooser = '';
+    else {
+      const k = svg.getBoundingClientRect().width / W;
+      const top0 = svg.getBoundingClientRect().top - this.el.getBoundingClientRect().top;
+      this.el.style.position = 'relative';
+      const c = this.chooserEl(open);
+      // Left lanes open rightwards from the card's left edge; the network lane leftwards from its right edge.
+      const right = open.lane === 3;
+      Object.assign(c.style, {
+        left: `${(at.x + (right ? LANE_W : 0)) * k}px`, top: `${top0 + (at.y + NODE_H + 2) * k}px`,
+        transform: right ? 'translateX(-100%)' : '',
+      });
+      this.el.appendChild(c);
     }
     this.syncFixPrompt();
   }
