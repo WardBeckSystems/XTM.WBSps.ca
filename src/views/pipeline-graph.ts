@@ -452,8 +452,13 @@ export class PipelineGraph {
     const groupOf = (n: GNode) => `${n.domain ?? ''}|${n.hub ? '' : n.label.replace(/[^a-z0-9]/gi, '').slice(0, 4).toUpperCase()}`;
     let bottom = TOP;
     const laneBottom = [TOP, TOP, TOP, TOP];
+    // Docked cards sit at the top of their lane; the lane's own cards follow below them.
+    const scale = (this.el.clientWidth || W) / W;
+    const dockTop = [TOP, TOP, TOP, TOP];
+    const laneStart = [TOP, TOP, TOP, TOP];
+    for (const d of this.docks) laneStart[d.lane] = TOP + (d.el.offsetHeight || 330) / scale + 8;
     for (let lane = 0; lane < 4; lane++) {
-      let y = TOP, prev: string | null = null;
+      let y = laneStart[lane], prev: string | null = null;
       for (const n of nodes.filter((n) => n.lane === lane)) {
         const g = groupOf(n);
         if (prev !== null && g !== prev) y += GROUP_GAP;
@@ -465,9 +470,7 @@ export class PipelineGraph {
       bottom = Math.max(bottom, y);
       laneBottom[lane] = y;
     }
-    // The ALSA lane is short: the docked cards sit under its cards, and the lanes grow to hold them.
-    const scale = (this.el.clientWidth || W) / W;
-    for (const d of this.docks) bottom = Math.max(bottom, laneBottom[d.lane] + 6 + (d.el.offsetHeight || 330) / scale + 4);
+    for (const d of this.docks) bottom = Math.max(bottom, laneStart[d.lane]);
     const H = Math.max(bottom, TOP + NODE_H + NODE_GAP) + 6; // PTP clocks live in the Timing tab
 
     // Network nodes hang off the MXL hub.
@@ -542,7 +545,7 @@ export class PipelineGraph {
         Object.assign(d.el.style, {
           position: 'absolute',
           left: `${LANE_X[d.lane] * k}px`,
-          top: `${top0 + (laneBottom[d.lane] + 6) * k}px`,
+          top: `${top0 + dockTop[d.lane] * k}px`,
           width: `${LANE_W * k}px`,
         });
         this.el.appendChild(d.el);
