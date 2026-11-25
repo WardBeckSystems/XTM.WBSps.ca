@@ -17,6 +17,8 @@
 import { inputCaption } from '../../../../app/input-assign';
 import { MC_WIN } from '../../layout/mccurdy-layout';
 
+const esc = (v: string) => v.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]!));
+
 function buildFlutedPath(baseR: number, fluteDepth: number, count: number): string {
   const samples = count * 16;
   let d = '';
@@ -56,12 +58,13 @@ export function renderMcCurdyComCenter(): string {
       <path class="mc-range-arrow" d="M1522 248 V214 M1514 224 L1522 212 L1530 224" stroke="#232325" stroke-width="3" fill="none"/>
       <path class="mc-range-arrow" d="M1678 212 V246 M1670 236 L1678 248 L1686 236" stroke="#232325" stroke-width="3" fill="none"/>
       <!-- INPUT box: four jacks, one per input (same INPUT_n buttons as the .ca selectors) -->
-      <rect class="mc-input-box" x="1430" y="274" width="340" height="120" rx="8" fill="url(#mc_blue)" stroke="#1b1c1e" stroke-width="2.5"/>
+      <rect class="mc-input-box" x="1430" y="274" width="340" height="136" rx="8" fill="url(#mc_blue)" stroke="#1b1c1e" stroke-width="2.5"/>
       <text class="mc-input-text" x="1600" y="296" text-anchor="middle" ${font} font-size="16" fill="#181b1e">INPUT</text>
       ${[1, 2, 3, 4].map((i) => {
         const jx = 1600 + (i - 2.5) * 80;
         return `
-      <text class="mc-input-text" x="${jx}" y="386" text-anchor="middle" ${font} font-size="15" fill="#181b1e">${i}</text>
+      <text class="mc-input-text" x="${jx}" y="384" text-anchor="middle" ${font} font-size="15" fill="#181b1e">${i}</text>
+      <text class="mc-input-text mc-input-cap" x="${jx}" y="401" text-anchor="middle" ${font} font-size="9" font-weight="700" letter-spacing="0.3" fill="#181b1e">${esc(inputCaption(i).slice(0, 11))}</text>
       <g class="xtm-btn mc-jack" id="mc_jack_${i}" data-btn="INPUT_${i}" data-input="${i}" style="cursor:pointer" role="button" tabindex="0" aria-label="Input ${i}">
         <title>Input ${i}: ${inputCaption(i)}</title>
         <circle cx="${jx}" cy="340" r="23" fill="url(#mc_jack)" stroke="#1b1c1e" stroke-width="2"/>
