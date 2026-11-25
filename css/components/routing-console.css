@@ -1891,3 +1891,53 @@ html body #routingStage .wr-rack .wr-grid .wr-strip.selected {
 .pg-node { cursor: pointer; }
 .pg-node.pg-focus { opacity: 1; }
 .pg-node.pg-focus rect { stroke: var(--pg-hub); stroke-width: 2.4; stroke-dasharray: none; filter: drop-shadow(0 0 4px var(--pg-hub)); }
+
+/* ==================================================================
+   Pipeline graph console, faced like an M460 module (Ward-Beck-Plugin-Core/art/concept-rack-gemini.svg):
+   anodized grey panel, silver trim rails, thumb screws, engraved white lettering,
+   lit LEDs with cap colours (green live, amber MXL, red test point, yellow routed).
+   The palette lives on the SVG itself so the module looks the same in every theme.
+   ================================================================== */
+.rc-pipeline-graph .pg-svg {
+  --pg-lane-line: #0c0e10; --pg-node-line: #0c0e10;
+  --pg-text: #e6eaee; --pg-sub: #aeb5bc; --pg-edge: #4a5158; --pg-flow: #34d07d; --pg-clock: #e5b800;
+  --pg-hw: #34d07d; --pg-pw: #dce0e4; --pg-mxl: #e5b800; --pg-dante: #d93218;
+  --pg-ravenna: #ffea4d; --pg-sap: #34d07d; --pg-nmos: #e5b800; --pg-sip: #d93218; --pg-hub: #34d07d;
+  --pg-tp: #d93218; --pg-accent: #e5b800;
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  background: #090a0c; border-radius: 4px;
+}
+.rc-pipeline-graph:has(.pg-svg) { background: #090a0c; border-color: #1d2024; }
+.pg-svg .pg-lane { fill: url(#pgPanel); stroke: #0c0e10; stroke-width: 1; }
+.pg-svg .pg-trim { fill: url(#pgTrim); }
+.pg-svg .pg-head { fill: #e6eaee; font-weight: 700; letter-spacing: 0.9px; }
+.pg-svg .pg-brand { fill: #eef1f4; font: 800 9px 'Helvetica Neue', Helvetica, Arial, sans-serif; letter-spacing: 1px; }
+.pg-svg .pg-model { fill: #e6eaee; font-weight: 700; }
+/* cards: recessed plates on the face */
+.pg-svg .pg-node rect { fill: url(#pgPlate); stroke: #0c0e10; stroke-width: 1; }
+.pg-svg .pg-node.pg-on rect { stroke: #454b52; }
+.pg-svg .pg-node.pg-hub rect { stroke: #687078; stroke-width: 1.2; }
+.pg-svg .pg-node:not(.pg-on) rect { stroke-dasharray: 3 3; }
+.pg-svg .pg-label { fill: #e6eaee; font-weight: 700; }
+.pg-svg .pg-sub { fill: #aeb5bc; }
+/* status dots are panel LEDs: dark when off, lit with a glow when live */
+.pg-svg .pg-dot { fill: url(#pgLedOff); stroke: #141618; stroke-width: 0.6; }
+.pg-svg .pg-on .pg-dot { fill: url(#pgLedGreen); filter: url(#pgGlow); }
+.pg-svg .pg-on.pg-mxl .pg-dot, .pg-svg .pg-ravenna .pg-dot, .pg-svg .pg-nmos .pg-dot { fill: url(#pgLedAmber); }
+.pg-svg .pg-on.pg-mxl.pg-writing .pg-dot { fill: url(#pgLedGreen); }
+.pg-svg .pg-dante .pg-dot, .pg-svg .pg-sip .pg-dot, .pg-svg .pg-tp .pg-dot { fill: url(#pgLedRed); }
+.pg-svg .pg-on.pg-pw .pg-dot { fill: url(#pgLedGreen); }
+.pg-svg .pg-node:not(.pg-on) .pg-dot { filter: none; }
+/* kind colours stay as thin edge lines on the plates, not neon outlines */
+.pg-svg .pg-on.pg-hw rect, .pg-svg .pg-on.pg-hub rect { stroke: #2f6b47; }
+.pg-svg .pg-dante rect, .pg-svg .pg-ravenna rect, .pg-svg .pg-sap rect, .pg-svg .pg-nmos rect, .pg-svg .pg-sip rect, .pg-svg .pg-moip rect { stroke: #454b52; }
+/* the two decorations: red METER (test point), yellow ROUTED (a router receiver has it) */
+.pg-svg .pg-node.pg-tp rect { stroke: #d93218; stroke-width: 2; stroke-dasharray: none; }
+.pg-svg .pg-node.pg-routed:not(.pg-tp) rect { stroke: #e5b800; stroke-width: 1.6; stroke-dasharray: none; }
+.pg-svg .pg-node.pg-pick rect { stroke: #34d07d; stroke-width: 1.8; stroke-dasharray: none; }
+.pg-svg .pg-tp-tag { fill: #ff664d; font-weight: 800; }
+.pg-svg .pg-rt-tag { fill: #ffea4d; font-weight: 800; }
+.pg-svg .pg-badge { fill: #cfd5db; }
+.pg-svg .pg-edge { stroke: #4a5158; }
+.pg-svg .pg-edge.pg-live { stroke: #34d07d; stroke-opacity: 0.75; }
+.pg-svg .pg-more { fill: #aeb5bc; }

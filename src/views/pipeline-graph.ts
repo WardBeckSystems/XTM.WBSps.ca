@@ -25,6 +25,7 @@ const LANE_W = 214;
 const LANE_X = [8, 270, 532, 794];
 const NODE_H = 21;
 const NODE_GAP = 4;
+const FOOT = 26;         // module foot: thumb screw + WBS badge (M460 face)
 const TOP = 28;          // first node y
 const GROUP_GAP = 6;     // between groups of similar names
 
@@ -532,7 +533,7 @@ export class PipelineGraph {
       laneBottom[lane] = y;
     }
     for (const d of this.docks) bottom = Math.max(bottom, laneStart[d.lane]);
-    const H = Math.max(bottom, TOP + NODE_H + NODE_GAP) + 6; // PTP clocks live in the Timing tab
+    const H = Math.max(bottom, TOP + NODE_H + NODE_GAP) + 6 + FOOT; // PTP clocks live in the Timing tab
 
     // Network nodes hang off the MXL hub.
     const netLinks = shown.filter((n) => n.lane === 3).map((n) => ({ from: 'mxl', to: n.id, live: n.live }));
@@ -584,10 +585,39 @@ export class PipelineGraph {
     const more = extra.map((e) => `<text class="pg-more" x="${LANE_X[e.lane] + 8}" y="${e.y + 10}">+${e.n} more</text>`).join('');
 
 
+    // Each lane is a module on the console, faced like an M460: anodized panel, silver trim
+    // rails down both edges, a thumb screw at each end, engraved lettering, WBS badge at the foot.
     const laneHead = ['1 · ALSA HARDWARE', '2 · PIPEWIRE GRAPH', '3 · MXL SHARED MEMORY', '4 · NETWORK AoIP'];
-    const heads = laneHead.map((t, i) => `
-      <rect class="pg-lane" x="${LANE_X[i] - 4}" y="4" width="${LANE_W + 8}" height="${H - 8}" rx="7"/>
-      <text class="pg-head" x="${LANE_X[i] + 4}" y="17">${t}</text>`).join('');
+    const laneBadge = ['ALSA', 'PW', 'MXL', 'AoIP'];
+    const screw = (x: number, y: number) => `<use href="#pgScrew" x="${x}" y="${y}"/>`;
+    const heads = laneHead.map((t, i) => {
+      const x = LANE_X[i] - 4, w = LANE_W + 8, h = H - 8;
+      return `
+      <rect class="pg-lane" x="${x}" y="4" width="${w}" height="${h}"/>
+      <rect class="pg-trim" x="${x}" y="4" width="3.5" height="${h}"/>
+      <rect class="pg-trim" x="${x + w - 3.5}" y="4" width="3.5" height="${h}"/>
+      ${screw(x + w - 14, 15)}
+      <text class="pg-head" x="${LANE_X[i] + 4}" y="18">${t}</text>
+      ${screw(x + 16, H - 17)}
+      <text class="pg-brand" x="${x + w - 10}" y="${H - 13}" text-anchor="end">WBS <tspan class="pg-model">${laneBadge[i]}</tspan></text>`;
+    }).join('');
+    const defs = `<defs>
+      <linearGradient id="pgPanel" x1="0" y1="0" x2="1" y2="0">
+        <stop offset="0" stop-color="#383e44"/><stop offset="0.06" stop-color="#2c3136"/>
+        <stop offset="0.94" stop-color="#25292e"/><stop offset="1" stop-color="#1d2024"/></linearGradient>
+      <linearGradient id="pgTrim" x1="0" y1="0" x2="1" y2="0">
+        <stop offset="0" stop-color="#fff"/><stop offset="0.45" stop-color="#d2d6da"/>
+        <stop offset="0.55" stop-color="#9ca2a8"/><stop offset="1" stop-color="#e4e7ea"/></linearGradient>
+      <linearGradient id="pgPlate" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#202327"/><stop offset="1" stop-color="#16191c"/></linearGradient>
+      <radialGradient id="pgLedGreen" cx="35%" cy="35%" r="65%"><stop offset="0" stop-color="#75ffad"/><stop offset="0.5" stop-color="#12a84e"/><stop offset="1" stop-color="#054a20"/></radialGradient>
+      <radialGradient id="pgLedAmber" cx="35%" cy="35%" r="65%"><stop offset="0" stop-color="#ffe875"/><stop offset="0.5" stop-color="#d99b00"/><stop offset="1" stop-color="#664700"/></radialGradient>
+      <radialGradient id="pgLedRed" cx="35%" cy="35%" r="65%"><stop offset="0" stop-color="#ff8a75"/><stop offset="0.5" stop-color="#d41e08"/><stop offset="1" stop-color="#5e0900"/></radialGradient>
+      <radialGradient id="pgLedOff" cx="35%" cy="35%" r="65%"><stop offset="0" stop-color="#484d54"/><stop offset="0.65" stop-color="#202327"/><stop offset="1" stop-color="#0e1012"/></radialGradient>
+      <filter id="pgGlow" x="-200%" y="-200%" width="500%" height="500%"><feGaussianBlur stdDeviation="1.6" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+      <g id="pgScrew"><circle r="7" fill="#111315" stroke="#454b52" stroke-width="0.7"/><circle r="5" fill="#2c3136" stroke="#687078" stroke-width="0.8"/>
+        <line x1="-3.3" x2="3.3" stroke="#111315" stroke-width="1.2"/><line y1="-3.3" y2="3.3" stroke="#111315" stroke-width="1.2"/></g>
+    </defs>`;
 
     const empty = (lane: number, msg: string) =>
       nodes.some((n) => n.lane === lane) ? '' : `<text class="pg-sub" x="${LANE_X[lane] + 6}" y="${TOP + 12}">${msg}</text>`;
@@ -598,7 +628,7 @@ export class PipelineGraph {
         ${this.tpChip()}
       </div>
       <svg class="pg-svg" viewBox="0 0 ${W} ${H}" role="img" aria-label="Audio pipeline signal flow: ALSA to PipeWire to MXL to network AoIP">
-        ${heads}${edgeSvg}${nodeSvg}${more}
+        ${defs}${heads}${edgeSvg}${nodeSvg}${more}
         ${this.online ? empty(0, 'no ALSA cards reported') : ''}
       </svg>
       ${[mc?.sap, mc?.sip].some((l) => l?.error) ? `<div class="pg-errors">${[['SAP', mc.sap], ['SIP', mc.sip]].filter(([, l]) => l?.error).map(([n, l]) => `<div><b>${n}</b> ${esc(l.error)}</div>`).join('')}</div>` : ''}
