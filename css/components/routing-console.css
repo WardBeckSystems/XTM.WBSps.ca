@@ -1816,3 +1816,51 @@ body.theme-mccurdy-light .rc-pipeline-graph, body.theme-mccurdy .rc-pipeline-gra
 .rc-vu-needle { stroke: #111; stroke-width: 1.6; stroke-linecap: round; }
 .rc-vu-pivot { fill: #222; }
 @media (max-width: 1300px) { .rc-flow-rings { grid-template-columns: minmax(0, 1fr); } }
+
+/* CBC / Radio-Canada MXL studio: early-web HTML, as plain as a page could be.
+   Grey page, Times, blue underlined links, grey bevelled buttons, default selects. */
+html body .rc-cbc-studio-panel {
+  background: #c0c0c0 !important;
+  color: #000 !important;
+  border: 2px outset #ffffff !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  font-family: "Times New Roman", Times, serif !important;
+  padding: 8px 12px !important;
+}
+html body .rc-cbc-studio-panel * { font-family: "Times New Roman", Times, serif !important; letter-spacing: normal !important; text-transform: none !important; }
+html body .rc-cbc-studio-panel .rc-cbc-header { border-bottom: 0 !important; padding-bottom: 0 !important; }
+html body .rc-cbc-studio-panel .rc-cbc-title strong { font-size: 1.5rem !important; font-weight: bold !important; color: #000 !important; }
+html body .rc-cbc-studio-panel .rc-cbc-header::after { content: ''; display: block; height: 0; border-top: 2px groove #ffffff; margin-top: 6px; width: 100%; }
+html body .rc-cbc-studio-panel .rc-cbc-label { color: #000 !important; font-size: 1rem !important; font-weight: bold !important; }
+html body .rc-cbc-studio-panel a.rc-cbc-svc { color: #0000ee !important; text-decoration: underline !important; background: none !important; border: 0 !important; font-size: 1rem !important; padding: 0 6px !important; }
+html body .rc-cbc-studio-panel a.rc-cbc-svc:visited { color: #551a8b !important; }
+html body .rc-cbc-studio-panel a.rc-cbc-svc .rc-led-dot { display: none !important; }
+html body .rc-cbc-studio-panel a.rc-cbc-svc:not(.up) { color: #808080 !important; }
+html body .rc-cbc-studio-panel button,
+html body .rc-cbc-studio-panel .rc-cbc-btn,
+html body .rc-cbc-studio-panel .rc-power-btn {
+  background: #c0c0c0 !important;
+  color: #000 !important;
+  border: 2px outset #ffffff !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  font-size: 0.9rem !important;
+  font-weight: normal !important;
+  padding: 1px 8px !important;
+}
+html body .rc-cbc-studio-panel button:active,
+html body .rc-cbc-studio-panel .rc-cbc-btn.active,
+html body .rc-cbc-studio-panel .rc-power-btn.active { border-style: inset !important; font-weight: bold !important; }
+html body .rc-cbc-studio-panel select.rc-cbc-select {
+  appearance: auto !important;
+  background: #fff !important;
+  color: #000 !important;
+  border: 2px inset #ffffff !important;
+  border-radius: 0 !important;
+  font-size: 1rem !important;
+  padding: 0 !important;
+}
+html body .rc-cbc-studio-panel .rc-cbc-flow-info { color: #000 !important; font-size: 0.85rem !important; font-style: italic; }
+html body .rc-cbc-studio-panel .rc-cbc-header { flex-wrap: wrap !important; }
+html body .rc-cbc-studio-panel .rc-cbc-header::after { flex: 0 0 100%; }
