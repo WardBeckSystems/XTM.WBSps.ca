@@ -10,9 +10,11 @@
  * PTP is read passively by the daemon from the apk-ptp MQTT topic.
  * Nothing is synthesized: an empty lane means the daemon reported nothing.
  *
- * Every card is a test point: clicking it clips the daemon's test point onto it
- * (POST /api/testpoint), which holds that point in a 10 s ring buffer and meters
- * it in the Scanalyzer eye. Clicking the clipped card again lifts the probe.
+ * Every card is a test point: clicking it opens a chooser of the receivers that can take it.
+ * METER clips the daemon's test point onto it (POST /api/testpoint), which holds that point
+ * in a 10 s ring buffer and meters it in the Scanalyzer eye. NETWORK RX / MOIP RX point a
+ * router receiver at it (POST /api/receiver {slot, kind, ref, label}); AoIP and MXL audio
+ * cards only. The holder is lit; pressing it again lifts it ({stop: true}).
  */
 
 import type { XmxlInstance } from '../audio/engine/sources/xmxl-discovery';
@@ -22,7 +24,7 @@ const POLL_MS = 4000;
 
 const W = 1000;          // viewBox width
 const LANE_W = 214;
-const LANE_X = [8, 270, 532, 794];
+const LANE_X = [8, 264, 520, 776]; // module faces span LANE_X-4 .. LANE_X+LANE_W+4: last ends at 994 < W
 const NODE_H = 21;
 const NODE_GAP = 4;
 const FOOT = 26;         // module foot: thumb screw + WBS badge (M460 face)
@@ -89,7 +91,9 @@ export class PipelineGraph {
   private picked = '';
   /** The clicked card: brought to the front, highlighted, its details shown. */
   private focused = '';
-  private onPick?: (instId: string, flowId: string) => void;
+  /** The card whose receiver chooser is open ('' = closed). */
+  private chooser = '';
+  private onPick?:(instId: string, flowId: string) => void;
 
   /** HTML docked in a lane's free space under its cards: lane 0 (ALSA) holds the telemetry
    *  cards, lane 1 (PipeWire) the INPUT 1-4 rings. */
@@ -109,17 +113,72 @@ export class PipelineGraph {
         this.syncFixPrompt();
         return;
       }
+      const rx = (e.target as Element).closest?.('[data-rx]');
+      if (rx) {
+        const n = this.taps.get(this.chooser);
+        if (n) this.route(n, rx.getAttribute('data-rx') || '');
+        return;
+      }
+      if ((e.target as Element).closest?.('.pg-chooser')) return;
       const card = (e.target as Element).closest?.('[data-node]');
       if (card) {
         const id = card.getAttribute('data-node') || '';
         this.focused = this.focused === id ? '' : id;
-        this.draw();
       }
       const g = (e.target as Element).closest?.('[data-tap]');
       const node = g ? this.taps.get(g.getAttribute('data-tap') || '') : undefined;
-      if (node?.pick) { this.onPick?.(node.pick.inst, node.pick.flow); return; }
-      if (node?.tap) this.clip(node);
+      // A tappable card toggles its chooser; anywhere else closes it.
+      this.chooser = node?.tap && this.chooser !== node.id ? node.id : '';
+      if (card || !this.chooser) this.draw();
+      if (node?.pick) this.onPick?.(node.pick.inst, node.pick.flow);
     });
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && this.chooser) { this.chooser = ''; this.draw(); }
+    });
+    document.addEventListener('click', (e) => {
+      if (this.chooser && !this.el.contains(e.target as Node)) { this.chooser = ''; this.draw(); }
+    });
+  }
+
+  /** Router receivers that can take this card: AoIP and MXL audio points, never a receiver's own output. */
+  private rxSlots(n: GNode): string[] {
+    if (!n.tap || (n.tap.kind !== 'aoip' && n.tap.kind !== 'mxl')) return [];
+    const own = new Set(Object.values(this.receivers).flatMap((r: any) => [r?.flow_id, r?.fold_flow_id]).filter(Boolean));
+    if (n.tap.kind === 'mxl' && own.has(n.tap.ref)) return [];
+    return Object.keys(this.receivers);
+  }
+
+  private holds(slot: string, n: GNode): boolean {
+    const r = this.receivers[slot];
+    return !!(n.tap && r?.active && r.point && r.point.kind === n.tap.kind && r.point.ref === n.tap.ref);
+  }
+
+  /** A chooser button: 'meter' clips the test point; a receiver slot is pointed here, or lifted if it already is. */
+  private async route(n: GNode, slot: string): Promise<void> {
+    if (slot === 'meter') return this.clip(n);
+    if (!this.rxSlots(n).includes(slot)) return;
+    const body = this.holds(slot, n) ? { slot, stop: true } : { slot, kind: n.tap!.kind, ref: n.tap!.ref, label: n.label };
+    try {
+      const res = await fetch(`${DAEMON}/api/receiver`, {
+        method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body),
+      });
+      const d = res.ok ? await res.json() : null;
+      if (d && typeof d === 'object' && !d.error) this.receivers = d;
+    } catch { /* the next poll shows the truth */ }
+    this.draw();
+  }
+
+  /** Pop-over beside the open card: cap-coloured push-buttons, the current holder lit. */
+  private chooserEl(n: GNode): HTMLElement {
+    const el = document.createElement('div');
+    el.className = 'pg-chooser';
+    el.setAttribute('role', 'group');
+    el.setAttribute('aria-label', `Receivers for ${n.label}`);
+    const btn = (slot: string, cap: string, text: string, lit: boolean) =>
+      `<button type="button" class="pg-cap pg-cap-${cap}${lit ? ' lit' : ''}" data-rx="${esc(slot)}" aria-pressed="${lit}"><i></i>${esc(text)}</button>`;
+    el.innerHTML = btn('meter', 'red', 'METER', this.isClipped(n))
+      + this.rxSlots(n).map((s) => btn(s, 'yellow', `${s.toUpperCase()} RX`, this.holds(s, n))).join('');
+    return el;
   }
 
   /** Locally discovered XMXL nodes and flows (xmxl-discovery): drawn as signals in the MXL / AoIP lanes. */
@@ -359,13 +418,14 @@ export class PipelineGraph {
       nodes.push({ id: `sip_${m.method}_${m.from}`, lane: 3, kind: 'sip', live: true, label: `${m.method} ${m.from}`, sub: `${m.source_ip} · ×${m.count}`, title: m.user_agent, badges: ['SIP'] });
 
     // Every flow in every domain under /dev/shm/mxl (nested ones too), each with how long ago it
-    // started. Clicking an audio flow points the test point at it.
+    // started, listed once under its home domain (the Tap marks copies elsewhere `home: false`).
+    // Clicking an audio flow points the test point at it.
     const age = (sec: number) => sec < 90 ? `${Math.round(sec)}s` : sec < 5400 ? `${Math.round(sec / 60)}m`
       : sec < 172800 ? `${Math.round(sec / 3600)}h` : `${Math.round(sec / 86400)}d`;
     for (const [dlbl, dom] of Object.entries<any>(mxl.domains ?? {})) {
       for (const f of dom?.flows ?? []) {
         const fid = String(f.flow_id ?? f.id ?? '');
-        if (!fid || seenFlowIds.has(fid)) continue;
+        if (!fid || f.home === false || seenFlowIds.has(fid)) continue;
         seenFlowIds.add(fid);
         const d = dlbl === mxl.domain_id ? tapDomain : dlbl;
         if (!domainLabel.has(d)) domainLabel.set(d, dlbl);
@@ -376,7 +436,8 @@ export class PipelineGraph {
         const started = typeof f.started_at === 'number' ? `\nstarted ${new Date(f.started_at * 1000).toLocaleString()}` : '';
         nodes.push({
           id: `fl_${fid}`, lane: 2, kind: 'mxl', live: f.active !== false, writing: f.active === true,
-          label: f.label || fid, domain: d, sub: `${what}${old}`, title: `${fid}\n${f.path ?? ''}${started}`,
+          label: f.label || fid, domain: d, sub: `${what}${old}`,
+          title: `${fid}\n${f.path ?? ''}${started}${f.also_in?.length ? `\nalso in ${f.also_in.join(', ')}` : ''}`,
           tap: audio ? { kind: 'mxl', ref: fid } : undefined,
         });
       }
