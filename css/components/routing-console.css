@@ -1963,3 +1963,9 @@ html body #routingStage .wr-rack .wr-grid .wr-strip.selected {
 .pg-cap:focus-visible { outline: 2px solid #e6eaee; outline-offset: 1px; }
 .pg-cap.lit i { background: var(--cap-lit); box-shadow: 0 0 6px var(--cap-lit), 0 0 2px var(--cap-lit); }
 .pg-cap.lit { color: #fff; box-shadow: inset 0 1px 0 #687078, 0 0 0 1px var(--cap-lit); }
+/* Phone width: the four modules keep a readable scale and swipe sideways inside the console
+   (16px gutter like the cards above); the page itself never scrolls horizontally. */
+@media (max-width: 600px) {
+  #dataStage .rc-pipeline-graph { margin: 0 16px; overflow-x: auto; overscroll-behavior-x: contain; -webkit-overflow-scrolling: touch; }
+  .rc-pipeline-graph .pg-svg { min-width: 900px; }
+}
