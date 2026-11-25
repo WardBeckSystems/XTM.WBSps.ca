@@ -1918,6 +1918,8 @@ html body #routingStage .wr-rack .wr-grid .wr-strip.selected {
 .pg-svg .pg-node.pg-on rect { stroke: #454b52; }
 .pg-svg .pg-node.pg-hub rect { stroke: #687078; stroke-width: 1.2; }
 .pg-svg .pg-node:not(.pg-on) rect { stroke-dasharray: 3 3; }
+/* idle cards: dark LED + dashed edge say "off"; dim less so the small sub line keeps >= 4.5:1 */
+.pg-svg .pg-node:not(.pg-on):not(.pg-gone, .pg-tp, .pg-pick, .pg-routed, .pg-focus) { opacity: 0.75; }
 .pg-svg .pg-label { fill: #e6eaee; font-weight: 700; }
 .pg-svg .pg-sub { fill: #aeb5bc; }
 /* status dots are panel LEDs: dark when off, lit with a glow when live */
