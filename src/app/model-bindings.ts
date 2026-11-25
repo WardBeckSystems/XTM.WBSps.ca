@@ -45,7 +45,15 @@ export function bindFrontPanel(ctx: AppContext, sync: AudioSync): void {
     if (btnName === 'MODE') {
       model.pressMode();
     } else if (btnName === 'SOURCE') {
-      model.pressSource();
+      // SOURCE steps through the routed inputs: INPUT 1 → 2 → 3 → 4 (the router's MTR 1-4),
+      // skipping any the router left empty, exactly as pressing that INPUT button
+      const cur = model.power ? model.getSelectedInput() : 0;
+      for (let k = 1; k <= 4; k++) {
+        const n = ((cur + k - 1) % 4) + 1;
+        if (inputAssignment(n) === 'none') continue;
+        selectAssignedInput(ctx, sync, n);
+        break;
+      }
     } else if (btnName === 'DOWN') {
       model.pressDown();
     } else if (btnName === 'UP') {
