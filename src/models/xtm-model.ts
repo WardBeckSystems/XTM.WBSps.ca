@@ -271,6 +271,28 @@ export class XtmModel {
     return -50 + this.mcAttenuatorStep * 2;
   }
 
+  /**
+   * Ctrl-click on the sensitivity knob: 0 dB. CARD IN / SYST OUT sensitivity to 0 dB; on the
+   * McCurdy attenuator the step that reads 0 dB on its scale; in TEST GEN the POD-33 to its
+   * reference level (−18 dBFS = 0 VU, not full scale).
+   */
+  public sensitivityToZero(): void {
+    if (!this.power) return;
+    const isMc = typeof document !== 'undefined' && (document.body?.classList.contains('theme-mccurdy') || document.body?.classList.contains('theme-mccurdy-dark'));
+    if (isMc) {
+      if (this.mcRangeMode === 'cal') this.mcRangeMode = 'outer';
+      this.mcAttenuatorStep = this.mcRangeMode === 'inner' ? 15 : 25;
+      this.applyMccurdySensitivity();
+      return;
+    }
+    if (this.mode === 'A') this.a.lvl = 60;
+    else if (this.mode === 'D') this.d.lvl = 60;
+    else if (this.mode === 'S') { this.pod33?.set({ levelDb: -18 }); this.flash(this.getDisplayText()); }
+    if (this.mode === 'A' || this.mode === 'D') this.flash('SENS ' + this.lvlChars(60));
+    this.saveEEPROM();
+    this.notify();
+  }
+
   public setMccurdyRange(mode: 'outer' | 'inner' | 'cal'): void {
     if (!this.power) return;
     this.mcRangeMode = mode;

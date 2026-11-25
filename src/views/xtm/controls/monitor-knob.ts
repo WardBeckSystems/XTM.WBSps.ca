@@ -147,6 +147,8 @@ export function bindMonitorKnob(container: HTMLElement, host: MonitorKnobHost): 
     if (!el || e.button !== 0) return;
     e.preventDefault();
     e.stopPropagation();
+    // Ctrl-click (⌘ on macOS): straight to 0 (see docs/CTRL-CLICK.md)
+    if (e.ctrlKey || e.metaKey) { turnTo(0); sync(); return; }
     (el as SVGElement).focus({ preventScroll: true });
     drag = { y: e.clientY, v: snap(host.level()), id: e.pointerId };
     el.classList.add('is-turning');

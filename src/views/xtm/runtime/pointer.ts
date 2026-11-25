@@ -30,6 +30,12 @@ export function attachPointerEvents(container: HTMLElement, host: ButtonHost): v
 
     // Track rotary knob drag adjustments (DR knob & McCurdy attenuator)
     const knob = target?.closest('#instrument-knob, #mccurdy-vintage-knob-assembly, .wbs-vintage-knob, .mccurdy-knob');
+    // Ctrl-click (⌘ on macOS) on a knob: straight to 0 (see docs/CTRL-CLICK.md)
+    if (knob && (e.ctrlKey || e.metaKey) && !e.altKey) {
+      e.preventDefault();
+      host.onButtonPressed?.('SENS_ZERO');
+      return;
+    }
     if (knob) {
       isDraggingKnob = true;
       dragStartY = e.clientY;
