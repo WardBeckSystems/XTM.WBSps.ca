@@ -58,6 +58,22 @@ interface Listener { listening?: boolean; error?: string | null; packets?: numbe
 
 const esc = (s: unknown) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]!));
 const trunc = (s: string, n: number) => (s.length > n ? s.slice(0, n - 1) + '…' : s);
+// mDNS / DNS-SD names arrive with decimal escapes (Desk\032preMO = "Desk preMO").
+const dnsName = (s: string) => s.replace(/\\(\d{3})/g, (_, d) => String.fromCharCode(+d));
+// Shorten an SVG <text> with an ellipsis until it is no wider than maxW (user units).
+// Character-count trunc() guesses; this measures, so badges and tags never collide.
+function fitText(t: SVGTextContentElement | null, maxW: number): void {
+  if (!t || maxW <= 0) return;
+  const full = t.textContent ?? '';
+  if (t.getComputedTextLength() <= maxW) return;
+  let lo = 0, hi = full.length;
+  while (lo < hi) {
+    const mid = (lo + hi + 1) >> 1;
+    t.textContent = full.slice(0, mid).trimEnd() + '…';
+    if (t.getComputedTextLength() <= maxW) lo = mid; else hi = mid - 1;
+  }
+  t.textContent = full.slice(0, lo).trimEnd() + '…';
+}
 
 async function getJson(path: string): Promise<any | null> {
   try {
@@ -633,10 +649,10 @@ export class PipelineGraph {
         + (n.pick ? '\nClick to show in the ring buffer' : n.tap ? (clipped ? '\n● On the meters (test point): click to lift the probe' : '\nClick to point the meters (test point) here') : '');
       return `
         <g class="pg-node pg-${n.kind}${n.live ? ' pg-on' : ''}${n.writing ? ' pg-writing' : ''}${n.hub ? ' pg-hub' : ''}${n.gone ? ' pg-gone' : ''}${n.tap ? ' pg-tappable' : ''}${n.pick ? ' pg-pickable' : ''}${clipped ? ' pg-tp' : ''}${routed.length ? ' pg-routed' : ''}${picked ? ' pg-pick' : ''}${focus ? ' pg-focus' : ''}" data-node="${esc(n.id)}"${tapAttr} transform="translate(${p.x} ${p.y})">
-          <title>${esc(n.label)}${n.sub ?? n.detail ? ` — ${esc(n.sub ?? n.detail!)}` : ''}${n.title ? `\n${esc(n.title)}` : ''}${tapHint}</title>
+          <title>${esc(dnsName(n.label))}${n.sub ?? n.detail ? ` — ${esc(n.sub ?? n.detail!)}` : ''}${n.title ? `\n${esc(n.title)}` : ''}${tapHint}</title>
           <rect width="${LANE_W}" height="${NODE_H}" rx="4"/>
           <circle class="pg-dot" cx="8" cy="${NODE_H / 2}" r="2.6"/>
-          <text class="pg-label" x="15" y="9">${esc(trunc(n.label, n.badges?.length ? 34 : 40))}</text>
+          <text class="pg-label" x="15" y="9">${esc(trunc(dnsName(n.label), n.badges?.length ? 34 : 40))}</text>
           ${n.badges?.length ? `<text class="pg-badge" x="${LANE_W - 5}" y="9" text-anchor="end">${esc(n.badges.join(' '))}</text>` : ''}
           ${line2 ? `<text class="pg-sub" x="15" y="17.5">${esc(trunc(line2, tags.length ? 50 - 10 * tags.length : 50))}</text>` : ''}
           ${tags.length ? `<text x="${LANE_W - 5}" y="17.5" text-anchor="end">${tags.map((t) => `<tspan class="${t.includes('METER') ? 'pg-tp-tag' : 'pg-rt-tag'}" dx="3">${t}</tspan>`).join('')}</text>` : ''}
@@ -697,6 +713,13 @@ export class PipelineGraph {
     const svg = this.el.querySelector('.pg-svg') as SVGSVGElement | null;
     if (svg && this.docks.length) {
       const k = svg.getBoundingClientRect().width / W;
+    // Measured fit: label clears the badge, sub line clears the METER / ROUTED tags, all inside the card.
+    svg?.querySelectorAll<SVGGElement>('.pg-node').forEach((g) => {
+      const left = (e: Element | null, dflt: number) => (e ? (e as SVGTextElement).getBBox().x : dflt);
+      const badge = g.querySelector('.pg-badge'), tag = g.querySelector('text:not([class])');
+      fitText(g.querySelector('.pg-label'), left(badge, LANE_W - 4) - 4 - 15);
+      fitText(g.querySelector('.pg-sub'), left(tag, LANE_W - 4) - 4 - 15);
+    });
       const top0 = svg.getBoundingClientRect().top - this.el.getBoundingClientRect().top;
       this.el.style.position = 'relative';
       for (const d of this.docks) {
