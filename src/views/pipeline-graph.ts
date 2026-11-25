@@ -594,7 +594,8 @@ export class PipelineGraph {
     let bottom = TOP;
     const laneBottom = [TOP, TOP, TOP, TOP];
     // Docked cards sit at the top of their lane; the lane's own cards follow below them.
-    const scale = (this.el.clientWidth || W) / W;
+    // the drawn svg's own width (phone width scrolls a wider svg inside the console)
+    const scale = (this.el.querySelector('.pg-svg')?.getBoundingClientRect().width || this.el.clientWidth || W) / W;
     const dockTop = [TOP, TOP, TOP, TOP];
     const laneStart = [TOP, TOP, TOP, TOP];
     for (const d of this.docks) laneStart[d.lane] = TOP + (d.el.offsetHeight || 330) / scale + 8;
