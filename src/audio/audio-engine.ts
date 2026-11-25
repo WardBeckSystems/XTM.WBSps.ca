@@ -258,6 +258,9 @@ export class XtmAudioEngine {
   /** Cue / HP on or off: the routed input plays into the TAP's HW 2 (Cue/HP) bus. */
   setCue(enabled: boolean): Promise<boolean> { return chain.setCue(this, enabled); }
 
+  /** Monitor into the TAP's HW 1 bus (true) or the default output (false). */
+  setMonitorSink(toTap: boolean): Promise<boolean> { return chain.setMonitorSink(this, toTap); }
+
   updateMonitorState(): void { chain.updateMonitorState(this); }
 
   // --- Reference / PPM / loudness -----------------------------------------

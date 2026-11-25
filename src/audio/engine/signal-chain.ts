@@ -71,6 +71,39 @@ let cueWarned = false;
  * Cue / HP: the routed input plays into the TAP's HW 2 bus through a second audio output
  * (an <audio> element on that sink); the hardware grid sends HW 2 to any sound cards.
  */
+/** The TAP's HW 1 bus ("Ward-Beck TAP 5: HW 1 (Speakers)"). */
+const SPEAKER_SINK = /HW 1 \(Speakers\)/;
+let speakerSinkWanted: boolean | null = null;
+
+/**
+ * Where the monitor (HW 1 / speakers) plays. With the TAP running it goes into the TAP's
+ * HW 1 bus, so the hardware tab decides which sound card hears it; without the TAP it is the
+ * system's default output (the shortest path). The whole context moves (AudioContext.setSinkId).
+ */
+export async function setMonitorSink(engine: XtmAudioEngine, toTap: boolean): Promise<boolean> {
+  const ctx = engine.ctx as (AudioContext & { setSinkId?: (id: string) => Promise<void>; sinkId?: string }) | null;
+  if (!ctx?.setSinkId || speakerSinkWanted === toTap) return false;
+  speakerSinkWanted = toTap;
+  try {
+    let id = '';
+    if (toTap) {
+      const outs = (await navigator.mediaDevices.enumerateDevices()).filter((d) => d.kind === 'audiooutput');
+      id = outs.find((d) => SPEAKER_SINK.test(d.label))?.deviceId ?? '';
+      if (!id) {
+        console.warn('[Monitor] TAP HW 1 (Speakers) output not found: playing to the default output');
+        speakerSinkWanted = null; // try again next time
+        return false;
+      }
+    }
+    if ((ctx.sinkId ?? '') !== id) await ctx.setSinkId(id);
+    return true;
+  } catch (e) {
+    console.warn('[Monitor] could not move the output:', e);
+    speakerSinkWanted = null;
+    return false;
+  }
+}
+
 export async function setCue(engine: XtmAudioEngine, enabled: boolean): Promise<boolean> {
   const ctx = engine.ctx;
   const g = engine.cueGainNode;
