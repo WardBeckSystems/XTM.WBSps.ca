@@ -15,5 +15,5 @@ echo "Bridge source: 'XTM Audio Bridge (Banner-Free)'"
 echo "Press Ctrl+C to stop."
 
 exec /usr/bin/pw-loopback \
-  --capture-props="node.name=XTM_Audio_Bridge node.description=\"XTM Desktop Loopback\"" \
-  --playback-props="media.class=Audio/Source/Virtual node.name=XTM_Audio_Source node.description=\"XTM Audio Bridge (Banner-Free)\""
+  --capture-props="node.name=XTM_Audio_Bridge node.description=\"XTM Desktop Loopback\" stream.capture.sink=true" \
+  --playback-props="media.class=Audio/Source/Virtual node.name=XTM_Audio_Source node.description=\"XTM Audio Bridge (Banner-Free)\" priority.session=1 priority.driver=1"

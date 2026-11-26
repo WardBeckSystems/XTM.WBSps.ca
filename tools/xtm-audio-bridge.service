@@ -5,7 +5,7 @@ BindsTo=pipewire.service
 
 [Service]
 Type=simple
-ExecStart=/usr/bin/pw-loopback --capture-props="node.name=XTM_Audio_Bridge node.description=\"XTM Desktop Loopback\"" --playback-props="media.class=Audio/Source/Virtual node.name=XTM_Audio_Source node.description=\"XTM Audio Bridge (Banner-Free)\""
+ExecStart=/usr/bin/pw-loopback --capture-props="node.name=XTM_Audio_Bridge node.description=\"XTM Desktop Loopback\" stream.capture.sink=true" --playback-props="media.class=Audio/Source/Virtual node.name=XTM_Audio_Source node.description=\"XTM Audio Bridge (Banner-Free)\" priority.session=1 priority.driver=1"
 Restart=on-failure
 RestartSec=2
 
