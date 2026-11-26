@@ -381,6 +381,13 @@ export class DataStreamView {
     this.drawScanalyzerEye(canvas, f ?? null, b.contains('theme-mccurdy-dark'), b.contains('theme-mccurdy') || b.contains('theme-mccurdy-light'), b.contains('theme-wbs-ca'), true, '');
   }
 
+  /** Per-channel peak / RMS (dBFS) of a flow from the rings poll; null when the TAP is silent or the flow idle. */
+  flowLevels(flowId: string): { peak: number[]; rms: number[] } | null {
+    const f = this.ringsFresh() && this.mxlRings ? this.mxlRings.flows.find((x: any) => x.flow_id === flowId) : null;
+    if (!f || f.idle || !Array.isArray(f.channels)) return null;
+    return { peak: f.channels.map((c: any) => c?.peak_db ?? -120), rms: f.channels.map((c: any) => c?.rms_db ?? -120) };
+  }
+
   private startRingsPoll(): void {
     if (this.mxlRingsPollTimer !== null) return;
     const poll = () => {

@@ -10,6 +10,7 @@ import { xtmModel as model } from './models/xtm-model';
 import { audio } from './audio/audio-engine';
 import { XtmView } from './views/xtm-view';
 import { Pod22View } from './views/pod22-view';
+import { Pod22Rack8 } from './views/pod22-micro';
 import { DbfsView } from './views/dbfs-view';
 import { DataStreamView } from './views/data-stream-view';
 import { LoggingView } from './views/logging-view';
@@ -146,7 +147,8 @@ export async function initApp(): Promise<void> {
   const receiversStageEl = document.getElementById('receiversStage');
   if (webRouter && receiversStageEl) {
     if (dataView) dataView.watchEyes(receiversStageEl);
-    webRouter.mountReceivers(receiversStageEl, dataView ? (cv, id) => dataView.drawEyeFor(cv, id) : undefined);
+    webRouter.mountReceivers(receiversStageEl, dataView ? (cv, id) => dataView.drawEyeFor(cv, id) : undefined,
+      dataView ? (host, id) => { const rack = new Pod22Rack8(host); return () => rack.render(dataView.flowLevels(id)); } : undefined);
   }
   const hardwareStageEl = document.getElementById('hardwareStage');
   if (webRouter && hardwareStageEl) webRouter.mountHardware(hardwareStageEl);
